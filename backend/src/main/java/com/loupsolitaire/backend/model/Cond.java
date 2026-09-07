@@ -42,4 +42,8 @@ public class Cond {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "effet_id")
     private Effet effet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lien_id")
+    private Lien lien;
 }
