@@ -33,6 +33,7 @@ public class Utilisateur {
 
     @Column(nullable = false, unique = true)
     private String username;
+    
 
     // Hash BCrypt uniquement. Ne jamais serialiser ce champ vers le frontend
     // (voir UtilisateurPublicDTO cote reponse, a creer avec le controleur /me).
