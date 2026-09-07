@@ -336,7 +336,7 @@
     "ennemi": null
   },
   {
-    "text": "Vous levez votre arme pour frapper la créature, dont la gueule hérissée de crocs tranchants comme des rasoirs vient de se refermer d'un claquement sec à quelques centimètres de votre tête. Gêné par le battement de ses ailes, vous avez du mal à vous tenir debout. Réduisez d'un point votre total d'HABILITÉ, et combattez ce Kraan. KRAAN HABILITÉ: 16 ENDURANCE: 24 Si vous parvenez à tuer votre adversaire, hâtez-vous de descendre le flanc opposé de la colline afin d'éviter les Gloks. Utilisez la Table de Hasard pour obtenir un chiffre. Si vous tirez le 0, rendez-vous au 53. Si vous tirez 1 ou 2, rendez-vous au 274. Si vous tirez entre 3 et 9, rendez-vous au 331.",
+    "text": "Vous levez votre arme pour frapper la créature, dont la gueule hérissée de crocs tranchants comme des rasoirs vient de se refermer d'un claquement sec à quelques centimètres de votre tête. Gêné par le battement de ses ailes, vous avez du mal à vous tenir debout. Réduisez d'un point votre total d'HABILITÉ, et combattez ce Kraan. KRAAN HABILITÉ: 16 ENDURANCE: 24 Si vous parvenez à tuer votre adversaire, hâtez-vous de descendre le flanc opposé de la colline afin d'éviter les Gloks. Utilisez la Table de Hasard pour obtenir un chiffre. Si vous tirez le 0, rendez-vous au 53. Si vous tirez 1 ou 2, rendez-vous au 274. Si vous tirez entre 3 et 9, rendez-vous au 316.",
     "combat": true,
     "ennemi": [
       {
@@ -432,7 +432,7 @@
     "objet": []
   },
   {
-    "text": "Il semble que le ou les occupants de la péniche soient partis en toute hâte il y a peu de temps. Les restes d’un repas à moitié mangé traînent sur la table ainsi qu’une tasse de Jala encore chaud. En fouillant un coffre et un petit placard, vous trouvez un Sac à Dos, de la Nourriture (l’équivalent de 2 Repas), et un Poignard. Si vous souhaitez emporter l’un ou l’autre de ces objets (ou tous les trois), n’oubliez pas de les inscrire sur votre Feuille d’Aventure. Rendez-vous ensuite au 272.",
+    "text": "Il semble que le ou les occupants de la péniche soient partis en toute hâte il y a peu de temps. Les restes d’un repas à moitié mangé traînent sur la table ainsi qu’une tasse de Jala encore chaud. En fouillant un coffre et un petit placard, vous trouvez un Sac à Dos, de la Nourriture (l’équivalent de 2 Repas), et un Poignard. Si vous souhaitez emporter l’un ou l’autre de ces objets (ou tous les trois), n’oubliez pas de les inscrire sur votre Feuille d’Aventure. Rendez-vous ensuite au 273.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -803,7 +803,7 @@
     "objet": []
   },
   {
-    "text": "La forêt devient de plus en plus dense, et un enchevêtrement de buissons d'épines recouvre le chemin en s'épaississant à mesure que vous avancez. Bien qu'il soit presque entièrement caché par ces broussailles, vous découvrez un autre sentier orienté vers l'est. Celui que vous suivez semble aboutir à un cul-de-sac de buissons inextricables, et vous décidez donc d'emprunter ce nouveau chemin en prenant la direction de l'est.",
+    "text": "La forêt devient de plus en plus dense, et un enchevêtrement de buissons d'épines recouvre le chemin en s'épaississant à mesure que vous avancez. Bien qu'il soit presque entièrement caché par ces broussailles, vous découvrez un autre sentier orienté vers l'est. Celui que vous suivez semble aboutir à un cul-de-sac de buissons inextricables, et vous décidez donc d'emprunter ce nouveau chemin en prenant la direction de l'est. Rendez-vous au 207.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -1295,7 +1295,7 @@
     "objet": []
   },
   {
-    "text": "Vous atteignez enfin la palissade en rondins du camp fortifié qui a été dressé autour de la ville. Et tandis que vous courez vers le poste de garde, vous entendez les soldats pousser des acclamations enthousiastes : les Dieux en soient loués, ils vous ont reconnu en dépit de vos vêtements déchirés et de votre triste apparence ! Votre cape est en lambeaux, votre visage écorché et taché de sang, et vous êtes couvert de la tête aux pieds de la poussière du cimetière. Pataugeant dans un petit ruisseau qu’il vous faut traverser, vous avancez en titubant vers l’une des entrées du camp. Peu à peu, la vision que vous venez d’avoir dans le cimetière vous apparaît dans toute son horreur ; vous êtes épuisé, affaibli, glacé et, juste avant de perdre connaissance, vous vous laissez tomber dans les bras tendus de deux soldats accourus à votre rencontre.",
+    "text": "Vous atteignez enfin la palissade en rondins du camp fortifié qui a été dressé autour de la ville. Et tandis que vous courez vers le poste de garde, vous entendez les soldats pousser des acclamations enthousiastes : les Dieux en soient loués, ils vous ont reconnu en dépit de vos vêtements déchirés et de votre triste apparence ! Votre cape est en lambeaux, votre visage écorché et taché de sang, et vous êtes couvert de la tête aux pieds de la poussière du cimetière. Pataugeant dans un petit ruisseau qu’il vous faut traverser, vous avancez en titubant vers l’une des entrées du camp. Peu à peu, la vision que vous venez d’avoir dans le cimetière vous apparaît dans toute son horreur ; vous êtes épuisé, affaibli, glacé et, juste avant de perdre connaissance, vous vous laissez tomber dans les bras tendus de deux soldats accourus à votre rencontre. Rendez-vous au 268.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -1809,7 +1809,7 @@
     "id": 93
   },
   {
-    "text": "Voyant que vous avez tué son fils, le Sage fait volte-face et s'enfuit de la boutique par la porte de derrière. Vous trouvez 12 Pièces d'Or dans la bourse du Voleur et 4 autres dans une boîte en bois, rangée sous le comptoir. Vous examinez ensuite les potions et la baguette magique, et vous vous apercevez qu’il s’agit de simples imitations sans aucune valeur. Il n’y a rien dans la boutique qui mérite votre attention et vous quittez les lieux pour rejoindre la grand-rue.",
+    "text": "Voyant que vous avez tué son fils, le Sage fait volte-face et s'enfuit de la boutique par la porte de derrière. Vous trouvez 12 Pièces d'Or dans la bourse du Voleur et 4 autres dans une boîte en bois, rangée sous le comptoir. Vous examinez ensuite les potions et la baguette magique, et vous vous apercevez qu’il s’agit de simples imitations sans aucune valeur. Il n’y a rien dans la boutique qui mérite votre attention et vous quittez les lieux pour rejoindre la grand-rue. Rendez-vous au 7.",
     "combat": false,
     "objet": [
       {
@@ -3871,7 +3871,7 @@
     "ennemi": null
   },
   {
-    "text": "Ce langage est celui des Kakarmis, une race d'animaux forestiers, doués d'intelligence, qui habitent les forêts du Sommerlund. [...]",
+    "text": "Ce langage est celui des Kakarmis, une race d'animaux forestiers, doués d'intelligence, qui habitent les forêts du Sommerlund. Vous n'avez rien à redouter de ces créatures timides et paisibles et votre Sens de la Communication Animale vous permet de leur parler dans leur étrange dialecte. Que désirez-vous leur dire ? « N'ayez pas peur, je viens en ami » ? Rendez-vous dans ce cas au 187. « Je suis un Seigneur Kaï, je ne vous veux aucun mal, je souhaite simplement parler avec vous » ? Rendez-vous alors au 39.",
     "combat": false,
     "lien": [
       { "page": "187", "cond": null },
@@ -4061,7 +4061,7 @@
     "ennemi": null
   },
   {
-    "text": "Le cheval du Prince est un magnifique animal, rapide et au pied sûr. Il galope le long du sentier sinueux comme s'il s'agissait d'une route large et droite et, bientôt, les échos de la bataille se dissipent derrière vous. Vous avez faim, et il vous faut prendre un Repas tandis que vous chevauchez l'étalon blanc, sinon, vous perdrez 3 points d'ENDURANCE. Quelques kilomètres plus loin, le sentier aboutit à un croisement en forme de T. Il y a là un panneau indicateur, mais il est illisible.",
+    "text": "Le cheval du Prince est un magnifique animal, rapide et au pied sûr. Il galope le long du sentier sinueux comme s'il s'agissait d'une route large et droite et, bientôt, les échos de la bataille se dissipent derrière vous. Vous avez faim, et il vous faut prendre un Repas tandis que vous chevauchez l'étalon blanc, sinon, vous perdrez 3 points d'ENDURANCE. Quelques kilomètres plus loin, le sentier aboutit à un croisement en forme de T. Il y a là un panneau indicateur, mais il est illisible. Si vous voulez prendre à gauche, rendez-vous au 32. Si vous préférez tourner à droite, rendez-vous au 146. Enfin, si vous maîtrisez la Discipline Kaï de l'Orientation, rendez-vous au 254.",
     "combat": false,
     "lien": [
       { "page": "32", "cond": null },
@@ -4253,7 +4253,13 @@
   {
     "text": "Lorsque l'embarcation se trouve au beau milieu du lac, l'homme ramène soudain sa perche et s'avance vers vous en éclatant d'un rire sinistre. Il rejette alors le capuchon qui lui couvre la tête et vous vous apercevez qu'il s'agit là d'un terrible Drakkarim. Il va falloir le combattre. DRAKKARIM HABILETÉ: 15 ENDURANCE: 23 Si vous êtes vainqueur, rendez-vous au 197.",
     "combat": true,
-    "objet": [],
+    "objet": [
+      {
+        "id": "or",
+        "valeur": -2,
+        "optionnel": false
+      }
+    ],
     "effet": null,
     "ennemi": [
       {
@@ -4537,7 +4543,13 @@
   {
     "text": "Le marchand prend votre or et claque des doigts. Son garde du corps vous attaque aussitôt. Si vous souhaitez le combattre, rendez-vous au 191. Si vous préférez éviter l'affrontement, vous pouvez sauter en marche de la roulotte en vous rendant au 234.",
     "combat": false,
-    "objet": [],
+    "objet": [
+      {
+        "id": "or",
+        "valeur": -10,
+        "optionnel": false
+      }
+    ],
     "effet": null,
     "ennemi": null,
     "lien": [
