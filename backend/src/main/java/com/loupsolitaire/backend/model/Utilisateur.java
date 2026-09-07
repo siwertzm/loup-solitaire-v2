@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -16,7 +17,10 @@ import lombok.Setter;
 @Entity
 @Table(
     name = "utilisateur",
-    uniqueConstraints = @UniqueConstraint(name = "uk_utilisateur_username", columnNames = "username")
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_utilisateur_username", columnNames = "username"),
+        @UniqueConstraint(name = "uk_utilisateur_email", columnNames = "email")
+    }
 )
 @Getter
 @Setter
@@ -34,4 +38,16 @@ public class Utilisateur {
     // (voir UtilisateurPublicDTO cote reponse, a creer avec le controleur /me).
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    // Optionnelle : peut etre completee apres inscription via PUT /auth/me.
+    // Date de naissance plutot qu'un age en dur, qui deviendrait faux avec le temps.
+    private LocalDate dateNaissance;
+
+    // Passe a true uniquement apres clic sur le lien de confirmation recu par email.
+    // Le login est bloque tant que ce flag est false (voir AuthController.login).
+    @Column(nullable = false)
+    private boolean emailVerifie = false;
 }

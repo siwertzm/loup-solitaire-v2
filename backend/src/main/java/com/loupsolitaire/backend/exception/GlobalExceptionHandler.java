@@ -42,6 +42,12 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(HttpStatus.FORBIDDEN.value(), "Acces refuse", ex.getMessage()));
     }
 
+    @ExceptionHandler(CompteNonVerifieException.class)
+    public ResponseEntity<ErrorResponse> handleCompteNonVerifie(CompteNonVerifieException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ErrorResponse.of(HttpStatus.FORBIDDEN.value(), "Compte non verifie", ex.getMessage()));
+    }
+
     @ExceptionHandler(TokenInvalideException.class)
     public ResponseEntity<ErrorResponse> handleTokenInvalide(TokenInvalideException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

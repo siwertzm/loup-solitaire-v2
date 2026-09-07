@@ -18,9 +18,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UtilisateurRepository utilisateurRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable : " + username));
+    public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
+        Utilisateur utilisateur = utilisateurRepository.findByUsernameOrEmail(identifiant, identifiant)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable : " + identifiant));
 
         return User.builder()
                 .username(utilisateur.getUsername())

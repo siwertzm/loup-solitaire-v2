@@ -8,9 +8,10 @@ import lombok.Setter;
 @Setter
 public class AuthRequest {
 
-    @NotBlank(message = "Le nom d'utilisateur est obligatoire")
-    private String username;
-
+    // Accepte soit le nom d'utilisateur, soit l'email (voir CustomUserDetailsService).
+    @NotBlank(message = "Le nom d'utilisateur ou l'email est obligatoire")
+    private String identifiant;
+    
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
 }

@@ -35,6 +35,13 @@ services:
       JWT_REFRESH_EXPIRATION_DAYS: ${JWT_REFRESH_EXPIRATION_DAYS:-30}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,capacitor://localhost,http://localhost,https://localhost}
       DDL_AUTO: ${DDL_AUTO:-update}
+      MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
+      MAIL_PORT: ${MAIL_PORT:-2525}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM:-no-reply@loup-solitaire.local}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      EMAIL_VERIFICATION_EXPIRATION_HOURS: ${EMAIL_VERIFICATION_EXPIRATION_HOURS:-24}
     ports:
       - "8080:8080"
     healthcheck:

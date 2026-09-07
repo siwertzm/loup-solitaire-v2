@@ -69,8 +69,18 @@ public class RefreshTokenService {
         existant.setRevoked(true);
         refreshTokenRepository.save(existant);
 
-        String nouveauToken = creerToken(existant.getUtilisateur());
-        return new RotationResult(existant.getUtilisateur(), nouveauToken);
+        // On lit username/password ICI, pendant que la transaction (et donc la
+        // session Hibernate) est encore active. Ne JAMAIS renvoyer l'entite
+        // Utilisateur elle-meme hors de cette methode : son champ 'utilisateur'
+        // sur RefreshToken est charge en LAZY, et tenter de le lire plus tard
+        // (ex. dans le controleur) leve LazyInitializationException, la session
+        // etant deja fermee.
+        Utilisateur utilisateur = existant.getUtilisateur();
+        String username = utilisateur.getUsername();
+        String passwordHash = utilisateur.getPassword();
+
+        String nouveauToken = creerToken(utilisateur);
+        return new RotationResult(username, passwordHash, nouveauToken);
     }
 
     @Transactional
@@ -104,6 +114,6 @@ public class RefreshTokenService {
         }
     }
 
-    public record RotationResult(Utilisateur utilisateur, String nouveauRefreshToken) {
+    public record RotationResult(String username, String passwordHash, String nouveauRefreshToken) {
     }
 }
