@@ -99,4 +99,10 @@ public class Personnage {
 
     @Column(nullable = false)
     private Instant dateCreation;
+
+    // Tirage 0-9 courant pour evaluer les conditions HASARD des liens.
+    // Regenere a chaque chargement du chapitre (GET /chapitre), puis relu
+    // (jamais re-tire) au moment de valider un choix (POST /chapitre/{id}) :
+    // le joueur choisit en fonction de ce qu'il a vu affiche.
+    private Integer dernierTirageHasard;
 }

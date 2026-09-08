@@ -157,6 +157,16 @@ public class PersonnageService {
         }
     }
 
+    // A appeler a chaque chargement du chapitre courant (GET /chapitre) :
+    // regenere le tirage utilise pour evaluer les conditions HASARD des
+    // liens (voir ConditionService), pour que l'affichage et la validation
+    // du choix se basent sur le meme tirage.
+    @Transactional
+    public void rafraichirTirageHasard(Personnage personnage) {
+        personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
+        personnageRepository.save(personnage);
+    }
+
     // Deplace le personnage vers chapitreCibleId, s'il existe bien un Lien
     // valide (conditions comprises) depuis son chapitre actuel. Met a jour
     // chapitrePrecedent/chapitreActuel et reinitialise l'habilite temporaire.

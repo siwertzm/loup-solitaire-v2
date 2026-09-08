@@ -6,6 +6,7 @@ public record ChapitreResponse(
         Integer id,
         String text,
         boolean combat,
+        Integer tirageHasard,
         List<EnnemiChapitreResponse> ennemis,
         List<EffetResponse> effets,
         List<LienResponse> liens,

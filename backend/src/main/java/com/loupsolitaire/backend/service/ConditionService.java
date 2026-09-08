@@ -10,14 +10,19 @@ import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import lombok.RequiredArgsConstructor;
 
 // Evalue si une Cond (attachee a un Lien) est satisfaite par l'etat actuel
-// d'un Personnage. Seuls 4 types sont evaluables statiquement a partir de
-// l'inventaire/des stats : DISCIPLINE, OBJET, BOURSE, ENDURANCE.
+// d'un Personnage.
 //
-// Les autres (HASARD, FUITE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC,
-// PERMANENT) decrivent une resolution DYNAMIQUE (un jet de de, un etat de
-// combat en cours) qui n'existe qu'au moment ou le joueur choisit ce
-// chemin : elles ne peuvent jamais bloquer l'affichage d'un lien, toujours
-// "disponibles" ici.
+// Evaluables statiquement a partir de l'inventaire/des stats : DISCIPLINE,
+// OBJET, ARME, BOURSE, ENDURANCE.
+//
+// HASARD : evalue via Personnage.dernierTirageHasard, regenere a chaque
+// chargement du chapitre (voir PersonnageService.rafraichirTirageHasard) et
+// relu (jamais re-tire) ici, pour que la validation au moment du choix
+// corresponde exactement a ce que le joueur a vu affiche.
+//
+// FUITE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC, PERMANENT : decrivent
+// un etat de COMBAT en cours, qui n'existe pas encore dans le systeme.
+// Toujours "disponibles" ici ; a traiter quand le combat sera construit.
 @Service
 @RequiredArgsConstructor
 public class ConditionService {
@@ -29,7 +34,8 @@ public class ConditionService {
             case DISCIPLINE -> possedeDiscipline(cond, personnage);
             case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, personnage);
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
-            case HASARD, FUITE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC, PERMANENT -> true;
+            case HASARD -> tirageDansLaPlage(cond, personnage);
+            case FUITE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC, PERMANENT -> true;
         };
     }
 
@@ -52,6 +58,24 @@ public class ConditionService {
 
     private boolean enduranceSuffisante(Cond cond, Personnage personnage) {
         return personnage.getEnduranceActuelle() >= parseValeur(cond.getValeur());
+    }
+
+    // valeur au format "[min, max]" (ex. "[0, 4]"). Si aucun tirage n'a
+    // encore ete fait (personnage jamais passe par GET /chapitre), on
+    // considere le lien indisponible plutot que de risquer une validation
+    // incorrecte sans tirage reel.
+    private boolean tirageDansLaPlage(Cond cond, Personnage personnage) {
+        Integer tirage = personnage.getDernierTirageHasard();
+        if (tirage == null) {
+            return false;
+        }
+
+        String valeur = cond.getValeur().replace("[", "").replace("]", "").trim();
+        String[] bornes = valeur.split(",");
+        int min = Integer.parseInt(bornes[0].trim());
+        int max = Integer.parseInt(bornes[1].trim());
+
+        return tirage >= min && tirage <= max;
     }
 
     private int parseValeur(String valeur) {

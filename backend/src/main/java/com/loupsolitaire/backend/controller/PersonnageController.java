@@ -84,11 +84,13 @@ public class PersonnageController {
         return personnageMapper.versReponse(personnage);
     }
 
-    // Chapitre courant du personnage, en lecture seule : liens et
-    // conditions non filtres pour l'instant (etape suivante).
+    // Chapitre courant du personnage. Le tirage HASARD est regenere a
+    // chaque appel, pour que les liens conditionnes par un jet de de
+    // reflètent un tirage frais (voir PersonnageService.rafraichirTirageHasard).
     @GetMapping("/{id}/chapitre")
     public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        personnageService.rafraichirTirageHasard(personnage);
         return chapitreMapper.versReponse(personnage.getChapitreActuel().getId(), personnage);
     }
 
