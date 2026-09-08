@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.loupsolitaire.backend.exception.AccesRefuseException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
-import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -27,10 +26,10 @@ import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
-import com.loupsolitaire.backend.response.InventaireItemResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.InventaireService;
 import com.loupsolitaire.backend.service.ObjetService;
+import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.PersonnageService;
 
 import jakarta.validation.Valid;
@@ -47,6 +46,7 @@ public class PersonnageController {
     private final ObjetRepository objetRepository;
     private final InventaireService inventaireService;
     private final ObjetService objetService;
+    private final PersonnageMapper personnageMapper;
 
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
@@ -61,7 +61,7 @@ public class PersonnageController {
 
         Personnage personnage = personnageService.creerPersonnage(utilisateur, request.getNom(), disciplines);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(versReponse(personnage));
+        return ResponseEntity.status(HttpStatus.CREATED).body(personnageMapper.versReponse(personnage));
     }
 
     // Ecran profil : la liste des personnages de l'utilisateur connecte.
@@ -70,7 +70,7 @@ public class PersonnageController {
         Utilisateur utilisateur = recupererUtilisateur(userDetails);
 
         return personnageRepository.findByUtilisateur(utilisateur).stream()
-                .map(this::versReponse)
+                .map(personnageMapper::versReponse)
                 .toList();
     }
 
@@ -78,7 +78,7 @@ public class PersonnageController {
     @GetMapping("/{id}")
     public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
-        return versReponse(personnage);
+        return personnageMapper.versReponse(personnage);
     }
 
     // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
@@ -96,7 +96,7 @@ public class PersonnageController {
 
         inventaireService.ajouterObjet(personnage, objet, quantite);
 
-        return versReponse(personnage);
+        return personnageMapper.versReponse(personnage);
     }
 
     // Endpoint de test/debug symetrique : retire un objet possede, sans
@@ -113,7 +113,7 @@ public class PersonnageController {
 
         inventaireService.retirerObjet(personnage, objet, quantite);
 
-        return versReponse(personnage);
+        return personnageMapper.versReponse(personnage);
     }
 
     // Consomme 1 exemplaire d'un objet (potion, laumspur, essence
@@ -131,7 +131,7 @@ public class PersonnageController {
         objetService.appliquerEffetsConsommation(personnage, objet);
         inventaireService.retirerObjet(personnage, objet, 1);
 
-        return versReponse(personnage);
+        return personnageMapper.versReponse(personnage);
     }
 
     private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
@@ -161,34 +161,5 @@ public class PersonnageController {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Discipline inconnue : " + valeur);
         }
-    }
-
-    private PersonnageResponse versReponse(Personnage personnage) {
-        List<InventaireItemResponse> inventaire = inventaireService.listerInventaire(personnage).stream()
-                .map(this::versReponseInventaire)
-                .toList();
-
-        return new PersonnageResponse(
-                personnage.getId(),
-                personnage.getNom(),
-                personnage.getHabiliteBase(),
-                personnage.getHabilite(),
-                personnage.getHabiliteTemp(),
-                personnage.getEnduranceMax(),
-                personnage.getEnduranceActuelle(),
-                personnage.getDisciplines().stream().map(d -> d.getId().name()).toList(),
-                personnage.getArmeMaitrisee() != null ? personnage.getArmeMaitrisee().getNom() : null,
-                personnage.getChapitreActuel().getId(),
-                inventaire
-        );
-    }
-
-    private InventaireItemResponse versReponseInventaire(InventaireItem item) {
-        return new InventaireItemResponse(
-                item.getObjet().getId(),
-                item.getObjet().getNom(),
-                item.getObjet().getCategorie().name(),
-                item.getQuantite()
-        );
     }
 }

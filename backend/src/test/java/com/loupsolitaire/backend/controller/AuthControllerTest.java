@@ -46,6 +46,7 @@ import com.loupsolitaire.backend.config.JwtUtil;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.AuthRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
@@ -53,6 +54,7 @@ import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
 import com.loupsolitaire.backend.request.UpdateProfilRequest;
 import com.loupsolitaire.backend.service.EmailVerificationService;
+import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.RefreshTokenService;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +62,10 @@ class AuthControllerTest {
 
     @Mock
     private UtilisateurRepository utilisateurRepository;
+    @Mock
+    private PersonnageRepository personnageRepository;
+    @Mock
+    private PersonnageMapper personnageMapper;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -367,12 +373,45 @@ class AuthControllerTest {
         utilisateur.setEmail("marius@example.com");
         utilisateur.setEmailVerifie(true);
         when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+        when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(java.util.List.of());
         authentifierComme(principal);
 
         mockMvc.perform(get("/auth/me"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("marius"))
-                .andExpect(jsonPath("$.email").value("marius@example.com"));
+                .andExpect(jsonPath("$.email").value("marius@example.com"))
+                .andExpect(jsonPath("$.personnages").isArray())
+                .andExpect(jsonPath("$.personnages").isEmpty());
+    }
+
+    @Test
+    void getCurrentUserIncluLesPersonnagesDeLUtilisateur() throws Exception {
+        UserDetails principal = User.builder()
+                .username("marius").password("hash").authorities("ROLE_USER").build();
+
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setUsername("marius");
+        utilisateur.setEmail("marius@example.com");
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+
+        com.loupsolitaire.backend.model.Personnage personnage = new com.loupsolitaire.backend.model.Personnage();
+        UUID personnageId = UUID.randomUUID();
+        personnage.setId(personnageId);
+        personnage.setNom("Loup Solitaire");
+        when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(java.util.List.of(personnage));
+
+        com.loupsolitaire.backend.response.PersonnageResponse reponsePersonnage =
+                new com.loupsolitaire.backend.response.PersonnageResponse(
+                        personnageId, "Loup Solitaire", 15, 15, 0, 20, 20,
+                        java.util.List.of(), null, 0, java.util.List.of());
+        when(personnageMapper.versReponse(personnage)).thenReturn(reponsePersonnage);
+
+        authentifierComme(principal);
+
+        mockMvc.perform(get("/auth/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.personnages", Matchers.hasSize(1)))
+                .andExpect(jsonPath("$.personnages[0].nom").value("Loup Solitaire"));
     }
 
     // =========================================================

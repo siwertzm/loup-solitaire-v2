@@ -1,5 +1,7 @@
 package com.loupsolitaire.backend.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.AuthRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
@@ -29,8 +32,10 @@ import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
 import com.loupsolitaire.backend.request.UpdateProfilRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
+import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.EmailVerificationService;
+import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.RefreshTokenService;
 
 import jakarta.validation.Valid;
@@ -42,6 +47,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final PersonnageRepository personnageRepository;
+    private final PersonnageMapper personnageMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -145,7 +152,11 @@ public class AuthController {
         Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
-        return UtilisateurResponse.fromEntity(utilisateur);
+        List<PersonnageResponse> personnages = personnageRepository.findByUtilisateur(utilisateur).stream()
+                .map(personnageMapper::versReponse)
+                .toList();
+
+        return UtilisateurResponse.fromEntity(utilisateur, personnages);
     }
 
     // Complete/modifie le profil (email, date de naissance) apres inscription.
