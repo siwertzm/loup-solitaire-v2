@@ -89,7 +89,7 @@ public class PersonnageController {
     @GetMapping("/{id}/chapitre")
     public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
-        return chapitreMapper.versReponse(personnage.getChapitreActuel().getId());
+        return chapitreMapper.versReponse(personnage.getChapitreActuel().getId(), personnage);
     }
 
     // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire

@@ -10,6 +10,7 @@ import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Lien;
+import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.CondResponse;
@@ -17,6 +18,7 @@ import com.loupsolitaire.backend.response.EffetResponse;
 import com.loupsolitaire.backend.response.EnnemiChapitreResponse;
 import com.loupsolitaire.backend.response.LienResponse;
 import com.loupsolitaire.backend.response.ObjetChapResponse;
+import com.loupsolitaire.backend.service.ConditionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,9 +34,13 @@ import lombok.RequiredArgsConstructor;
 public class ChapitreMapper {
 
     private final ChapitreRepository chapitreRepository;
+    private final ConditionService conditionService;
 
+    // "personnage" sert uniquement a calculer LienResponse.disponible
+    // (voir ConditionService) : le reste du chapitre est identique pour
+    // tout le monde.
     @Transactional(readOnly = true)
-    public ChapitreResponse versReponse(Integer chapitreId) {
+    public ChapitreResponse versReponse(Integer chapitreId, Personnage personnage) {
         Chapitre chapitre = chapitreRepository.findById(chapitreId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreId));
 
@@ -47,7 +53,7 @@ public class ChapitreMapper {
                 .toList();
 
         List<LienResponse> liens = chapitre.getLiens().stream()
-                .map(this::versReponseLien)
+                .map(lien -> versReponseLien(lien, personnage))
                 .toList();
 
         List<ObjetChapResponse> objets = chapitre.getObjets().stream()
@@ -65,11 +71,17 @@ public class ChapitreMapper {
         return new EffetResponse(effet.getType().name(), effet.getValeur(), conditions);
     }
 
-    private LienResponse versReponseLien(Lien lien) {
+    private LienResponse versReponseLien(Lien lien, Personnage personnage) {
         List<CondResponse> conditions = lien.getConditions().stream()
                 .map(this::versReponseCond)
                 .toList();
-        return new LienResponse(lien.getChapitreCible().getId(), conditions);
+
+        // Vacuously true si aucune condition (lien toujours disponible) ;
+        // sinon, TOUTES les conditions doivent etre satisfaites.
+        boolean disponible = lien.getConditions().stream()
+                .allMatch(cond -> conditionService.estDisponible(cond, personnage));
+
+        return new LienResponse(lien.getChapitreCible().getId(), disponible, conditions);
     }
 
     private CondResponse versReponseCond(Cond cond) {

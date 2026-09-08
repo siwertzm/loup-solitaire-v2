@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,19 +22,30 @@ import com.loupsolitaire.backend.model.Ennemi;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChap;
+import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.response.ChapitreResponse;
+import com.loupsolitaire.backend.service.ConditionService;
 
 @ExtendWith(MockitoExtension.class)
 class ChapitreMapperTest {
 
     @Mock
     private ChapitreRepository chapitreRepository;
+    @Mock
+    private ConditionService conditionService;
 
     @InjectMocks
     private ChapitreMapper chapitreMapper;
+
+    private Personnage personnage;
+
+    @BeforeEach
+    void setUp() {
+        personnage = new Personnage();
+    }
 
     private Chapitre creerChapitre(int id, String text, boolean combat) {
         Chapitre chapitre = new Chapitre();
@@ -48,7 +60,7 @@ class ChapitreMapperTest {
         Chapitre chapitre = creerChapitre(17, "Un Kraan surgit devant vous.", true);
         when(chapitreRepository.findById(17)).thenReturn(Optional.of(chapitre));
 
-        ChapitreResponse reponse = chapitreMapper.versReponse(17);
+        ChapitreResponse reponse = chapitreMapper.versReponse(17, personnage);
 
         assertThat(reponse.id()).isEqualTo(17);
         assertThat(reponse.text()).isEqualTo("Un Kraan surgit devant vous.");
@@ -66,7 +78,7 @@ class ChapitreMapperTest {
         chapitre.setEnnemis(List.of(kraan));
         when(chapitreRepository.findById(17)).thenReturn(Optional.of(chapitre));
 
-        ChapitreResponse reponse = chapitreMapper.versReponse(17);
+        ChapitreResponse reponse = chapitreMapper.versReponse(17, personnage);
 
         assertThat(reponse.ennemis()).hasSize(1);
         assertThat(reponse.ennemis().get(0).id()).isEqualTo("kraan");
@@ -88,7 +100,7 @@ class ChapitreMapperTest {
 
         when(chapitreRepository.findById(236)).thenReturn(Optional.of(chapitre));
 
-        ChapitreResponse reponse = chapitreMapper.versReponse(236);
+        ChapitreResponse reponse = chapitreMapper.versReponse(236, personnage);
 
         assertThat(reponse.effets()).hasSize(1);
         assertThat(reponse.effets().get(0).type()).isEqualTo("HABILETE");
@@ -111,14 +123,56 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
+        when(conditionService.estDisponible(condDiscipline, personnage)).thenReturn(true);
 
-        ChapitreResponse reponse = chapitreMapper.versReponse(0);
+        ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
         assertThat(reponse.liens()).hasSize(1);
         assertThat(reponse.liens().get(0).chapitreCibleId()).isEqualTo(1);
+        assertThat(reponse.liens().get(0).disponible()).isTrue();
         assertThat(reponse.liens().get(0).conditions()).hasSize(1);
         assertThat(reponse.liens().get(0).conditions().get(0).type()).isEqualTo("DISCIPLINE");
         assertThat(reponse.liens().get(0).conditions().get(0).targetId()).isEqualTo("chasse");
+    }
+
+    @Test
+    void marqueUnLienIndisponibleSiUneConditionEchoue() {
+        Chapitre chapitre = creerChapitre(0, "texte", false);
+        Chapitre cible = creerChapitre(1, "texte cible", false);
+
+        Lien lien = new Lien();
+        lien.setChapitreCible(cible);
+        Cond condDiscipline = new Cond();
+        condDiscipline.setType(TypeCondition.DISCIPLINE);
+        condDiscipline.setTargetId("chasse");
+        lien.setConditions(List.of(condDiscipline));
+        chapitre.setLiens(List.of(lien));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
+        when(conditionService.estDisponible(condDiscipline, personnage)).thenReturn(false);
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
+
+        // Le lien est toujours present dans la reponse, juste marque indisponible.
+        assertThat(reponse.liens()).hasSize(1);
+        assertThat(reponse.liens().get(0).disponible()).isFalse();
+    }
+
+    @Test
+    void unLienSansConditionEstToujoursDisponible() {
+        Chapitre chapitre = creerChapitre(0, "texte", false);
+        Chapitre cible = creerChapitre(1, "texte cible", false);
+
+        Lien lien = new Lien();
+        lien.setChapitreCible(cible);
+        lien.setConditions(List.of());
+        chapitre.setLiens(List.of(lien));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
+
+        assertThat(reponse.liens().get(0).disponible()).isTrue();
     }
 
     @Test
@@ -136,7 +190,7 @@ class ChapitreMapperTest {
 
         when(chapitreRepository.findById(20)).thenReturn(Optional.of(chapitre));
 
-        ChapitreResponse reponse = chapitreMapper.versReponse(20);
+        ChapitreResponse reponse = chapitreMapper.versReponse(20, personnage);
 
         assertThat(reponse.objets()).hasSize(1);
         assertThat(reponse.objets().get(0).objetId()).isEqualTo("repas");
@@ -148,7 +202,7 @@ class ChapitreMapperTest {
     void echoueSiLeChapitreEstIntrouvable() {
         when(chapitreRepository.findById(999)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> chapitreMapper.versReponse(999))
+        assertThatThrownBy(() -> chapitreMapper.versReponse(999, personnage))
                 .isInstanceOf(RessourceNonTrouveeException.class);
     }
 }
