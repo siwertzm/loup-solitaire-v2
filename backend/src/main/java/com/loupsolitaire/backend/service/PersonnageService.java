@@ -132,4 +132,15 @@ public class PersonnageService {
                 .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
         inventaireService.ajouterObjet(personnage, objet, quantite);
     }
+
+    // A appeler par le futur service de navigation entre chapitres, a
+    // chaque fois que chapitreActuel change : l'HABILETE temporaire (ex.
+    // essence d'Alether) ne vaut que pour le chapitre/combat en cours.
+    @Transactional
+    public void reinitialiserHabiliteTemp(Personnage personnage) {
+        if (personnage.getHabiliteTemp() != 0) {
+            personnage.setHabiliteTemp(0);
+            personnageRepository.save(personnage);
+        }
+    }
 }

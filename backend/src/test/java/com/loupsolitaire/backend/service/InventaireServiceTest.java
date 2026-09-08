@@ -29,6 +29,8 @@ class InventaireServiceTest {
 
     @Mock
     private InventaireItemRepository inventaireItemRepository;
+    @Mock
+    private ObjetService objetService;
 
     @InjectMocks
     private InventaireService inventaireService;
@@ -56,21 +58,21 @@ class InventaireServiceTest {
     }
 
     // =========================================================
-    // Ajout simple (pas de plafonnement)
+    // Ajout simple
     // =========================================================
 
     @Test
-    void ajouteUnNouvelObjetAvecSaQuantite() {
-        Objet hache = creerObjet("hache", CategorieObjet.ARME);
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of());
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache")).thenReturn(Optional.empty());
+    void ajouteUnNouvelObjetAvecSaQuantiteEtAppliqueSesBonus() {
+        Objet repas = creerObjet("repas", CategorieObjet.REPAS);
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        ResultatAjout resultat = inventaireService.ajouterObjet(personnage, hache, 1);
+        ResultatAjout resultat = inventaireService.ajouterObjet(personnage, repas, 1);
 
         assertThat(resultat.quantiteAjoutee()).isEqualTo(1);
         assertThat(resultat.estPlafonne()).isFalse();
         assertThat(resultat.objetsRemplacables()).isEmpty();
+        verify(objetService).appliquerBonusRecuperation(personnage, repas);
     }
 
     @Test
@@ -78,7 +80,6 @@ class InventaireServiceTest {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
         InventaireItem ligneExistante = creerLigne(repas, 2);
 
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of(ligneExistante));
         when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas"))
                 .thenReturn(Optional.of(ligneExistante));
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -116,7 +117,7 @@ class InventaireServiceTest {
     // =========================================================
 
     @Test
-    void plafonneUneTroisiemeArmeAZeroEtProposeLesArmesActuelles() {
+    void plafonneUneTroisiemeArmeAZeroEtProposeLesArmesActuellesSansAppelerObjetService() {
         Objet hache = creerObjet("hache", CategorieObjet.ARME);
         Objet glaive = creerObjet("glaive", CategorieObjet.ARME);
         Objet lance = creerObjet("lance", CategorieObjet.ARME);
@@ -132,6 +133,7 @@ class InventaireServiceTest {
         assertThat(resultat.estPlafonne()).isTrue();
         assertThat(resultat.objetsRemplacables()).containsExactlyInAnyOrder(ligneHache, ligneGlaive);
         verify(inventaireItemRepository, never()).save(any());
+        verify(objetService, never()).appliquerBonusRecuperation(any(), any());
     }
 
     @Test
@@ -139,7 +141,6 @@ class InventaireServiceTest {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
         Objet laumspur = creerObjet("laumspur", CategorieObjet.OBJET);
 
-        // 6 deja en inventaire (categories melangees), il ne reste que 2 places sur 8.
         when(inventaireItemRepository.findByPersonnage(personnage))
                 .thenReturn(List.of(creerLigne(repas, 4), creerLigne(laumspur, 2)));
         when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "laumspur"))
@@ -151,6 +152,7 @@ class InventaireServiceTest {
         assertThat(resultat.quantiteDemandee()).isEqualTo(3);
         assertThat(resultat.quantiteAjoutee()).isEqualTo(2);
         assertThat(resultat.estPlafonne()).isTrue();
+        verify(objetService).appliquerBonusRecuperation(personnage, laumspur);
     }
 
     @Test
@@ -158,9 +160,10 @@ class InventaireServiceTest {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
         Objet pierrePrecieuse = creerObjet("pierre_precieuse", CategorieObjet.BOURSE);
 
-        // 45 deja en bourse (30 or + 15 pierres), il ne reste que 5 places sur 50.
         when(inventaireItemRepository.findByPersonnage(personnage))
                 .thenReturn(List.of(creerLigne(or, 30), creerLigne(pierrePrecieuse, 15)));
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, or, 10);
 
@@ -173,7 +176,7 @@ class InventaireServiceTest {
     // =========================================================
 
     @Test
-    void retireUneQuantitePartielleSansSupprimerLaLigne() {
+    void retireUneQuantitePartielleSansSupprimerLaLigneNiToucherLeBonus() {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
         InventaireItem ligne = creerLigne(or, 10);
         when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or"))
@@ -183,19 +186,21 @@ class InventaireServiceTest {
         inventaireService.retirerObjet(personnage, or, 2);
 
         assertThat(ligne.getQuantite()).isEqualTo(8);
+        verify(objetService, never()).retirerBonusPerte(any(), any());
     }
 
     @Test
-    void supprimeLaLigneQuandLaQuantiteTombeAZero() {
-        Objet pierreDeVordak = creerObjet("pierre_de_vordak", CategorieObjet.OBJET);
-        InventaireItem ligne = creerLigne(pierreDeVordak, 1);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "pierre_de_vordak"))
+    void supprimeLaLigneQuandLaQuantiteTombeAZeroEtRetireLeBonus() {
+        Objet casque = creerObjet("casque", CategorieObjet.OBJETS_SPECIAUX);
+        InventaireItem ligne = creerLigne(casque, 1);
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "casque"))
                 .thenReturn(Optional.of(ligne));
 
-        inventaireService.retirerObjet(personnage, pierreDeVordak, 1);
+        inventaireService.retirerObjet(personnage, casque, 1);
 
         verify(inventaireItemRepository).delete(ligne);
         verify(inventaireItemRepository, never()).save(any());
+        verify(objetService).retirerBonusPerte(personnage, casque);
     }
 
     @Test
@@ -236,14 +241,10 @@ class InventaireServiceTest {
         Objet hache = creerObjet("hache", CategorieObjet.ARME);
         Objet lance = creerObjet("lance", CategorieObjet.ARME);
         InventaireItem ligneHache = creerLigne(hache, 1);
+        Objet glaive = creerObjet("glaive", CategorieObjet.ARME);
 
-        // Retrait de la hache : elle disparait de l'inventaire (quantite -> 0).
         when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache"))
                 .thenReturn(Optional.of(ligneHache));
-
-        // Au moment d'ajouter la lance, la hache a deja ete retiree : une
-        // seule arme restante ("glaive"), donc de la place pour la lance.
-        Objet glaive = creerObjet("glaive", CategorieObjet.ARME);
         when(inventaireItemRepository.findByPersonnage(personnage))
                 .thenReturn(List.of(creerLigne(glaive, 1)));
         when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "lance"))
@@ -255,5 +256,6 @@ class InventaireServiceTest {
         verify(inventaireItemRepository).delete(ligneHache);
         assertThat(resultat.quantiteAjoutee()).isEqualTo(1);
         assertThat(resultat.estPlafonne()).isFalse();
+        verify(objetService).appliquerBonusRecuperation(personnage, lance);
     }
 }

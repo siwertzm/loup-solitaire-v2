@@ -48,6 +48,14 @@ public class Personnage {
     @Column(nullable = false)
     private int habilite;
 
+    // Bonus/malus TEMPORAIRE d'habilite (ex. essence d'Alether), remis a
+    // zero a chaque changement de chapitre. Pas d'equivalent pour
+    // l'endurance : toute perte/gain d'ENDURANCE est toujours reel, jamais
+    // temporaire (sauf le cas des objets speciaux, qui touchent aussi le
+    // plafond enduranceMax - voir ObjetService).
+    @Column(nullable = false)
+    private int habiliteTemp;
+
     // Plafond fixe a la creation (20 + tirage), rarement modifie en cours
     // de partie. A distinguer de enduranceActuelle qui fluctue sans cesse.
     @Column(nullable = false)

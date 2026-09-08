@@ -35,6 +35,7 @@ public class InventaireService {
     );
 
     private final InventaireItemRepository inventaireItemRepository;
+    private final ObjetService objetService;
 
     // Pour la fiche personnage : consultation en lecture seule.
     public List<InventaireItem> listerInventaire(Personnage personnage) {
@@ -77,6 +78,8 @@ public class InventaireService {
 
             item.setQuantite(item.getQuantite() + quantiteAjoutee);
             inventaireItemRepository.save(item);
+
+            objetService.appliquerBonusRecuperation(personnage, objet);
         }
 
         return new ResultatAjout(objet, quantite, quantiteAjoutee, objetsRemplacables);
@@ -117,6 +120,10 @@ public class InventaireService {
         int reste = item.getQuantite() - quantite;
         if (reste == 0) {
             inventaireItemRepository.delete(item);
+            // Le bonus (armure passive) ne se retire que si le personnage
+            // n'en possede plus AUCUN exemplaire. Une reduction partielle
+            // (reste > 0) ne doit rien changer au bonus.
+            objetService.retirerBonusPerte(personnage, objet);
         } else {
             item.setQuantite(reste);
             inventaireItemRepository.save(item);

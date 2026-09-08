@@ -216,4 +216,29 @@ class PersonnageServiceTest {
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE))
                 .isInstanceOf(RessourceNonTrouveeException.class);
     }
+
+    // =========================================================
+    // Reinitialisation de l'habilite temporaire (changement de chapitre)
+    // =========================================================
+
+    @Test
+    void reinitialiseHabiliteTempAZeroEtSauvegarde() {
+        Personnage p = new Personnage();
+        p.setHabiliteTemp(2);
+
+        personnageService.reinitialiserHabiliteTemp(p);
+
+        assertThat(p.getHabiliteTemp()).isEqualTo(0);
+        verify(personnageRepository).save(p);
+    }
+
+    @Test
+    void neSauvegardeRienSiHabiliteTempEstDejaAZero() {
+        Personnage p = new Personnage();
+        p.setHabiliteTemp(0);
+
+        personnageService.reinitialiserHabiliteTemp(p);
+
+        verify(personnageRepository, never()).save(any());
+    }
 }
