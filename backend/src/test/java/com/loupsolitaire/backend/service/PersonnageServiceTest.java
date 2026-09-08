@@ -333,6 +333,28 @@ class PersonnageServiceTest {
     }
 
     @Test
+    void declencheLEffetHabiliteSiLeNouveauChapitreEnAUn() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        com.loupsolitaire.backend.model.Effet effetHabilite = new com.loupsolitaire.backend.model.Effet();
+        effetHabilite.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILETE);
+        effetHabilite.setValeur(-2);
+        effetHabilite.setConditions(List.of());
+        chapitre1.setEffets(List.of(effetHabilite));
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(effetChapitreService).appliquerEffetHabilite(p, effetHabilite);
+    }
+
+    @Test
     void refuseDAvancerVersUnChapitreSansLienDepuisLActuel() {
         Personnage p = new Personnage();
         p.setChapitreActuel(chapitre0);

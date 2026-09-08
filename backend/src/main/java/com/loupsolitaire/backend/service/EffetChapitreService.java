@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.loupsolitaire.backend.model.Cond;
+import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
@@ -13,7 +15,7 @@ import com.loupsolitaire.backend.repository.PersonnageRepository;
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
-// ObjetService). Commence par REPAS ; ENDURANCE/HABILETE viendront ensuite.
+// ObjetService). REPAS et HABILETE geres ; ENDURANCE viendra ensuite.
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -49,5 +51,66 @@ public class EffetChapitreService {
             personnage.setEnduranceActuelle(nouvelleEndurance);
             personnageRepository.save(personnage);
         }
+    }
+
+    // Regle HABILETE, selon la (au plus une) condition de l'effet :
+    // - Aucune condition : applique directement a habiliteTemp.
+    // - DISCIPLINE / OBJET (semantique INVERSEE, valeur negative dans les
+    //   donnees : "si vous NE possedez PAS") : applique a habiliteTemp
+    //   uniquement si la discipline/l'objet est absent.
+    // - PERMANENT : applique a habiliteBase (definitif), puis recalcule
+    //   l'HABILETE effective (qui depend aussi des armes possedees).
+    // - Le reste (ASSAUT_MAX, etc.) : combat non construit, ignore.
+    @Transactional
+    public void appliquerEffetHabilite(Personnage personnage, Effet effet) {
+        Optional<Cond> condition = effet.getConditions().stream().findFirst();
+
+        if (condition.isEmpty()) {
+            appliquerHabiliteTemp(personnage, effet.getValeur());
+            return;
+        }
+
+        switch (condition.get().getType()) {
+            case PERMANENT -> appliquerHabilitePermanent(personnage, effet.getValeur());
+            case DISCIPLINE -> {
+                if (!possedeDiscipline(personnage, condition.get().getTargetId())) {
+                    appliquerHabiliteTemp(personnage, effet.getValeur());
+                }
+            }
+            case OBJET -> {
+                if (!possedeObjet(personnage, condition.get().getTargetId())) {
+                    appliquerHabiliteTemp(personnage, effet.getValeur());
+                }
+            }
+            default -> {
+                // ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE, FUITE, HASARD,
+                // ARME, BOURSE, ENDURANCE : combat non construit, ou non
+                // rencontre sur un effet HABILETE dans ce tome. Ignore.
+            }
+        }
+    }
+
+    private boolean possedeDiscipline(Personnage personnage, String targetId) {
+        IdDiscipline recherchee = IdDiscipline.fromJson(targetId);
+        return personnage.getDisciplines().stream().anyMatch(d -> d.getId() == recherchee);
+    }
+
+    private boolean possedeObjet(Personnage personnage, String objetId) {
+        return inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> item.getObjet().getId().equals(objetId) && item.getQuantite() > 0);
+    }
+
+    private void appliquerHabiliteTemp(Personnage personnage, int valeur) {
+        personnage.setHabiliteTemp(personnage.getHabiliteTemp() + valeur);
+        personnageRepository.save(personnage);
+    }
+
+    private void appliquerHabilitePermanent(Personnage personnage, int valeur) {
+        personnage.setHabiliteBase(personnage.getHabiliteBase() + valeur);
+        personnageRepository.save(personnage);
+        // habilite depend de habiliteBase + etat des armes : recalcul
+        // necessaire pour que le changement permanent soit reellement
+        // reflete dans la valeur effective.
+        inventaireService.recalculerHabiliteArmes(personnage);
     }
 }

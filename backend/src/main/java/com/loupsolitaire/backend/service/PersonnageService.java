@@ -204,12 +204,16 @@ public class PersonnageService {
         reinitialiserHabiliteTemp(personnage);
 
         // Effets du nouveau chapitre : appliques UNE SEULE FOIS ici, a
-        // l'arrivee (pas a chaque GET /chapitre). Seul REPAS est traite
-        // pour l'instant ; ENDURANCE/HABILETE viendront ensuite.
+        // l'arrivee (pas a chaque GET /chapitre). ENDURANCE et VOL restent
+        // a traiter.
         boolean aUnEffetRepas = nouveauChapitre.getEffets().stream()
                 .anyMatch(effet -> effet.getType() == TypeEffet.REPAS);
         if (aUnEffetRepas) {
             effetChapitreService.appliquerEffetRepas(personnage);
         }
+
+        nouveauChapitre.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.HABILETE)
+                .forEach(effet -> effetChapitreService.appliquerEffetHabilite(personnage, effet));
     }
 }

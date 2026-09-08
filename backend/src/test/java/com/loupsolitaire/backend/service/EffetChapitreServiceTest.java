@@ -110,4 +110,110 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService).retirerObjet(personnage, ligneRepas.getObjet(), 1);
     }
+
+    // =========================================================
+    // HABILETE
+    // =========================================================
+
+    private com.loupsolitaire.backend.model.Effet creerEffetHabilite(int valeur,
+            com.loupsolitaire.backend.model.enums.TypeCondition typeCondition, String targetId) {
+        com.loupsolitaire.backend.model.Effet effet = new com.loupsolitaire.backend.model.Effet();
+        effet.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILETE);
+        effet.setValeur(valeur);
+        if (typeCondition != null) {
+            com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();
+            cond.setType(typeCondition);
+            cond.setTargetId(targetId);
+            effet.setConditions(List.of(cond));
+        } else {
+            effet.setConditions(List.of());
+        }
+        return effet;
+    }
+
+    @Test
+    void appliqueDirectementAHabiliteTempSiAucuneCondition() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(4, null, null);
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(4);
+        verify(personnageRepository).save(personnage);
+    }
+
+    @Test
+    void appliqueLeMalusSiLaDisciplineRequiseEstAbsente() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                -2, com.loupsolitaire.backend.model.enums.TypeCondition.DISCIPLINE, "bouclier_psychique");
+        personnage.setDisciplines(List.of());
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(-2);
+    }
+
+    @Test
+    void nAppliqueRienSiLaDisciplineRequiseEstPossedee() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                -2, com.loupsolitaire.backend.model.enums.TypeCondition.DISCIPLINE, "bouclier_psychique");
+        Discipline bouclier = new Discipline();
+        bouclier.setId(IdDiscipline.BOUCLIER_PSYCHIQUE);
+        personnage.setDisciplines(List.of(bouclier));
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+        verify(personnageRepository, never()).save(any());
+    }
+
+    @Test
+    void appliqueLeMalusSiLObjetRequisEstAbsent() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                -3, com.loupsolitaire.backend.model.enums.TypeCondition.OBJET, "torche");
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of());
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(-3);
+    }
+
+    @Test
+    void nAppliqueRienSiLObjetRequisEstPossede() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                -3, com.loupsolitaire.backend.model.enums.TypeCondition.OBJET, "torche");
+        Objet torche = new Objet();
+        torche.setId("torche");
+        InventaireItem ligne = new InventaireItem();
+        ligne.setObjet(torche);
+        ligne.setQuantite(1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(ligne));
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+    }
+
+    @Test
+    void appliquePermanentAHabiliteBaseEtRecalculeLHabiliteEffective() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                -1, com.loupsolitaire.backend.model.enums.TypeCondition.PERMANENT, null);
+        personnage.setHabiliteBase(15);
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteBase()).isEqualTo(14);
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0); // pas touchee
+        verify(inventaireService).recalculerHabiliteArmes(personnage);
+    }
+
+    @Test
+    void ignoreLesConditionsDeCombatNonConstruites() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetHabilite(
+                2, com.loupsolitaire.backend.model.enums.TypeCondition.ASSAUT_MAX, null);
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+        verify(personnageRepository, never()).save(any());
+    }
 }

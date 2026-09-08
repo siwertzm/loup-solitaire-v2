@@ -152,7 +152,14 @@ public class InventaireService {
         if (categorie != CategorieObjet.ARME) {
             return;
         }
+        recalculerHabiliteArmes(personnage);
+    }
 
+    // Public : recalcule l'HABILETE effective a partir des armes possedees
+    // et de habiliteBase. A appeler aussi quand habiliteBase change de
+    // facon PERMANENTE (voir EffetChapitreService), pas seulement lors
+    // d'un ajout/retrait d'arme.
+    public void recalculerHabiliteArmes(Personnage personnage) {
         List<InventaireItem> armes = inventaireItemRepository.findByPersonnage(personnage).stream()
                 .filter(item -> item.getObjet().getCategorie() == CategorieObjet.ARME)
                 .toList();
