@@ -92,6 +92,23 @@ public class PersonnageController {
         return chapitreMapper.versReponse(personnage.getChapitreActuel().getId(), personnage);
     }
 
+    // Avance le personnage vers chapitreCibleId, si un lien valide (avec
+    // conditions remplies) existe depuis son chapitre actuel. Ne fait
+    // qu'avancer le pointeur (chapitrePrecedent/chapitreActuel) et
+    // reinitialiser l'habilite temporaire : n'applique pas encore les
+    // effets/ennemis/objets du nouveau chapitre (etape suivante).
+    @PostMapping("/{id}/chapitre/{chapitreCibleId}")
+    public PersonnageResponse avancerVersChapitre(
+            @PathVariable UUID id,
+            @PathVariable Integer chapitreCibleId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        personnageService.avancerVersChapitre(personnage, chapitreCibleId);
+
+        return personnageMapper.versReponse(personnage);
+    }
+
     // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
     // du personnage (limites, plafonnement, bonus d'armure a la
     // recuperation - les consommables n'ont plus d'effet ici).

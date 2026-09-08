@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -56,6 +57,7 @@ public class PersonnageService {
     private final ChapitreRepository chapitreRepository;
     private final TableDeHasardService tableDeHasardService;
     private final InventaireService inventaireService;
+    private final ConditionService conditionService;
 
     @Transactional
     public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies) {
@@ -153,5 +155,41 @@ public class PersonnageService {
             personnage.setHabiliteTemp(0);
             personnageRepository.save(personnage);
         }
+    }
+
+    // Deplace le personnage vers chapitreCibleId, s'il existe bien un Lien
+    // valide (conditions comprises) depuis son chapitre actuel. Met a jour
+    // chapitrePrecedent/chapitreActuel et reinitialise l'habilite temporaire.
+    // Les effets/ennemis/objets du nouveau chapitre ne sont PAS appliques ici
+    // (etape suivante).
+    @Transactional
+    public void avancerVersChapitre(Personnage personnage, Integer chapitreCibleId) {
+        Integer chapitreActuelId = personnage.getChapitreActuel().getId();
+
+        // personnage.getChapitreActuel() vient d'une session deja fermee
+        // (chargee par le controleur) : ses collections lazy (liens) ne sont
+        // pas accessibles telles quelles. On recharge le chapitre a neuf ici,
+        // dans la transaction courante.
+        Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
+
+        Lien lienChoisi = chapitreActuel.getLiens().stream()
+                .filter(lien -> lien.getChapitreCible().getId().equals(chapitreCibleId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Aucun lien vers le chapitre " + chapitreCibleId + " depuis le chapitre " + chapitreActuelId));
+
+        boolean conditionsRemplies = lienChoisi.getConditions().stream()
+                .allMatch(cond -> conditionService.estDisponible(cond, personnage));
+        if (!conditionsRemplies) {
+            throw new IllegalArgumentException(
+                    "Les conditions pour rejoindre le chapitre " + chapitreCibleId + " ne sont pas remplies");
+        }
+
+        personnage.setChapitrePrecedent(chapitreActuel);
+        personnage.setChapitreActuel(lienChoisi.getChapitreCible());
+        personnageRepository.save(personnage);
+
+        reinitialiserHabiliteTemp(personnage);
     }
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,6 +52,8 @@ class PersonnageServiceTest {
     private TableDeHasardService tableDeHasardService;
     @Mock
     private InventaireService inventaireService;
+    @Mock
+    private ConditionService conditionService;
 
     @InjectMocks
     private PersonnageService personnageService;
@@ -241,5 +244,70 @@ class PersonnageServiceTest {
         personnageService.reinitialiserHabiliteTemp(p);
 
         verify(personnageRepository, never()).save(any());
+    }
+
+    // =========================================================
+    // Navigation entre chapitres
+    // =========================================================
+
+    private com.loupsolitaire.backend.model.Lien creerLien(com.loupsolitaire.backend.model.Chapitre cible,
+                                                             com.loupsolitaire.backend.model.Cond... conditions) {
+        com.loupsolitaire.backend.model.Lien lien = new com.loupsolitaire.backend.model.Lien();
+        lien.setChapitreCible(cible);
+        lien.setConditions(List.of(conditions));
+        return lien;
+    }
+
+    @Test
+    void avanceVersLeChapitreCibleEtMetAJourPrecedentEtActuel() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setHabiliteTemp(3);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getChapitrePrecedent()).isEqualTo(chapitre0);
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
+        assertThat(p.getHabiliteTemp()).isEqualTo(0);
+        verify(personnageRepository, atLeastOnce()).save(p);
+    }
+
+    @Test
+    void refuseDAvancerVersUnChapitreSansLienDepuisLActuel() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setLiens(List.of());
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 42))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void refuseDAvancerSiLesConditionsDuLienNeSontPasRemplies() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        com.loupsolitaire.backend.model.Cond condDiscipline = new com.loupsolitaire.backend.model.Cond();
+        condDiscipline.setType(com.loupsolitaire.backend.model.enums.TypeCondition.DISCIPLINE);
+        condDiscipline.setTargetId("chasse");
+        chapitre0.setLiens(List.of(creerLien(chapitre1, condDiscipline)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(conditionService.estDisponible(condDiscipline, p)).thenReturn(false);
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre0); // inchange
     }
 }
