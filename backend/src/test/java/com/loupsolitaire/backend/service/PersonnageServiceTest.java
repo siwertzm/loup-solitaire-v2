@@ -99,8 +99,8 @@ class PersonnageServiceTest {
 
     @Test
     void calculeHabiliteEtEnduranceSelonLesTirages() {
-        // ordre des tirages : habilite, endurance, or de depart, objet de depart
-        when(tableDeHasardService.tirerChiffre()).thenReturn(7, 3, 0, 0);
+        // ordre des tirages : habilite, endurance, tirage hasard initial, or de depart, objet de depart
+        when(tableDeHasardService.tirerChiffre()).thenReturn(7, 3, 0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
@@ -113,7 +113,7 @@ class PersonnageServiceTest {
 
     @Test
     void assigneExactementLesCinqDisciplinesChoisiesEtLeChapitreDeDepart() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
@@ -124,8 +124,18 @@ class PersonnageServiceTest {
     }
 
     @Test
+    void fixeUnTirageHasardDesLaCreation() {
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 8, 0, 0);
+
+        Personnage personnage = personnageService.creerPersonnage(
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+
+        assertThat(personnage.getDernierTirageHasard()).isEqualTo(8);
+    }
+
+    @Test
     void equipeLeMaterielDeBaseFixe() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
 
         personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
 
@@ -136,8 +146,8 @@ class PersonnageServiceTest {
 
     @Test
     void nAjouteAucunOrSiLeTirageEstZero() {
-        // habilite=0, endurance=0, or=0, objet depart=2 (casque)
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 2);
+        // habilite=0, endurance=0, tirage hasard=0, or=0, objet depart=2 (casque)
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 2);
 
         personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
 
@@ -146,7 +156,7 @@ class PersonnageServiceTest {
 
     @Test
     void ajouteLOrDeDepartSiLeTirageEstPositif() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 6, 2);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 6, 2);
 
         personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
 
@@ -156,7 +166,7 @@ class PersonnageServiceTest {
     @Test
     void appliqueLaTableDeTirageDeLObjetDeDepart() {
         // tirage objet de depart = 3 -> 2 Repas
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 3);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 3);
 
         personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
 
@@ -174,7 +184,7 @@ class PersonnageServiceTest {
         List<Objet> armes = List.of(objetsParId.get("hache"), objetsParId.get("glaive"));
         when(objetRepository.findByCategorie(CategorieObjet.ARME)).thenReturn(armes);
         when(tableDeHasardService.tirerParmi(armes)).thenReturn(armes.get(1));
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", avecMaitrise);
@@ -184,7 +194,7 @@ class PersonnageServiceTest {
 
     @Test
     void neTireAucuneArmeMaitriseeSiLaDisciplineNestPasChoisie() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
@@ -269,12 +279,16 @@ class PersonnageServiceTest {
         chapitre0.setLiens(List.of(creerLien(chapitre1)));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(9);
 
         personnageService.avancerVersChapitre(p, 1);
 
         assertThat(p.getChapitrePrecedent()).isEqualTo(chapitre0);
         assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
         assertThat(p.getHabiliteTemp()).isEqualTo(0);
+        // Nouveau tirage fige des l'arrivee sur le chapitre, pas re-tire au
+        // prochain GET /chapitre.
+        assertThat(p.getDernierTirageHasard()).isEqualTo(9);
         verify(personnageRepository, atLeastOnce()).save(p);
     }
 

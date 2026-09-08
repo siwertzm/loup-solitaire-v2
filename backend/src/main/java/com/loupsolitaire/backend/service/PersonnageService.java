@@ -80,6 +80,9 @@ public class PersonnageService {
         personnage.setDisciplines(disciplines);
         personnage.setDateCreation(Instant.now());
         personnage.setChapitreActuel(recupererChapitreDepart());
+        // Tirage fige des l'arrivee sur le chapitre de depart (voir
+        // avancerVersChapitre pour la meme logique aux chapitres suivants).
+        personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
 
         if (disciplinesChoisies.contains(IdDiscipline.MAITRISE_ARMES)) {
             personnage.setArmeMaitrisee(tirerArmeMaitrisee());
@@ -146,25 +149,15 @@ public class PersonnageService {
         inventaireService.ajouterObjet(personnage, objet, quantite);
     }
 
-    // A appeler par le futur service de navigation entre chapitres, a
-    // chaque fois que chapitreActuel change : l'HABILETE temporaire (ex.
-    // essence d'Alether) ne vaut que pour le chapitre/combat en cours.
+    // A appeler a chaque fois que chapitreActuel change : l'HABILETE
+    // temporaire (ex. essence d'Alether) ne vaut que pour le
+    // chapitre/combat en cours.
     @Transactional
     public void reinitialiserHabiliteTemp(Personnage personnage) {
         if (personnage.getHabiliteTemp() != 0) {
             personnage.setHabiliteTemp(0);
             personnageRepository.save(personnage);
         }
-    }
-
-    // A appeler a chaque chargement du chapitre courant (GET /chapitre) :
-    // regenere le tirage utilise pour evaluer les conditions HASARD des
-    // liens (voir ConditionService), pour que l'affichage et la validation
-    // du choix se basent sur le meme tirage.
-    @Transactional
-    public void rafraichirTirageHasard(Personnage personnage) {
-        personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
-        personnageRepository.save(personnage);
     }
 
     // Deplace le personnage vers chapitreCibleId, s'il existe bien un Lien
@@ -198,6 +191,11 @@ public class PersonnageService {
 
         personnage.setChapitrePrecedent(chapitreActuel);
         personnage.setChapitreActuel(lienChoisi.getChapitreCible());
+        // Nouveau tirage FIGE des l'arrivee sur ce chapitre : ne doit plus
+        // changer tant qu'on ne le quitte pas, meme si on recharge l'ecran
+        // plusieurs fois (voir aussi creerPersonnage, meme logique au
+        // premier chapitre).
+        personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
         personnageRepository.save(personnage);
 
         reinitialiserHabiliteTemp(personnage);

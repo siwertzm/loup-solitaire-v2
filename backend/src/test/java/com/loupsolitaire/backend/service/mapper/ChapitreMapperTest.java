@@ -68,6 +68,17 @@ class ChapitreMapperTest {
     }
 
     @Test
+    void mappeLeTirageHasardCourantDuPersonnage() {
+        personnage.setDernierTirageHasard(7);
+        Chapitre chapitre = creerChapitre(17, "texte", false);
+        when(chapitreRepository.findById(17)).thenReturn(Optional.of(chapitre));
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(17, personnage);
+
+        assertThat(reponse.tirageHasard()).isEqualTo(7);
+    }
+
+    @Test
     void mappeLesEnnemis() {
         Chapitre chapitre = creerChapitre(17, "texte", true);
         Ennemi kraan = new Ennemi();

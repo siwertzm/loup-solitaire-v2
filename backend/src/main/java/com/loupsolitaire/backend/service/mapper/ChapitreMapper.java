@@ -61,7 +61,7 @@ public class ChapitreMapper {
                 .toList();
 
         return new ChapitreResponse(chapitre.getId(), chapitre.getText(), chapitre.isCombat(),
-                ennemis, effets, liens, objets);
+                personnage.getDernierTirageHasard(), ennemis, effets, liens, objets);
     }
 
     private EffetResponse versReponseEffet(Effet effet) {

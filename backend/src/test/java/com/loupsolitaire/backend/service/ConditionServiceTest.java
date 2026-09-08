@@ -150,15 +150,47 @@ class ConditionServiceTest {
     }
 
     // =========================================================
-    // Conditions dynamiques : toujours disponibles (non pre-evaluables)
+    // HASARD (evalue via le tirage stocke)
     // =========================================================
 
     @Test
-    void hasardEstToujoursDisponible() {
+    void disponibleSiLeTirageEstDansLaPlage() {
+        personnage.setDernierTirageHasard(3);
         Cond cond = creerCond(TypeCondition.HASARD, null, "[0, 4]");
 
         assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
     }
+
+    @Test
+    void indisponibleSiLeTirageEstHorsDeLaPlage() {
+        personnage.setDernierTirageHasard(7);
+        Cond cond = creerCond(TypeCondition.HASARD, null, "[0, 4]");
+
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    @Test
+    void disponibleAuxBornesDeLaPlage() {
+        Cond cond = creerCond(TypeCondition.HASARD, null, "[5, 9]");
+
+        personnage.setDernierTirageHasard(5);
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+
+        personnage.setDernierTirageHasard(9);
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+    }
+
+    @Test
+    void indisponibleSiAucunTirageNaEncoreEteFait() {
+        personnage.setDernierTirageHasard(null);
+        Cond cond = creerCond(TypeCondition.HASARD, null, "[0, 9]");
+
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    // =========================================================
+    // Conditions de combat (pas encore construit) : toujours disponibles
+    // =========================================================
 
     @Test
     void fuiteEstToujoursDisponible() {
