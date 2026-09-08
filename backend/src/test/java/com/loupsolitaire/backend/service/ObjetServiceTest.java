@@ -1,6 +1,7 @@
 package com.loupsolitaire.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -57,11 +58,12 @@ class ObjetServiceTest {
     }
 
     // =========================================================
-    // Armure (OBJETS_SPECIAUX) : endurance reelle, passive, touche le plafond
+    // Armure (OBJETS_SPECIAUX) : seule categorie avec effet a la
+    // recuperation/perte, passif, touche le plafond
     // =========================================================
 
     @Test
-    void uneArmureAugmenteLePlafondEtLEnduranceActuelle() {
+    void uneArmureAugmenteLePlafondEtLEnduranceActuelleALaRecuperation() {
         Objet casque = creerObjet("casque", CategorieObjet.OBJETS_SPECIAUX, creerEffet(TypeEffet.ENDURANCE, 2));
 
         objetService.appliquerBonusRecuperation(personnage, casque);
@@ -97,77 +99,99 @@ class ObjetServiceTest {
     }
 
     // =========================================================
-    // Consommable ENDURANCE (OBJET) : reel, applique une fois, jamais retire
+    // Consommable (OBJET) : AUCUN effet a la recuperation ni a la perte
+    // generique. Seulement a la consommation explicite.
     // =========================================================
 
     @Test
-    void unConsommableSoigneUneFoisSansToucherAuPlafond() {
+    void unConsommableNAAucunEffetALaRecuperation() {
         Objet potion = creerObjet("potion_de_soin", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 4));
 
         objetService.appliquerBonusRecuperation(personnage, potion);
 
-        assertThat(personnage.getEnduranceMax()).isEqualTo(20);
-        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18); // inchange
+        assertThat(personnage.getEnduranceMax()).isEqualTo(20); // inchange
+        verify(personnageRepository, never()).save(any());
     }
 
     @Test
-    void unConsommableNeSoigneJamaisAuDessusDuPlafond() {
-        personnage.setEnduranceActuelle(19);
-        Objet laumspur = creerObjet("laumspur", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 3));
-
-        objetService.appliquerBonusRecuperation(personnage, laumspur);
-
-        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
-    }
-
-    @Test
-    void perdreUnConsommableNeRetireRienCarDejaDepense() {
-        personnage.setEnduranceMax(24);
-        personnage.setEnduranceActuelle(24);
+    void unConsommableNAAucunEffetALaPerteGenerique() {
         Objet potion = creerObjet("potion_de_soin", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 4));
 
         objetService.retirerBonusPerte(personnage, potion);
 
-        assertThat(personnage.getEnduranceMax()).isEqualTo(24);
-        assertThat(personnage.getEnduranceActuelle()).isEqualTo(24);
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18);
         verify(personnageRepository, never()).save(any());
     }
 
-    // =========================================================
-    // HABILETE : toujours temporaire (habiliteTemp), jamais permanent
-    // =========================================================
+    @Test
+    void consommerUnePotionSoigneUneFoisSansToucherAuPlafond() {
+        Objet potion = creerObjet("potion_de_soin", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 4));
+
+        objetService.appliquerEffetsConsommation(personnage, potion);
+
+        assertThat(personnage.getEnduranceMax()).isEqualTo(20);
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20); // 18 + 4, plafonne
+        verify(personnageRepository).save(personnage);
+    }
 
     @Test
-    void unEffetHabiliteAugmenteHabiliteTempPasHabilite() {
+    void consommerNeSoigneJamaisAuDessusDuPlafond() {
+        personnage.setEnduranceActuelle(19);
+        Objet laumspur = creerObjet("laumspur", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 3));
+
+        objetService.appliquerEffetsConsommation(personnage, laumspur);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
+    }
+
+    @Test
+    void consommerLEssenceDAletherAugmenteHabiliteTempPasHabilite() {
         Objet essence = creerObjet("essence_alether", CategorieObjet.OBJET, creerEffet(TypeEffet.HABILETE, 2));
 
-        objetService.appliquerBonusRecuperation(personnage, essence);
+        objetService.appliquerEffetsConsommation(personnage, essence);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(2);
         assertThat(personnage.getHabilite()).isEqualTo(15); // valeur de base inchangee
     }
 
     @Test
-    void retirerBonusPerteNeTouchePasHabiliteTemp() {
-        personnage.setHabiliteTemp(2);
-        Objet essence = creerObjet("essence_alether", CategorieObjet.OBJET, creerEffet(TypeEffet.HABILETE, 2));
+    void unObjetSansEffetNeChangeRienMemeConsomme() {
+        Objet laumspurSansEffet = creerObjet("laumspur", CategorieObjet.OBJET);
 
-        objetService.retirerBonusPerte(personnage, essence);
+        objetService.appliquerEffetsConsommation(personnage, laumspurSansEffet);
 
-        // habiliteTemp se reinitialise seul au changement de chapitre, pas ici.
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(2);
+        assertThat(personnage.getEnduranceMax()).isEqualTo(20);
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18);
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+    }
+
+    // =========================================================
+    // Consommation refusee pour tout ce qui n'est pas OBJET
+    // =========================================================
+
+    @Test
+    void refuseDeConsommerUnObjetSpecial() {
+        Objet casque = creerObjet("casque", CategorieObjet.OBJETS_SPECIAUX, creerEffet(TypeEffet.ENDURANCE, 2));
+
+        assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, casque))
+                .isInstanceOf(IllegalArgumentException.class);
         verify(personnageRepository, never()).save(any());
     }
 
     @Test
-    void unObjetSansEffetNeChangeRien() {
-        Objet carte = creerObjet("carte", CategorieObjet.OBJETS_SPECIAUX);
+    void refuseDeConsommerUneArme() {
+        Objet hache = creerObjet("hache", CategorieObjet.ARME);
 
-        objetService.appliquerBonusRecuperation(personnage, carte);
+        assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, hache))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
-        assertThat(personnage.getEnduranceMax()).isEqualTo(20);
-        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18);
-        assertThat(personnage.getHabilite()).isEqualTo(15);
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+    @Test
+    void refuseDeConsommerDeLOr() {
+        Objet or = creerObjet("or", CategorieObjet.BOURSE);
+
+        assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, or))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

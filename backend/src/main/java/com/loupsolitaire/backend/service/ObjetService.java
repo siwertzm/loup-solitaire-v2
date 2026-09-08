@@ -12,68 +12,77 @@ import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
 
-// Applique les effets attaches a un Objet du catalogue (objet.json) au
-// personnage qui l'obtient.
+// Applique les effets attaches a un Objet du catalogue (objet.json).
 //
-// - ENDURANCE : toujours REEL (jamais temporaire), applique a
-//   enduranceActuelle. Si l'objet est OBJETS_SPECIAUX (armure : casque,
-//   cotte de mailles), l'effet est en plus PASSIF et lie a la possession :
-//   il touche aussi enduranceMax, et se retire si l'objet est perdu.
+// - OBJETS_SPECIAUX (armure : casque, cotte de mailles) : effet PASSIF,
+//   lie a la possession. Applique a la RECUPERATION, retire a la PERTE.
+//   Touche enduranceMax (le plafond) en plus d'enduranceActuelle.
 //
-// - HABILETE : toujours TEMPORAIRE (ex. essence d'Alether), ajoute a
-//   Personnage.habiliteTemp plutot qu'a habilite. Remis a zero a chaque
-//   changement de chapitre (voir PersonnageService.reinitialiserHabiliteTemp,
-//   a appeler par le futur service de navigation entre chapitres). Jamais
-//   annule dans retirerBonusPerte : inutile, ca se reinitialise tout seul.
+// - OBJET (consommable : potion de guerison, laumspur, essence d'Alether) :
+//   AUCUN effet a la recuperation, ni au retrait/perte generique. L'effet
+//   ne s'applique qu'a la CONSOMMATION explicite (voir
+//   appliquerEffetsConsommation), qui ne retire PAS l'objet elle-meme :
+//   c'est au controleur d'enchainer avec InventaireService.retirerObjet,
+//   pour eviter une dependance circulaire entre les deux services.
 //
-// A appeler explicitement en plus de InventaireService.ajouterObjet(...) :
-// volontairement PAS integre dans InventaireService pour eviter d'y
-// accumuler des responsabilites deconnectees de la gestion de capacite.
+// HABILETE : toujours TEMPORAIRE (habiliteTemp), remis a zero a chaque
+// changement de chapitre (voir PersonnageService.reinitialiserHabiliteTemp).
 @Service
 @RequiredArgsConstructor
 public class ObjetService {
 
     private final PersonnageRepository personnageRepository;
 
+    // Uniquement pour l'armure (OBJETS_SPECIAUX) : les consommables
+    // (OBJET) n'ont plus aucun effet a la recuperation.
     @Transactional
     public void appliquerBonusRecuperation(Personnage personnage, Objet objet) {
-        for (Effet effet : objet.getEffets()) {
-            if (effet.getType() == TypeEffet.ENDURANCE) {
-                appliquerEndurance(personnage, objet, effet.getValeur());
-            } else if (effet.getType() == TypeEffet.HABILETE) {
-                personnage.setHabiliteTemp(personnage.getHabiliteTemp() + effet.getValeur());
-            }
-            // REPAS/VOL n'ont pas de sens comme effet d'un Objet du
-            // catalogue (uniquement rencontres comme effets de Chapitre).
+        if (objet.getCategorie() != CategorieObjet.OBJETS_SPECIAUX) {
+            return;
         }
+        appliquerEffets(personnage, objet, 1);
         personnageRepository.save(personnage);
     }
 
-    // Retire le bonus passif d'une armure perdue/volee. Ne gere que
-    // l'ENDURANCE : l'HABILETE etant toujours temporaire (habiliteTemp),
-    // il n'y a jamais rien a "annuler" ici, elle se reinitialise seule au
-    // prochain changement de chapitre.
+    // Symetrique : uniquement pour l'armure. Rien a faire pour un
+    // consommable, qui n'a jamais eu d'effet applique a la recuperation.
     @Transactional
     public void retirerBonusPerte(Personnage personnage, Objet objet) {
         if (objet.getCategorie() != CategorieObjet.OBJETS_SPECIAUX) {
             return;
         }
+        appliquerEffets(personnage, objet, -1);
+        personnageRepository.save(personnage);
+    }
 
-        boolean aChange = false;
+    // Applique les effets d'un consommable au moment ou le joueur choisit
+    // explicitement de le consommer (boire la potion, manger le repas...).
+    // Reserve a la categorie OBJET : armes, bourse et objets speciaux
+    // (armure) ne se "consomment" pas.
+    // Ne retire PAS l'objet de l'inventaire : a faire ensuite via
+    // InventaireService.retirerObjet (orchestre par le controleur).
+    @Transactional
+    public void appliquerEffetsConsommation(Personnage personnage, Objet objet) {
+        if (objet.getCategorie() != CategorieObjet.OBJET) {
+            throw new IllegalArgumentException(
+                    "Impossible de consommer un objet de categorie " + objet.getCategorie());
+        }
+        appliquerEffets(personnage, objet, 1);
+        personnageRepository.save(personnage);
+    }
+
+    private void appliquerEffets(Personnage personnage, Objet objet, int signe) {
         for (Effet effet : objet.getEffets()) {
             if (effet.getType() == TypeEffet.ENDURANCE) {
-                appliquerEndurance(personnage, objet, -effet.getValeur());
-                aChange = true;
+                appliquerEndurance(personnage, objet, signe * effet.getValeur());
+            } else if (effet.getType() == TypeEffet.HABILETE) {
+                personnage.setHabiliteTemp(personnage.getHabiliteTemp() + signe * effet.getValeur());
             }
-        }
-        if (aChange) {
-            personnageRepository.save(personnage);
         }
     }
 
     private void appliquerEndurance(Personnage personnage, Objet objet, int delta) {
         if (objet.getCategorie() == CategorieObjet.OBJETS_SPECIAUX) {
-            // Armure : le plafond bouge avec le delta.
             personnage.setEnduranceMax(personnage.getEnduranceMax() + delta);
         }
         int nouvelleActuelle = personnage.getEnduranceActuelle() + delta;

@@ -30,6 +30,7 @@ import com.loupsolitaire.backend.request.CreerPersonnageRequest;
 import com.loupsolitaire.backend.response.InventaireItemResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.InventaireService;
+import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.PersonnageService;
 
 import jakarta.validation.Valid;
@@ -45,6 +46,7 @@ public class PersonnageController {
     private final UtilisateurRepository utilisateurRepository;
     private final ObjetRepository objetRepository;
     private final InventaireService inventaireService;
+    private final ObjetService objetService;
 
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
@@ -80,8 +82,8 @@ public class PersonnageController {
     }
 
     // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
-    // du personnage, pour observer InventaireService + ObjetService en
-    // action (limites, plafonnement, bonus/malus appliques).
+    // du personnage (limites, plafonnement, bonus d'armure a la
+    // recuperation - les consommables n'ont plus d'effet ici).
     @PostMapping("/{id}/objets/{objetId}")
     public PersonnageResponse ajouterObjet(
             @PathVariable UUID id,
@@ -97,7 +99,8 @@ public class PersonnageController {
         return versReponse(personnage);
     }
 
-    // Endpoint de test/debug symetrique : retire un objet possede.
+    // Endpoint de test/debug symetrique : retire un objet possede, sans
+    // jamais appliquer d'effet de consommable (voir /consommer ci-dessous).
     @DeleteMapping("/{id}/objets/{objetId}")
     public PersonnageResponse retirerObjet(
             @PathVariable UUID id,
@@ -109,6 +112,24 @@ public class PersonnageController {
         Objet objet = recupererObjet(objetId);
 
         inventaireService.retirerObjet(personnage, objet, quantite);
+
+        return versReponse(personnage);
+    }
+
+    // Consomme 1 exemplaire d'un objet (potion, laumspur, essence
+    // d'Alether...) : applique son effet PUIS le retire de l'inventaire.
+    // Contrairement a DELETE /objets/{objetId}, celui-ci modifie les stats.
+    @PostMapping("/{id}/objets/{objetId}/consommer")
+    public PersonnageResponse consommerObjet(
+            @PathVariable UUID id,
+            @PathVariable String objetId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Objet objet = recupererObjet(objetId);
+
+        objetService.appliquerEffetsConsommation(personnage, objet);
+        inventaireService.retirerObjet(personnage, objet, 1);
 
         return versReponse(personnage);
     }
