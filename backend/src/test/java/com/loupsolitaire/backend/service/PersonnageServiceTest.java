@@ -102,6 +102,7 @@ class PersonnageServiceTest {
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
 
+        assertThat(personnage.getHabiliteBase()).isEqualTo(17);
         assertThat(personnage.getHabilite()).isEqualTo(17);
         assertThat(personnage.getEnduranceMax()).isEqualTo(23);
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(23);

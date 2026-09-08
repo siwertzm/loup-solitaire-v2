@@ -22,6 +22,7 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.repository.InventaireItemRepository;
+import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +30,8 @@ class InventaireServiceTest {
 
     @Mock
     private InventaireItemRepository inventaireItemRepository;
+    @Mock
+    private PersonnageRepository personnageRepository;
     @Mock
     private ObjetService objetService;
 
@@ -40,6 +43,8 @@ class InventaireServiceTest {
     @BeforeEach
     void setUp() {
         personnage = new Personnage();
+        personnage.setHabiliteBase(15);
+        personnage.setHabilite(15);
     }
 
     private Objet creerObjet(String id, CategorieObjet categorie) {
@@ -73,6 +78,8 @@ class InventaireServiceTest {
         assertThat(resultat.estPlafonne()).isFalse();
         assertThat(resultat.objetsRemplacables()).isEmpty();
         verify(objetService).appliquerBonusRecuperation(personnage, repas);
+        // Pas une arme : pas de recalcul d'habilite.
+        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -133,7 +140,9 @@ class InventaireServiceTest {
         assertThat(resultat.estPlafonne()).isTrue();
         assertThat(resultat.objetsRemplacables()).containsExactlyInAnyOrder(ligneHache, ligneGlaive);
         verify(inventaireItemRepository, never()).save(any());
+        // Rien n'a ete ajoute : pas de bonus a appliquer, pas de recalcul.
         verify(objetService, never()).appliquerBonusRecuperation(any(), any());
+        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -187,6 +196,7 @@ class InventaireServiceTest {
 
         assertThat(ligne.getQuantite()).isEqualTo(8);
         verify(objetService, never()).retirerBonusPerte(any(), any());
+        verify(personnageRepository, never()).save(any()); // pas une arme
     }
 
     @Test
@@ -230,6 +240,64 @@ class InventaireServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> inventaireService.retirerObjet(personnage, or, -1))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    // =========================================================
+    // Recalcul d'HABILETE base sur les armes (etat global, pas un delta)
+    // =========================================================
+
+    @Test
+    void appliqueMoins4QuandLaDerniereArmeEstRetiree() {
+        Objet hache = creerObjet("hache", CategorieObjet.ARME);
+        InventaireItem ligne = creerLigne(hache, 1);
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache"))
+                .thenReturn(Optional.of(ligne));
+        // Apres suppression de la ligne, l'inventaire ne contient plus d'arme.
+        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of());
+
+        inventaireService.retirerObjet(personnage, hache, 1);
+
+        assertThat(personnage.getHabilite()).isEqualTo(11); // 15 - 4
+        verify(personnageRepository).save(personnage);
+    }
+
+    @Test
+    void nAppliqueAucunAjustementAvecUneArmeNonMaitrisee() {
+        Objet hache = creerObjet("hache", CategorieObjet.ARME);
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of(creerLigne(hache, 1)));
+
+        inventaireService.ajouterObjet(personnage, hache, 1);
+
+        assertThat(personnage.getHabilite()).isEqualTo(15); // inchange, sans malus ni bonus
+        verify(personnageRepository).save(personnage);
+    }
+
+    @Test
+    void appliquePlus2QuandLArmeMaitriseeEstAjoutee() {
+        Objet epee = creerObjet("epee", CategorieObjet.ARME);
+        personnage.setArmeMaitrisee(epee);
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "epee")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of(creerLigne(epee, 1)));
+
+        inventaireService.ajouterObjet(personnage, epee, 1);
+
+        assertThat(personnage.getHabilite()).isEqualTo(17); // 15 + 2
+    }
+
+    @Test
+    void neRecalculeRienPourUnObjetNonArme() {
+        Objet repas = creerObjet("repas", CategorieObjet.REPAS);
+        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of());
+        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        inventaireService.ajouterObjet(personnage, repas, 1);
+
+        assertThat(personnage.getHabilite()).isEqualTo(15);
+        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================

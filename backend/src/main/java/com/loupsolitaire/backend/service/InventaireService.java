@@ -11,6 +11,7 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.repository.InventaireItemRepository;
+import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,12 @@ import lombok.RequiredArgsConstructor;
 // portent sur des sommes de quantites a travers plusieurs lignes : ni
 // l'entite InventaireItem, ni une contrainte SQL ne peuvent verifier ca
 // proprement, d'ou un service dedie.
+//
+// Gere aussi le recalcul de l'HABILETE effective a chaque ajout/retrait
+// d'arme : -4 sans arme, +2 avec l'arme maitrisee, +0 sinon. Contrairement
+// au bonus d'armure (delta par objet, gere par ObjetService), cette regle
+// depend de l'etat GLOBAL des armes possedees, d'ou un recalcul complet a
+// chaque fois plutot qu'un delta.
 @Service
 @RequiredArgsConstructor
 public class InventaireService {
@@ -26,6 +33,8 @@ public class InventaireService {
     private static final int MAX_ARMES = 2;
     private static final int MAX_OBJETS_ET_REPAS = 8;
     private static final int MAX_BOURSE = 50;
+    private static final int MALUS_SANS_ARME = -4;
+    private static final int BONUS_ARME_MAITRISEE = 2;
 
     // Categories regroupees pour le calcul des limites : ARME et BOURSE
     // comptent seules, OBJET+REPAS sont cumules ensemble. OBJETS_SPECIAUX
@@ -35,6 +44,7 @@ public class InventaireService {
     );
 
     private final InventaireItemRepository inventaireItemRepository;
+    private final PersonnageRepository personnageRepository;
     private final ObjetService objetService;
 
     // Pour la fiche personnage : consultation en lecture seule.
@@ -80,6 +90,7 @@ public class InventaireService {
             inventaireItemRepository.save(item);
 
             objetService.appliquerBonusRecuperation(personnage, objet);
+            recalculerHabiliteSiArme(personnage, objet.getCategorie());
         }
 
         return new ResultatAjout(objet, quantite, quantiteAjoutee, objetsRemplacables);
@@ -128,6 +139,37 @@ public class InventaireService {
             item.setQuantite(reste);
             inventaireItemRepository.save(item);
         }
+
+        // Contrairement au bonus d'armure (delta, seulement a la perte
+        // totale), l'habilite depend de l'etat global des armes : on
+        // recalcule a chaque retrait, partiel ou total.
+        recalculerHabiliteSiArme(personnage, objet.getCategorie());
+    }
+
+    // Recalcule et persiste l'HABILETE effective apres un changement
+    // impliquant une ARME. Ne fait rien pour les autres categories.
+    private void recalculerHabiliteSiArme(Personnage personnage, CategorieObjet categorie) {
+        if (categorie != CategorieObjet.ARME) {
+            return;
+        }
+
+        List<InventaireItem> armes = inventaireItemRepository.findByPersonnage(personnage).stream()
+                .filter(item -> item.getObjet().getCategorie() == CategorieObjet.ARME)
+                .toList();
+
+        int nouvelleHabilite;
+        if (armes.isEmpty()) {
+            nouvelleHabilite = personnage.getHabiliteBase() + MALUS_SANS_ARME;
+        } else {
+            boolean possedeArmeMaitrisee = personnage.getArmeMaitrisee() != null
+                    && armes.stream().anyMatch(item -> item.getObjet().getId().equals(personnage.getArmeMaitrisee().getId()));
+            nouvelleHabilite = possedeArmeMaitrisee
+                    ? personnage.getHabiliteBase() + BONUS_ARME_MAITRISEE
+                    : personnage.getHabiliteBase();
+        }
+
+        personnage.setHabilite(nouvelleHabilite);
+        personnageRepository.save(personnage);
     }
 
     private Integer limitePour(CategorieObjet categorie) {

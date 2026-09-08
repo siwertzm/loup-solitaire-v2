@@ -6,6 +6,7 @@ import java.util.UUID;
 public record PersonnageResponse(
         UUID id,
         String nom,
+        int habiliteBase,
         int habilite,
         int habiliteTemp,
         int enduranceMax,

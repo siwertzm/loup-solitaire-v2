@@ -41,10 +41,16 @@ public class Personnage {
     @Column(nullable = false)
     private String nom;
 
-    // Valeur de base : peut etre modifiee de facon permanente par de rares
-    // effets (ex. chapitre 236 de ce tome). Les bonus/malus de combat
-    // ponctuels ne sont jamais persistes ici, seulement appliques au moment
-    // de resoudre un assaut.
+    // Valeur fixee a la creation (10 + tirage), jamais modifiee ensuite
+    // (sauf de rares effets permanents comme le chapitre 236 de ce tome).
+    // "habilite" ci-dessous est la valeur COURANTE/EFFECTIVE, recalculee a
+    // chaque ajout/retrait d'arme (voir InventaireService).
+    @Column(nullable = false)
+    private int habiliteBase;
+
+    // Valeur effective actuelle : habiliteBase ajustee selon les armes
+    // possedees (-4 sans arme, +2 avec l'arme maitrisee, +0 sinon). C'est
+    // celle-ci qu'on utilise en jeu, jamais habiliteBase directement.
     @Column(nullable = false)
     private int habilite;
 
@@ -93,12 +99,4 @@ public class Personnage {
 
     @Column(nullable = false)
     private Instant dateCreation;
-
-    public void setDisciplines(List<Discipline> disciplines) {
-        this.disciplines.clear();
-
-        if (disciplines != null) {
-            this.disciplines.addAll(disciplines);
-        }
-    }
 }

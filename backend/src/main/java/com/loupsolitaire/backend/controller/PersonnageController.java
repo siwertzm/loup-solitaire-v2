@@ -171,6 +171,7 @@ public class PersonnageController {
         return new PersonnageResponse(
                 personnage.getId(),
                 personnage.getNom(),
+                personnage.getHabiliteBase(),
                 personnage.getHabilite(),
                 personnage.getHabiliteTemp(),
                 personnage.getEnduranceMax(),

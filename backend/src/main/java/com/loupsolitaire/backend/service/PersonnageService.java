@@ -64,7 +64,12 @@ public class PersonnageService {
         Personnage personnage = new Personnage();
         personnage.setUtilisateur(utilisateur);
         personnage.setNom(nom);
-        personnage.setHabilite(10 + tableDeHasardService.tirerChiffre());
+        int habilite = 10 + tableDeHasardService.tirerChiffre();
+        personnage.setHabiliteBase(habilite);
+        // Valeur de depart avant equipement : ajustee automatiquement dans
+        // equiperMateriel() des que la hache de depart est ajoutee (voir
+        // InventaireService.recalculerHabiliteSiArme).
+        personnage.setHabilite(habilite);
 
         int endurance = 20 + tableDeHasardService.tirerChiffre();
         personnage.setEnduranceMax(endurance);
