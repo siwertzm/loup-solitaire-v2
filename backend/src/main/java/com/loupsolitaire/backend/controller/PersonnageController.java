@@ -7,19 +7,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.loupsolitaire.backend.exception.AccesRefuseException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.InventaireItem;
+import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
@@ -39,6 +43,7 @@ public class PersonnageController {
     private final PersonnageService personnageService;
     private final PersonnageRepository personnageRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final ObjetRepository objetRepository;
     private final InventaireService inventaireService;
 
     @PostMapping
@@ -70,6 +75,45 @@ public class PersonnageController {
     // Fiche personnage complete (reprise d'une partie).
     @GetMapping("/{id}")
     public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        return versReponse(personnage);
+    }
+
+    // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
+    // du personnage, pour observer InventaireService + ObjetService en
+    // action (limites, plafonnement, bonus/malus appliques).
+    @PostMapping("/{id}/objets/{objetId}")
+    public PersonnageResponse ajouterObjet(
+            @PathVariable UUID id,
+            @PathVariable String objetId,
+            @RequestParam(defaultValue = "1") int quantite,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Objet objet = recupererObjet(objetId);
+
+        inventaireService.ajouterObjet(personnage, objet, quantite);
+
+        return versReponse(personnage);
+    }
+
+    // Endpoint de test/debug symetrique : retire un objet possede.
+    @DeleteMapping("/{id}/objets/{objetId}")
+    public PersonnageResponse retirerObjet(
+            @PathVariable UUID id,
+            @PathVariable String objetId,
+            @RequestParam(defaultValue = "1") int quantite,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Objet objet = recupererObjet(objetId);
+
+        inventaireService.retirerObjet(personnage, objet, quantite);
+
+        return versReponse(personnage);
+    }
+
+    private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
         Personnage personnage = personnageRepository.findById(id)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
 
@@ -77,7 +121,12 @@ public class PersonnageController {
             throw new AccesRefuseException("Ce personnage ne vous appartient pas");
         }
 
-        return versReponse(personnage);
+        return personnage;
+    }
+
+    private Objet recupererObjet(String objetId) {
+        return objetRepository.findById(objetId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
     }
 
     private Utilisateur recupererUtilisateur(UserDetails userDetails) {
@@ -102,6 +151,7 @@ public class PersonnageController {
                 personnage.getId(),
                 personnage.getNom(),
                 personnage.getHabilite(),
+                personnage.getHabiliteTemp(),
                 personnage.getEnduranceMax(),
                 personnage.getEnduranceActuelle(),
                 personnage.getDisciplines().stream().map(d -> d.getId().name()).toList(),

@@ -7,6 +7,7 @@ public record PersonnageResponse(
         UUID id,
         String nom,
         int habilite,
+        int habiliteTemp,
         int enduranceMax,
         int enduranceActuelle,
         List<String> disciplines,

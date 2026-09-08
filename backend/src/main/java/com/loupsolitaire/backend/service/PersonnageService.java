@@ -1,6 +1,7 @@
 package com.loupsolitaire.backend.service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -92,10 +93,15 @@ public class PersonnageService {
                     "Il faut choisir exactement " + NB_DISCIPLINES_A_CHOISIR + " disciplines distinctes");
         }
 
-        return disciplinesChoisies.stream()
+        // ArrayList, PAS .toList() (immuable) : Hibernate doit pouvoir
+        // vider/remplir cette collection lors d'un merge (ex. lors du
+        // 2e save() lance par ObjetService apres l'ajout d'un objet), ce
+        // qui echoue avec UnsupportedOperationException sur une liste
+        // immuable.
+        return new ArrayList<>(disciplinesChoisies.stream()
                 .map(id -> disciplineRepository.findById(id)
                         .orElseThrow(() -> new RessourceNonTrouveeException("Discipline introuvable : " + id)))
-                .toList();
+                .toList());
     }
 
     private Chapitre recupererChapitreDepart() {

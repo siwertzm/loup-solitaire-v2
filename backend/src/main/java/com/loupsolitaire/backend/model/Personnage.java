@@ -93,4 +93,12 @@ public class Personnage {
 
     @Column(nullable = false)
     private Instant dateCreation;
+
+    public void setDisciplines(List<Discipline> disciplines) {
+        this.disciplines.clear();
+
+        if (disciplines != null) {
+            this.disciplines.addAll(disciplines);
+        }
+    }
 }
