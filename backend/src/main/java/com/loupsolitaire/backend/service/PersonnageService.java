@@ -18,6 +18,7 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
@@ -58,6 +59,7 @@ public class PersonnageService {
     private final TableDeHasardService tableDeHasardService;
     private final InventaireService inventaireService;
     private final ConditionService conditionService;
+    private final EffetChapitreService effetChapitreService;
 
     @Transactional
     public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies) {
@@ -190,7 +192,8 @@ public class PersonnageService {
         }
 
         personnage.setChapitrePrecedent(chapitreActuel);
-        personnage.setChapitreActuel(lienChoisi.getChapitreCible());
+        Chapitre nouveauChapitre = lienChoisi.getChapitreCible();
+        personnage.setChapitreActuel(nouveauChapitre);
         // Nouveau tirage FIGE des l'arrivee sur ce chapitre : ne doit plus
         // changer tant qu'on ne le quitte pas, meme si on recharge l'ecran
         // plusieurs fois (voir aussi creerPersonnage, meme logique au
@@ -199,5 +202,14 @@ public class PersonnageService {
         personnageRepository.save(personnage);
 
         reinitialiserHabiliteTemp(personnage);
+
+        // Effets du nouveau chapitre : appliques UNE SEULE FOIS ici, a
+        // l'arrivee (pas a chaque GET /chapitre). Seul REPAS est traite
+        // pour l'instant ; ENDURANCE/HABILETE viendront ensuite.
+        boolean aUnEffetRepas = nouveauChapitre.getEffets().stream()
+                .anyMatch(effet -> effet.getType() == TypeEffet.REPAS);
+        if (aUnEffetRepas) {
+            effetChapitreService.appliquerEffetRepas(personnage);
+        }
     }
 }

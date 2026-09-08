@@ -54,6 +54,8 @@ class PersonnageServiceTest {
     private InventaireService inventaireService;
     @Mock
     private ConditionService conditionService;
+    @Mock
+    private EffetChapitreService effetChapitreService;
 
     @InjectMocks
     private PersonnageService personnageService;
@@ -290,6 +292,44 @@ class PersonnageServiceTest {
         // prochain GET /chapitre.
         assertThat(p.getDernierTirageHasard()).isEqualTo(9);
         verify(personnageRepository, atLeastOnce()).save(p);
+    }
+
+    @Test
+    void declencheLEffetRepasSiLeNouveauChapitreEnAUn() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        com.loupsolitaire.backend.model.Effet effetRepas = new com.loupsolitaire.backend.model.Effet();
+        effetRepas.setType(com.loupsolitaire.backend.model.enums.TypeEffet.REPAS);
+        chapitre1.setEffets(List.of(effetRepas));
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(effetChapitreService).appliquerEffetRepas(p);
+    }
+
+    @Test
+    void neDeclencheAucunEffetSiLeNouveauChapitreNenAPas() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre1.setEffets(List.of());
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(effetChapitreService, never()).appliquerEffetRepas(any());
     }
 
     @Test
