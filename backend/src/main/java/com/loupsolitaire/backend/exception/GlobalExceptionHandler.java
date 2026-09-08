@@ -24,10 +24,22 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), "Validation echouee", erreurs));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST.value(), "Requete invalide", ex.getMessage()));
+    }
+
     @ExceptionHandler(ConflitException.class)
     public ResponseEntity<ErrorResponse> handleConflit(ConflitException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), "Conflit", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InventairePleinException.class)
+    public ResponseEntity<ErrorResponse> handleInventairePlein(InventairePleinException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), "Inventaire plein", ex.getMessage()));
     }
 
     @ExceptionHandler(RessourceNonTrouveeException.class)

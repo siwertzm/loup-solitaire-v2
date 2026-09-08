@@ -1,0 +1,135 @@
+package com.loupsolitaire.backend.service;
+
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
+import com.loupsolitaire.backend.model.Chapitre;
+import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.Objet;
+import com.loupsolitaire.backend.model.Personnage;
+import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.model.enums.CategorieObjet;
+import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.repository.ChapitreRepository;
+import com.loupsolitaire.backend.repository.DisciplineRepository;
+import com.loupsolitaire.backend.repository.ObjetRepository;
+import com.loupsolitaire.backend.repository.PersonnageRepository;
+import com.loupsolitaire.backend.service.record.ObjetDepart;
+
+import lombok.RequiredArgsConstructor;
+
+// Orchestre la creation de personnage telle que specifiee dans le parcours
+// utilisateur : tirages de stats, disciplines choisies, arme de Maitrise des
+// Armes (si applicable), equipement de depart fixe + aleatoire.
+@Service
+@RequiredArgsConstructor
+public class PersonnageService {
+
+    private static final int NB_DISCIPLINES_A_CHOISIR = 5;
+    private static final int CHAPITRE_DEPART_ID = 0;
+
+    // Table de tirage 0-9 pour l'objet de depart aleatoire (voir doc de
+    // conception du parcours utilisateur).
+    private static final Map<Integer, ObjetDepart> TABLE_OBJET_DEPART = Map.ofEntries(
+            Map.entry(0, new ObjetDepart("glaive", 1)),
+            Map.entry(1, new ObjetDepart("epee", 1)),
+            Map.entry(2, new ObjetDepart("casque", 1)),
+            Map.entry(3, new ObjetDepart("repas", 2)),
+            Map.entry(4, new ObjetDepart("cotte_de_mailles", 1)),
+            Map.entry(5, new ObjetDepart("masse", 1)),
+            Map.entry(6, new ObjetDepart("potion_de_soin", 1)),
+            Map.entry(7, new ObjetDepart("baton", 1)),
+            Map.entry(8, new ObjetDepart("lance", 1)),
+            Map.entry(9, new ObjetDepart("or", 12))
+    );
+
+    private final PersonnageRepository personnageRepository;
+    private final DisciplineRepository disciplineRepository;
+    private final ObjetRepository objetRepository;
+    private final ChapitreRepository chapitreRepository;
+    private final TableDeHasardService tableDeHasardService;
+    private final InventaireService inventaireService;
+
+    @Transactional
+    public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies) {
+        List<Discipline> disciplines = resoudreDisciplines(disciplinesChoisies);
+
+        Personnage personnage = new Personnage();
+        personnage.setUtilisateur(utilisateur);
+        personnage.setNom(nom);
+        personnage.setHabilite(10 + tableDeHasardService.tirerChiffre());
+
+        int endurance = 20 + tableDeHasardService.tirerChiffre();
+        personnage.setEnduranceMax(endurance);
+        personnage.setEnduranceActuelle(endurance);
+
+        personnage.setDisciplines(disciplines);
+        personnage.setDateCreation(Instant.now());
+        personnage.setChapitreActuel(recupererChapitreDepart());
+
+        if (disciplinesChoisies.contains(IdDiscipline.MAITRISE_ARMES)) {
+            personnage.setArmeMaitrisee(tirerArmeMaitrisee());
+        }
+
+        personnage = personnageRepository.save(personnage);
+
+        equiperMateriel(personnage);
+
+        return personnage;
+    }
+
+    private List<Discipline> resoudreDisciplines(List<IdDiscipline> disciplinesChoisies) {
+        if (disciplinesChoisies == null
+                || disciplinesChoisies.size() != NB_DISCIPLINES_A_CHOISIR
+                || new HashSet<>(disciplinesChoisies).size() != NB_DISCIPLINES_A_CHOISIR) {
+            throw new IllegalArgumentException(
+                    "Il faut choisir exactement " + NB_DISCIPLINES_A_CHOISIR + " disciplines distinctes");
+        }
+
+        return disciplinesChoisies.stream()
+                .map(id -> disciplineRepository.findById(id)
+                        .orElseThrow(() -> new RessourceNonTrouveeException("Discipline introuvable : " + id)))
+                .toList();
+    }
+
+    private Chapitre recupererChapitreDepart() {
+        return chapitreRepository.findById(CHAPITRE_DEPART_ID)
+                .orElseThrow(() -> new RessourceNonTrouveeException(
+                        "Chapitre de depart introuvable : " + CHAPITRE_DEPART_ID));
+    }
+
+    // Tirage uniforme parmi toutes les armes du catalogue.
+    private Objet tirerArmeMaitrisee() {
+        List<Objet> armes = objetRepository.findByCategorie(CategorieObjet.ARME);
+        return tableDeHasardService.tirerParmi(armes);
+    }
+
+    private void equiperMateriel(Personnage personnage) {
+        // Equipement fixe.
+        ajouter(personnage, "hache", 1);
+        ajouter(personnage, "repas", 1);
+        ajouter(personnage, "carte", 1);
+
+        // Or de depart : tirage unique, peut valoir 0 (rien a ajouter).
+        int orDepart = tableDeHasardService.tirerChiffre();
+        if (orDepart > 0) {
+            ajouter(personnage, "or", orDepart);
+        }
+
+        // Objet de depart aleatoire (table fixe 0-9).
+        ObjetDepart objetDepart = TABLE_OBJET_DEPART.get(tableDeHasardService.tirerChiffre());
+        ajouter(personnage, objetDepart.objetId(), objetDepart.quantite());
+    }
+
+    private void ajouter(Personnage personnage, String objetId, int quantite) {
+        Objet objet = objetRepository.findById(objetId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
+        inventaireService.ajouterObjet(personnage, objet, quantite);
+    }
+}
