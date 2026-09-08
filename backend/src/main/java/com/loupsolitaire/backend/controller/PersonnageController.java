@@ -26,7 +26,9 @@ import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
+import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
 import com.loupsolitaire.backend.service.InventaireService;
 import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
@@ -47,6 +49,7 @@ public class PersonnageController {
     private final InventaireService inventaireService;
     private final ObjetService objetService;
     private final PersonnageMapper personnageMapper;
+    private final ChapitreMapper chapitreMapper;
 
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
@@ -79,6 +82,14 @@ public class PersonnageController {
     public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
         return personnageMapper.versReponse(personnage);
+    }
+
+    // Chapitre courant du personnage, en lecture seule : liens et
+    // conditions non filtres pour l'instant (etape suivante).
+    @GetMapping("/{id}/chapitre")
+    public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        return chapitreMapper.versReponse(personnage.getChapitreActuel().getId());
     }
 
     // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
