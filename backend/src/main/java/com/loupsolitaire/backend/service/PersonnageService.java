@@ -169,6 +169,11 @@ public class PersonnageService {
     // (etape suivante).
     @Transactional
     public void avancerVersChapitre(Personnage personnage, Integer chapitreCibleId) {
+        if (personnage.getVolEnAttente() != null) {
+            throw new IllegalArgumentException(
+                    "Un vol est en attente de resolution (POST /vol/{objetId}) avant de pouvoir avancer");
+        }
+
         Integer chapitreActuelId = personnage.getChapitreActuel().getId();
 
         // personnage.getChapitreActuel() vient d'une session deja fermee
@@ -204,7 +209,7 @@ public class PersonnageService {
         reinitialiserHabiliteTemp(personnage);
 
         // Effets du nouveau chapitre : appliques UNE SEULE FOIS ici, a
-        // l'arrivee (pas a chaque GET /chapitre). Seul VOL reste a traiter.
+        // l'arrivee (pas a chaque GET /chapitre).
         boolean aUnEffetRepas = nouveauChapitre.getEffets().stream()
                 .anyMatch(effet -> effet.getType() == TypeEffet.REPAS);
         if (aUnEffetRepas) {
@@ -218,5 +223,9 @@ public class PersonnageService {
         nouveauChapitre.getEffets().stream()
                 .filter(effet -> effet.getType() == TypeEffet.ENDURANCE)
                 .forEach(effet -> effetChapitreService.appliquerEffetEndurance(personnage, effet));
+
+        nouveauChapitre.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.VOL)
+                .forEach(effet -> effetChapitreService.appliquerEffetVol(personnage, effet));
     }
 }

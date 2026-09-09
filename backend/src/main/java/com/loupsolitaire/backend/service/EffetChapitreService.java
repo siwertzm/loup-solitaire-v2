@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,16 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.InventaireItem;
+import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
+import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.PorteeVol;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
-// ObjetService). REPAS, HABILETE et ENDURANCE geres ; VOL laisse de cote
-// (donnees insuffisantes, voir doc de conception).
+// ObjetService). REPAS, HABILETE, ENDURANCE et VOL geres.
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -26,6 +30,20 @@ public class EffetChapitreService {
     // les donnees structurees : voir doc de conception, limitation connue.
     private static final int MALUS_SANS_REPAS = -3;
     private static final String OBJET_ID_REPAS = "repas";
+
+    // VOL : le "valeur" code une PORTEE de perte, pas une quantite (voir
+    // doc de conception, analyse menee avec l'utilisateur sur les 9 cas
+    // reels du tome) :
+    //   10 -> tout (sac + armes) ; 8 -> tout le sac ; 2+cond ARME -> toutes
+    //   les armes ; 1+cond ARME -> 1 arme au choix ; 1 sans condition ->
+    //   1 objet/repas/arme au choix.
+    private static final int VOL_TOUT = 10;
+    private static final int VOL_SAC = 8;
+    private static final int VOL_TOUTES_ARMES = 2;
+    private static final int VOL_UN_AU_CHOIX = 1;
+    private static final Set<CategorieObjet> CATEGORIES_SAC = Set.of(CategorieObjet.OBJET, CategorieObjet.REPAS);
+    private static final Set<CategorieObjet> CATEGORIES_TOUT =
+            Set.of(CategorieObjet.OBJET, CategorieObjet.REPAS, CategorieObjet.ARME);
 
     private final InventaireService inventaireService;
     private final PersonnageRepository personnageRepository;
@@ -116,6 +134,76 @@ public class EffetChapitreService {
         nouvelleEndurance = Math.max(0, Math.min(nouvelleEndurance, personnage.getEnduranceMax()));
         personnage.setEnduranceActuelle(nouvelleEndurance);
         personnageRepository.save(personnage);
+    }
+
+    // Regle VOL : voir les constantes VOL_* en tete de classe pour le
+    // detail de chaque portee. HASARD (ex. chapitre 188) gate le vol tout
+    // entier, comme pour ENDURANCE.
+    @Transactional
+    public void appliquerEffetVol(Personnage personnage, Effet effet) {
+        Optional<Cond> hasard = effet.getConditions().stream()
+                .filter(c -> c.getType() == TypeCondition.HASARD)
+                .findFirst();
+        if (hasard.isPresent() && !conditionService.estDisponible(hasard.get(), personnage)) {
+            return;
+        }
+
+        boolean gateArme = effet.getConditions().stream().anyMatch(c -> c.getType() == TypeCondition.ARME);
+
+        if (effet.getValeur() == VOL_TOUT) {
+            retirerTout(personnage, CATEGORIES_TOUT);
+        } else if (effet.getValeur() == VOL_SAC) {
+            retirerTout(personnage, CATEGORIES_SAC);
+        } else if (effet.getValeur() == VOL_TOUTES_ARMES && gateArme) {
+            retirerTout(personnage, Set.of(CategorieObjet.ARME));
+        } else if (effet.getValeur() == VOL_UN_AU_CHOIX) {
+            Set<CategorieObjet> categoriesEligibles = gateArme ? Set.of(CategorieObjet.ARME) : CATEGORIES_TOUT;
+            boolean aQuelqueChoseAPerdre = inventaireService.listerInventaire(personnage).stream()
+                    .anyMatch(item -> categoriesEligibles.contains(item.getObjet().getCategorie()));
+
+            if (aQuelqueChoseAPerdre) {
+                personnage.setVolEnAttente(gateArme ? PorteeVol.ARME : PorteeVol.TOUT);
+                personnageRepository.save(personnage);
+            }
+            // Sinon : rien a voler, on ne bloque pas la partie pour un vol
+            // impossible a resoudre.
+        }
+        // Toute autre valeur : non rencontree dans ce tome, on ignore.
+    }
+
+    // Resout un vol en attente (Effet VOL, valeur=1) : le joueur a choisi
+    // quel objet perdre. Verifie que le choix respecte la portee autorisee
+    // avant de retirer l'objet et de lever l'attente.
+    @Transactional
+    public void resoudreVolEnAttente(Personnage personnage, Objet objet) {
+        PorteeVol portee = personnage.getVolEnAttente();
+        if (portee == null) {
+            throw new IllegalStateException("Aucun vol en attente pour ce personnage");
+        }
+
+        boolean categorieValide = portee == PorteeVol.ARME
+                ? objet.getCategorie() == CategorieObjet.ARME
+                : CATEGORIES_TOUT.contains(objet.getCategorie());
+        if (!categorieValide) {
+            throw new IllegalArgumentException(
+                    "Cet objet ne correspond pas a la portee du vol en attente (" + portee + ")");
+        }
+
+        inventaireService.retirerObjet(personnage, objet, 1);
+        personnage.setVolEnAttente(null);
+        personnageRepository.save(personnage);
+    }
+
+    // Retire integralement tous les objets possedes dans les categories
+    // donnees (utilise par VOL_TOUT/VOL_SAC/VOL_TOUTES_ARMES).
+    private void retirerTout(Personnage personnage, Set<CategorieObjet> categories) {
+        List<InventaireItem> items = inventaireService.listerInventaire(personnage).stream()
+                .filter(item -> categories.contains(item.getObjet().getCategorie()))
+                .toList();
+
+        for (InventaireItem item : items) {
+            inventaireService.retirerObjet(personnage, item.getObjet(), item.getQuantite());
+        }
     }
 
     private boolean possedeDiscipline(Personnage personnage, String targetId) {

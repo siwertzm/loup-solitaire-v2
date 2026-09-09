@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +18,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import com.loupsolitaire.backend.model.enums.PorteeVol;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -105,4 +110,10 @@ public class Personnage {
     // (jamais re-tire) au moment de valider un choix (POST /chapitre/{id}) :
     // le joueur choisit en fonction de ce qu'il a vu affiche.
     private Integer dernierTirageHasard;
+
+    // Non-null si un Effet VOL (valeur=1) attend que le joueur choisisse
+    // quoi perdre. Voir EffetChapitreService.resoudreVolEnAttente et
+    // PersonnageController POST /vol/{objetId}.
+    @Enumerated(EnumType.STRING)
+    private PorteeVol volEnAttente;
 }

@@ -5420,21 +5420,16 @@
         "id": "repas",
         "valeur": 1,
         "optionnel": false
-      },
-      {
-        "id": "marteau",
-        "valeur": 1,
-        "optionnel": true
       }
     ],
     "effet": [
       {
-        "type": "vol",
+        "type": "echange",
         "valeur": 1,
         "cond": [{
           "type": "arme",
           "valeur": "1",
-          "targetId": null
+          "targetId": "marteau"
         }]
       }
     ],

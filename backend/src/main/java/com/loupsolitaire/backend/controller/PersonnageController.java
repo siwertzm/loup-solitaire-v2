@@ -29,6 +29,7 @@ import com.loupsolitaire.backend.request.CreerPersonnageRequest;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
+import com.loupsolitaire.backend.service.EffetChapitreService;
 import com.loupsolitaire.backend.service.InventaireService;
 import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
@@ -48,6 +49,7 @@ public class PersonnageController {
     private final ObjetRepository objetRepository;
     private final InventaireService inventaireService;
     private final ObjetService objetService;
+    private final EffetChapitreService effetChapitreService;
     private final PersonnageMapper personnageMapper;
     private final ChapitreMapper chapitreMapper;
 
@@ -160,6 +162,24 @@ public class PersonnageController {
 
         objetService.appliquerEffetsConsommation(personnage, objet);
         inventaireService.retirerObjet(personnage, objet, 1);
+
+        return personnageMapper.versReponse(personnage);
+    }
+
+    // Resout un vol en attente (Effet VOL, valeur=1) : le joueur choisit
+    // quel objet/repas/arme il perd, parmi ceux autorises par la portee
+    // (voir PersonnageResponse.volEnAttente pour savoir si un choix est
+    // requis, et lequel).
+    @PostMapping("/{id}/vol/{objetId}")
+    public PersonnageResponse resoudreVol(
+            @PathVariable UUID id,
+            @PathVariable String objetId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Objet objet = recupererObjet(objetId);
+
+        effetChapitreService.resoudreVolEnAttente(personnage, objet);
 
         return personnageMapper.versReponse(personnage);
     }

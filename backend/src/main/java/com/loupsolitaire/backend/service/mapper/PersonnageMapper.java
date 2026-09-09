@@ -37,6 +37,7 @@ public class PersonnageMapper {
                 personnage.getDisciplines().stream().map(d -> d.getId().name()).toList(),
                 personnage.getArmeMaitrisee() != null ? personnage.getArmeMaitrisee().getNom() : null,
                 personnage.getChapitreActuel().getId(),
+                personnage.getVolEnAttente() != null ? personnage.getVolEnAttente().name() : null,
                 inventaire
         );
     }
