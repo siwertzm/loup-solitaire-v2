@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -442,5 +443,117 @@ class PersonnageServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(p.getChapitreActuel()).isEqualTo(chapitre0); // inchange
+    }
+
+    // =========================================================
+    // Echange volontaire (ex. chapitre 307 : Marteau de Guerre)
+    // =========================================================
+
+    private com.loupsolitaire.backend.model.Objet creerObjetArme(String id) {
+        com.loupsolitaire.backend.model.Objet objet = new com.loupsolitaire.backend.model.Objet();
+        objet.setId(id);
+        objet.setCategorie(CategorieObjet.ARME);
+        return objet;
+    }
+
+    private com.loupsolitaire.backend.model.Effet creerEffetEchange(String targetId) {
+        com.loupsolitaire.backend.model.Effet effet = new com.loupsolitaire.backend.model.Effet();
+        effet.setType(com.loupsolitaire.backend.model.enums.TypeEffet.ECHANGE);
+        effet.setValeur(1);
+        com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();
+        cond.setType(com.loupsolitaire.backend.model.enums.TypeCondition.ARME);
+        cond.setTargetId(targetId);
+        effet.setConditions(List.of(cond));
+        return effet;
+    }
+
+    @Test
+    void refuseLEchangeSiLesCategoriesNeCorrespondentPas() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet repas = new Objet();
+        repas.setId("repas");
+        repas.setCategorie(CategorieObjet.REPAS);
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, repas))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        // La verification de categorie se fait avant meme d'aller chercher
+        // le chapitre : aucun appel inutile.
+        verify(chapitreRepository, never()).findById(any());
+        verify(inventaireService, never()).remplacerObjet(any(), any(), anyInt(), any(), anyInt());
+    }
+
+    @Test
+    void echangeAutoriseSiLeChapitreActuelProposeCetEchangePrecis() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet marteau = creerObjetArme("marteau");
+        chapitre0.setEffets(List.of(creerEffetEchange("marteau")));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        InventaireItem ligneHache = new InventaireItem();
+        ligneHache.setObjet(hache);
+        ligneHache.setQuantite(1);
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(ligneHache));
+
+        personnageService.echangerObjet(p, hache, marteau);
+
+        verify(inventaireService).remplacerObjet(p, hache, 1, marteau, 1);
+    }
+
+    @Test
+    void refuseLEchangeSiLeChapitreActuelNeLeProposePas() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet marteau = creerObjetArme("marteau");
+        chapitre0.setEffets(List.of()); // aucun effet ECHANGE sur ce chapitre
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, marteau))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(inventaireService, never()).remplacerObjet(any(), any(), anyInt(), any(), anyInt());
+    }
+
+    @Test
+    void refuseLEchangeSiLObjetProposeNeCorrespondPasATargetId() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet epee = creerObjetArme("epee");
+        // Le chapitre propose un echange pour "marteau", pas pour "epee".
+        chapitre0.setEffets(List.of(creerEffetEchange("marteau")));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, epee))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void refuseLEchangeSiLObjetARetirerNestPasPossede() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet marteau = creerObjetArme("marteau");
+        chapitre0.setEffets(List.of(creerEffetEchange("marteau")));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of()); // aucune arme possedee
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, marteau))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(inventaireService, never()).remplacerObjet(any(), any(), anyInt(), any(), anyInt());
     }
 }

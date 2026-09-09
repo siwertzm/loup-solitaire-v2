@@ -228,4 +228,41 @@ public class PersonnageService {
                 .filter(effet -> effet.getType() == TypeEffet.VOL)
                 .forEach(effet -> effetChapitreService.appliquerEffetVol(personnage, effet));
     }
+
+    // Echange volontaire (ex. chapitre 307 : le Marteau de Guerre de
+    // l'ermite contre une arme deja possedee). Valide que le chapitre
+    // ACTUEL du personnage propose bien cet echange precis (Effet ECHANGE
+    // dont une condition cible objetAAjouter), pour empecher un joueur
+    // d'echanger n'importe quelle arme a n'importe quel chapitre.
+    @Transactional
+    public void echangerObjet(Personnage personnage, Objet objetARetirer, Objet objetAAjouter) {
+        if (objetARetirer.getCategorie() != objetAAjouter.getCategorie()) {
+            throw new IllegalArgumentException(
+                    "Impossible d'echanger des objets de categories differentes ("
+                            + objetARetirer.getCategorie() + " contre " + objetAAjouter.getCategorie() + ")");
+        }
+
+        Integer chapitreActuelId = personnage.getChapitreActuel().getId();
+        Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
+
+        boolean echangeAutorise = chapitreActuel.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.ECHANGE)
+                .flatMap(effet -> effet.getConditions().stream())
+                .anyMatch(cond -> objetAAjouter.getId().equals(cond.getTargetId()));
+
+        if (!echangeAutorise) {
+            throw new IllegalArgumentException(
+                    "Aucun echange pour " + objetAAjouter.getId() + " n'est propose sur ce chapitre");
+        }
+
+        boolean possede = inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> item.getObjet().getId().equals(objetARetirer.getId()) && item.getQuantite() > 0);
+        if (!possede) {
+            throw new IllegalArgumentException(
+                    "Vous ne possedez pas " + objetARetirer.getId() + ", impossible de l'echanger");
+        }
+
+        inventaireService.remplacerObjet(personnage, objetARetirer, 1, objetAAjouter, 1);
+    }
 }

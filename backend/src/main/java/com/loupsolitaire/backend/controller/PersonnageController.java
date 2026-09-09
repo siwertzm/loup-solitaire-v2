@@ -184,6 +184,27 @@ public class PersonnageController {
         return personnageMapper.versReponse(personnage);
     }
 
+    // Echange volontaire (jamais force) : retire objetARetirerId pour
+    // ajouter objetAAjouterId a la place. Valide cote serveur que le
+    // chapitre ACTUEL du personnage propose bien cet echange precis (Effet
+    // ECHANGE) : impossible d'echanger n'importe quoi n'importe ou.
+    // Cas d'usage : chapitre 307 (Marteau de Guerre de l'ermite).
+    @PostMapping("/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}")
+    public PersonnageResponse echangerObjet(
+            @PathVariable UUID id,
+            @PathVariable String objetAAjouterId,
+            @PathVariable String objetARetirerId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Objet objetAAjouter = recupererObjet(objetAAjouterId);
+        Objet objetARetirer = recupererObjet(objetARetirerId);
+
+        personnageService.echangerObjet(personnage, objetARetirer, objetAAjouter);
+
+        return personnageMapper.versReponse(personnage);
+    }
+
     private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
         Personnage personnage = personnageRepository.findById(id)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
