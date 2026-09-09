@@ -3815,7 +3815,7 @@
     "effet": null,
     "lien": [
       { "page": "24", "cond": null },
-      { "page": "234", "cond": [{ "type": "fuite", "valeur": "0", "targetId": null }] }
+      { "page": "234", "cond": [{ "type": "fuite", "valeur": "1", "targetId": null }] }
     ],
     "id": 220,
     "objet": []
@@ -6044,7 +6044,7 @@
         "page": "7",
         "cond": [{
           "type": "fuite",
-          "valeur": "0",
+          "valeur": "1",
           "targetId": null
         }]
       }
