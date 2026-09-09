@@ -251,6 +251,29 @@ public class PersonnageService {
         }
     }
 
+    // Ramassage MANUEL d'un objet optionnel (POST /objets/{objetId}) :
+    // securise contre un joueur qui tenterait de se donner n'importe quel
+    // objet du catalogue - verifie que l'objet est bien propose par le
+    // chapitre ACTUEL. Ajoute toujours 1 exemplaire par appel (meme
+    // principe que l'equipement de depart) : pour un objet dont la donnee
+    // du chapitre indique "valeur=2" (ex. chapitre 20, 2 Repas), le
+    // frontend doit appeler cet endpoint deux fois.
+    @Transactional
+    public void ramasserObjetDuChapitre(Personnage personnage, Objet objet) {
+        Integer chapitreActuelId = personnage.getChapitreActuel().getId();
+        Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
+
+        boolean disponibleIci = chapitreActuel.getObjets().stream()
+                .anyMatch(oc -> oc.getObjet().getId().equals(objet.getId()));
+        if (!disponibleIci) {
+            throw new IllegalArgumentException(
+                    "Cet objet n'est pas disponible sur le chapitre " + chapitreActuelId);
+        }
+
+        inventaireService.ajouterObjet(personnage, objet, 1);
+    }
+
     // Echange volontaire (ex. chapitre 307 : le Marteau de Guerre de
     // l'ermite contre une arme deja possedee). Valide que le chapitre
     // ACTUEL du personnage propose bien cet echange precis (Effet ECHANGE

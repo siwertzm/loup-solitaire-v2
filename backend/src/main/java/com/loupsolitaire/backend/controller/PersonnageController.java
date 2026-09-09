@@ -113,20 +113,20 @@ public class PersonnageController {
         return personnageMapper.versReponse(personnage);
     }
 
-    // Endpoint de test/debug : ajoute un objet du catalogue a l'inventaire
-    // du personnage (limites, plafonnement, bonus d'armure a la
-    // recuperation - les consommables n'ont plus d'effet ici).
+    // Ramasse un objet optionnel propose par le chapitre courant. Securise
+    // cote serveur (PersonnageService.ramasserObjetDuChapitre) : impossible
+    // de ramasser un objet non propose ici, et la quantite vient toujours
+    // du chapitre lui-meme, jamais du client.
     @PostMapping("/{id}/objets/{objetId}")
     public PersonnageResponse ajouterObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
-            @RequestParam(defaultValue = "1") int quantite,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
         Objet objet = recupererObjet(objetId);
 
-        inventaireService.ajouterObjet(personnage, objet, quantite);
+        personnageService.ramasserObjetDuChapitre(personnage, objet);
 
         return personnageMapper.versReponse(personnage);
     }
