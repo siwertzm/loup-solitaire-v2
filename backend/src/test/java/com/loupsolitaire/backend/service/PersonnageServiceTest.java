@@ -355,6 +355,28 @@ class PersonnageServiceTest {
     }
 
     @Test
+    void declencheLEffetEnduranceSiLeNouveauChapitreEnAUn() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        com.loupsolitaire.backend.model.Effet effetEndurance = new com.loupsolitaire.backend.model.Effet();
+        effetEndurance.setType(com.loupsolitaire.backend.model.enums.TypeEffet.ENDURANCE);
+        effetEndurance.setValeur(-2);
+        effetEndurance.setConditions(List.of());
+        chapitre1.setEffets(List.of(effetEndurance));
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(effetChapitreService).appliquerEffetEndurance(p, effetEndurance);
+    }
+
+    @Test
     void refuseDAvancerVersUnChapitreSansLienDepuisLActuel() {
         Personnage p = new Personnage();
         p.setChapitreActuel(chapitre0);

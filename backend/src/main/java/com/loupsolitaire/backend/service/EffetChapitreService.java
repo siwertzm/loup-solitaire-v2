@@ -10,12 +10,14 @@ import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
-// ObjetService). REPAS et HABILETE geres ; ENDURANCE viendra ensuite.
+// ObjetService). REPAS, HABILETE et ENDURANCE geres ; VOL laisse de cote
+// (donnees insuffisantes, voir doc de conception).
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -27,6 +29,7 @@ public class EffetChapitreService {
 
     private final InventaireService inventaireService;
     private final PersonnageRepository personnageRepository;
+    private final ConditionService conditionService;
 
     // Regle du Repas : la Discipline Kai de la Chasse en dispense
     // completement (le personnage se debrouille pour trouver a manger).
@@ -88,6 +91,31 @@ public class EffetChapitreService {
                 // rencontre sur un effet HABILETE dans ce tome. Ignore.
             }
         }
+    }
+
+    // Regle ENDURANCE : toujours REEL (jamais temporaire, contrairement a
+    // HABILETE). Dans ce tome, la seule condition rencontree sur un effet
+    // ENDURANCE est HASARD (jamais discipline/objet) : pas de semantique
+    // inversee a gerer ici, on reutilise directement ConditionService.
+    // Toute autre condition (combat non construit) fait qu'on ignore
+    // l'effet, comme pour HABILETE.
+    @Transactional
+    public void appliquerEffetEndurance(Personnage personnage, Effet effet) {
+        Optional<Cond> condition = effet.getConditions().stream().findFirst();
+
+        if (condition.isPresent()) {
+            if (condition.get().getType() != TypeCondition.HASARD) {
+                return;
+            }
+            if (!conditionService.estDisponible(condition.get(), personnage)) {
+                return;
+            }
+        }
+
+        int nouvelleEndurance = personnage.getEnduranceActuelle() + effet.getValeur();
+        nouvelleEndurance = Math.max(0, Math.min(nouvelleEndurance, personnage.getEnduranceMax()));
+        personnage.setEnduranceActuelle(nouvelleEndurance);
+        personnageRepository.save(personnage);
     }
 
     private boolean possedeDiscipline(Personnage personnage, String targetId) {

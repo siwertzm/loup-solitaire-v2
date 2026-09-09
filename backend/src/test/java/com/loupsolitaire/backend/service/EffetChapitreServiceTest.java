@@ -32,6 +32,8 @@ class EffetChapitreServiceTest {
     private InventaireService inventaireService;
     @Mock
     private PersonnageRepository personnageRepository;
+    @Mock
+    private ConditionService conditionService;
 
     @InjectMocks
     private EffetChapitreService effetChapitreService;
@@ -214,6 +216,93 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+        verify(personnageRepository, never()).save(any());
+    }
+
+    // =========================================================
+    // ENDURANCE
+    // =========================================================
+
+    private com.loupsolitaire.backend.model.Effet creerEffetEndurance(int valeur,
+            com.loupsolitaire.backend.model.enums.TypeCondition typeCondition, String valeurCondition) {
+        com.loupsolitaire.backend.model.Effet effet = new com.loupsolitaire.backend.model.Effet();
+        effet.setType(com.loupsolitaire.backend.model.enums.TypeEffet.ENDURANCE);
+        effet.setValeur(valeur);
+        if (typeCondition != null) {
+            com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();
+            cond.setType(typeCondition);
+            cond.setValeur(valeurCondition);
+            effet.setConditions(List.of(cond));
+        } else {
+            effet.setConditions(List.of());
+        }
+        return effet;
+    }
+
+    @Test
+    void appliqueDirectementSiAucuneCondition() {
+        personnage.setEnduranceMax(20);
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(-2, null, null);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(13); // 15 - 2
+        verify(personnageRepository).save(personnage);
+    }
+
+    @Test
+    void appliqueSiLeTirageHasardEstDansLaPlage() {
+        personnage.setEnduranceMax(20);
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(
+                -2, com.loupsolitaire.backend.model.enums.TypeCondition.HASARD, "[0, 4]");
+        when(conditionService.estDisponible(effet.getConditions().get(0), personnage)).thenReturn(true);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(13);
+    }
+
+    @Test
+    void nAppliqueRienSiLeTirageHasardEstHorsPlage() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(
+                -2, com.loupsolitaire.backend.model.enums.TypeCondition.HASARD, "[0, 4]");
+        when(conditionService.estDisponible(effet.getConditions().get(0), personnage)).thenReturn(false);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(15); // inchangee
+        verify(personnageRepository, never()).save(any());
+    }
+
+    @Test
+    void neDepasseJamaisLeplafondEnduranceMax() {
+        personnage.setEnduranceMax(20);
+        personnage.setEnduranceActuelle(19);
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(10, null, null);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
+    }
+
+    @Test
+    void neDescendJamaisSousZeroPourUnEffetEndurance() {
+        personnage.setEnduranceActuelle(1);
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(-10, null, null);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(0);
+    }
+
+    @Test
+    void ignoreUneConditionDeCombatNonConstruitePourEndurance() {
+        com.loupsolitaire.backend.model.Effet effet = creerEffetEndurance(
+                -2, com.loupsolitaire.backend.model.enums.TypeCondition.ENDURANCE_PERDUE, "1");
+
+        effetChapitreService.appliquerEffetEndurance(personnage, effet);
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(15); // inchangee
         verify(personnageRepository, never()).save(any());
     }
 }
