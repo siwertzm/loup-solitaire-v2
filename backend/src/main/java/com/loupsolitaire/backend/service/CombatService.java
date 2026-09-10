@@ -24,6 +24,8 @@ import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
+import com.loupsolitaire.backend.service.record.ResultatTour;
+import com.loupsolitaire.backend.service.record.TourJoue;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,8 +50,9 @@ public class CombatService {
     private final InventaireService inventaireService;
     private final ObjetService objetService;
 
-    // Cree le combat du Chapitre courant du personnage, ou renvoie celui
-    // deja EN_COURS si l'ecran est rafraichi/rouvert (idempotent).
+    // Cree le combat du Chapitre courant du personnage, ou renvoie le
+    // dernier existant (EN_COURS ou deja resolu) si l'ecran est
+    // rafraichi/rouvert (idempotent).
     @Transactional
     public Combat initierCombat(Personnage personnage) {
         return combatEnCoursOuNouveau(personnage);
@@ -61,8 +64,15 @@ public class CombatService {
             throw new IllegalArgumentException("Le chapitre " + chapitre.getId() + " n'est pas un combat");
         }
 
+        // IMPORTANT : cherche le PLUS RECENT combat, quel que soit son
+        // statut - pas seulement EN_COURS. Un combat deja resolu
+        // (VICTOIRE/DEFAITE/FUITE/INTERROMPU) doit rester LE combat de ce
+        // chapitre pour toujours ; le retrouver ici (au lieu de ne
+        // chercher que EN_COURS) evite d'en recreer un nouveau à chaque
+        // appel de POST /combat ou /combat/tour une fois le combat
+        // termine, ce qui effacerait silencieusement son issue.
         return combatRepository
-                .findByPersonnageIdAndChapitreIdAndStatut(personnage.getId(), chapitre.getId(), StatutCombat.EN_COURS)
+                .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitre.getId())
                 .orElseGet(() -> creerCombat(personnage, chapitre));
     }
 
@@ -111,7 +121,7 @@ public class CombatService {
     // le fetch-graph (perte du chargement pourtant deja fait), provoquant
     // une LazyInitializationException plus tard dans CombatMapper.
     @Transactional
-    public Combat jouerTour(Personnage personnage, ActionCombat action, Objet objet) {
+    public TourJoue jouerTour(Personnage personnage, ActionCombat action, Objet objet) {
         Combat combat = combatEnCoursOuNouveau(personnage);
 
         if (combat.getStatut() != StatutCombat.EN_COURS) {
@@ -121,12 +131,12 @@ public class CombatService {
             throw new IllegalArgumentException("Ce combat est deja termine (" + combat.getStatut() + ")");
         }
 
-        switch (action) {
+        ResultatTour resultat = switch (action) {
             case ATTAQUE -> jouerAttaque(personnage, combat);
             case DEFENSE -> jouerDefense(personnage, combat);
             case OBJET -> jouerObjet(personnage, combat, objet);
             case FUITE -> jouerFuite(personnage, combat);
-        }
+        };
 
         // ASSAUT_ECHEC : si le seuil du chapitre est desormais atteint sans
         // que l'ennemi actif soit mort, le combat s'arrete de force (texte
@@ -141,16 +151,19 @@ public class CombatService {
         }
 
         personnageRepository.save(personnage);
-        return combatRepository.save(combat);
+        Combat sauvegarde = combatRepository.save(combat);
+        return new TourJoue(sauvegarde, resultat);
     }
 
-    private void jouerAttaque(Personnage personnage, Combat combat) {
+    private ResultatTour jouerAttaque(Personnage personnage, Combat combat) {
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
         int habEnnemi = ennemiActif.getEnnemi().getHabilite();
 
-        int habJoueur = habiliteEffective(personnage) + combat.getBonusHabiliteEnAttente();
-        int diff = habJoueur - habEnnemi;
-        int degatsInfliges = tableCombatService.degatsInfliges(diff, tableDeHasardService.tirerChiffre());
+        int bonusUtilise = combat.getBonusHabiliteEnAttente();
+        int habJoueur = habiliteEffective(personnage) + bonusUtilise;
+        int rapportAttaque = habJoueur - habEnnemi;
+        int tirageAttaque = tableDeHasardService.tirerChiffre();
+        int degatsInfliges = tableCombatService.degatsInfliges(rapportAttaque, tirageAttaque);
 
         combat.setBonusHabiliteEnAttente(0);
         combat.setAssautsLivres(combat.getAssautsLivres() + 1);
@@ -160,17 +173,23 @@ public class CombatService {
 
         if (nouvelleEnduranceEnnemi <= 0) {
             passerAuProchainEnnemi(combat);
-            return;
+            // Ennemi mort : pas de riposte ce tour.
+            return new ResultatTour("ATTAQUE", rapportAttaque, tirageAttaque, degatsInfliges,
+                    null, null, null, null, null, null, null);
         }
 
         // L'ennemi riposte : pas de bonus d'HABILITE sur la defense du
         // joueur ici (le bonus ne joue que sur SA propre attaque).
-        int diffRiposte = habiliteEffective(personnage) - habEnnemi;
-        int degatsSubis = tableCombatService.degatsSubis(diffRiposte, tableDeHasardService.tirerChiffre());
+        int rapportRiposte = habiliteEffective(personnage) - habEnnemi;
+        int tirageRiposte = tableDeHasardService.tirerChiffre();
+        int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
+
+        return new ResultatTour("ATTAQUE", rapportAttaque, tirageAttaque, degatsInfliges,
+                rapportRiposte, tirageRiposte, degatsSubis, degatsSubis, null, null, null);
     }
 
-    private void jouerDefense(Personnage personnage, Combat combat) {
+    private ResultatTour jouerDefense(Personnage personnage, Combat combat) {
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
         int habEnnemi = ennemiActif.getEnnemi().getHabilite();
 
@@ -182,14 +201,18 @@ public class CombatService {
         combat.setBonusHabiliteEnAttente(bonus);
         combat.setAssautsLivres(combat.getAssautsLivres() + 1);
 
-        int diff = (habiliteEffective(personnage) + bonus) - habEnnemi;
-        int degatsBruts = tableCombatService.degatsSubis(diff, tableDeHasardService.tirerChiffre());
+        int rapportRiposte = (habiliteEffective(personnage) + bonus) - habEnnemi;
+        int tirageRiposte = tableDeHasardService.tirerChiffre();
+        int degatsBruts = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         int degatsReduits = (int) Math.round(degatsBruts * (100.0 - reduction) / 100.0);
 
         appliquerDegatsAuJoueur(personnage, combat, degatsReduits);
+
+        return new ResultatTour("DEFENSE", null, null, null,
+                rapportRiposte, tirageRiposte, degatsBruts, degatsReduits, tirageDefense, reduction, bonus);
     }
 
-    private void jouerObjet(Personnage personnage, Combat combat, Objet objet) {
+    private ResultatTour jouerObjet(Personnage personnage, Combat combat, Objet objet) {
         if (objet == null) {
             throw new IllegalArgumentException("Un objet est requis pour l'action OBJET");
         }
@@ -209,12 +232,16 @@ public class CombatService {
 
         // Le bonus d'une DEFENSE precedente reste en reserve pour la
         // prochaine ATTAQUE : consommer un objet ne le consomme pas.
-        int diff = habiliteEffective(personnage) - habEnnemi;
-        int degatsSubis = tableCombatService.degatsSubis(diff, tableDeHasardService.tirerChiffre());
+        int rapportRiposte = habiliteEffective(personnage) - habEnnemi;
+        int tirageRiposte = tableDeHasardService.tirerChiffre();
+        int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
+
+        return new ResultatTour("OBJET", null, null, null,
+                rapportRiposte, tirageRiposte, degatsSubis, degatsSubis, null, null, null);
     }
 
-    private void jouerFuite(Personnage personnage, Combat combat) {
+    private ResultatTour jouerFuite(Personnage personnage, Combat combat) {
         Chapitre chapitre = recupererChapitre(combat.getChapitreId());
         if (!peutFuir(chapitre, combat)) {
             throw new IllegalArgumentException(
@@ -222,6 +249,7 @@ public class CombatService {
         }
         // Reussie a coup sur des qu'elle est proposee ; aucune riposte.
         combat.setStatut(StatutCombat.FUITE);
+        return new ResultatTour("FUITE", null, null, null, null, null, null, null, null, null, null);
     }
 
     // Vrai si au moins un Lien du chapitre porte une condition FUITE dont

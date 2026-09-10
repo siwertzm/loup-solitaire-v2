@@ -13,7 +13,9 @@ import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.response.CombatEnnemiResponse;
 import com.loupsolitaire.backend.response.CombatResponse;
+import com.loupsolitaire.backend.response.ResultatTourResponse;
 import com.loupsolitaire.backend.service.CombatService;
+import com.loupsolitaire.backend.service.record.ResultatTour;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +26,16 @@ public class CombatMapper {
     private final ChapitreRepository chapitreRepository;
     private final CombatService combatService;
 
+    // Utilise par GET/POST /combat : aucun tour ne vient d'etre joue.
     @Transactional(readOnly = true)
     public CombatResponse versReponse(Combat combat) {
+        return versReponse(combat, null);
+    }
+
+    // Utilise par POST /combat/tour : inclut le detail du calcul (rapport
+    // de combat, tirages, degats, % de reduction) dans "dernierTour".
+    @Transactional(readOnly = true)
+    public CombatResponse versReponse(Combat combat, ResultatTour resultat) {
         List<CombatEnnemiResponse> ennemis = combat.getEnnemis().stream()
                 .map(ce -> versReponseEnnemi(ce, combat))
                 .toList();
@@ -40,7 +50,26 @@ public class CombatMapper {
                 combat.isEndurancePerdue(),
                 combat.getBonusHabiliteEnAttente(),
                 combat.getStatut().name(),
-                fuitePossible);
+                fuitePossible,
+                versReponseResultat(resultat));
+    }
+
+    private ResultatTourResponse versReponseResultat(ResultatTour resultat) {
+        if (resultat == null) {
+            return null;
+        }
+        return new ResultatTourResponse(
+                resultat.action(),
+                resultat.rapportAttaque(),
+                resultat.tirageAttaque(),
+                resultat.degatsInfliges(),
+                resultat.rapportRiposte(),
+                resultat.tirageRiposte(),
+                resultat.degatsSubisBruts(),
+                resultat.degatsSubis(),
+                resultat.tirageDefense(),
+                resultat.reductionPourcent(),
+                resultat.bonusHabiliteObtenu());
     }
 
     private boolean peutFuir(Combat combat) {

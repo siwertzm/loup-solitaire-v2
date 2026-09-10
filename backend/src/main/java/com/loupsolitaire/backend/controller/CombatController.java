@@ -25,6 +25,7 @@ import com.loupsolitaire.backend.request.JouerTourCombatRequest;
 import com.loupsolitaire.backend.response.CombatResponse;
 import com.loupsolitaire.backend.service.CombatService;
 import com.loupsolitaire.backend.service.mapper.CombatMapper;
+import com.loupsolitaire.backend.service.record.TourJoue;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -77,8 +78,8 @@ public class CombatController {
         ActionCombat action = versActionCombat(request.getAction());
         Objet objet = request.getObjetId() != null ? recupererObjet(request.getObjetId()) : null;
 
-        Combat combat = combatService.jouerTour(personnage, action, objet);
-        return combatMapper.versReponse(combat);
+        TourJoue tourJoue = combatService.jouerTour(personnage, action, objet);
+        return combatMapper.versReponse(tourJoue.combat(), tourJoue.resultat());
     }
 
     private ActionCombat versActionCombat(String valeur) {
