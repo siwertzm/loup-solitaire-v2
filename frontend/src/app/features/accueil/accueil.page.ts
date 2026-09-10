@@ -1,14 +1,18 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonIcon } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { personCircleOutline } from 'ionicons/icons';
 
 import { PersonnageResume } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
 
+addIcons({ 'person-circle-outline': personCircleOutline });
+
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [IonContent],
+  imports: [IonContent, IonIcon],
   templateUrl: './accueil.page.html',
   styleUrl: './accueil.page.scss',
 })

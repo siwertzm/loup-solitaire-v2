@@ -1,0 +1,33 @@
+<ion-content [fullscreen]="true" class="profil">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">‹ MENU</button>
+
+    @if (chargement()) {
+      <div class="etat">Chargement…</div>
+    } @else if (erreur()) {
+      <div class="etat erreur">{{ erreur() }}</div>
+    } @else if (compte(); as c) {
+      <div class="identite">
+        <div class="avatar">{{ initiale() }}</div>
+        <div>
+          <div class="username">{{ c.username }}</div>
+          <div class="email">{{ c.email }}</div>
+        </div>
+      </div>
+
+      <div class="tableau">
+        @for (l of lignes(); track l.cle) {
+          <div class="ligne">
+            <span class="cle">{{ l.cle }}</span>
+            <span class="valeur" [class.vert]="l.ton === 'vert'" [class.rouge]="l.ton === 'rouge'">{{ l.valeur }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="actions">
+        <button type="button" class="secondaire" (click)="modifierEmail()">MODIFIER MON EMAIL</button>
+        <button type="button" class="danger" (click)="deconnexion()">SE DÉCONNECTER</button>
+      </div>
+    }
+  </div>
+</ion-content>

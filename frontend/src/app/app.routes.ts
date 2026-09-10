@@ -18,6 +18,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/accueil/accueil.page').then((m) => m.AccueilPage),
   },
   {
+    path: 'profil',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profil/profil.page').then((m) => m.ProfilPage),
+  },
+  {
     path: 'personnages',
     canActivate: [authGuard],
     loadComponent: () =>

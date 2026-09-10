@@ -1,0 +1,155 @@
+// Écran profil — même palette et typo que l'accueil.
+
+$foret: #2c3323;
+$foret-clair: #3b442d;
+$parchemin: #ece2c8;
+$cuivre: #c2703a;
+$or: #d9a94a;
+$rouge: #e0705a;
+$vert: #9dbf5c;
+
+ion-content.profil {
+  --background: #{$foret};
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ion-text-color: #{$parchemin};
+  color: $parchemin;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  button {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+  }
+}
+
+.ecran {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 22px 24px;
+  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
+}
+
+.retour {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  color: rgba(236, 226, 200, 0.6);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+.etat {
+  padding: 24px 2px;
+  font-size: 15px;
+  color: rgba(236, 226, 200, 0.6);
+
+  &.erreur {
+    color: $rouge;
+  }
+}
+
+.identite {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0 22px;
+
+  .avatar {
+    flex: none;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: $foret-clair;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: $or;
+  }
+
+  .username {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .email {
+    font-size: 14.5px;
+    color: rgba(236, 226, 200, 0.6);
+  }
+}
+
+.tableau {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(236, 226, 200, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+
+  .ligne {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    padding: 14px 16px;
+  }
+
+  .cle {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: rgba(236, 226, 200, 0.55);
+  }
+
+  .valeur {
+    font-size: 15px;
+    color: $parchemin;
+
+    &.vert {
+      color: $vert;
+    }
+
+    &.rouge {
+      color: $rouge;
+    }
+  }
+}
+
+.actions {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.secondaire {
+  border: 1px solid rgba(236, 226, 200, 0.28);
+  background: none;
+  border-radius: 11px;
+  padding: 14px;
+  color: $parchemin;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $cuivre;
+  }
+}
+
+.danger {
+  border: 1px solid rgba(184, 65, 47, 0.5);
+  background: rgba(184, 65, 47, 0.12);
+  border-radius: 11px;
+  padding: 14px;
+  color: $rouge;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}

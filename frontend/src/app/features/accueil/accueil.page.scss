@@ -12,8 +12,14 @@ $sepia: #8a7a5e;
 
 ion-content.accueil {
   --background: #{$foret};
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ion-text-color: #{$parchemin};
   color: $parchemin;
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  button {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+  }
 }
 
 .ecran {
@@ -38,6 +44,8 @@ ion-content.accueil {
 .rond {
   width: 38px;
   height: 38px;
+  padding: 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,6 +54,10 @@ ion-content.accueil {
   border: 1px solid rgba(236, 226, 200, 0.22);
   color: rgba(236, 226, 200, 0.85);
   cursor: pointer;
+
+  ion-icon {
+    font-size: 22px;
+  }
 
   &:hover {
     border-color: $cuivre;
