@@ -129,6 +129,22 @@ public class PersonnageController {
         return personnageMapper.versReponse(personnage);
     }
 
+    // MVP1 : seule action possible pour un personnage mort HORS combat
+    // (perte d'endurance par un effet de chapitre, voir Personnage.mort).
+    // Distinct de revenir-apres-defaite : ne change pas de chapitre, paye
+    // 1 coin (non retire, illimite pour le MVP1) pour restaurer
+    // l'endurance a fond et repasser mort a false.
+    @PostMapping("/{id}/ressusciter")
+    public PersonnageResponse ressusciter(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        personnageService.ressusciter(personnage);
+
+        return personnageMapper.versReponse(personnage);
+    }
+
     // Ramasse un objet optionnel propose par le chapitre courant. Securise
     // cote serveur (PersonnageService.ramasserObjetDuChapitre) : impossible
     // de ramasser un objet non propose ici, et la quantite vient toujours

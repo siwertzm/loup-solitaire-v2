@@ -189,6 +189,7 @@ public class PersonnageService {
     // (etape suivante).
     @Transactional
     public void avancerVersChapitre(Personnage personnage, Integer chapitreCibleId) {
+        verifierPasMort(personnage);
         if (personnage.getVolEnAttente() != null) {
             throw new IllegalArgumentException(
                     "Un vol est en attente de resolution (POST /vol/{objetId}) avant de pouvoir avancer");
@@ -337,6 +338,41 @@ public class PersonnageService {
         reinitialiserHabiliteTemp(personnage);
     }
 
+    // Garde reutilisee par toute action mutant l'etat du personnage : un
+    // personnage mort (perte d'endurance HORS combat, voir Personnage.mort)
+    // ne peut plus rien faire tant qu'il n'a pas ete ressuscite. La mort EN
+    // COMBAT n'est PAS concernee ici (voir revenirApresDefaite) : ce n'est
+    // pas ce champ qui bloque alors, mais Combat.statut lui-meme.
+    private void verifierPasMort(Personnage personnage) {
+        if (personnage.isMort()) {
+            throw new IllegalArgumentException(
+                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
+                            + "POST /personnages/{id}/ressusciter avant de continuer");
+        }
+    }
+
+    // MVP1 : seule action possible pour un personnage mort (perte
+    // d'endurance HORS combat) - paye 1 coin (non retire, illimite comme
+    // pour revenirApresDefaite) pour restaurer l'endurance a fond et
+    // repasser mort a false. Reste sur place : ne change PAS de chapitre,
+    // contrairement a revenirApresDefaite.
+    @Transactional
+    public void ressusciter(Personnage personnage) {
+        if (!personnage.isMort()) {
+            throw new IllegalArgumentException("Ce personnage n'est pas mort");
+        }
+
+        boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> item.getObjet().getId().equals("coin") && item.getQuantite() >= 1);
+        if (!possedeCoin) {
+            throw new IllegalArgumentException("Vous n'avez pas de Piece Premium (coin) pour ressusciter");
+        }
+
+        personnage.setEnduranceActuelle(personnage.getEnduranceMax());
+        personnage.setMort(false);
+        personnageRepository.save(personnage);
+    }
+
     // Discipline Kai Guerison : +1 point d'ENDURANCE (plafonne a
     // enduranceMax) a chaque fois qu'on arrive sur un nouveau chapitre
     // SANS combat. Pas de recuperation sur un chapitre combat=true, meme
@@ -380,6 +416,7 @@ public class PersonnageService {
     // frontend doit appeler cet endpoint deux fois.
     @Transactional
     public void ramasserObjetDuChapitre(Personnage personnage, Objet objet) {
+        verifierPasMort(personnage);
         Integer chapitreActuelId = personnage.getChapitreActuel().getId();
         Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
@@ -401,6 +438,7 @@ public class PersonnageService {
     // d'echanger n'importe quelle arme a n'importe quel chapitre.
     @Transactional
     public void echangerObjet(Personnage personnage, Objet objetARetirer, Objet objetAAjouter) {
+        verifierPasMort(personnage);
         if (objetARetirer.getCategorie() != objetAAjouter.getCategorie()) {
             throw new IllegalArgumentException(
                     "Impossible d'echanger des objets de categories differentes ("

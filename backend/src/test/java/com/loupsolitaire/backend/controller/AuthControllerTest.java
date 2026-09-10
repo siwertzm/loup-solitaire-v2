@@ -403,7 +403,7 @@ class AuthControllerTest {
         com.loupsolitaire.backend.response.PersonnageResponse reponsePersonnage =
                 new com.loupsolitaire.backend.response.PersonnageResponse(
                         personnageId, "Loup Solitaire", 15, 15, 0, 20, 20,
-                        java.util.List.of(), null, 0, null, java.util.List.of());
+                        java.util.List.of(), null, 0, null, false, java.util.List.of());
         when(personnageMapper.versReponse(personnage)).thenReturn(reponsePersonnage);
 
         authentifierComme(principal);

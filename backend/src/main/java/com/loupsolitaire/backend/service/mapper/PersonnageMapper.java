@@ -38,6 +38,7 @@ public class PersonnageMapper {
                 personnage.getArmeMaitrisee() != null ? personnage.getArmeMaitrisee().getNom() : null,
                 personnage.getChapitreActuel().getId(),
                 personnage.getVolEnAttente() != null ? personnage.getVolEnAttente().name() : null,
+                personnage.isMort(),
                 inventaire
         );
     }

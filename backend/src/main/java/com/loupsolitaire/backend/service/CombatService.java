@@ -56,6 +56,7 @@ public class CombatService {
     // rafraichi/rouvert (idempotent).
     @Transactional
     public Combat initierCombat(Personnage personnage) {
+        verifierPasMort(personnage);
         return combatEnCoursOuNouveau(personnage);
     }
 
@@ -123,6 +124,7 @@ public class CombatService {
     // une LazyInitializationException plus tard dans CombatMapper.
     @Transactional
     public TourJoue jouerTour(Personnage personnage, ActionCombat action, Objet objet) {
+        verifierPasMort(personnage);
         Combat combat = combatEnCoursOuNouveau(personnage);
 
         if (combat.getStatut() != StatutCombat.EN_COURS) {
@@ -339,6 +341,18 @@ public class CombatService {
     private Chapitre recupererChapitre(Integer chapitreId) {
         return chapitreRepository.findById(chapitreId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreId));
+    }
+
+    // Un personnage mort HORS combat (Personnage.mort, voir
+    // EffetChapitreService) ne peut plus initier ni jouer de combat tant
+    // qu'il n'a pas ete ressuscite (PersonnageService.ressusciter). Ne
+    // concerne pas la mort EN COMBAT (Combat.statut=DEFAITE), geree a part.
+    private void verifierPasMort(Personnage personnage) {
+        if (personnage.isMort()) {
+            throw new IllegalArgumentException(
+                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
+                            + "POST /personnages/{id}/ressusciter avant de continuer");
+        }
     }
 
     private int parseValeur(Cond cond) {

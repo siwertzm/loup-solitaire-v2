@@ -63,6 +63,11 @@ public class ObjetService {
     // InventaireService.retirerObjet (orchestre par le controleur).
     @Transactional
     public void appliquerEffetsConsommation(Personnage personnage, Objet objet) {
+        if (personnage.isMort()) {
+            throw new IllegalArgumentException(
+                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
+                            + "POST /personnages/{id}/ressusciter avant de continuer");
+        }
         if (objet.getCategorie() != CategorieObjet.OBJET) {
             throw new IllegalArgumentException(
                     "Impossible de consommer un objet de categorie " + objet.getCategorie());

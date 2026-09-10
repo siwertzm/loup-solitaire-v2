@@ -116,4 +116,13 @@ public class Personnage {
     // PersonnageController POST /vol/{objetId}.
     @Enumerated(EnumType.STRING)
     private PorteeVol volEnAttente;
+
+    // true des que l'ENDURANCE tombe a 0 HORS combat (effet ENDURANCE ou
+    // REPAS d'un chapitre, voir EffetChapitreService). Bloque alors toute
+    // action jusqu'a resurrection (PersonnageService.ressusciter). La mort
+    // EN COMBAT est geree separement (Combat.statut=DEFAITE, voir
+    // PersonnageService.revenirApresDefaite) : ce champ ne s'applique pas
+    // a ce cas-la.
+    @Column(nullable = false)
+    private boolean mort;
 }

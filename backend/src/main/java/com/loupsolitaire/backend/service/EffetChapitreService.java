@@ -70,6 +70,9 @@ public class EffetChapitreService {
         } else {
             int nouvelleEndurance = Math.max(0, personnage.getEnduranceActuelle() + MALUS_SANS_REPAS);
             personnage.setEnduranceActuelle(nouvelleEndurance);
+            if (nouvelleEndurance <= 0) {
+                personnage.setMort(true);
+            }
             personnageRepository.save(personnage);
         }
     }
@@ -133,6 +136,9 @@ public class EffetChapitreService {
         int nouvelleEndurance = personnage.getEnduranceActuelle() + effet.getValeur();
         nouvelleEndurance = Math.max(0, Math.min(nouvelleEndurance, personnage.getEnduranceMax()));
         personnage.setEnduranceActuelle(nouvelleEndurance);
+        if (nouvelleEndurance <= 0) {
+            personnage.setMort(true);
+        }
         personnageRepository.save(personnage);
     }
 
@@ -176,6 +182,11 @@ public class EffetChapitreService {
     // avant de retirer l'objet et de lever l'attente.
     @Transactional
     public void resoudreVolEnAttente(Personnage personnage, Objet objet) {
+        if (personnage.isMort()) {
+            throw new IllegalArgumentException(
+                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
+                            + "POST /personnages/{id}/ressusciter avant de continuer");
+        }
         PorteeVol portee = personnage.getVolEnAttente();
         if (portee == null) {
             throw new IllegalStateException("Aucun vol en attente pour ce personnage");
