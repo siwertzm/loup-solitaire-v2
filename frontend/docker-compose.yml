@@ -1,0 +1,11 @@
+services:
+  front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        API_URL: ${API_URL:-http://localhost:8080}
+    container_name: loup-front
+    restart: unless-stopped
+    ports:
+      - "4200:80"

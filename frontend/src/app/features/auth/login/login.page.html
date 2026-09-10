@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Connexion</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="soumettre()">
+    <ion-item>
+      <ion-label position="stacked">Username ou email</ion-label>
+      <ion-input formControlName="identifiant" type="text" autocomplete="username"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Mot de passe</ion-label>
+      <ion-input formControlName="password" type="password" autocomplete="current-password"></ion-input>
+    </ion-item>
+
+    @if (erreur()) {
+      <ion-note color="danger">{{ erreur() }}</ion-note>
+    }
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="form.invalid || enCours()">
+      Se connecter
+    </ion-button>
+  </form>
+
+  <ion-button expand="block" fill="clear" routerLink="/auth/register">
+    Pas encore de compte ? S'inscrire
+  </ion-button>
+</ion-content>

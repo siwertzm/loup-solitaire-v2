@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inscription</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (succes()) {
+    <p>
+      Compte créé. Un email de vérification a été envoyé : clique sur le lien
+      qu'il contient avant de pouvoir te connecter.
+    </p>
+    <ion-button expand="block" (click)="allerVersLogin()">Aller à la connexion</ion-button>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="soumettre()">
+      <ion-item>
+        <ion-label position="stacked">Nom d'utilisateur</ion-label>
+        <ion-input formControlName="username" type="text" autocomplete="username"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input formControlName="email" type="email" autocomplete="email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Mot de passe (8 caractères min.)</ion-label>
+        <ion-input formControlName="password" type="password" autocomplete="new-password"></ion-input>
+      </ion-item>
+
+      @if (erreur()) {
+        <ion-note color="danger">{{ erreur() }}</ion-note>
+      }
+
+      <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="form.invalid || enCours()">
+        Créer mon compte
+      </ion-button>
+    </form>
+
+    <ion-button expand="block" fill="clear" routerLink="/auth/login">
+      Déjà un compte ? Se connecter
+    </ion-button>
+  }
+</ion-content>
