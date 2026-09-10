@@ -1,0 +1,60 @@
+<ion-content [fullscreen]="true" class="accueil">
+  <div class="ecran">
+    <div class="barre-haut">
+      <button type="button" class="rond" aria-label="Mon profil" (click)="profil()">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="12" cy="8" r="3.6"></circle>
+          <path d="M4.8 20c0-3.6 3.2-5.6 7.2-5.6s7.2 2 7.2 5.6"></path>
+        </svg>
+      </button>
+    </div>
+
+    <header class="titre">
+      <div class="sur-titre">Livre premier</div>
+      <h1>Les Maîtres<br />des Ténèbres</h1>
+      <div class="sous-titre">Loup Solitaire</div>
+    </header>
+
+    <div class="carrousel" [style.mask-image]="masque()" [style.-webkit-mask-image]="masque()" (scroll)="onScroll($event)">
+      @if (chargement()) {
+        <div class="etat">Chargement…</div>
+      } @else if (erreur()) {
+        <div class="etat erreur">{{ erreur() }}</div>
+      } @else if (!cartes().length) {
+        <div class="etat">Aucune aventure en cours.</div>
+      } @else {
+        @for (pj of cartes(); track pj.id) {
+          <article class="carte">
+            <div class="entete">
+              <div class="identite">
+                <div class="avatar">{{ pj.initiale }}</div>
+                <div class="nom">{{ pj.nom }}</div>
+              </div>
+              <div class="chapitre">CHAP. {{ pj.chapitreCourantId }}</div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <span class="cle">HABILETÉ</span>
+                <span class="valeur">{{ pj.habileteTotale }}</span>
+              </div>
+              <div class="stat droite">
+                <span class="cle">ENDURANCE</span>
+                <span class="valeur">{{ pj.endurance }}</span>
+              </div>
+            </div>
+
+            <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
+              {{ pj.actif ? "REPRENDRE L'AVENTURE" : 'CHOISIR CE PERSONNAGE' }}
+            </button>
+          </article>
+        }
+      }
+    </div>
+
+    <button type="button" class="secondaire" (click)="nouveauPersonnage()">NOUVEAU PERSONNAGE</button>
+    <button type="button" class="secondaire" (click)="regles()">RÈGLES DU JEU</button>
+
+    <div class="pied">Progression sauvegardée sur l'appareil</div>
+  </div>
+</ion-content>
