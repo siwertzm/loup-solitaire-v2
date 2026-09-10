@@ -50,6 +50,14 @@ class RefreshTokenServiceTest {
         utilisateur.setPassword("hash");
     }
 
+    private RefreshToken creerToken(boolean revoked, Instant expiresAt) {
+        RefreshToken token = new RefreshToken();
+        token.setUtilisateur(utilisateur);
+        token.setRevoked(revoked);
+        token.setExpiresAt(expiresAt);
+        return token;
+    }
+
     @Test
     void creerTokenPersisteUnHashEtRenvoieLaValeurBrute() {
         String rawToken = service.creerToken(utilisateur);
@@ -94,15 +102,24 @@ class RefreshTokenServiceTest {
         dejaUtilise.setRevoked(true);
         dejaUtilise.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
 
+        // Une AUTRE session, encore active sur un autre appareil : c'est
+        // precisement celle-la que la revocation en masse doit invalider.
+        // (le token deja revoque lui-meme ne prouve rien : il l'etait deja
+        // avant l'appel.)
+        RefreshToken autreSessionActive = creerToken(false, Instant.now().plus(1, ChronoUnit.DAYS));
+
         when(refreshTokenRepository.findByTokenHash(anyString())).thenReturn(Optional.of(dejaUtilise));
         when(refreshTokenRepository.findAllByUtilisateurAndRevokedFalse(utilisateur))
-                .thenReturn(List.of(dejaUtilise));
+                .thenReturn(List.of(autreSessionActive));
 
         assertThatThrownBy(() -> service.validerEtPivoter("token-vole"))
                 .isInstanceOf(TokenInvalideException.class)
                 .hasMessageContaining("Reutilisation");
 
         verify(refreshTokenRepository).findAllByUtilisateurAndRevokedFalse(utilisateur);
+        // La vraie preuve que la revocation en masse a fait son travail :
+        // cette session, active avant l'appel, est maintenant revoquee.
+        assertThat(autreSessionActive.isRevoked()).isTrue();
     }
 
     @Test
@@ -148,5 +165,38 @@ class RefreshTokenServiceTest {
         service.revoquer("token-inexistant");
 
         verify(refreshTokenRepository, never()).save(any());
+    }
+
+    // =========================================================
+    // revoquerToutesLesSessions : teste directement, pas seulement via le
+    // chemin de reutilisation de validerEtPivoter
+    // =========================================================
+
+    @Test
+    void revoquerToutesLesSessionsMarqueChaqueSessionActiveCommeRevoquee() {
+        RefreshToken session1 = creerToken(false, Instant.now().plus(1, ChronoUnit.DAYS));
+        RefreshToken session2 = creerToken(false, Instant.now().plus(2, ChronoUnit.DAYS));
+
+        when(refreshTokenRepository.findAllByUtilisateurAndRevokedFalse(utilisateur))
+                .thenReturn(List.of(session1, session2));
+
+        service.revoquerToutesLesSessions(utilisateur);
+
+        assertThat(session1.isRevoked()).isTrue();
+        assertThat(session2.isRevoked()).isTrue();
+        // Pas d'appel a save() ici : la methode compte sur le dirty-checking
+        // JPA au sein de la transaction (voir commentaire dans le service).
+        // Une entite deja geree n'a pas besoin d'un save() explicite pour
+        // que la mutation soit persistee au commit.
+    }
+
+    @Test
+    void revoquerToutesLesSessionsNeFaitRienSiAucuneSessionActive() {
+        when(refreshTokenRepository.findAllByUtilisateurAndRevokedFalse(utilisateur))
+                .thenReturn(List.of());
+
+        service.revoquerToutesLesSessions(utilisateur);
+
+        verify(refreshTokenRepository).findAllByUtilisateurAndRevokedFalse(utilisateur);
     }
 }

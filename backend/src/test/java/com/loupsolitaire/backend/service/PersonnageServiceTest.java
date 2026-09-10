@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
+import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Discipline;
 import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Objet;
@@ -32,7 +33,9 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
+import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -57,6 +60,8 @@ class PersonnageServiceTest {
     private ConditionService conditionService;
     @Mock
     private EffetChapitreService effetChapitreService;
+    @Mock
+    private CombatRepository combatRepository;
 
     @InjectMocks
     private PersonnageService personnageService;
@@ -89,8 +94,16 @@ class PersonnageServiceTest {
         lenient().when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
         lenient().when(personnageRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
+        // Par defaut, un lien est considere disponible : sur un mock,
+        // Mockito renvoie false par defaut pour un booleen non stubbe, ce
+        // qui bloquerait silencieusement TOUS les tests de succes de
+        // avancerVersChapitre avec "conditions non remplies". Les tests
+        // qui veulent specifiquement un lien indisponible ecrasent ce
+        // defaut au cas par cas.
+        lenient().when(conditionService.estLienDisponible(any(), any())).thenReturn(true);
+
         for (String id : List.of("hache", "repas", "carte", "or", "glaive", "epee", "casque",
-                "cotte_de_mailles", "masse", "potion_de_soin", "baton", "lance")) {
+                "cotte_de_mailles", "masse", "potion_de_soin", "baton", "lance", "coin")) {
             Objet objet = new Objet();
             objet.setId(id);
             objetsParId.put(id, objet);
@@ -98,6 +111,13 @@ class PersonnageServiceTest {
         }
         lenient().when(inventaireService.ajouterObjet(any(), any(), anyInt()))
                 .thenAnswer(inv -> new ResultatAjout(inv.getArgument(1), inv.getArgument(2), inv.getArgument(2), List.of()));
+    }
+
+    private InventaireItem creerLigneCoin(int quantite) {
+        InventaireItem ligne = new InventaireItem();
+        ligne.setObjet(objetsParId.get("coin"));
+        ligne.setQuantite(quantite);
+        return ligne;
     }
 
     @Test
@@ -434,15 +454,392 @@ class PersonnageServiceTest {
         com.loupsolitaire.backend.model.Cond condDiscipline = new com.loupsolitaire.backend.model.Cond();
         condDiscipline.setType(com.loupsolitaire.backend.model.enums.TypeCondition.DISCIPLINE);
         condDiscipline.setTargetId("chasse");
-        chapitre0.setLiens(List.of(creerLien(chapitre1, condDiscipline)));
+        com.loupsolitaire.backend.model.Lien lien = creerLien(chapitre1, condDiscipline);
+        chapitre0.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
-        when(conditionService.estDisponible(condDiscipline, p)).thenReturn(false);
+        // PersonnageService appelle conditionService.estLienDisponible(...),
+        // pas estDisponible(...) directement : conditionService est ici un
+        // mock, donc stubber estDisponible() n'a aucun effet sur ce que
+        // renvoie estLienDisponible() (contrairement au vrai service, ou
+        // l'un delegue a l'autre). Il faut ecraser le defaut "true" pose
+        // dans setUp() directement sur estLienDisponible().
+        when(conditionService.estLienDisponible(lien, p)).thenReturn(false);
 
         assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(p.getChapitreActuel()).isEqualTo(chapitre0); // inchange
+    }
+
+    @Test
+    void refuseDAvancerSiLePersonnageEstMort() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setMort(true);
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("mort");
+
+        verify(chapitreRepository, never()).findById(any());
+    }
+
+    // =========================================================
+    // Sortie d'un chapitre de combat : bloquee tant que non resolu
+    // =========================================================
+
+    @Test
+    void refuseDeQuitterUnChapitreDeCombatNonResolu() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.EN_COURS);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre0);
+    }
+
+    @Test
+    void refuseDeQuitterUnChapitreDeCombatSiAucunCombatNAJamaisEteEngage() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void autoriseDeQuitterUnChapitreDeCombatResoluParVictoire() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.VICTOIRE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.of(combat));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
+    }
+
+    // =========================================================
+    // Arrivee sur un chapitre de combat : un ancien combat resolu est
+    // supprime pour permettre un affrontement entierement neuf
+    // =========================================================
+
+    @Test
+    void supprimeUnCombatDejaResoluALArriveeSurUnNouveauChapitreDeCombat() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre1.setCombat(true);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        Combat ancienCombat = new Combat();
+        ancienCombat.setStatut(StatutCombat.VICTOIRE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 1))
+                .thenReturn(Optional.of(ancienCombat));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(combatRepository).delete(ancienCombat);
+    }
+
+    @Test
+    void neSupprimeRienSiLeCombatDuNouveauChapitreEstEncoreEnCours() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre1.setCombat(true);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        Combat combatEnCours = new Combat();
+        combatEnCours.setStatut(StatutCombat.EN_COURS);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 1))
+                .thenReturn(Optional.of(combatEnCours));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        verify(combatRepository, never()).delete(any());
+    }
+
+    // =========================================================
+    // Discipline Kai Guerison : +1 ENDURANCE a l'arrivee sur un chapitre
+    // SANS combat, jamais sur un chapitre de combat
+    // =========================================================
+
+    @Test
+    void laDisciplineGuerisonAugmenteLEnduranceDUnPointSurUnChapitreSansCombat() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(15);
+        Discipline guerison = new Discipline();
+        guerison.setId(IdDiscipline.GUERISON);
+        p.setDisciplines(List.of(guerison));
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getEnduranceActuelle()).isEqualTo(16);
+    }
+
+    @Test
+    void laGuerisonNeDepassePasLePlafondDEndurance() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(20);
+        Discipline guerison = new Discipline();
+        guerison.setId(IdDiscipline.GUERISON);
+        p.setDisciplines(List.of(guerison));
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getEnduranceActuelle()).isEqualTo(20);
+    }
+
+    @Test
+    void laGuerisonNeSAppliquePasSurUnChapitreDeCombat() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(15);
+        Discipline guerison = new Discipline();
+        guerison.setId(IdDiscipline.GUERISON);
+        p.setDisciplines(List.of(guerison));
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre1.setCombat(true);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+        // nouveauChapitre est un combat : le service verifie aussi s'il faut
+        // purger un ancien combat resolu.
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 1))
+                .thenReturn(Optional.empty());
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getEnduranceActuelle()).isEqualTo(15); // inchangee : c'est un combat
+    }
+
+    @Test
+    void laGuerisonNeSAppliquePasSansLaDiscipline() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(15);
+        p.setDisciplines(List.of());
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getEnduranceActuelle()).isEqualTo(15);
+    }
+
+    // =========================================================
+    // revenirApresDefaite : retour payant (1 coin) au chapitre precedent
+    // apres une DEFAITE en combat
+    // =========================================================
+
+    @Test
+    void revenirApresDefaiteRestaureLEnduranceEtRevientAuChapitrePrecedent() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        Chapitre chapitrePrecedent = new Chapitre();
+        chapitrePrecedent.setId(4);
+        p.setChapitreActuel(chapitreCombat);
+        p.setChapitrePrecedent(chapitrePrecedent);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(0);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.DEFAITE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.of(combat));
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(creerLigneCoin(999)));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(4);
+
+        personnageService.revenirApresDefaite(p);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitrePrecedent);
+        assertThat(p.getEnduranceActuelle()).isEqualTo(20);
+        assertThat(p.getDernierTirageHasard()).isEqualTo(4);
+        verify(personnageRepository, atLeastOnce()).save(p);
+    }
+
+    @Test
+    void revenirApresDefaiteEchoueSiAucunCombatTrouve() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        p.setChapitreActuel(chapitreCombat);
+
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> personnageService.revenirApresDefaite(p))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void revenirApresDefaiteEchoueSiLeCombatNEstPasPerdu() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        p.setChapitreActuel(chapitreCombat);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.VICTOIRE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> personnageService.revenirApresDefaite(p))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void revenirApresDefaiteEchoueSiAucunChapitrePrecedent() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        p.setChapitreActuel(chapitreCombat);
+        p.setChapitrePrecedent(null);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.DEFAITE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> personnageService.revenirApresDefaite(p))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void revenirApresDefaiteEchoueSansPieceCoin() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        Chapitre chapitrePrecedent = new Chapitre();
+        chapitrePrecedent.setId(4);
+        p.setChapitreActuel(chapitreCombat);
+        p.setChapitrePrecedent(chapitrePrecedent);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.DEFAITE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.of(combat));
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> personnageService.revenirApresDefaite(p))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    // =========================================================
+    // ressusciter : retour a la vie payant (1 coin) apres une mort hors
+    // combat, sans changer de chapitre
+    // =========================================================
+
+    @Test
+    void ressusciterRestaureLEnduranceEtRepasseMortAFalse() {
+        Personnage p = new Personnage();
+        p.setMort(true);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(0);
+
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(creerLigneCoin(999)));
+
+        personnageService.ressusciter(p);
+
+        assertThat(p.isMort()).isFalse();
+        assertThat(p.getEnduranceActuelle()).isEqualTo(20);
+        verify(personnageRepository).save(p);
+    }
+
+    @Test
+    void ressusciterEchoueSiLePersonnageNEstPasMort() {
+        Personnage p = new Personnage();
+        p.setMort(false);
+
+        assertThatThrownBy(() -> personnageService.ressusciter(p))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void ressusciterEchoueSansPieceCoin() {
+        Personnage p = new Personnage();
+        p.setMort(true);
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of());
+
+        assertThatThrownBy(() -> personnageService.ressusciter(p))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(p.isMort()).isTrue(); // inchange
+        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================
@@ -465,6 +862,22 @@ class PersonnageServiceTest {
         cond.setTargetId(targetId);
         effet.setConditions(List.of(cond));
         return effet;
+    }
+
+    @Test
+    void refuseLEchangeSiLePersonnageEstMort() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setMort(true);
+
+        Objet hache = creerObjetArme("hache");
+        Objet marteau = creerObjetArme("marteau");
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, marteau))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("mort");
+
+        verify(chapitreRepository, never()).findById(any());
     }
 
     @Test
@@ -659,5 +1072,18 @@ class PersonnageServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());
+    }
+
+    @Test
+    void refuseDeRamasserSiLePersonnageEstMort() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setMort(true);
+
+        assertThatThrownBy(() -> personnageService.ramasserObjetDuChapitre(p, objetsParId.get("hache")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("mort");
+
+        verify(chapitreRepository, never()).findById(any());
     }
 }

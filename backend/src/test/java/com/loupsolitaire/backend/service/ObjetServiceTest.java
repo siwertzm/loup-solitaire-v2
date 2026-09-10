@@ -194,4 +194,21 @@ class ObjetServiceTest {
         assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, or))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    // =========================================================
+    // Garde-fou : un personnage mort (hors combat) ne peut rien consommer
+    // =========================================================
+
+    @Test
+    void refuseDeConsommerSiLePersonnageEstMort() {
+        personnage.setMort(true);
+        Objet potion = creerObjet("potion_de_soin", CategorieObjet.OBJET, creerEffet(TypeEffet.ENDURANCE, 4));
+
+        assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, potion))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("mort");
+
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18); // inchange
+        verify(personnageRepository, never()).save(any());
+    }
 }

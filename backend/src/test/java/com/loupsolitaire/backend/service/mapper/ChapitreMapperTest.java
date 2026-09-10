@@ -134,7 +134,12 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
-        when(conditionService.estDisponible(condDiscipline, personnage)).thenReturn(true);
+        // Le mapper appelle conditionService.estLienDisponible(lien, personnage),
+        // pas estDisponible(cond, personnage) directement : conditionService
+        // etant un mock, stubber estDisponible() n'a aucun effet sur ce que
+        // renvoie estLienDisponible() (le mock n'execute pas la vraie logique
+        // de delegation de l'un vers l'autre).
+        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(true);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
@@ -160,7 +165,7 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
-        when(conditionService.estDisponible(condDiscipline, personnage)).thenReturn(false);
+        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(false);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
@@ -180,6 +185,12 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
+        // Sans condition, c'est la vraie regle metier de ConditionService
+        // (allMatch sur une liste vide = true) qui rendrait ce lien
+        // disponible - mais conditionService est ici un mock : il faut le
+        // stubber explicitement, le "true" par defaut du vrai service n'est
+        // pas reproduit automatiquement.
+        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(true);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 

@@ -476,4 +476,21 @@ class EffetChapitreServiceTest {
                         () -> effetChapitreService.resoudreVolEnAttente(personnage, hache))
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void resoudreVolEnAttenteEchoueSiLePersonnageEstMort() {
+        personnage.setMort(true);
+        personnage.setVolEnAttente(com.loupsolitaire.backend.model.enums.PorteeVol.ARME);
+        Objet hache = new Objet();
+        hache.setId("hache");
+        hache.setCategorie(CategorieObjet.ARME);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> effetChapitreService.resoudreVolEnAttente(personnage, hache))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("mort");
+
+        verify(inventaireService, never()).retirerObjet(any(), any(), anyInt());
+        verify(personnageRepository, never()).save(any());
+    }
 }

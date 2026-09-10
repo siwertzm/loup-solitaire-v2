@@ -122,6 +122,9 @@ public class ConditionService {
     }
 
     private int parseValeur(String valeur) {
+        if (valeur == null) {
+            return 0;
+        }
         try {
             return Integer.parseInt(valeur.trim());
         } catch (NumberFormatException e) {

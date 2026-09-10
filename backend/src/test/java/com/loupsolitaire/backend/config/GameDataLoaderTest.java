@@ -145,7 +145,7 @@ class GameDataLoaderTest {
     // =========================================================
 
     @Test
-    void chargeLesVingtSeptObjetsAvecLeursEffets() throws Exception {
+    void chargeLesVingtHuitObjetsAvecLeursEffets() throws Exception {
         when(disciplineRepository.count()).thenReturn(1L);
         when(ennemiRepository.count()).thenReturn(1L);
         when(objetRepository.count()).thenReturn(0L);
@@ -157,7 +157,9 @@ class GameDataLoaderTest {
         verify(objetRepository).saveAll(captor.capture());
 
         List<Objet> objets = captor.getValue();
-        assertThat(objets).hasSize(27);
+        // objet.json contient desormais 28 objets (ajout de "coin",
+        // utilise notamment par la condition du chapitre 53).
+        assertThat(objets).hasSize(28);
 
         Objet casque = objets.stream().filter(o -> o.getId().equals("casque")).findFirst().orElseThrow();
         assertThat(casque.getCategorie()).isEqualTo(CategorieObjet.OBJETS_SPECIAUX);
@@ -174,7 +176,7 @@ class GameDataLoaderTest {
     void neRechargeRienSiLesObjetsSontDejaPresents() throws Exception {
         when(disciplineRepository.count()).thenReturn(1L);
         when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(27L);
+        when(objetRepository.count()).thenReturn(28L);
         when(chapitreRepository.count()).thenReturn(1L);
 
         creerLoader().run(null);
@@ -193,9 +195,9 @@ class GameDataLoaderTest {
         when(objetRepository.count()).thenReturn(1L);
         when(chapitreRepository.count()).thenReturn(0L);
 
-        // Le catalogue reel (27 objets, 25 ennemis) n'est pas charge dans ce
+        // Le catalogue reel (28 objets, 25 ennemis) n'est pas charge dans ce
         // test isole : on simule des lookups toujours reussis pour n'importe
-        // quel id demande, plutot que de mocker les 52 entrees une par une.
+        // quel id demande, plutot que de mocker les 53 entrees une par une.
         when(ennemiRepository.findById(anyString())).thenAnswer(inv -> {
             Ennemi e = new Ennemi();
             e.setId(inv.getArgument(0));
@@ -231,10 +233,12 @@ class GameDataLoaderTest {
         assertThat(chapitre0.getLiens()).hasSize(1);
         assertThat(chapitre0.getLiens().get(0).getChapitreCible().getId()).isEqualTo(1);
 
-        // Chapitre 53 : sa seule sortie ("352") est une fin de partie ignoree
-        // au chargement -> aucun lien persiste.
+        // Chapitre 53 : deux liens dans le JSON, page "352" (fin de partie,
+        // ignoree) et page "47" (conditionne a la possession de l'objet
+        // "coin", conserve) -> il reste donc 1 lien reel, pas 0.
         Chapitre chapitre53 = chapitresFinaux.stream().filter(c -> c.getId() == 53).findFirst().orElseThrow();
-        assertThat(chapitre53.getLiens()).isEmpty();
+        assertThat(chapitre53.getLiens()).hasSize(1);
+        assertThat(chapitre53.getLiens().get(0).getChapitreCible().getId()).isEqualTo(47);
 
         // Chapitre 350 : fin victorieuse du tome, seule sortie ("351")
         // egalement ignoree.
