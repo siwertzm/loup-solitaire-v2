@@ -27,7 +27,7 @@ export class AccueilPage {
     this.personnages().map((p) => ({
       ...p,
       actif: p.id === this.actifId(),
-      habileteTotale: p.habilete + (p.habileteTemporaire ?? 0),
+      habileteTotale: p.habilite + (p.habiliteTemp ?? 0),
       initiale: p.nom.charAt(0).toUpperCase(),
     })),
   );

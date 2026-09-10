@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // Lu depuis app.cors.allowed-origins (variable d'environnement CORS_ALLOWED_ORIGINS).
     // Unique source de verite pour le CORS : evite l'incoherence @CrossOrigin/SecurityConfig de la V1.
@@ -38,6 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
