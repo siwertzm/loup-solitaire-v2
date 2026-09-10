@@ -1,7 +1,7 @@
 package com.loupsolitaire.backend.model.enums;
 
 public enum TypeCondition {
-    DISCIPLINE, OBJET, BOURSE, HASARD, FUITE, ARME, ENDURANCE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC,
+    DISCIPLINE, OBJET, BOURSE, HASARD, FUITE, ARME, ENDURANCE, ENDURANCE_PERDUE, ASSAUT_MAX, ASSAUT_ECHEC, VICTOIRE,
     // Marqueur, pas une vraie condition d'acces : indique qu'un Effet
     // modifie une stat de base du joueur de facon definitive plutot que
     // temporairement. Voir EffetService (a venir) pour son traitement special.
@@ -22,6 +22,7 @@ public enum TypeCondition {
             case "endurance_perdue" -> ENDURANCE_PERDUE;
             case "assaut_max" -> ASSAUT_MAX;
             case "assaut_echec" -> ASSAUT_ECHEC;
+            case "victoire" -> VICTOIRE;
             case "permanent" -> PERMANENT;
             default -> throw new IllegalArgumentException("Type de condition inconnu : " + valeur);
         };

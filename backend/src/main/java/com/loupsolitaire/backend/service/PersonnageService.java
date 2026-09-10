@@ -203,13 +203,12 @@ public class PersonnageService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Aucun lien vers le chapitre " + chapitreCibleId + " depuis le chapitre " + chapitreActuelId));
 
-        // Un chapitre combat=true ne peut jamais etre quitte sans que le
-        // combat soit resolu, meme si le Lien choisi n'a lui-meme aucune
-        // condition (ex. chapitre 43 : le lien de victoire n'a pas besoin
-        // de condition explicite, mais reste bloque tant que le combat
-        // n'est pas gagne/fui/interrompu). Complementaire, pas redondant,
-        // avec les conditions FUITE/ASSAUT_MAX/ASSAUT_ECHEC/ENDURANCE_PERDUE
-        // deja verifiees ci-dessous par ConditionService.
+        // Filet de securite complementaire : bloque tout lien tant que le
+        // combat n'est pas resolu d'une facon ou d'une autre (VICTOIRE/
+        // FUITE/INTERROMPU), meme pour un type de condition qui n'aurait
+        // aucun rapport avec le combat lui-meme. Le cas precis "quel lien
+        // pour quelle issue" (victoire vs fuite vs arret force) est traite
+        // par ConditionService.estLienDisponible juste en dessous.
         if (chapitreActuel.isCombat()) {
             Optional<Combat> combat = combatRepository
                     .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitreActuelId);
@@ -220,9 +219,8 @@ public class PersonnageService {
             }
         }
 
-        boolean conditionsRemplies = lienChoisi.getConditions().stream()
-                .allMatch(cond -> conditionService.estDisponible(cond, personnage));
-        if (!conditionsRemplies) {
+        boolean lienDisponible = conditionService.estLienDisponible(lienChoisi, personnage);
+        if (!lienDisponible) {
             throw new IllegalArgumentException(
                     "Les conditions pour rejoindre le chapitre " + chapitreCibleId + " ne sont pas remplies");
         }

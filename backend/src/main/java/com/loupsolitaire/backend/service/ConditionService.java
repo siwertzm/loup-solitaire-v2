@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.InventaireItem;
+import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
@@ -25,9 +26,10 @@ import lombok.RequiredArgsConstructor;
 // relu (jamais re-tire) ici, pour que la validation au moment du choix
 // corresponde exactement a ce que le joueur a vu affiche.
 //
-// FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE : evaluees a partir du
-// dernier Combat du personnage sur son chapitre ACTUEL (voir CombatService).
-// Indisponibles (false) tant qu'aucun combat n'a ete resolu sur ce chapitre.
+// FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE, VICTOIRE : evaluees a
+// partir du dernier Combat du personnage sur son chapitre ACTUEL (voir
+// CombatService). Indisponibles (false) tant qu'aucun combat n'a ete
+// resolu sur ce chapitre.
 //
 // PERMANENT : marqueur, pas une vraie condition d'acces (toujours true).
 @Service
@@ -43,9 +45,18 @@ public class ConditionService {
             case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, personnage);
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
-            case FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, personnage);
+            case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, personnage);
             case PERMANENT -> true;
         };
+    }
+
+    // Point d'entree unique pour decider si un Lien (pas juste une Cond
+    // isolee) est empruntable, utilise a la fois par ChapitreMapper
+    // (affichage, LienResponse.disponible) et PersonnageService
+    // (validation avant d'avancer). Un seul et meme calcul pour les deux,
+    // pour eviter que l'affichage et la validation divergent.
+    public boolean estLienDisponible(Lien lien, Personnage personnage) {
+        return lien.getConditions().stream().allMatch(cond -> estDisponible(cond, personnage));
     }
 
     // Cherche le Combat le plus recent du personnage sur son chapitre
@@ -61,6 +72,7 @@ public class ConditionService {
         int valeur = parseValeur(cond.getValeur());
 
         return switch (cond.getType()) {
+            case VICTOIRE -> combat.getStatut() == StatutCombat.VICTOIRE;
             case FUITE -> combat.getStatut() == StatutCombat.FUITE;
             case ASSAUT_MAX -> combat.getStatut() == StatutCombat.VICTOIRE && combat.getAssautsLivres() <= valeur;
             case ASSAUT_ECHEC -> combat.getStatut() == StatutCombat.INTERROMPU && combat.getAssautsLivres() >= valeur;

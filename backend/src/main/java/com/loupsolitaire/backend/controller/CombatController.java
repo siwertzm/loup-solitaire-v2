@@ -73,12 +73,11 @@ public class CombatController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
-        Combat combat = combatService.initierCombat(personnage);
 
         ActionCombat action = versActionCombat(request.getAction());
         Objet objet = request.getObjetId() != null ? recupererObjet(request.getObjetId()) : null;
 
-        combat = combatService.jouerTour(personnage, combat, action, objet);
+        Combat combat = combatService.jouerTour(personnage, action, objet);
         return combatMapper.versReponse(combat);
     }
 

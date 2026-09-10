@@ -52,6 +52,10 @@ public class CombatService {
     // deja EN_COURS si l'ecran est rafraichi/rouvert (idempotent).
     @Transactional
     public Combat initierCombat(Personnage personnage) {
+        return combatEnCoursOuNouveau(personnage);
+    }
+
+    private Combat combatEnCoursOuNouveau(Personnage personnage) {
         Chapitre chapitre = recupererChapitre(personnage.getChapitreActuel().getId());
         if (!chapitre.isCombat()) {
             throw new IllegalArgumentException("Le chapitre " + chapitre.getId() + " n'est pas un combat");
@@ -98,8 +102,18 @@ public class CombatService {
     }
 
     // Joue un tour. objetId n'est utilise (et requis) que pour ActionCombat.OBJET.
+    //
+    // Charge SON PROPRE Combat (via combatEnCoursOuNouveau) plutot que d'en
+    // accepter un en parametre : un Combat charge par un appel PRECEDENT
+    // (ex. initierCombat, dans le controleur) est detache une fois cette
+    // transaction refermee. Le reattacher ici via combatRepository.save()
+    // declencherait un merge() Hibernate qui recharge "ennemis.ennemi" SANS
+    // le fetch-graph (perte du chargement pourtant deja fait), provoquant
+    // une LazyInitializationException plus tard dans CombatMapper.
     @Transactional
-    public Combat jouerTour(Personnage personnage, Combat combat, ActionCombat action, Objet objet) {
+    public Combat jouerTour(Personnage personnage, ActionCombat action, Objet objet) {
+        Combat combat = combatEnCoursOuNouveau(personnage);
+
         if (combat.getStatut() != StatutCombat.EN_COURS) {
             // IllegalArgumentException (pas IllegalStateException) : c'est
             // le seul type d'exception "requete invalide" gere avec un 400

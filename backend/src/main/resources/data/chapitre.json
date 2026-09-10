@@ -982,7 +982,11 @@
     "lien": [
       {
         "page": "195",
-        "cond": null
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }]
       },
       {
         "page": "106",
@@ -2130,7 +2134,11 @@
     "lien": [
       {
         "page": "33",
-        "cond": null
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }]
       },
       {
         "page": "248",
@@ -3048,7 +3056,11 @@
       },
       {
         "page": "137",
-        "cond": null
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }]
       }
     ],
     "id": 169,
@@ -3235,7 +3247,13 @@
     ],
     "effet": null,
     "lien": [
-      { "page": "62", "cond": null },
+      { "page": "62", 
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }] 
+      },
       {
         "page": "22",
         "cond": [{
@@ -3404,7 +3422,14 @@
     ],
     "effet": null,
     "lien": [
-      { "page": "24", "cond": null },
+      { 
+        "page": "24",
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }] 
+      },
       {
         "page": "234",
         "cond": [{
@@ -3814,7 +3839,14 @@
     "ennemi": [{ "id": "garde_corps" }],
     "effet": null,
     "lien": [
-      { "page": "24", "cond": null },
+      { 
+        "page": "24",
+        "cond": [{
+          "type": "victoire",
+          "valeur": "1",
+          "targetId": null
+        }] 
+      },
       { "page": "234", "cond": [{ "type": "fuite", "valeur": "1", "targetId": null }] }
     ],
     "id": 220,

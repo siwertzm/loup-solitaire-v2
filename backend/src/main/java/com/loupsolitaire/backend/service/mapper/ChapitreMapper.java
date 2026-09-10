@@ -76,10 +76,7 @@ public class ChapitreMapper {
                 .map(this::versReponseCond)
                 .toList();
 
-        // Vacuously true si aucune condition (lien toujours disponible) ;
-        // sinon, TOUTES les conditions doivent etre satisfaites.
-        boolean disponible = lien.getConditions().stream()
-                .allMatch(cond -> conditionService.estDisponible(cond, personnage));
+        boolean disponible = conditionService.estLienDisponible(lien, personnage);
 
         return new LienResponse(lien.getChapitreCible().getId(), disponible, conditions);
     }
