@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
+import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Discipline;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
@@ -19,8 +22,10 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
+import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -61,6 +66,14 @@ public class PersonnageService {
     private final InventaireService inventaireService;
     private final ConditionService conditionService;
     private final EffetChapitreService effetChapitreService;
+    private final CombatRepository combatRepository;
+
+    // Statuts de Combat qui autorisent a quitter un chapitre combat=true :
+    // DEFAITE en est volontairement exclu (pas de flux "fin de partie"
+    // construit ici, voir doc de conception - limitation connue) et
+    // EN_COURS bien sur aussi (le combat n'est pas termine).
+    private static final Set<StatutCombat> STATUTS_PERMETTANT_LA_SORTIE =
+            Set.of(StatutCombat.VICTOIRE, StatutCombat.FUITE, StatutCombat.INTERROMPU);
 
     @Transactional
     public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies) {
@@ -189,6 +202,23 @@ public class PersonnageService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Aucun lien vers le chapitre " + chapitreCibleId + " depuis le chapitre " + chapitreActuelId));
+
+        // Un chapitre combat=true ne peut jamais etre quitte sans que le
+        // combat soit resolu, meme si le Lien choisi n'a lui-meme aucune
+        // condition (ex. chapitre 43 : le lien de victoire n'a pas besoin
+        // de condition explicite, mais reste bloque tant que le combat
+        // n'est pas gagne/fui/interrompu). Complementaire, pas redondant,
+        // avec les conditions FUITE/ASSAUT_MAX/ASSAUT_ECHEC/ENDURANCE_PERDUE
+        // deja verifiees ci-dessous par ConditionService.
+        if (chapitreActuel.isCombat()) {
+            Optional<Combat> combat = combatRepository
+                    .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitreActuelId);
+            boolean combatResolu = combat.isPresent() && STATUTS_PERMETTANT_LA_SORTIE.contains(combat.get().getStatut());
+            if (!combatResolu) {
+                throw new IllegalArgumentException(
+                        "Le combat du chapitre " + chapitreActuelId + " n'est pas termine");
+            }
+        }
 
         boolean conditionsRemplies = lienChoisi.getConditions().stream()
                 .allMatch(cond -> conditionService.estDisponible(cond, personnage));
