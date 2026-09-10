@@ -292,6 +292,51 @@ public class PersonnageService {
                 .forEach(objetChap -> appliquerObjetChap(personnage, objetChap));
     }
 
+    // MVP1 : apres une DEFAITE en combat, le joueur peut payer 1 coin pour
+    // revenir au chapitre precedent, endurance entierement restauree. Pas
+    // de calcul de dominateur ici (contrairement aux 16 morts narratives) :
+    // c'est un simple retour d'un cran, meme s'il ne mene pas forcement a
+    // un autre choix que ce meme combat (voir doc de conception, choix
+    // volontairement simplifie). Si le joueur revient plus tard sur ce
+    // meme chapitre de combat, avancerVersChapitre le reinitialise deja
+    // automatiquement (Combat resolu supprime a l'arrivee).
+    @Transactional
+    public void revenirApresDefaite(Personnage personnage) {
+        Integer chapitreActuelId = personnage.getChapitreActuel().getId();
+        Combat combat = combatRepository
+                .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitreActuelId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Aucun combat trouve sur le chapitre " + chapitreActuelId));
+
+        if (combat.getStatut() != StatutCombat.DEFAITE) {
+            throw new IllegalArgumentException(
+                    "Ce combat n'est pas perdu (statut actuel : " + combat.getStatut() + ")");
+        }
+
+        Chapitre precedent = personnage.getChapitrePrecedent();
+        if (precedent == null) {
+            throw new IllegalArgumentException("Aucun chapitre precedent connu pour ce personnage");
+        }
+
+        boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> item.getObjet().getId().equals("coin") && item.getQuantite() >= 1);
+        if (!possedeCoin) {
+            throw new IllegalArgumentException("Vous n'avez pas de Piece Premium (coin) pour revenir en arriere");
+        }
+        // MVP1 : coin illimite, on ne le retire pas (coherent avec les
+        // retours narratifs via chapitre.json, qui ne consomment rien non
+        // plus). A revoir pour le MVP2 si le coin devient une vraie
+        // ressource limitee/achetee.
+
+        personnage.setChapitreActuel(precedent);
+        personnage.setEnduranceActuelle(personnage.getEnduranceMax());
+        // Nouveau tirage FIGE, comme pour tout changement de chapitre.
+        personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
+        personnageRepository.save(personnage);
+
+        reinitialiserHabiliteTemp(personnage);
+    }
+
     // Discipline Kai Guerison : +1 point d'ENDURANCE (plafonne a
     // enduranceMax) a chaque fois qu'on arrive sur un nouveau chapitre
     // SANS combat. Pas de recuperation sur un chapitre combat=true, meme

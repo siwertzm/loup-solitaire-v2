@@ -113,6 +113,22 @@ public class PersonnageController {
         return personnageMapper.versReponse(personnage);
     }
 
+    // MVP1 : apres une DEFAITE en combat, paye 1 coin pour revenir au
+    // chapitre precedent (endurance entierement restauree). Nom de route
+    // distinct de "/chapitre/{chapitreCibleId}" (litteral vs variable
+    // Integer) : Spring privilegie toujours le match litteral, pas de
+    // conflit de routage.
+    @PostMapping("/{id}/chapitre/revenir-apres-defaite")
+    public PersonnageResponse revenirApresDefaite(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        personnageService.revenirApresDefaite(personnage);
+
+        return personnageMapper.versReponse(personnage);
+    }
+
     // Ramasse un objet optionnel propose par le chapitre courant. Securise
     // cote serveur (PersonnageService.ramasserObjetDuChapitre) : impossible
     // de ramasser un objet non propose ici, et la quantite vient toujours
