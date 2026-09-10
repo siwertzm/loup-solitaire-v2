@@ -236,6 +236,7 @@ public class PersonnageService {
         personnageRepository.save(personnage);
 
         reinitialiserHabiliteTemp(personnage);
+        appliquerGuerison(personnage, nouveauChapitre);
 
         // Effets du nouveau chapitre : appliques UNE SEULE FOIS ici, a
         // l'arrivee (pas a chaque GET /chapitre).
@@ -265,6 +266,28 @@ public class PersonnageService {
         nouveauChapitre.getObjets().stream()
                 .filter(objetChap -> !objetChap.isOptionnel())
                 .forEach(objetChap -> appliquerObjetChap(personnage, objetChap));
+    }
+
+    // Discipline Kai Guerison : +1 point d'ENDURANCE (plafonne a
+    // enduranceMax) a chaque fois qu'on arrive sur un nouveau chapitre
+    // SANS combat. Pas de recuperation sur un chapitre combat=true, meme
+    // si le combat n'est pas encore engage (l'idee du livre est "un
+    // paragraphe traverse sans avoir a se battre", pas juste "pas encore
+    // combattu").
+    private void appliquerGuerison(Personnage personnage, Chapitre nouveauChapitre) {
+        if (nouveauChapitre.isCombat()) {
+            return;
+        }
+
+        boolean possedeGuerison = personnage.getDisciplines().stream()
+                .anyMatch(discipline -> discipline.getId() == IdDiscipline.GUERISON);
+        if (!possedeGuerison) {
+            return;
+        }
+
+        int nouvelleEndurance = Math.min(personnage.getEnduranceMax(), personnage.getEnduranceActuelle() + 1);
+        personnage.setEnduranceActuelle(nouvelleEndurance);
+        personnageRepository.save(personnage);
     }
 
     private void appliquerObjetChap(Personnage personnage, ObjetChap objetChap) {
