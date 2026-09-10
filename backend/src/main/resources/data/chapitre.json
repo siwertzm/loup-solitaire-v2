@@ -1189,6 +1189,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "47",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 53,
@@ -1203,6 +1213,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "120",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 54,
@@ -1293,6 +1313,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "152",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 60,
@@ -2064,6 +2094,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "129",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 108
@@ -2364,7 +2404,20 @@
     "effet": null,
     "ennemi": null,
     "lien": [
-      { "page": "352", "cond": null }
+      { 
+        "page": "352",
+        "cond": null 
+      },
+      {
+        "page": "106",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
+      }
     ],
     "id": 127
   },
@@ -2794,6 +2847,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "235",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 154
@@ -3333,7 +3396,17 @@
     "ennemi": null,
     "effet": null,
     "lien": [
-      { "page": "352", "cond": null }
+      { "page": "352", "cond": null },
+      {
+        "page": "295",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
+      }
     ],
     "id": 185,
     "objet": []
@@ -3826,7 +3899,17 @@
     "text": "Ce qui reste de vous se trouve encastré dans l'escalier, à une profondeur de deux mètres, sous la masse d'un énorme bloc de granité. Votre mission s'achève ici, en même temps que votre vie.",
     "combat": false,
     "lien": [
-      { "page": "352", "cond": null }
+      { "page": "352", "cond": null },
+      {
+        "page": "104",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
+      }
     ],
     "id": 219,
     "objet": [],
@@ -4085,7 +4168,17 @@
     "text": "Vous sautez de la roulotte qui file à bonne allure, mais vous vous recevez mal et vous vous brisez la cheville en tombant. La douleur est insupportable : elle vous fait perdre connaissance. Hélas ! vous ne vous réveillerez jamais. Peut-être, cependant, serez-vous intéressé d'apprendre que votre tête orne désormais la selle d'un Kraan ? Votre mission s'est achevée ici, en même temps que votre vie.",
     "combat": false,
     "lien": [
-      { "page": "352", "cond": null}
+      { "page": "352", "cond": null},
+      {
+        "page": "78",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
+      }
     ],
     "id": 234,
     "objet": [],
@@ -4523,6 +4616,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "211",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 259
@@ -4753,6 +4856,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "299",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 271
@@ -5052,6 +5165,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "58",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 286
@@ -5162,6 +5285,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "71",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 292
@@ -5440,6 +5573,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "97",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 306
@@ -5512,6 +5655,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "121",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 309
@@ -5834,6 +5987,16 @@
       {
         "page": "352",
         "cond": null
+      },
+      {
+        "page": "280",
+        "cond": [
+          {
+            "type": "objet",
+            "valeur": "1",
+            "targetId": "coin"
+          }
+        ]
       }
     ],
     "id": 327

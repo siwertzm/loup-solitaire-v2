@@ -217,5 +217,12 @@
     "description": "Une carte géographique qui vous permet de vous orienter.",
     "categorie": "objets spéciaux",
     "effet": null
+  },
+  {
+    "id": "coin",
+    "nom": "Piece Premium",
+    "description": "Monnaie de l'application. Permet de revenir a un point de choix anterieur apres une mort narrative. Illimitee pour le MVP1.",
+    "categorie": "objets spéciaux",
+    "effet": null
   }
 ]

@@ -148,6 +148,12 @@ public class PersonnageService {
         ajouter(personnage, "repas", 1);
         ajouter(personnage, "carte", 1);
 
+        // "coin" : monnaie premium (retour a un point de choix anterieur
+        // apres une mort narrative, voir chapitre.json). Illimitee pour le
+        // MVP1 (categorie OBJETS_SPECIAUX, non plafonnee) ; deviendra un
+        // vrai achat en MVP2.
+        ajouter(personnage, "coin", 999);
+
         // Or de depart : tirage unique, peut valoir 0 (rien a ajouter).
         int orDepart = tableDeHasardService.tirerChiffre();
         if (orDepart > 0) {
@@ -228,6 +234,24 @@ public class PersonnageService {
         personnage.setChapitrePrecedent(chapitreActuel);
         Chapitre nouveauChapitre = lienChoisi.getChapitreCible();
         personnage.setChapitreActuel(nouveauChapitre);
+
+        // Si ce chapitre est un combat DEJA resolu (VICTOIRE/DEFAITE/FUITE/
+        // INTERROMPU) pour ce personnage, on le supprime pour permettre un
+        // combat entierement neuf : sans ca, CombatService.
+        // combatEnCoursOuNouveau retrouverait l'ancien Combat et renverrait
+        // son issue figee au lieu d'un vrai nouvel affrontement. Necessaire
+        // pour les retours en arriere payants qui retraversent un chapitre
+        // de combat (ex. chapitre 78 -> 220, chapitre 299 -> 227). Un
+        // Combat encore EN_COURS n'est jamais supprime (ne devrait de toute
+        // facon pas arriver, avancerVersChapitre bloque deja la sortie d'un
+        // combat non resolu).
+        if (nouveauChapitre.isCombat()) {
+            combatRepository
+                    .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, nouveauChapitre.getId())
+                    .filter(combat -> combat.getStatut() != StatutCombat.EN_COURS)
+                    .ifPresent(combatRepository::delete);
+        }
+
         // Nouveau tirage FIGE des l'arrivee sur ce chapitre : ne doit plus
         // changer tant qu'on ne le quitte pas, meme si on recharge l'ecran
         // plusieurs fois (voir aussi creerPersonnage, meme logique au
