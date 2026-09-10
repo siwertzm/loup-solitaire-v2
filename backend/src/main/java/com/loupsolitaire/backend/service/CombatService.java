@@ -19,6 +19,7 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.ActionCombat;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
+import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
@@ -157,10 +158,11 @@ public class CombatService {
 
     private ResultatTour jouerAttaque(Personnage personnage, Combat combat) {
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
-        int habEnnemi = ennemiActif.getEnnemi().getHabilite();
+        Ennemi ennemi = ennemiActif.getEnnemi();
+        int habEnnemi = ennemi.getHabilite();
 
         int bonusUtilise = combat.getBonusHabiliteEnAttente();
-        int habJoueur = habiliteEffective(personnage) + bonusUtilise;
+        int habJoueur = habiliteEffective(personnage, ennemi) + bonusUtilise;
         int rapportAttaque = habJoueur - habEnnemi;
         int tirageAttaque = tableDeHasardService.tirerChiffre();
         int degatsInfliges = tableCombatService.degatsInfliges(rapportAttaque, tirageAttaque);
@@ -180,7 +182,7 @@ public class CombatService {
 
         // L'ennemi riposte : pas de bonus d'HABILITE sur la defense du
         // joueur ici (le bonus ne joue que sur SA propre attaque).
-        int rapportRiposte = habiliteEffective(personnage) - habEnnemi;
+        int rapportRiposte = habiliteEffective(personnage, ennemi) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
@@ -191,7 +193,8 @@ public class CombatService {
 
     private ResultatTour jouerDefense(Personnage personnage, Combat combat) {
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
-        int habEnnemi = ennemiActif.getEnnemi().getHabilite();
+        Ennemi ennemi = ennemiActif.getEnnemi();
+        int habEnnemi = ennemi.getHabilite();
 
         int tirageDefense = tableDeHasardService.tirerChiffre();
         int reduction = tableCombatService.reductionDefense(tirageDefense);
@@ -201,7 +204,7 @@ public class CombatService {
         combat.setBonusHabiliteEnAttente(bonus);
         combat.setAssautsLivres(combat.getAssautsLivres() + 1);
 
-        int rapportRiposte = (habiliteEffective(personnage) + bonus) - habEnnemi;
+        int rapportRiposte = (habiliteEffective(personnage, ennemi) + bonus) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsBruts = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         int degatsReduits = (int) Math.round(degatsBruts * (100.0 - reduction) / 100.0);
@@ -221,7 +224,8 @@ public class CombatService {
         }
 
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
-        int habEnnemi = ennemiActif.getEnnemi().getHabilite();
+        Ennemi ennemi = ennemiActif.getEnnemi();
+        int habEnnemi = ennemi.getHabilite();
 
         // Meme mecanique que POST /objets/{objetId}/consommer : applique
         // l'effet ENDURANCE/HABILETE de l'objet, puis le retire.
@@ -232,7 +236,7 @@ public class CombatService {
 
         // Le bonus d'une DEFENSE precedente reste en reserve pour la
         // prochaine ATTAQUE : consommer un objet ne le consomme pas.
-        int rapportRiposte = habiliteEffective(personnage) - habEnnemi;
+        int rapportRiposte = habiliteEffective(personnage, ennemi) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
@@ -299,8 +303,29 @@ public class CombatService {
         }
     }
 
-    private int habiliteEffective(Personnage personnage) {
-        return personnage.getHabilite() + personnage.getHabiliteTemp();
+    // HABILETE effective pour un calcul de combat contre CET ennemi : la
+    // valeur de base (Personnage.habilite + habiliteTemp) plus le bonus de
+    // la Discipline Kai Puissance Psychique (+2), sauf si l'ennemi y
+    // resiste (Ennemi.resistances, ex. serpent_aile, gluatre,
+    // vordak_puissant). Le bonus est donc recalcule a chaque appel plutot
+    // que fixe une fois pour toutes : necessaire pour un combat a
+    // plusieurs ennemis ou chacun peut avoir une resistance differente.
+    private int habiliteEffective(Personnage personnage, Ennemi ennemi) {
+        int base = personnage.getHabilite() + personnage.getHabiliteTemp();
+        if (possedePuissancePsychique(personnage) && !resisteAPuissancePsychique(ennemi)) {
+            base += 2;
+        }
+        return base;
+    }
+
+    private boolean possedePuissancePsychique(Personnage personnage) {
+        return personnage.getDisciplines().stream()
+                .anyMatch(discipline -> discipline.getId() == IdDiscipline.PUISSANCE_PSYCHIQUE);
+    }
+
+    private boolean resisteAPuissancePsychique(Ennemi ennemi) {
+        return ennemi.getResistances().stream()
+                .anyMatch(discipline -> discipline.getId() == IdDiscipline.PUISSANCE_PSYCHIQUE);
     }
 
     private CombatEnnemi ennemiActifRequis(Combat combat) {
