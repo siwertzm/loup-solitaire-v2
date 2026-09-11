@@ -53,7 +53,7 @@ export class ProfilPage {
   }
 
   modifierEmail(): void {
-    this.router.navigate(['/profil/email']);
+    this.router.navigate(['/profil/edition']);
   }
 
   deconnexion(): void {
