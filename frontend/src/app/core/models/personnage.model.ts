@@ -1,5 +1,27 @@
 // Aligné sur backend/src/main/java/.../response/PersonnageResponse.java
 
+// Aligné sur backend/.../model/enums/IdDiscipline.java — les 10 Disciplines Kaï.
+export type IdDiscipline =
+  | 'CAMOUFLAGE'
+  | 'CHASSE'
+  | 'SIXIEME_SENS'
+  | 'ORIENTATION'
+  | 'GUERISON'
+  | 'MAITRISE_ARMES'
+  | 'BOUCLIER_PSYCHIQUE'
+  | 'PUISSANCE_PSYCHIQUE'
+  | 'COMMUNICATION_ANIMALE'
+  | 'MAITRISE_MATIERE';
+
+export const NB_DISCIPLINES_A_CHOISIR = 5;
+
+// Aligné sur backend/.../response/DisciplineResponse.java (GET /disciplines).
+export interface DisciplineResume {
+  id: IdDiscipline;
+  nom: string;
+  description: string;
+}
+
 export interface PersonnageResume {
   id: string;
   nom: string;

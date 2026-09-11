@@ -34,20 +34,24 @@
           <span class="compteur" [class.complet]="nbChoisies() === 5">{{ nbChoisies() }}/5</span>
         </div>
 
-        @for (d of disciplines(); track d.id) {
-          <button
-            type="button"
-            class="discipline"
-            [class.prise]="d.prise"
-            [class.bloquee]="d.bloquee"
-            (click)="basculer(d.id)"
-          >
-            <span class="ligne">
-              <span class="case"></span>
-              {{ d.nom }}
-            </span>
-            <span class="resume">{{ d.resume }}</span>
-          </button>
+        @if (chargement()) {
+          <div class="cle">Chargement des disciplines…</div>
+        } @else {
+          @for (d of disciplines(); track d.id) {
+            <button
+              type="button"
+              class="discipline"
+              [class.prise]="d.prise"
+              [class.bloquee]="d.bloquee"
+              (click)="basculer(d.id)"
+            >
+              <span class="ligne">
+                <span class="case"></span>
+                {{ d.nom }}
+              </span>
+              <span class="resume">{{ d.resume }}</span>
+            </button>
+          }
         }
       </div>
     </div>

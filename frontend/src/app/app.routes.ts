@@ -28,10 +28,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/profil/edition/profil-edition.page').then((m) => m.ProfilEditionPage),
   },
   {
-    path: 'personnages',
+    path: 'personnages/creation',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/personnages/liste/personnages-liste.page').then((m) => m.PersonnagesListePage),
+      import('./features/personnages/creation/creation-personnage.page').then((m) => m.CreationPersonnagePage),
   },
   {
     path: 'personnages/:id/chapitre',

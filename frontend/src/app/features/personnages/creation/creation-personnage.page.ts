@@ -3,9 +3,9 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 
-import { DISCIPLINES_KAI, NB_DISCIPLINES_A_CHOISIR } from '../models/disciplines';
-import { IdDiscipline } from '../models/personnage.model';
+import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
+import { DisciplineService } from '../../../core/services/discipline.service';
 
 @Component({
   selector: 'app-creation-personnage',
@@ -17,6 +17,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 export class CreationPersonnagePage {
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
+  private readonly disciplines$ = inject(DisciplineService);
 
   readonly nom = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
@@ -30,6 +31,10 @@ export class CreationPersonnagePage {
   readonly erreur = signal<string | null>(null);
   readonly envoi = signal(false);
 
+  /** Catalogue des 10 Disciplines Kaï (id, nom, description), depuis GET /disciplines. */
+  readonly catalogue = signal<{ id: IdDiscipline; nom: string; resume: string }[]>([]);
+  readonly chargement = signal(true);
+
   readonly tirageFait = computed(() => this.habilete() !== null);
   readonly tirageLabel = computed(() => (this.tirageFait() ? 'TIRAGE DES CARACTÉRISTIQUES' : 'LANCE LE DÉ'));
   readonly habileteAffichee = computed(() => this.habilete() ?? '—');
@@ -41,12 +46,25 @@ export class CreationPersonnagePage {
 
   readonly disciplines = computed(() => {
     const prises = this.choisies();
-    return DISCIPLINES_KAI.map((d) => ({
+    return this.catalogue().map((d) => ({
       ...d,
       prise: prises.includes(d.id),
       bloquee: !prises.includes(d.id) && prises.length >= NB_DISCIPLINES_A_CHOISIR,
     }));
   });
+
+  ngOnInit(): void {
+    this.disciplines$.lister().subscribe({
+      next: (liste) => {
+        this.catalogue.set(liste.map((d) => ({ id: d.id, nom: d.nom, resume: d.description })));
+        this.chargement.set(false);
+      },
+      error: () => {
+        this.erreur.set('Impossible de charger les disciplines.');
+        this.chargement.set(false);
+      },
+    });
+  }
 
   /**
    * Tirage côté client : purement cosmétique.
@@ -112,6 +130,6 @@ export class CreationPersonnagePage {
   }
 
   retour(): void {
-    this.router.navigate(['/personnages']);
+    this.router.navigate(['/accueil']);
   }
 }

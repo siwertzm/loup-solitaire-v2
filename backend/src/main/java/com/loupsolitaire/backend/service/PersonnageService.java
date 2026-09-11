@@ -76,20 +76,20 @@ public class PersonnageService {
             Set.of(StatutCombat.VICTOIRE, StatutCombat.FUITE, StatutCombat.INTERROMPU);
 
     @Transactional
-    public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies) {
+    public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies, Integer hasardHabilite, Integer hasardEndurance) {
         List<Discipline> disciplines = resoudreDisciplines(disciplinesChoisies);
 
         Personnage personnage = new Personnage();
         personnage.setUtilisateur(utilisateur);
         personnage.setNom(nom);
-        int habilite = 10 + tableDeHasardService.tirerChiffre();
+        int habilite = 10 + (hasardHabilite);
         personnage.setHabiliteBase(habilite);
         // Valeur de depart avant equipement : ajustee automatiquement dans
         // equiperMateriel() des que la hache de depart est ajoutee (voir
         // InventaireService.recalculerHabiliteSiArme).
         personnage.setHabilite(habilite);
 
-        int endurance = 20 + tableDeHasardService.tirerChiffre();
+        int endurance = 20 + (hasardEndurance);
         personnage.setEnduranceMax(endurance);
         personnage.setEnduranceActuelle(endurance);
 

@@ -64,7 +64,7 @@ public class PersonnageController {
                 .map(this::versIdDiscipline)
                 .toList();
 
-        Personnage personnage = personnageService.creerPersonnage(utilisateur, request.getNom(), disciplines);
+        Personnage personnage = personnageService.creerPersonnage(utilisateur, request.getNom(), disciplines, request.getHasardHabilite(), request.getHasardEndurance());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(personnageMapper.versReponse(personnage));
     }
