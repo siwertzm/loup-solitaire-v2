@@ -59,18 +59,36 @@ ion-content.creation {
   margin: 8px 0 16px;
 }
 
-.corps {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
+.haut {
+  flex: none;
   display: flex;
   flex-direction: column;
   gap: 14px;
   padding-bottom: 14px;
+}
 
-  &::-webkit-scrollbar {
-    display: none;
+.disciplines {
+  flex: 1;
+  min-height: 0;
+
+  .entete-disciplines {
+    flex: none;
+  }
+
+  .liste {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 -4px;
+    padding: 0 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 

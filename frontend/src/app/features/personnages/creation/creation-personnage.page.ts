@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -16,7 +17,7 @@ interface DisciplineCatalogue {
 @Component({
   selector: 'app-creation-personnage',
   standalone: true,
-  imports: [IonContent, ReactiveFormsModule],
+  imports: [IonContent, ReactiveFormsModule, TranslatePipe],
   templateUrl: './creation-personnage.page.html',
   styleUrl: './creation-personnage.page.scss',
 })
@@ -37,6 +38,7 @@ export class CreationPersonnagePage {
 
   readonly choisies = signal<IdDiscipline[]>([]);
   readonly erreur = signal<string | null>(null);
+  readonly erreurParams = signal<Record<string, unknown> | undefined>(undefined);
   readonly envoi = signal(false);
   readonly description = signal<DisciplineCatalogue | null>(null);
 
@@ -45,7 +47,7 @@ export class CreationPersonnagePage {
   readonly chargement = signal(true);
 
   readonly tirageFait = computed(() => this.habilete() !== null && this.endurance() !== null);
-  readonly tirageLabel = computed(() => (this.tirageFait() ? 'TIRAGE DES CARACTÉRISTIQUES' : 'LANCE LES DÉS'));
+  readonly tirageLabel = computed(() => (this.tirageFait() ? 'CREATION_PERSONNAGE.LABEL_TIRAGE_FAIT' : 'CREATION_PERSONNAGE.LABEL_TIRAGE_EN_ATTENTE'));
   readonly habTiree = computed(() => this.habilete() !== null && !this.roulantHab());
   readonly endTiree = computed(() => this.endurance() !== null && !this.roulantEnd());
   readonly detailHab = computed(() => `10 + ${this.faceHab()}`);
@@ -71,7 +73,7 @@ export class CreationPersonnagePage {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger les disciplines.');
+        this.erreur.set('CREATION_PERSONNAGE.ERREUR_CHARGEMENT_DISCIPLINES');
         this.chargement.set(false);
       },
     });
@@ -120,7 +122,8 @@ export class CreationPersonnagePage {
       return;
     }
     if (prises.length >= NB_DISCIPLINES_A_CHOISIR) {
-      this.erreur.set(`Exactement ${NB_DISCIPLINES_A_CHOISIR} disciplines : retires-en une d'abord.`);
+      this.erreur.set('CREATION_PERSONNAGE.ERREUR_TROP_DE_DISCIPLINES');
+      this.erreurParams.set({ n: NB_DISCIPLINES_A_CHOISIR });
       return;
     }
     this.choisies.set([...prises, id]);
@@ -129,10 +132,12 @@ export class CreationPersonnagePage {
 
   creer(): void {
     if (this.envoi()) return;
-    if (!this.nom.value.trim()) return this.erreur.set('Donne un nom à ton personnage.');
-    if (!this.tirageFait()) return this.erreur.set('Lance les deux dés pour tirer tes caractéristiques.');
+    if (!this.nom.value.trim()) return this.erreur.set('CREATION_PERSONNAGE.ERREUR_NOM_MANQUANT');
+    if (!this.tirageFait()) return this.erreur.set('CREATION_PERSONNAGE.ERREUR_TIRAGE_MANQUANT');
     if (this.nbChoisies() !== NB_DISCIPLINES_A_CHOISIR) {
-      return this.erreur.set(`Choisis exactement ${NB_DISCIPLINES_A_CHOISIR} disciplines.`);
+      this.erreur.set('CREATION_PERSONNAGE.ERREUR_NOMBRE_DISCIPLINES');
+      this.erreurParams.set({ n: NB_DISCIPLINES_A_CHOISIR });
+      return;
     }
 
     this.envoi.set(true);
@@ -146,7 +151,7 @@ export class CreationPersonnagePage {
       },
       error: () => {
         this.envoi.set(false);
-        this.erreur.set('La création a échoué.');
+        this.erreur.set('CREATION_PERSONNAGE.ERREUR_CREATION');
       },
     });
   }

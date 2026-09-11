@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircleOutline } from 'ionicons/icons';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
@@ -12,7 +13,7 @@ addIcons({ 'person-circle-outline': personCircleOutline });
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [IonContent, IonIcon],
+  imports: [IonContent, IonIcon, TranslatePipe],
   templateUrl: './accueil.page.html',
   styleUrl: './accueil.page.scss',
 })
@@ -61,7 +62,7 @@ export class AccueilPage implements ViewWillEnter {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger tes personnages.');
+        this.erreur.set('ACCUEIL.ERREUR_CHARGEMENT');
         this.chargement.set(false);
       },
     });
@@ -79,7 +80,7 @@ export class AccueilPage implements ViewWillEnter {
   }
 
   nouveauPersonnage(): void {
-    this.router.navigate(['/personnages/creation']);
+    this.router.navigate(['/personnages/intro']);
   }
 
   regles(): void {

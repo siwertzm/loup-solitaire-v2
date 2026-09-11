@@ -7,18 +7,18 @@
     </div>
 
     <header class="titre">
-      <div class="sur-titre">Livre premier</div>
-      <h1>Les Maîtres<br />des Ténèbres</h1>
-      <div class="sous-titre">Loup Solitaire</div>
+      <div class="sur-titre">{{ 'ACCUEIL.SUR_TITRE' | translate }}</div>
+      <h1>{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
+      <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
     </header>
 
     <div class="carrousel" [style.mask-image]="masque()" [style.-webkit-mask-image]="masque()" (scroll)="onScroll($event)">
       @if (chargement()) {
-        <div class="etat">Chargement…</div>
+        <div class="etat">{{ 'ACCUEIL.CHARGEMENT' | translate }}</div>
       } @else if (erreur()) {
-        <div class="etat erreur">{{ erreur() }}</div>
+        <div class="etat erreur">{{ erreur() | translate }}</div>
       } @else if (!cartes().length) {
-        <div class="etat">Aucune aventure en cours.</div>
+        <div class="etat">{{ 'ACCUEIL.AUCUNE_AVENTURE' | translate }}</div>
       } @else {
         @for (pj of cartes(); track pj.id) {
           <article class="carte">
@@ -27,31 +27,31 @@
                 <div class="avatar">{{ pj.initiale }}</div>
                 <div class="nom">{{ pj.nom }}</div>
               </div>
-              <div class="chapitre">CHAP. {{ pj.chapitreActuelId }}</div>
+              <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
             </div>
 
             <div class="stats">
               <div class="stat">
-                <span class="cle">HABILETÉ</span>
+                <span class="cle">{{ 'ACCUEIL.HABILETE' | translate }}</span>
                 <span class="valeur">{{ pj.habileteTotale }}</span>
               </div>
               <div class="stat droite">
-                <span class="cle">ENDURANCE</span>
+                <span class="cle">{{ 'ACCUEIL.ENDURANCE' | translate }}</span>
                 <span class="valeur">{{ pj.enduranceActuelle }}</span>
               </div>
             </div>
 
             <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
-              {{ pj.actif ? "REPRENDRE L'AVENTURE" : 'CHOISIR CE PERSONNAGE' }}
+              {{ pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate) }}
             </button>
           </article>
         }
       }
     </div>
 
-    <button type="button" class="secondaire" (click)="nouveauPersonnage()">NOUVEAU PERSONNAGE</button>
-    <button type="button" class="secondaire" (click)="regles()">RÈGLES DU JEU</button>
+    <button type="button" class="secondaire" (click)="nouveauPersonnage()">{{ 'ACCUEIL.NOUVEAU_PERSONNAGE' | translate }}</button>
+    <button type="button" class="secondaire" (click)="regles()">{{ 'ACCUEIL.REGLES_DU_JEU' | translate }}</button>
 
-    <div class="pied">Progression sauvegardée sur l'appareil</div>
+    <div class="pied">{{ 'ACCUEIL.PIED' | translate }}</div>
   </div>
 </ion-content>

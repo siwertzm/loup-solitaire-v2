@@ -1,19 +1,19 @@
 <ion-content [fullscreen]="true" class="creation">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">‹ MENU</button>
-    <h1 class="titre">Nouveau personnage</h1>
+    <button type="button" class="retour" (click)="retour()">{{ 'CREATION_PERSONNAGE.RETOUR' | translate }}</button>
+    <h1 class="titre">{{ 'CREATION_PERSONNAGE.TITRE' | translate }}</h1>
 
-    <div class="corps">
+    <div class="haut">
       <label class="champ">
-        <span class="cle">NOM DU PERSONNAGE</span>
-        <input type="text" [formControl]="nom" placeholder="Kai le puissant" autocomplete="off" />
+        <span class="cle">{{ 'CREATION_PERSONNAGE.CHAMP_NOM' | translate }}</span>
+        <input type="text" [formControl]="nom" placeholder="{{ 'CREATION_PERSONNAGE.NOM_PLACEHOLDER' | translate }}" autocomplete="off" />
       </label>
 
       <div class="bloc">
-        <div class="bloc-titre">{{ tirageLabel() }}</div>
+        <div class="bloc-titre">{{ tirageLabel() | translate }}</div>
         <div class="tirage">
           <div class="colonne">
-            <span class="cle">HABILETÉ</span>
+            <span class="cle">{{ 'CREATION_PERSONNAGE.HABILETE' | translate }}</span>
             @if (habTiree()) {
               <span class="total habilete">{{ habilete() }}</span>
               <span class="detail">{{ detailHab() }}</span>
@@ -27,12 +27,12 @@
               >
                 {{ faceHab() }}
               </button>
-              <span class="detail">10 + dé</span>
+              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_HABILETE_DEFAUT' | translate }}</span>
             }
           </div>
 
           <div class="colonne">
-            <span class="cle">ENDURANCE</span>
+            <span class="cle">{{ 'CREATION_PERSONNAGE.ENDURANCE' | translate }}</span>
             @if (endTiree()) {
               <span class="total endurance">{{ endurance() }}</span>
               <span class="detail">{{ detailEnd() }}</span>
@@ -46,20 +46,22 @@
               >
                 {{ faceEnd() }}
               </button>
-              <span class="detail">20 + dé</span>
+              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_ENDURANCE_DEFAUT' | translate }}</span>
             }
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="bloc">
-        <div class="entete-disciplines">
-          <span class="bloc-titre">DISCIPLINES KAÏ</span>
-          <span class="compteur" [class.complet]="nbChoisies() === 5">{{ nbChoisies() }}/5</span>
-        </div>
+    <div class="bloc disciplines">
+      <div class="entete-disciplines">
+        <span class="bloc-titre">{{ 'CREATION_PERSONNAGE.DISCIPLINES_TITRE' | translate }}</span>
+        <span class="compteur" [class.complet]="nbChoisies() === 5">{{ nbChoisies() }}/5</span>
+      </div>
 
+      <div class="liste">
         @if (chargement()) {
-          <div class="cle">Chargement des disciplines…</div>
+          <div class="cle">{{ 'CREATION_PERSONNAGE.CHARGEMENT_DISCIPLINES' | translate }}</div>
         } @else {
           @for (d of disciplines(); track d.id) {
             <div class="discipline" [class.prise]="d.prise" [class.bloquee]="d.bloquee">
@@ -76,10 +78,10 @@
 
     <div class="pied">
       @if (erreur()) {
-        <div class="erreur">{{ erreur() }}</div>
+        <div class="erreur">{{ erreur() | translate: erreurParams() }}</div>
       }
       <button type="button" class="valider" [class.actif]="complet()" [disabled]="envoi()" (click)="creer()">
-        COMMENCER L'AVENTURE
+        {{ 'CREATION_PERSONNAGE.VALIDER' | translate }}
       </button>
     </div>
   </div>
@@ -87,10 +89,10 @@
   @if (description(); as d) {
     <div class="voile" (click)="fermerDescription()">
       <div class="popup" (click)="$event.stopPropagation()">
-        <div class="surtitre">DISCIPLINE KAÏ</div>
+        <div class="surtitre">{{ 'CREATION_PERSONNAGE.POPUP_SURTITRE' | translate }}</div>
         <div class="popup-titre">{{ d.nom }}</div>
         <p class="popup-texte">{{ d.resume }}</p>
-        <button type="button" class="fermer" (click)="fermerDescription()">FERMER</button>
+        <button type="button" class="fermer" (click)="fermerDescription()">{{ 'CREATION_PERSONNAGE.FERMER' | translate }}</button>
       </div>
     </div>
   }

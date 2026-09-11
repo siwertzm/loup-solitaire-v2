@@ -1,11 +1,11 @@
 <ion-content [fullscreen]="true" class="profil">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">‹ ACCUEIL</button>
+    <button type="button" class="retour" (click)="retour()">{{ 'PROFIL.RETOUR' | translate }}</button>
 
     @if (chargement()) {
-      <div class="etat">Chargement…</div>
+      <div class="etat">{{ 'PROFIL.CHARGEMENT' | translate }}</div>
     } @else if (erreur()) {
-      <div class="etat erreur">{{ erreur() }}</div>
+      <div class="etat erreur">{{ erreur() | translate }}</div>
     } @else if (compte(); as c) {
       <div class="identite">
         <div class="avatar">{{ initiale() }}</div>
@@ -18,15 +18,15 @@
       <div class="tableau">
         @for (l of lignes(); track l.cle) {
           <div class="ligne">
-            <span class="cle">{{ l.cle }}</span>
-            <span class="valeur" [class.vert]="l.ton === 'vert'" [class.rouge]="l.ton === 'rouge'" [class.gold]="l.ton === 'gold'">{{ l.valeur }}</span>
+            <span class="cle">{{ l.cle | translate }}</span>
+            <span class="valeur" [class.vert]="l.ton === 'vert'" [class.rouge]="l.ton === 'rouge'" [class.gold]="l.ton === 'gold'">{{ l.valeur | translate }}</span>
           </div>
         }
       </div>
 
       <div class="actions">
-        <button type="button" class="secondaire" (click)="modifierEmail()">MODIFIER MON PROFIL</button>
-        <button type="button" class="danger" (click)="deconnexion()">SE DÉCONNECTER</button>
+        <button type="button" class="secondaire" (click)="modifierEmail()">{{ 'PROFIL.MODIFIER' | translate }}</button>
+        <button type="button" class="danger" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
       </div>
     }
   </div>

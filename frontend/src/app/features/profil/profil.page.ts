@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MoiResponse } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
@@ -9,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [IonContent],
+  imports: [IonContent, TranslatePipe],
   templateUrl: './profil.page.html',
   styleUrl: './profil.page.scss',
 })
@@ -28,10 +29,10 @@ export class ProfilPage implements ViewWillEnter {
     const c = this.compte();
     if (!c) return [];
     return [
-      { cle: 'PERSONNAGES', valeur: String(c.personnages?.length ?? 0), ton: 'clair' },
-      { cle: 'EMAIL VÉRIFIÉ', valeur: c.emailVerifie ? 'oui' : 'non', ton: c.emailVerifie ? 'vert' : 'rouge' },
-      { cle: 'PIÈCES PREMIUM', valeur: "999", ton: 'gold' },
-      { cle: 'MEMBRE DEPUIS', valeur: "mars 2026", ton: 'clair' }
+      { cle: 'PROFIL.LIGNE_PERSONNAGES', valeur: String(c.personnages?.length ?? 0), ton: 'clair' },
+      { cle: 'PROFIL.LIGNE_EMAIL_VERIFIE', valeur: c.emailVerifie ? 'COMMUN.OUI' : 'COMMUN.NON', ton: c.emailVerifie ? 'vert' : 'rouge' },
+      { cle: 'PROFIL.LIGNE_PIECES_PREMIUM', valeur: "999", ton: 'gold' },
+      { cle: 'PROFIL.LIGNE_MEMBRE_DEPUIS', valeur: "mars 2026", ton: 'clair' }
     ];
   });
 
@@ -48,7 +49,7 @@ export class ProfilPage implements ViewWillEnter {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger ton profil.');
+        this.erreur.set('PROFIL.ERREUR_CHARGEMENT');
         this.chargement.set(false);
       },
     });

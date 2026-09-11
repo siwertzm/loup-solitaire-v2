@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-profil-edition',
   standalone: true,
-  imports: [IonContent, ReactiveFormsModule],
+  imports: [IonContent, ReactiveFormsModule, TranslatePipe],
   templateUrl: './profil-edition.page.html',
   styleUrl: './profil-edition.page.scss',
 })
@@ -45,7 +46,7 @@ export class ProfilEditionPage {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger ton profil.');
+        this.erreur.set('PROFIL_EDITION.ERREUR_CHARGEMENT');
         this.chargement.set(false);
       },
     });
@@ -65,12 +66,12 @@ export class ProfilEditionPage {
         this.emailVerifie.set(c.emailVerifie);
         this.compteForm.patchValue({ username: c.username, email: c.email });
         this.message.set(
-          c.emailVerifie ? 'Profil mis à jour.' : 'Profil mis à jour. Vérifie ta nouvelle adresse email.',
+          c.emailVerifie ? 'PROFIL_EDITION.SUCCES_PROFIL_MAJ' : 'PROFIL_EDITION.SUCCES_PROFIL_MAJ_EMAIL',
         );
       },
       error: () => {
         this.envoi.set(false);
-        this.erreur.set('La mise à jour a échoué.');
+        this.erreur.set('PROFIL_EDITION.ERREUR_MAJ');
       },
     });
   }
@@ -79,7 +80,7 @@ export class ProfilEditionPage {
     const v = this.motDePasseForm.getRawValue();
     if (this.motDePasseForm.invalid || this.envoi()) return;
     if (v.nouveau !== v.confirmation) {
-      this.erreur.set('Les deux mots de passe ne correspondent pas.');
+      this.erreur.set('PROFIL_EDITION.ERREUR_MDP_DIFFERENTS');
       return;
     }
     this.envoi.set(true);
@@ -88,12 +89,12 @@ export class ProfilEditionPage {
       next: () => {
         this.envoi.set(false);
         this.motDePasseForm.reset();
-        this.message.set('Mot de passe modifié.');
+        this.message.set('PROFIL_EDITION.SUCCES_MDP');
       },
       error: (err: HttpErrorResponse) => {
         this.envoi.set(false);
         this.erreur.set(
-          err.status === 401 ? 'Mot de passe actuel incorrect.' : 'La modification a échoué.',
+          err.status === 401 ? 'PROFIL_EDITION.ERREUR_MDP_ACTUEL' : 'PROFIL_EDITION.ERREUR_MDP_MODIFICATION',
         );
       },
     });
@@ -102,8 +103,8 @@ export class ProfilEditionPage {
   renvoyerVerification(): void {
     const email = this.compteForm.controls.email.value;
     this.personnages$.renvoyerVerification(email).subscribe({
-      next: () => this.message.set('Email de vérification renvoyé.'),
-      error: () => this.erreur.set("L'envoi a échoué."),
+      next: () => this.message.set('PROFIL_EDITION.SUCCES_VERIFICATION'),
+      error: () => this.erreur.set('PROFIL_EDITION.ERREUR_VERIFICATION'),
     });
   }
 }

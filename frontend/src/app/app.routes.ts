@@ -34,6 +34,11 @@ export const routes: Routes = [
       import('./features/personnages/creation/creation-personnage.page').then((m) => m.CreationPersonnagePage),
   },
   {
+    path: 'personnages/intro',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/personnages/creation/intro/intro-creation.page').then((m) => m.IntroCreationPage),
+  },
+  {
     path: 'personnages/:id/chapitre',
     canActivate: [authGuard],
     loadComponent: () => import('./features/game/chapitre/chapitre.page').then((m) => m.ChapitrePage),

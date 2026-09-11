@@ -1,0 +1,33 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'INTRO_CREATION.TITRE' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p [innerHTML]="'INTRO_CREATION.PARAGRAPHE_1' | translate"></p>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_HABILETE' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_ENDURANCE' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_MORT' | translate }}
+      </p>
+
+      <div class="section">{{ 'INTRO_CREATION.SECTION_DISCIPLINES' | translate }}</div>
+
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_DISCIPLINES' | translate }}
+      </p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="continuer()">{{ 'INTRO_CREATION.VALIDER' | translate }}</button>
+    </div>
+  </div>
+</ion-content>
