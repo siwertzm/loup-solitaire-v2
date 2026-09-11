@@ -87,7 +87,7 @@
     "RETOUR": "‹ MENU",
     "TITRE": "Nouveau personnage",
     "CHAMP_NOM": "NOM DU PERSONNAGE",
-    "NOM_PLACEHOLDER": "Loup solitaire",
+    "NOM": "Loup solitaire",
     "LABEL_TIRAGE_EN_ATTENTE": "LANCE LES DÉS",
     "LABEL_TIRAGE_FAIT": "TIRAGE DES CARACTÉRISTIQUES",
     "HABILETE": "HABILETÉ",
@@ -117,6 +117,7 @@
     "PARAGRAPHE_MORT": "Si vous êtes blessé lors d'un combat, vous perdrez des points d'ENDURANCE et si jamais votre ENDURANCE tombe à zéro, vous saurez alors que vous venez d'être tué et que votre aventure est terminée. Au cours de votre mission, vous aurez la possibilité de récupérer des points d'ENDURANCE mais votre total d'ENDURANCE ne pourra en aucun cas dépasser celui dont vous disposiez au départ de votre mission.",
     "SECTION_DISCIPLINES": "Les Disciplines Kaï",
     "PARAGRAPHE_DISCIPLINES": "Au cours des siècles, les Moines Kaï ont appris à maîtriser toutes les techniques du guerrier. Ces techniques sont connues sous le nom de Disciplines Kaï et enseignées aux Seigneurs Kaï. Pour votre part, vous n'avez été initié qu'à cinq des techniques décrites ci-dessous. Il vous appartient de choisir vous-même ces cinq disciplines. Chaque Discipline Kaï peut vous être utile à un moment ou à un autre de votre quête et votre choix devra être le plus judicieux possible : dans certaines circonstances, une habile mise en pratique de l'une de ces techniques peut vous sauver la vie.",
+    "PARAGRAPHE_DISCIPLINES_2": "Si vous remplissez avec succès la mission qui vous est assignée dans ce premier livre de la série du Loup Solitaire, vous aurez le droit d'ajouter une Discipline Kaï supplémentaire à celles que vous possédez déjà. Lorsque vous vous lancerez dans la nouvelle aventure que vous propose le prochain volume de la série (intitulé La Traversée Infernale), vous pourrez ainsi faire usage de six disciplines Kaï (les cinq premières étant acquises une bonne fois pour toutes), de même que des Objets Spéciaux que vous aurez décidé de conserver au cours de votre première mission. Sachez en effet que, de livre en livre, votre expérience grandira chaque fois que vous aurez accompli une mission : vous pourrez, de cette façon, espérer atteindre un jour la complète maîtrise de l'art et de la science des Moines Kaï.",
     "VALIDER": "CRÉER MON PERSONNAGE"
   }
 }

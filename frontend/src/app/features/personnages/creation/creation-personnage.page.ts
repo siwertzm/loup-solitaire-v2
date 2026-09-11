@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -25,6 +25,7 @@ export class CreationPersonnagePage {
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
   private readonly disciplines$ = inject(DisciplineService);
+  private readonly translate = inject(TranslateService);
 
   readonly nom = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
@@ -54,7 +55,7 @@ export class CreationPersonnagePage {
   readonly detailEnd = computed(() => `20 + ${this.faceEnd()}`);
   readonly nbChoisies = computed(() => this.choisies().length);
   readonly complet = computed(
-    () => this.nom.value.trim().length > 0 && this.tirageFait() && this.nbChoisies() === NB_DISCIPLINES_A_CHOISIR,
+    () => this.tirageFait() && this.nbChoisies() === NB_DISCIPLINES_A_CHOISIR,
   );
 
   readonly disciplines = computed(() => {
@@ -132,7 +133,6 @@ export class CreationPersonnagePage {
 
   creer(): void {
     if (this.envoi()) return;
-    if (!this.nom.value.trim()) return this.erreur.set('CREATION_PERSONNAGE.ERREUR_NOM_MANQUANT');
     if (!this.tirageFait()) return this.erreur.set('CREATION_PERSONNAGE.ERREUR_TIRAGE_MANQUANT');
     if (this.nbChoisies() !== NB_DISCIPLINES_A_CHOISIR) {
       this.erreur.set('CREATION_PERSONNAGE.ERREUR_NOMBRE_DISCIPLINES');
@@ -142,9 +142,10 @@ export class CreationPersonnagePage {
 
     this.envoi.set(true);
     this.erreur.set(null);
+    const nomFinal = this.nom.value.trim() || this.translate.instant('CREATION_PERSONNAGE.NOM');
     const hasardHabilite = this.habilete()! - 10;
     const hasardEndurance = this.endurance()! - 20;
-    this.personnages$.creer(this.nom.value.trim(), this.choisies(), hasardHabilite, hasardEndurance).subscribe({
+    this.personnages$.creer(nomFinal, this.choisies(), hasardHabilite, hasardEndurance).subscribe({
       next: (p) => {
         this.envoi.set(false);
         this.router.navigate(['/personnages', p.id, 'chapitre'], { replaceUrl: true });
