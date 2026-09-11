@@ -1,0 +1,64 @@
+<ion-content [fullscreen]="true" class="creation">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">‹ MENU</button>
+    <h1 class="titre">Nouveau personnage</h1>
+
+    <div class="corps">
+      <label class="champ">
+        <span class="cle">NOM DU PERSONNAGE</span>
+        <input type="text" [formControl]="nom" placeholder="Kai le puissant" autocomplete="off" />
+      </label>
+
+      <div class="bloc tirage">
+        <div class="tirage-texte">
+          <div class="bloc-titre">{{ tirageLabel() }}</div>
+          <div class="stats">
+            <div class="stat">
+              <span class="cle">HABILETÉ</span>
+              <span class="valeur habilete">{{ habileteAffichee() }}</span>
+            </div>
+            <div class="stat">
+              <span class="cle">ENDURANCE</span>
+              <span class="valeur endurance">{{ enduranceAffichee() }}</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="de" [class.roule]="roulant()" aria-label="Lancer le dé" (click)="lancerDe()">
+          {{ face() }}
+        </button>
+      </div>
+
+      <div class="bloc">
+        <div class="entete-disciplines">
+          <span class="bloc-titre">DISCIPLINES KAÏ</span>
+          <span class="compteur" [class.complet]="nbChoisies() === 5">{{ nbChoisies() }}/5</span>
+        </div>
+
+        @for (d of disciplines(); track d.id) {
+          <button
+            type="button"
+            class="discipline"
+            [class.prise]="d.prise"
+            [class.bloquee]="d.bloquee"
+            (click)="basculer(d.id)"
+          >
+            <span class="ligne">
+              <span class="case"></span>
+              {{ d.nom }}
+            </span>
+            <span class="resume">{{ d.resume }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="pied">
+      @if (erreur()) {
+        <div class="erreur">{{ erreur() }}</div>
+      }
+      <button type="button" class="valider" [class.actif]="complet()" [disabled]="envoi()" (click)="creer()">
+        COMMENCER L'AVENTURE
+      </button>
+    </div>
+  </div>
+</ion-content>
