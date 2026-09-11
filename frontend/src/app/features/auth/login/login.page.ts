@@ -57,7 +57,7 @@ export class LoginPage {
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.enCours.set(false);
-        this.router.navigateByUrl('/personnages');
+        this.router.navigateByUrl('/accueil');
       },
       error: () => {
         this.enCours.set(false);

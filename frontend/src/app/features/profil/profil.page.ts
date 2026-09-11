@@ -30,6 +30,8 @@ export class ProfilPage {
     return [
       { cle: 'PERSONNAGES', valeur: String(c.personnages?.length ?? 0), ton: 'clair' },
       { cle: 'EMAIL VÉRIFIÉ', valeur: c.emailVerifie ? 'oui' : 'non', ton: c.emailVerifie ? 'vert' : 'rouge' },
+      { cle: 'PIÈCES PREMIUM', valeur: "999", ton: 'gold' },
+      { cle: 'MEMBRE DEPUIS', valeur: "mars 2026", ton: 'clair' }
     ];
   });
 
@@ -55,7 +57,14 @@ export class ProfilPage {
   }
 
   deconnexion(): void {
-    this.auth.logout();
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.auth.logout().subscribe({
+      next: () => this.router.navigate(['/auth/login'], { replaceUrl: true }),
+      // Le refresh token était déjà invalide côté serveur : on nettoie quand
+      // même localement pour ne pas bloquer l'utilisateur sur cet écran.
+      error: () => {
+        this.auth.clearSessionLocale();
+        this.router.navigate(['/auth/login'], { replaceUrl: true });
+      },
+    });
   }
 }
