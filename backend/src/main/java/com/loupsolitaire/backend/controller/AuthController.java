@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +28,7 @@ import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.AuthRequest;
+import com.loupsolitaire.backend.request.ChangePasswordRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
 import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
@@ -185,5 +187,30 @@ public class AuthController {
 
         utilisateurRepository.save(utilisateur);
         return UtilisateurResponse.fromEntity(utilisateur);
+    }
+
+    // Verifie le mot de passe actuel avant d'appliquer le nouveau.
+    // Par securite, toutes les autres sessions (refresh tokens) sont revoquees :
+    // seule la session courante repart avec un nouveau couple de tokens.
+    @PutMapping("/me/password")
+    public AuthResponse changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), utilisateur.getPassword())) {
+            throw new BadCredentialsException("Mot de passe actuel incorrect");
+        }
+
+        utilisateur.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        utilisateurRepository.save(utilisateur);
+
+        refreshTokenService.revoquerToutesLesSessions(utilisateur);
+
+        String accessToken = jwtUtil.generateToken(userDetails);
+        String refreshToken = refreshTokenService.creerToken(utilisateur);
+        return new AuthResponse(accessToken, refreshToken);
     }
 }

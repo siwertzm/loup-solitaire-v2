@@ -24,4 +24,19 @@ export class PersonnageService {
   creer(nom: string, disciplines: string[]): Observable<PersonnageResume> {
     return this.http.post<PersonnageResume>(`${this.base}/personnages`, { nom, disciplines });
   }
+
+  /** PATCH /auth/me — TODO : endpoint à créer côté backend. */
+  majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
+    return this.http.patch<MoiResponse>(`${this.base}/auth/me`, payload);
+  }
+
+  /** POST /auth/mot-de-passe — TODO : endpoint à créer côté backend. */
+  changerMotDePasse(actuel: string, nouveau: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/mot-de-passe`, { actuel, nouveau });
+  }
+
+  /** POST /auth/verify-email/renvoyer — TODO : endpoint à créer côté backend. */
+  renvoyerVerification(): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/verify-email/renvoyer`, {});
+  }
 }

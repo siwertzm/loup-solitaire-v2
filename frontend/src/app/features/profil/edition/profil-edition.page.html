@@ -1,0 +1,73 @@
+<ion-content [fullscreen]="true" class="profil-edition">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">‹ PROFIL</button>
+    <h1 class="titre">Modifier mon profil</h1>
+
+    @if (chargement()) {
+      <div class="etat">Chargement…</div>
+    } @else {
+      @if (message()) {
+        <div class="bandeau succes">{{ message() }}</div>
+      }
+      @if (erreur()) {
+        <div class="bandeau erreur">{{ erreur() }}</div>
+      }
+
+      <form class="bloc" [formGroup]="compteForm" (ngSubmit)="enregistrerCompte()">
+        <div class="bloc-titre">COMPTE</div>
+
+        <label class="champ">
+          <span class="cle">NOM D'UTILISATEUR</span>
+          <input type="text" formControlName="username" autocomplete="username" />
+          @if (compteForm.controls.username.touched && compteForm.controls.username.invalid) {
+            <span class="aide">Entre 3 et 30 caractères.</span>
+          }
+        </label>
+
+        <label class="champ">
+          <span class="cle">EMAIL</span>
+          <input type="email" formControlName="email" autocomplete="email" inputmode="email" />
+          @if (compteForm.controls.email.touched && compteForm.controls.email.invalid) {
+            <span class="aide">Adresse email invalide.</span>
+          }
+        </label>
+
+        @if (!emailVerifie()) {
+          <button type="button" class="lien" (click)="renvoyerVerification()">
+            Email non vérifié — renvoyer le lien
+          </button>
+        }
+
+        <button type="submit" class="principal" [disabled]="compteForm.invalid || envoi()">
+          ENREGISTRER
+        </button>
+      </form>
+
+      <form class="bloc" [formGroup]="motDePasseForm" (ngSubmit)="changerMotDePasse()">
+        <div class="bloc-titre">MOT DE PASSE</div>
+
+        <label class="champ">
+          <span class="cle">MOT DE PASSE ACTUEL</span>
+          <input type="password" formControlName="actuel" autocomplete="current-password" />
+        </label>
+
+        <label class="champ">
+          <span class="cle">NOUVEAU MOT DE PASSE</span>
+          <input type="password" formControlName="nouveau" autocomplete="new-password" />
+          @if (motDePasseForm.controls.nouveau.touched && motDePasseForm.controls.nouveau.invalid) {
+            <span class="aide">8 caractères minimum.</span>
+          }
+        </label>
+
+        <label class="champ">
+          <span class="cle">CONFIRMATION</span>
+          <input type="password" formControlName="confirmation" autocomplete="new-password" />
+        </label>
+
+        <button type="submit" class="secondaire" [disabled]="motDePasseForm.invalid || envoi()">
+          CHANGER LE MOT DE PASSE
+        </button>
+      </form>
+    }
+  </div>
+</ion-content>
