@@ -48,6 +48,13 @@ export class AuthService {
       .pipe(tap((utilisateur) => this._utilisateur.set(utilisateur)));
   }
 
+  /** Révoque les autres sessions côté serveur ; renvoie un nouveau couple de tokens pour rester connecté ici. */
+  changePassword(currentPassword: string, newPassword: string): Observable<AuthResponse> {
+    return this.http
+      .put<AuthResponse>(`${this.baseUrl}/me/password`, { currentPassword, newPassword })
+      .pipe(tap((res) => this.tokenStorage.setTokens(res.accessToken, res.refreshToken)));
+  }
+
   logout(): Observable<void> {
     const refreshToken = this.tokenStorage.getRefreshToken();
     return this.http

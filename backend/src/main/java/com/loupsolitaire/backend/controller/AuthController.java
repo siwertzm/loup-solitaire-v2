@@ -171,6 +171,13 @@ public class AuthController {
         Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
+        if (request.getUsername() != null && !request.getUsername().equals(utilisateur.getUsername())) {
+            if (utilisateurRepository.existsByUsername(request.getUsername())) {
+                throw new ConflitException("Ce nom d'utilisateur est deja utilise");
+            }
+            utilisateur.setUsername(request.getUsername());
+        }
+
         if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(utilisateur.getEmail())) {
             if (utilisateurRepository.existsByEmail(request.getEmail())) {
                 throw new ConflitException("Cet email est deja utilise");

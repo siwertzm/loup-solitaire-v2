@@ -2,8 +2,10 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { PersonnageService } from '../../../core/services/personnage.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-profil-edition',
@@ -16,6 +18,7 @@ export class ProfilEditionPage {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
+  private readonly auth = inject(AuthService);
 
   readonly chargement = signal(true);
   readonly envoi = signal(false);
@@ -56,7 +59,6 @@ export class ProfilEditionPage {
     if (this.compteForm.invalid || this.envoi()) return;
     this.envoi.set(true);
     this.erreur.set(null);
-    // TODO backend : PATCH /auth/me { username, email }
     this.personnages$.majCompte(this.compteForm.getRawValue()).subscribe({
       next: (c) => {
         this.envoi.set(false);
@@ -82,22 +84,24 @@ export class ProfilEditionPage {
     }
     this.envoi.set(true);
     this.erreur.set(null);
-    // TODO backend : POST /auth/mot-de-passe { actuel, nouveau }
-    this.personnages$.changerMotDePasse(v.actuel, v.nouveau).subscribe({
+    this.auth.changePassword(v.actuel, v.nouveau).subscribe({
       next: () => {
         this.envoi.set(false);
         this.motDePasseForm.reset();
         this.message.set('Mot de passe modifié.');
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.envoi.set(false);
-        this.erreur.set('Mot de passe actuel incorrect.');
+        this.erreur.set(
+          err.status === 401 ? 'Mot de passe actuel incorrect.' : 'La modification a échoué.',
+        );
       },
     });
   }
 
   renvoyerVerification(): void {
-    this.personnages$.renvoyerVerification().subscribe({
+    const email = this.compteForm.controls.email.value;
+    this.personnages$.renvoyerVerification(email).subscribe({
       next: () => this.message.set('Email de vérification renvoyé.'),
       error: () => this.erreur.set("L'envoi a échoué."),
     });

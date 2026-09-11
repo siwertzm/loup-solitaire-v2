@@ -25,18 +25,13 @@ export class PersonnageService {
     return this.http.post<PersonnageResume>(`${this.base}/personnages`, { nom, disciplines });
   }
 
-  /** PATCH /auth/me — TODO : endpoint à créer côté backend. */
+  /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
   majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
-    return this.http.patch<MoiResponse>(`${this.base}/auth/me`, payload);
+    return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);
   }
-
-  /** POST /auth/mot-de-passe — TODO : endpoint à créer côté backend. */
-  changerMotDePasse(actuel: string, nouveau: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/auth/mot-de-passe`, { actuel, nouveau });
-  }
-
-  /** POST /auth/verify-email/renvoyer — TODO : endpoint à créer côté backend. */
-  renvoyerVerification(): Observable<void> {
-    return this.http.post<void>(`${this.base}/auth/verify-email/renvoyer`, {});
+ 
+  /** POST /auth/resend-verification — renvoie le lien de vérification à l'email donné. */
+  renvoyerVerification(email: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/resend-verification`, { email });
   }
 }
