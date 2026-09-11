@@ -122,35 +122,27 @@ ion-content.creation {
 }
 
 .tirage {
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.colonne {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 8px;
+  min-height: 118px;
 
-  .tirage-texte {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .cle {
+    font-size: 9.5px;
   }
 
-  .stats {
-    display: flex;
-    gap: 22px;
-  }
-
-  .stat {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-
-    .cle {
-      font-size: 9.5px;
-    }
-  }
-
-  .valeur {
+  .total {
     font-family: 'Cinzel', serif;
-    font-size: 24px;
+    font-size: 46px;
+    line-height: 1;
 
     &.habilete {
       color: $vert;
@@ -161,16 +153,29 @@ ion-content.creation {
     }
   }
 
+  .detail {
+    font-size: 12.5px;
+    color: rgba(236, 226, 200, 0.4);
+  }
+
   .de {
-    flex: none;
-    width: 62px;
-    height: 62px;
+    width: 58px;
+    height: 58px;
     border-radius: 16px;
-    border: 1px solid rgba(217, 169, 74, 0.45);
-    background: rgba(217, 169, 74, 0.1);
-    color: $or;
-    font-size: 26px;
+    font-size: 24px;
     cursor: pointer;
+
+    &.habilete {
+      border: 1px solid rgba(157, 191, 92, 0.45);
+      background: rgba(157, 191, 92, 0.1);
+      color: $vert;
+    }
+
+    &.endurance {
+      border: 1px solid rgba(224, 112, 90, 0.45);
+      background: rgba(224, 112, 90, 0.1);
+      color: $rouge;
+    }
 
     &.roule {
       animation: de-roule 0.28s ease-in-out infinite;
@@ -197,21 +202,23 @@ ion-content.creation {
 
 .discipline {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  width: 100%;
-  text-align: left;
+  align-items: center;
+  gap: 8px;
   background: rgba(236, 226, 200, 0.04);
   border: 1px solid rgba(236, 226, 200, 0.16);
   border-radius: 11px;
-  padding: 11px 13px;
-  cursor: pointer;
+  padding: 4px 10px 4px 13px;
 
-  .ligne {
+  .choix {
+    flex: 1;
     display: flex;
     align-items: center;
     gap: 9px;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 9px 0;
+    cursor: pointer;
     font-family: 'Cinzel', serif;
     font-size: 14px;
     color: $parchemin;
@@ -225,18 +232,28 @@ ion-content.creation {
     border: 1px solid rgba(236, 226, 200, 0.35);
   }
 
-  .resume {
-    font-family: 'EB Garamond', Georgia, serif;
-    font-size: 13.5px;
-    line-height: 1.4;
-    color: rgba(236, 226, 200, 0.55);
+  .info {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(236, 226, 200, 0.3);
+    background: none;
+    color: rgba(236, 226, 200, 0.65);
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $cuivre;
+      color: $or;
+    }
   }
 
   &.prise {
     background: rgba(194, 112, 58, 0.16);
     border-color: $cuivre;
 
-    .ligne {
+    .choix {
       color: $or;
     }
 
@@ -248,6 +265,62 @@ ion-content.creation {
 
   &.bloquee {
     opacity: 0.45;
+  }
+}
+
+.voile {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: rgba(12, 14, 9, 0.66);
+}
+
+.popup {
+  background: $parchemin;
+  color: #3a3226;
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  max-height: 70%;
+  overflow-y: auto;
+
+  .surtitre {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #8a7a5e;
+  }
+
+  .popup-titre {
+    font-family: 'Cinzel', serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin: 8px 0 12px;
+  }
+
+  .popup-texte {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    text-wrap: pretty;
+    white-space: pre-line;
+  }
+
+  .fermer {
+    margin-top: 18px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    background: $foret;
+    color: $parchemin;
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    cursor: pointer;
   }
 }
 

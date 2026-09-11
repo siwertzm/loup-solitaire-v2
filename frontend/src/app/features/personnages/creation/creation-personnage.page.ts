@@ -7,6 +7,12 @@ import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR } from '../../../core/models/per
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { DisciplineService } from '../../../core/services/discipline.service';
 
+interface DisciplineCatalogue {
+  id: IdDiscipline;
+  nom: string;
+  resume: string;
+}
+
 @Component({
   selector: 'app-creation-personnage',
   standalone: true,
@@ -21,24 +27,29 @@ export class CreationPersonnagePage {
 
   readonly nom = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
-  /** null tant que le joueur n'a pas lancé le dé. */
+  /** null tant que le dé correspondant n'a pas été lancé. */
   readonly habilete = signal<number | null>(null);
   readonly endurance = signal<number | null>(null);
-  readonly face = signal<number | string>('?');
-  readonly roulant = signal(false);
+  readonly faceHab = signal<number | string>('?');
+  readonly faceEnd = signal<number | string>('?');
+  readonly roulantHab = signal(false);
+  readonly roulantEnd = signal(false);
 
   readonly choisies = signal<IdDiscipline[]>([]);
   readonly erreur = signal<string | null>(null);
   readonly envoi = signal(false);
+  readonly description = signal<DisciplineCatalogue | null>(null);
 
   /** Catalogue des 10 Disciplines Kaï (id, nom, description), depuis GET /disciplines. */
-  readonly catalogue = signal<{ id: IdDiscipline; nom: string; resume: string }[]>([]);
+  readonly catalogue = signal<DisciplineCatalogue[]>([]);
   readonly chargement = signal(true);
 
-  readonly tirageFait = computed(() => this.habilete() !== null);
-  readonly tirageLabel = computed(() => (this.tirageFait() ? 'TIRAGE DES CARACTÉRISTIQUES' : 'LANCE LE DÉ'));
-  readonly habileteAffichee = computed(() => this.habilete() ?? '—');
-  readonly enduranceAffichee = computed(() => this.endurance() ?? '—');
+  readonly tirageFait = computed(() => this.habilete() !== null && this.endurance() !== null);
+  readonly tirageLabel = computed(() => (this.tirageFait() ? 'TIRAGE DES CARACTÉRISTIQUES' : 'LANCE LES DÉS'));
+  readonly habTiree = computed(() => this.habilete() !== null && !this.roulantHab());
+  readonly endTiree = computed(() => this.endurance() !== null && !this.roulantEnd());
+  readonly detailHab = computed(() => `10 + ${this.faceHab()}`);
+  readonly detailEnd = computed(() => `20 + ${this.faceEnd()}`);
   readonly nbChoisies = computed(() => this.choisies().length);
   readonly complet = computed(
     () => this.nom.value.trim().length > 0 && this.tirageFait() && this.nbChoisies() === NB_DISCIPLINES_A_CHOISIR,
@@ -67,29 +78,38 @@ export class CreationPersonnagePage {
   }
 
   /**
-   * Tirage côté client : purement cosmétique.
-   * Le backend refait les tirages dans `PersonnageService.creerPersonnage`,
-   * les valeurs affichées ici sont donc remplacées par sa réponse.
+   * Tirage côté client : purement cosmétique (le backend refait les tirages
+   * dans PersonnageService.creerPersonnage à partir des valeurs qu'on lui
+   * envoie). Une seule écriture d'état par lancer : l'animation du dé est en CSS.
    */
-  lancerDe(): void {
-    if (this.roulant()) return;
-    this.roulant.set(true);
+  lancerDe(quoi: 'hab' | 'end'): void {
+    if (quoi === 'hab' ? this.roulantHab() : this.roulantEnd()) return;
     this.erreur.set(null);
+    const de = Math.floor(Math.random() * 10);
 
-    let tours = 0;
-    const spin = setInterval(() => {
-      tours++;
-      this.face.set(Math.floor(Math.random() * 10));
-      if (tours > 8) {
-        clearInterval(spin);
-        const dHab = Math.floor(Math.random() * 10);
-        const dEnd = Math.floor(Math.random() * 10);
-        this.face.set(dHab);
-        this.habilete.set(10 + dHab);
-        this.endurance.set(20 + dEnd);
-        this.roulant.set(false);
-      }
-    }, 70);
+    if (quoi === 'hab') {
+      this.roulantHab.set(true);
+      setTimeout(() => {
+        this.faceHab.set(de);
+        this.habilete.set(10 + de);
+        this.roulantHab.set(false);
+      }, 640);
+    } else {
+      this.roulantEnd.set(true);
+      setTimeout(() => {
+        this.faceEnd.set(de);
+        this.endurance.set(20 + de);
+        this.roulantEnd.set(false);
+      }, 640);
+    }
+  }
+
+  ouvrirDescription(d: DisciplineCatalogue): void {
+    this.description.set(d);
+  }
+
+  fermerDescription(): void {
+    this.description.set(null);
   }
 
   basculer(id: IdDiscipline): void {
@@ -110,7 +130,7 @@ export class CreationPersonnagePage {
   creer(): void {
     if (this.envoi()) return;
     if (!this.nom.value.trim()) return this.erreur.set('Donne un nom à ton personnage.');
-    if (!this.tirageFait()) return this.erreur.set('Lance le dé pour tirer tes caractéristiques.');
+    if (!this.tirageFait()) return this.erreur.set('Lance les deux dés pour tirer tes caractéristiques.');
     if (this.nbChoisies() !== NB_DISCIPLINES_A_CHOISIR) {
       return this.erreur.set(`Choisis exactement ${NB_DISCIPLINES_A_CHOISIR} disciplines.`);
     }

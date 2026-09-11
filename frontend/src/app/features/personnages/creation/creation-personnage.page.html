@@ -6,26 +6,50 @@
     <div class="corps">
       <label class="champ">
         <span class="cle">NOM DU PERSONNAGE</span>
-        <input type="text" [formControl]="nom" placeholder="Loup Solitaire" autocomplete="off" />
+        <input type="text" [formControl]="nom" placeholder="Kai le puissant" autocomplete="off" />
       </label>
 
-      <div class="bloc tirage">
-        <div class="tirage-texte">
-          <div class="bloc-titre">{{ tirageLabel() }}</div>
-          <div class="stats">
-            <div class="stat">
-              <span class="cle">HABILETÉ</span>
-              <span class="valeur habilete">{{ habileteAffichee() }}</span>
-            </div>
-            <div class="stat">
-              <span class="cle">ENDURANCE</span>
-              <span class="valeur endurance">{{ enduranceAffichee() }}</span>
-            </div>
+      <div class="bloc">
+        <div class="bloc-titre">{{ tirageLabel() }}</div>
+        <div class="tirage">
+          <div class="colonne">
+            <span class="cle">HABILETÉ</span>
+            @if (habTiree()) {
+              <span class="total habilete">{{ habilete() }}</span>
+              <span class="detail">{{ detailHab() }}</span>
+            } @else {
+              <button
+                type="button"
+                class="de habilete"
+                [class.roule]="roulantHab()"
+                aria-label="Lancer le dé d'habileté"
+                (click)="lancerDe('hab')"
+              >
+                {{ faceHab() }}
+              </button>
+              <span class="detail">10 + dé</span>
+            }
+          </div>
+
+          <div class="colonne">
+            <span class="cle">ENDURANCE</span>
+            @if (endTiree()) {
+              <span class="total endurance">{{ endurance() }}</span>
+              <span class="detail">{{ detailEnd() }}</span>
+            } @else {
+              <button
+                type="button"
+                class="de endurance"
+                [class.roule]="roulantEnd()"
+                aria-label="Lancer le dé d'endurance"
+                (click)="lancerDe('end')"
+              >
+                {{ faceEnd() }}
+              </button>
+              <span class="detail">20 + dé</span>
+            }
           </div>
         </div>
-        <button type="button" class="de" [class.roule]="roulant()" aria-label="Lancer le dé" (click)="lancerDe()">
-          {{ face() }}
-        </button>
       </div>
 
       <div class="bloc">
@@ -38,19 +62,13 @@
           <div class="cle">Chargement des disciplines…</div>
         } @else {
           @for (d of disciplines(); track d.id) {
-            <button
-              type="button"
-              class="discipline"
-              [class.prise]="d.prise"
-              [class.bloquee]="d.bloquee"
-              (click)="basculer(d.id)"
-            >
-              <span class="ligne">
+            <div class="discipline" [class.prise]="d.prise" [class.bloquee]="d.bloquee">
+              <button type="button" class="choix" (click)="basculer(d.id)">
                 <span class="case"></span>
                 {{ d.nom }}
-              </span>
-              <span class="resume">{{ d.resume }}</span>
-            </button>
+              </button>
+              <button type="button" class="info" aria-label="Description" (click)="ouvrirDescription(d)">i</button>
+            </div>
           }
         }
       </div>
@@ -65,4 +83,15 @@
       </button>
     </div>
   </div>
+
+  @if (description(); as d) {
+    <div class="voile" (click)="fermerDescription()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <div class="surtitre">DISCIPLINE KAÏ</div>
+        <div class="popup-titre">{{ d.nom }}</div>
+        <p class="popup-texte">{{ d.resume }}</p>
+        <button type="button" class="fermer" (click)="fermerDescription()">FERMER</button>
+      </div>
+    </div>
+  }
 </ion-content>
