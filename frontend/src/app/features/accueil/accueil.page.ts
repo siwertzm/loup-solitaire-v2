@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular';
+import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircleOutline } from 'ionicons/icons';
 
@@ -16,7 +16,7 @@ addIcons({ 'person-circle-outline': personCircleOutline });
   templateUrl: './accueil.page.html',
   styleUrl: './accueil.page.scss',
 })
-export class AccueilPage {
+export class AccueilPage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
 
@@ -48,7 +48,12 @@ export class AccueilPage {
     return `linear-gradient(to bottom, ${haut}, ${bas})`;
   });
 
-  ngOnInit(): void {
+  // ionViewWillEnter : se redéclenche à chaque retour sur cette page (ex. après
+  // avoir joué un chapitre), contrairement à ngOnInit qui ne tourne qu'une fois
+  // tant qu'ion-router-outlet garde le composant en mémoire.
+  ionViewWillEnter(): void {
+    this.chargement.set(true);
+    this.erreur.set(null);
     this.personnages$.lister().subscribe({
       next: (liste) => {
         this.personnages.set(liste);

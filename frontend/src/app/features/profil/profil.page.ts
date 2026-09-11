@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, ViewWillEnter } from '@ionic/angular';
 
 import { MoiResponse } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
@@ -13,7 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './profil.page.html',
   styleUrl: './profil.page.scss',
 })
-export class ProfilPage {
+export class ProfilPage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
   private readonly auth = inject(AuthService);
@@ -35,7 +35,13 @@ export class ProfilPage {
     ];
   });
 
-  ngOnInit(): void {
+  // ionViewWillEnter (et non ngOnInit) : ion-router-outlet garde cette page en
+  // mémoire quand on va sur /profil/edition, le composant n'est pas recréé au
+  // retour. Ce hook Ionic se redéclenche bien à chaque fois que la page
+  // redevient active, contrairement à ngOnInit qui ne tourne qu'une fois.
+  ionViewWillEnter(): void {
+    this.chargement.set(true);
+    this.erreur.set(null);
     this.personnages$.moi().subscribe({
       next: (c) => {
         this.compte.set(c);
