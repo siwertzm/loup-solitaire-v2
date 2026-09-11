@@ -20,9 +20,19 @@ export class PersonnageService {
     return this.http.get<MoiResponse>(`${this.base}/auth/me`);
   }
 
-  /** POST /personnages — nom + exactement 5 disciplines. */
-  creer(nom: string, disciplines: string[]): Observable<PersonnageResume> {
-    return this.http.post<PersonnageResume>(`${this.base}/personnages`, { nom, disciplines });
+  /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habileté/endurance). */
+  creer(
+    nom: string,
+    disciplines: string[],
+    hasardHabilite: number,
+    hasardEndurance: number,
+  ): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(`${this.base}/personnages`, {
+      nom,
+      disciplines,
+      hasardHabilite,
+      hasardEndurance,
+    });
   }
 
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */

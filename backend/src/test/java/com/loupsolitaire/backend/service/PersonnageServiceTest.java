@@ -122,11 +122,12 @@ class PersonnageServiceTest {
 
     @Test
     void calculeHabiliteEtEnduranceSelonLesTirages() {
-        // ordre des tirages : habilite, endurance, tirage hasard initial, or de depart, objet de depart
-        when(tableDeHasardService.tirerChiffre()).thenReturn(7, 3, 0, 0, 0);
+        // hasardHabilite=7, hasardEndurance=3 passes en parametres ; ordre des
+        // tirages restants (tableDeHasardService) : tirage hasard initial, or de depart, objet de depart
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 7, 3);
 
         assertThat(personnage.getHabiliteBase()).isEqualTo(17);
         assertThat(personnage.getHabilite()).isEqualTo(17);
@@ -136,10 +137,10 @@ class PersonnageServiceTest {
 
     @Test
     void assigneExactementLesCinqDisciplinesChoisiesEtLeChapitreDeDepart() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         assertThat(personnage.getDisciplines()).hasSize(5);
         assertThat(personnage.getChapitreActuel()).isEqualTo(chapitre0);
@@ -148,19 +149,19 @@ class PersonnageServiceTest {
 
     @Test
     void fixeUnTirageHasardDesLaCreation() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 8, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(8, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         assertThat(personnage.getDernierTirageHasard()).isEqualTo(8);
     }
 
     @Test
     void equipeLeMaterielDeBaseFixe() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
 
-        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("hache")), eq(1));
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("repas")), eq(1));
@@ -169,19 +170,19 @@ class PersonnageServiceTest {
 
     @Test
     void nAjouteAucunOrSiLeTirageEstZero() {
-        // habilite=0, endurance=0, tirage hasard=0, or=0, objet depart=2 (casque)
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 2);
+        // tirage hasard initial=0, or=0, objet depart=2 (casque)
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 2);
 
-        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         verify(inventaireService, never()).ajouterObjet(any(), eq(objetsParId.get("or")), anyInt());
     }
 
     @Test
     void ajouteLOrDeDepartSiLeTirageEstPositif() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 6, 2);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 6, 2);
 
-        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("or")), eq(6));
     }
@@ -189,9 +190,9 @@ class PersonnageServiceTest {
     @Test
     void appliqueLaTableDeTirageDeLObjetDeDepart() {
         // tirage objet de depart = 3 -> 2 Repas
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 3);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 3);
 
-        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+        personnageService.creerPersonnage(utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         // 1 (equipement fixe) + 2 (objet de depart, meme id "repas") -> deux appels distincts
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("repas")), eq(1));
@@ -207,20 +208,20 @@ class PersonnageServiceTest {
         List<Objet> armes = List.of(objetsParId.get("hache"), objetsParId.get("glaive"));
         when(objetRepository.findByCategorie(CategorieObjet.ARME)).thenReturn(armes);
         when(tableDeHasardService.tirerParmi(armes)).thenReturn(armes.get(1));
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", avecMaitrise);
+                utilisateur, "Loup Solitaire", avecMaitrise, 0, 0);
 
         assertThat(personnage.getArmeMaitrisee()).isEqualTo(armes.get(1));
     }
 
     @Test
     void neTireAucuneArmeMaitriseeSiLaDisciplineNestPasChoisie() {
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE);
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         assertThat(personnage.getArmeMaitrisee()).isNull();
         verify(objetRepository, never()).findByCategorie(any());
@@ -229,7 +230,7 @@ class PersonnageServiceTest {
     @Test
     void refuseUnNombreDeDisciplinesDifferentDeCinq() {
         assertThatThrownBy(() -> personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", List.of(IdDiscipline.CAMOUFLAGE)))
+                utilisateur, "Loup Solitaire", List.of(IdDiscipline.CAMOUFLAGE), 0, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -240,17 +241,16 @@ class PersonnageServiceTest {
                 IdDiscipline.SIXIEME_SENS, IdDiscipline.ORIENTATION
         );
 
-        assertThatThrownBy(() -> personnageService.creerPersonnage(utilisateur, "Loup Solitaire", avecDoublon))
+        assertThatThrownBy(() -> personnageService.creerPersonnage(utilisateur, "Loup Solitaire", avecDoublon, 0, 0))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void echoueSiLeChapitreDeDepartEstIntrouvable() {
         when(chapitreRepository.findById(0)).thenReturn(Optional.empty());
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0);
 
         assertThatThrownBy(() -> personnageService.creerPersonnage(
-                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE))
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0))
                 .isInstanceOf(RessourceNonTrouveeException.class);
     }
 

@@ -117,7 +117,9 @@ export class CreationPersonnagePage {
 
     this.envoi.set(true);
     this.erreur.set(null);
-    this.personnages$.creer(this.nom.value.trim(), this.choisies()).subscribe({
+    const hasardHabilite = this.habilete()! - 10;
+    const hasardEndurance = this.endurance()! - 20;
+    this.personnages$.creer(this.nom.value.trim(), this.choisies(), hasardHabilite, hasardEndurance).subscribe({
       next: (p) => {
         this.envoi.set(false);
         this.router.navigate(['/personnages', p.id, 'chapitre'], { replaceUrl: true });

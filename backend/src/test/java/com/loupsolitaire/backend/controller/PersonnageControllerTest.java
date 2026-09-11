@@ -135,13 +135,16 @@ class PersonnageControllerTest {
         CreerPersonnageRequest request = new CreerPersonnageRequest();
         request.setNom("Loup Solitaire");
         request.setDisciplines(List.of("CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"));
+        request.setHasardHabilite(5);
+        request.setHasardEndurance(3);
 
         Personnage personnage = creerPersonnage("marius");
 
         when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
         when(personnageService.creerPersonnage(eq(utilisateur), eq("Loup Solitaire"),
                 eq(List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE, IdDiscipline.SIXIEME_SENS,
-                        IdDiscipline.ORIENTATION, IdDiscipline.GUERISON))))
+                        IdDiscipline.ORIENTATION, IdDiscipline.GUERISON)),
+                eq(5), eq(3)))
                 .thenReturn(personnage);
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -163,6 +166,8 @@ class PersonnageControllerTest {
         CreerPersonnageRequest request = new CreerPersonnageRequest();
         request.setNom("Loup Solitaire");
         request.setDisciplines(List.of("VOL_DIRECT", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"));
+        request.setHasardHabilite(5);
+        request.setHasardEndurance(3);
 
         authentifierComme("marius");
 
@@ -171,7 +176,7 @@ class PersonnageControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
 
-        verify(personnageService, never()).creerPersonnage(any(), any(), any());
+        verify(personnageService, never()).creerPersonnage(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -179,6 +184,8 @@ class PersonnageControllerTest {
         CreerPersonnageRequest request = new CreerPersonnageRequest();
         request.setNom("Loup Solitaire");
         request.setDisciplines(List.of("CAMOUFLAGE", "CHASSE"));
+        request.setHasardHabilite(5);
+        request.setHasardEndurance(3);
 
         authentifierComme("marius");
 
