@@ -111,6 +111,10 @@
               @if (lien.conditions.length > 0) {
                 @if (lien.conditions[0].type === 'DISCIPLINE') {
                   {{ nomDiscipline(lien.conditions[0].targetId) }}
+                } @else if (lien.conditions[0].type === 'OBJET') {
+                  {{ nomObjet(lien.conditions[0].targetId) }}
+                } @else if (lien.conditions[0].type === 'BOURSE') {
+                  {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}s
                 } @else {
                   {{ lien.chapitreCibleId }}
                 }
@@ -123,7 +127,14 @@
                   {{ nomDiscipline(lien.conditions[0].targetId) }}
                 } @else if (lien.conditions[0].type === 'HASARD') {
                   {{ lien.conditions[0].type }}
-                } @else {
+                } @else if (lien.conditions[0].type === 'OBJET') {
+                  {{ nomObjet(lien.conditions[0].targetId) }}
+                } @else if (lien.conditions[0].type === 'BOURSE') {
+                  {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
+                } @else if (lien.conditions[0].type === 'ENDURANCE') {
+                  {{ lien.conditions[0].valeur }} Endurances requises
+                }
+                @else {
                   Condition requise
                 }
               }

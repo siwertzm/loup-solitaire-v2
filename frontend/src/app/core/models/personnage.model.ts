@@ -22,6 +22,14 @@ export interface DisciplineResume {
   description: string;
 }
 
+// Aligné sur backend/.../response/ObjetResponse.java (GET /objets).
+export interface ObjetResume {
+  id: string;
+  nom: string;
+  description: string | null;
+  categorie: CategorieObjet;
+}
+
 // Aligné sur backend/.../response/InventaireItemResponse.java — structure
 // PLATE (objetId/nom/categorie/quantite), pas d'objet imbriqué.
 export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'BOURSE';

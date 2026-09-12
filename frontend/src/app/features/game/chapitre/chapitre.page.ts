@@ -9,6 +9,8 @@ import { ChapitreResponse, LienResponse } from '../../../core/models/chapitre.mo
 import { ChapitreService } from '../../../core/services/chapitre.service';
 import { DisciplineResume } from '../../../core/models/personnage.model';
 import { DisciplineService } from '../../../core/services/discipline.service';
+import { ObjetResume } from '../../../core/models/personnage.model';
+import { ObjetService } from '../../../core/services/objet.service';
 
 /**
  * Écran central du jeu : affiche le chapitre en cours et la fiche du personnage.
@@ -26,11 +28,15 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly chapitreService = inject(ChapitreService);
   private readonly personnageService = inject(PersonnageService);
   private readonly disciplineService = inject(DisciplineService);
+  private readonly objetService = inject(ObjetService);
 
   readonly personnageId = signal<string | null>(null);
 
   // Signal stockant les infos du personnage
   readonly personnage = signal<PersonnageResume | null>(null);
+
+  // Signal stockant tous les objets disponibles
+  readonly tousObjets = signal<ObjetResume[]>([]);
 
   // Signal stockant le chapitre courant
   readonly chapitre = signal<ChapitreResponse | null>(null);
@@ -53,7 +59,6 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly habilite = computed(
     () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
   );
-  readonly habiliteTemp = computed(() => this.personnage()?.habiliteTemp ?? 0);
   readonly enduranceActuelle = computed(() => this.personnage()?.enduranceActuelle ?? 0);
 
   // Pourcentages pour le remplissage visuel des barres
@@ -64,7 +69,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   readonly habilitePourcentage = computed(() => {
     const max = this.habilite(); // Valeur d'Habileté maximale estimée
-    return Math.min(100, Math.max(0, ((this.habilite() + this.habiliteTemp()) / max) * 100));
+    return Math.min(100, Math.max(0, (this.habilite() / max) * 100));
   });
 
   readonly enduranceMax = computed(() => this.personnage()?.enduranceMax ?? 0);
@@ -92,37 +97,32 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   );
 
   revelerHasard(): void {
-  if (
-    this.hasardRoule() ||
-    this.hasardResultatVisible() ||
-    this.hasardTermine()
-  ) {
-    return;
-  }
+    if (this.hasardRoule() || this.hasardResultatVisible() || this.hasardTermine()) {
+      return;
+    }
 
-  const valeur = this.chapitre()?.tirageHasard;
+    const valeur = this.chapitre()?.tirageHasard;
 
-  if (valeur === null || valeur === undefined) {
-    return;
-  }
+    if (valeur === null || valeur === undefined) {
+      return;
+    }
 
-  // 1. Le dé roule
-  this.hasardRoule.set(true);
+    // 1. Le dé roule
+    this.hasardRoule.set(true);
 
-  setTimeout(() => {
-    // 2. Le dé s'arrête sur la vraie valeur
-    this.faceHasard.set(valeur);
-    this.hasardRoule.set(false);
-    this.hasardResultatVisible.set(true);
-
-    // 3. On laisse le résultat affiché 2 secondes
     setTimeout(() => {
-      this.hasardResultatVisible.set(false);
-      this.hasardTermine.set(true);
-    }, 2000);
+      // 2. Le dé s'arrête sur la vraie valeur
+      this.faceHasard.set(valeur);
+      this.hasardRoule.set(false);
+      this.hasardResultatVisible.set(true);
 
-  }, 640);
-}
+      // 3. On laisse le résultat affiché 2 secondes
+      setTimeout(() => {
+        this.hasardResultatVisible.set(false);
+        this.hasardTermine.set(true);
+      }, 2000);
+    }, 640);
+  }
 
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
     // Si on reclique sur l'onglet déjà ouvert, on ferme l'encart
@@ -186,10 +186,29 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       error: (err) => console.error('Erreur lors du chargement des disciplines :', err),
     });
 
-    // 3. Récupération du chapitre (GET /personnages/{id}/chapitre)
+    // 3. Récupération de tous les objets disponibles (GET /objets)
+    this.objetService.lister().subscribe({
+      next: (objets) => {
+        this.tousObjets.set(objets);
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des objets :', err);
+      },
+    });
+
+    // 4. Récupération du chapitre (GET /personnages/{id}/chapitre)
     this.chapitreService.getChapitreCourant(id).subscribe({
       next: (data) => {
         this.chapitre.set(data);
+
+        this.ongletActif.set('chapitre');
+        this.ongletLeve.set(null);
+
+        this.hasardRoule.set(false);
+        this.hasardResultatVisible.set(false);
+        this.hasardTermine.set(false);
+        this.faceHasard.set('?');
+
         this.chargement.set(false);
       },
       error: (err) => {
@@ -210,6 +229,16 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     );
 
     return discipline?.nom ?? id;
+  }
+
+  nomObjet(id: string | null): string {
+    if (!id) {
+      return 'Objet requis';
+    }
+
+    const objet = this.tousObjets().find((o) => o.id.toLowerCase() === id.toLowerCase());
+
+    return objet?.nom ?? id;
   }
 
   /**
