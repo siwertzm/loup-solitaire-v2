@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular';
-
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { IonContent } from '@ionic/angular';
+import { TranslatePipe } from '@ngx-translate/core';
 /**
  * Placeholder : écran central du jeu (GET /personnages/{id}/chapitre).
  * À implémenter avec ChapitreService : texte, liens filtrés, objets proposés,
@@ -9,16 +10,10 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar],
-  template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Chapitre</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <p>À venir : texte du chapitre, liens, objets, combat.</p>
-    </ion-content>
-  `,
+  imports: [IonContent, TranslatePipe],
+  templateUrl: './chapitre.page.html',
+  styleUrl: './chapitre.page.scss',
 })
-export class ChapitrePage {}
+export class ChapitrePage {
+  private router = inject(Router);
+}
