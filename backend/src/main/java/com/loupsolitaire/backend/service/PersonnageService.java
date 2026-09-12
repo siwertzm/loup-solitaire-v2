@@ -18,6 +18,7 @@ import com.loupsolitaire.backend.model.Discipline;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChap;
+import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
@@ -28,6 +29,7 @@ import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.InventaireItemRepository;
+import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ObjetDepart;
@@ -69,6 +71,7 @@ public class PersonnageService {
     private final ConditionService conditionService;
     private final EffetChapitreService effetChapitreService;
     private final CombatRepository combatRepository;
+    private final ObjetChapitreRamasseRepository objetChapitreRamasseRepository;
 
     // Statuts de Combat qui autorisent a quitter un chapitre combat=true :
     // DEFAITE en est volontairement exclu (pas de flux "fin de partie"
@@ -423,12 +426,34 @@ public class PersonnageService {
         Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
 
-        boolean disponibleIci = chapitreActuel.getObjets().stream()
-                .anyMatch(oc -> oc.getObjet().getId().equals(objet.getId()));
-        if (!disponibleIci) {
+        ObjetChap objetChap = chapitreActuel.getObjets().stream()
+                .filter(oc -> oc.getObjet().getId().equals(objet.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Cet objet n'est pas disponible sur le chapitre " + chapitreActuelId));
+
+        // Plafond reel : sans ce suivi persistant, rien n'empeche de reprendre
+        // le meme objet a l'infini sur le meme chapitre (voir ObjetChapitreRamasse).
+        Optional<ObjetChapitreRamasse> existant = objetChapitreRamasseRepository
+                .findByPersonnageIdAndChapitreIdAndObjetId(personnage.getId(), chapitreActuelId, objet.getId());
+        int dejaPris = existant.map(ObjetChapitreRamasse::getQuantite).orElse(0);
+
+        if (dejaPris >= objetChap.getValeur()) {
             throw new IllegalArgumentException(
-                    "Cet objet n'est pas disponible sur le chapitre " + chapitreActuelId);
+                    "Vous avez deja ramasse tous les exemplaires de " + objet.getId()
+                            + " disponibles sur ce chapitre");
         }
+
+        ObjetChapitreRamasse ramasse = existant.orElseGet(() -> {
+            ObjetChapitreRamasse nouveau = new ObjetChapitreRamasse();
+            nouveau.setPersonnage(personnage);
+            nouveau.setChapitre(chapitreActuel);
+            nouveau.setObjet(objet);
+            nouveau.setQuantite(0);
+            return nouveau;
+        });
+        ramasse.setQuantite(ramasse.getQuantite() + 1);
+        objetChapitreRamasseRepository.save(ramasse);
 
         inventaireService.ajouterObjet(personnage, objet, 1);
     }

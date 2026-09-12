@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.service.mapper;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +12,11 @@ import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Lien;
+import com.loupsolitaire.backend.model.ObjetChap;
+import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
+import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.CondResponse;
 import com.loupsolitaire.backend.response.EffetResponse;
@@ -35,10 +40,11 @@ public class ChapitreMapper {
 
     private final ChapitreRepository chapitreRepository;
     private final ConditionService conditionService;
+    private final ObjetChapitreRamasseRepository objetChapitreRamasseRepository;
 
-    // "personnage" sert uniquement a calculer LienResponse.disponible
-    // (voir ConditionService) : le reste du chapitre est identique pour
-    // tout le monde.
+    // "personnage" sert a calculer LienResponse.disponible (voir
+    // ConditionService) ET la quantite RESTANTE des objets optionnels (voir
+    // versReponseObjet) : le reste du chapitre est identique pour tout le monde.
     @Transactional(readOnly = true)
     public ChapitreResponse versReponse(Integer chapitreId, Personnage personnage) {
         Chapitre chapitre = chapitreRepository.findById(chapitreId)
@@ -56,12 +62,35 @@ public class ChapitreMapper {
                 .map(lien -> versReponseLien(lien, personnage))
                 .toList();
 
+        // Deja ramasse ici, par objetId : une seule requete pour tout le
+        // chapitre plutot qu'une par objet (voir Repository).
+        Map<String, Integer> dejaPrisParObjet = objetChapitreRamasseRepository
+                .findByPersonnageIdAndChapitreId(personnage.getId(), chapitreId).stream()
+                .collect(Collectors.toMap(r -> r.getObjet().getId(), ObjetChapitreRamasse::getQuantite));
+
         List<ObjetChapResponse> objets = chapitre.getObjets().stream()
-                .map(o -> new ObjetChapResponse(o.getObjet().getId(), o.getObjet().getNom(), o.getValeur(), o.isOptionnel()))
+                .map(o -> versReponseObjet(o, dejaPrisParObjet))
                 .toList();
 
         return new ChapitreResponse(chapitre.getId(), chapitre.getText(), chapitre.isCombat(),
                 personnage.getDernierTirageHasard(), ennemis, effets, liens, objets);
+    }
+
+    private ObjetChapResponse versReponseObjet(ObjetChap objetChap, Map<String, Integer> dejaPrisParObjet) {
+
+        String objetId = objetChap.getObjet().getId();
+        int valeur = objetChap.getValeur();
+
+        // Uniquement pour les objets OPTIONNELS : les obligatoires sont
+        // appliques une seule fois automatiquement a l'arrivee sur le
+        // chapitre (voir PersonnageService.avancerVersChapitre), valeur y
+        // garde son sens original (montant applique), pas "restant a prendre".
+        if (objetChap.isOptionnel()) {
+            int dejaPris = dejaPrisParObjet.getOrDefault(objetId, 0);
+            valeur = Math.max(0, objetChap.getValeur() - dejaPris);
+        }
+
+        return new ObjetChapResponse(objetId, objetChap.getObjet().getNom(), valeur, objetChap.isOptionnel());
     }
 
     private EffetResponse versReponseEffet(Effet effet) {

@@ -29,6 +29,7 @@ import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Discipline;
 import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Objet;
+import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
@@ -37,6 +38,7 @@ import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
+import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
@@ -62,6 +64,8 @@ class PersonnageServiceTest {
     private EffetChapitreService effetChapitreService;
     @Mock
     private CombatRepository combatRepository;
+    @Mock
+    private ObjetChapitreRamasseRepository objetChapitreRamasseRepository;
 
     @InjectMocks
     private PersonnageService personnageService;
@@ -1069,6 +1073,28 @@ class PersonnageServiceTest {
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
 
         assertThatThrownBy(() -> personnageService.ramasserObjetDuChapitre(p, hache))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());
+    }
+
+    @Test
+    void refuseDeRamasserSiLePlafondDuChapitreEstDejaAtteint() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        Objet repas = objetsParId.get("repas");
+        chapitre0.setObjets(List.of(creerObjetChap(repas, 2, true))); // max 2 sur ce chapitre
+
+        ObjetChapitreRamasse dejaPris = new ObjetChapitreRamasse();
+        dejaPris.setQuantite(2); // deja pris les 2 exemplaires disponibles
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(objetChapitreRamasseRepository.findByPersonnageIdAndChapitreIdAndObjetId(any(), eq(0), eq("repas")))
+                .thenReturn(Optional.of(dejaPris));
+
+        // Sans ce plafond, rien n'empechait de reprendre le meme objet a l'infini
+        // sur le meme chapitre (le seul garde-fou existant etait cote client).
+        assertThatThrownBy(() -> personnageService.ramasserObjetDuChapitre(p, repas))
                 .isInstanceOf(IllegalArgumentException.class);
 
         verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());

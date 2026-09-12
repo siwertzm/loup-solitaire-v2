@@ -2,6 +2,8 @@ package com.loupsolitaire.backend.service.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -22,10 +24,12 @@ import com.loupsolitaire.backend.model.Ennemi;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChap;
+import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
+import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.service.ConditionService;
 
@@ -36,6 +40,8 @@ class ChapitreMapperTest {
     private ChapitreRepository chapitreRepository;
     @Mock
     private ConditionService conditionService;
+    @Mock
+    private ObjetChapitreRamasseRepository objetChapitreRamasseRepository;
 
     @InjectMocks
     private ChapitreMapper chapitreMapper;
@@ -218,6 +224,33 @@ class ChapitreMapperTest {
         assertThat(reponse.objets().get(0).objetId()).isEqualTo("repas");
         assertThat(reponse.objets().get(0).valeur()).isEqualTo(1);
         assertThat(reponse.objets().get(0).optionnel()).isTrue();
+    }
+
+    @Test
+    void laValeurDUnObjetOptionnelRefleteCeQuiResteAPrendre() {
+        Chapitre chapitre = creerChapitre(20, "texte", false);
+        Objet repas = new Objet();
+        repas.setId("repas");
+        repas.setNom("Repas");
+
+        ObjetChap objetChap = new ObjetChap();
+        objetChap.setObjet(repas);
+        objetChap.setValeur(2); // le chapitre en propose 2
+        objetChap.setOptionnel(true);
+        chapitre.setObjets(List.of(objetChap));
+
+        ObjetChapitreRamasse dejaPris = new ObjetChapitreRamasse();
+        dejaPris.setObjet(repas);
+        dejaPris.setQuantite(1); // 1 deja pris precedemment
+
+        when(chapitreRepository.findById(20)).thenReturn(Optional.of(chapitre));
+        when(objetChapitreRamasseRepository.findByPersonnageIdAndChapitreId(any(), eq(20)))
+                .thenReturn(List.of(dejaPris));
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(20, personnage);
+
+        // 2 proposes - 1 deja pris = 1 restant, pas 2 (la valeur brute du chapitre).
+        assertThat(reponse.objets().get(0).valeur()).isEqualTo(1);
     }
 
     @Test
