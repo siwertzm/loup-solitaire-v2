@@ -22,6 +22,17 @@ export interface DisciplineResume {
   description: string;
 }
 
+// Aligné sur backend/.../response/InventaireItemResponse.java — structure
+// PLATE (objetId/nom/categorie/quantite), pas d'objet imbriqué.
+export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'BOURSE';
+
+export interface InventaireItem {
+  objetId: string;
+  nom: string;
+  categorie: CategorieObjet;
+  quantite: number;
+}
+
 export interface PersonnageResume {
   id: string;
   nom: string;
@@ -35,7 +46,7 @@ export interface PersonnageResume {
   chapitreActuelId: number | null;
   volEnAttente: string | null;
   mort: boolean;
-  inventaire: unknown[]; // affiné quand InventaireItemResponse sera modélisé
+  inventaire: InventaireItem[]; // affiné quand InventaireItemResponse sera modélisé
 }
 
 export interface MoiResponse {

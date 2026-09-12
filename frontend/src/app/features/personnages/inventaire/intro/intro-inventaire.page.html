@@ -1,0 +1,31 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_INVENTAIRE.RETOUR' | translate }}</button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'INTRO_INVENTAIRE.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'INTRO_INVENTAIRE.TITRE' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_1' | translate"></p>
+      <p>
+        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_2' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_3' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_4' | translate }}
+      </p>
+
+      <p>
+        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_5' | translate }}
+      </p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="continuer()">{{ 'INTRO_INVENTAIRE.VALIDER' | translate }}</button>
+    </div>
+  </div>
+</ion-content>

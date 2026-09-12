@@ -39,6 +39,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/personnages/creation/intro/intro-creation.page').then((m) => m.IntroCreationPage),
   },
   {
+    path: 'personnages/:id/inventaire/intro',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/personnages/inventaire/intro/intro-inventaire.page').then((m) => m.IntroInventairePage),
+  },
+  {
+    path: 'personnages/:id/inventaire/depart',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/personnages/inventaire/inventaire-depart.page').then((m) => m.InventaireDepartPage),
+  },
+  {
     path: 'personnages/:id/chapitre',
     canActivate: [authGuard],
     loadComponent: () => import('./features/game/chapitre/chapitre.page').then((m) => m.ChapitrePage),

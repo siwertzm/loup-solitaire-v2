@@ -1,0 +1,135 @@
+<ion-content [fullscreen]="true" class="equipement">
+  <div class="ecran">
+    <div class="entete">
+      <div class="surtitre">{{ 'EQUIPEMENT.SURTITRE' | translate }}</div>
+      <h1 class="titre">{{ nom() }}</h1>
+    </div>
+
+    <div class="bloc">
+      <span class="bloc-titre">{{ 'EQUIPEMENT.VETEMENTS' | translate }}</span>
+      <div class="ligne vetements">
+        <span class="ligne-nom">{{ 'EQUIPEMENT.TUNIQUE_ET_CAPE' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="tirages">
+      <div class="bloc de-bloc">
+        <span class="cle">{{ 'EQUIPEMENT.TROUVE_DANS_LES_RUINES' | translate }}</span>
+        @if (objetRevele()) {
+          <span class="de fige objet">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              @for (trait of traitsObjet(); track $index) {
+                <path [attr.d]="trait"></path>
+              }
+            </svg>
+          </span>
+          <span class="nom-objet">{{ nomObjet() }}</span>
+        } @else {
+          <button
+            type="button"
+            class="de objet"
+            [class.roule]="roulantObjet()"
+            [disabled]="chargement()"
+            aria-label="Révéler l'objet trouvé"
+            (click)="revelerObjet()"
+          >
+            @if (traitsObjet().length) {
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                @for (trait of traitsObjet(); track $index) {
+                  <path [attr.d]="trait"></path>
+                }
+              </svg>
+            } @else {
+              ?
+            }
+          </button>
+        }
+      </div>
+
+      <div class="bloc de-bloc">
+        <span class="cle">{{ 'EQUIPEMENT.PIECES_DOR' | translate }}</span>
+        @if (orRevele()) {
+          <span class="total or">{{ or() }}</span>
+          <span class="detail">{{ 'EQUIPEMENT.COURONNES' | translate }}</span>
+        } @else {
+          <button
+            type="button"
+            class="de or"
+            [class.roule]="roulantOr()"
+            [disabled]="chargement()"
+            aria-label="Révéler les Pièces d'Or"
+            (click)="revelerOr()"
+          >
+            {{ faceOr() }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="feuille">
+      <div class="bloc">
+        <div class="entete-bloc">
+          <span class="bloc-titre">{{ 'EQUIPEMENT.ARMES' | translate }}</span>
+          <span class="compteur">{{ armesCompte() }}/{{ maxArmes }}</span>
+        </div>
+        <div class="cases deux">
+          @for (c of casesArmes(); track $index) {
+            <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
+              <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="bloc">
+        <div class="entete-bloc">
+          <span class="bloc-titre">{{ 'EQUIPEMENT.SAC_A_DOS' | translate }}</span>
+          <span class="compteur">{{ sacCompte() }}/{{ maxSac }}</span>
+        </div>
+        <div class="sac">
+          <div class="zone">
+            <span class="cle">{{ 'EQUIPEMENT.OBJETS' | translate }}</span>
+            <div class="cases deux">
+              @for (c of casesObjets(); track $index) {
+                <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
+                  <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="zone">
+            <span class="cle">{{ 'EQUIPEMENT.REPAS' | translate }}</span>
+            <div class="cases deux">
+              @for (c of casesRepas(); track $index) {
+                <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
+                  <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <span class="bloc-titre">{{ 'EQUIPEMENT.OBJETS_SPECIAUX' | translate }}</span>
+        <div class="lignes">
+          @for (o of casesSpeciaux(); track o.nom) {
+            <div class="ligne">
+              <span class="ligne-nom">{{ o.nom }}</span>
+              <span class="ligne-note">{{ o.note }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="pied">
+      @if (erreur()) {
+        <div class="erreur">{{ erreur() | translate }}</div>
+      }
+      <button type="button" class="valider" [class.actif]="complet()" [disabled]="!complet()" (click)="partir()">
+        {{ 'EQUIPEMENT.VALIDER' | translate }}
+      </button>
+    </div>
+  </div>
+</ion-content>

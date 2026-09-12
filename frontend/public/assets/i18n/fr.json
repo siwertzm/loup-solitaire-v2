@@ -119,5 +119,32 @@
     "PARAGRAPHE_DISCIPLINES": "Au cours des siècles, les Moines Kaï ont appris à maîtriser toutes les techniques du guerrier. Ces techniques sont connues sous le nom de Disciplines Kaï et enseignées aux Seigneurs Kaï. Pour votre part, vous n'avez été initié qu'à cinq des techniques décrites ci-dessous. Il vous appartient de choisir vous-même ces cinq disciplines. Chaque Discipline Kaï peut vous être utile à un moment ou à un autre de votre quête et votre choix devra être le plus judicieux possible : dans certaines circonstances, une habile mise en pratique de l'une de ces techniques peut vous sauver la vie.",
     "PARAGRAPHE_DISCIPLINES_2": "Si vous remplissez avec succès la mission qui vous est assignée dans ce premier livre de la série du Loup Solitaire, vous aurez le droit d'ajouter une Discipline Kaï supplémentaire à celles que vous possédez déjà. Lorsque vous vous lancerez dans la nouvelle aventure que vous propose le prochain volume de la série (intitulé La Traversée Infernale), vous pourrez ainsi faire usage de six disciplines Kaï (les cinq premières étant acquises une bonne fois pour toutes), de même que des Objets Spéciaux que vous aurez décidé de conserver au cours de votre première mission. Sachez en effet que, de livre en livre, votre expérience grandira chaque fois que vous aurez accompli une mission : vous pourrez, de cette façon, espérer atteindre un jour la complète maîtrise de l'art et de la science des Moines Kaï.",
     "VALIDER": "CRÉER MON PERSONNAGE"
+  },
+  "EQUIPEMENT": {
+    "SURTITRE": "Équipement de départ",
+    "VETEMENTS": "Vêtements",
+    "TUNIQUE_ET_CAPE": "Tunique et cape de voyage",
+    "TROUVE_DANS_LES_RUINES": "Trouvé dans les ruines",
+    "PIECES_DOR": "Pièces d'Or",
+    "COURONNES": "Couronnes d'Or",
+    "ARMES": "Armes",
+    "LIBRE": "libre",
+    "SAC_A_DOS": "Sac à dos",
+    "OBJETS": "Objets",
+    "REPAS": "Repas",
+    "OBJETS_SPECIAUX": "Objets spéciaux",
+    "VALIDER": "PARTIR À L'AVENTURE",
+    "ERREUR_CHARGEMENT": "Impossible de charger l'équipement de ce personnage."
+  },
+  "INTRO_INVENTAIRE": {
+    "RETOUR": "‹ MENU",
+    "SUR_TITRE": "Avant de commencer",
+    "TITRE": "Équipement de départ",
+    "PARAGRAPHE_1": "Au départ de votre aventure, vous êtes vêtu d'une tunique et d'une cape de Seigneur Kaï, toutes deux de couleur verte. Le matériel dont vous disposez pour assurer votre survie est par ailleurs réduit au minimum. Vous possédez une Hache et un Sac à Dos qui contient un Repas",
+    "PARAGRAPHE_2": "Vous disposez également, accrochée à votre ceinture, d'une Bourse de Cuir qui contient des Pièces d'Or. En appuyant sur le dé de Pièces d'Or, l'application tire pour vous un chiffre entre 0 et 9. Le chiffre que vous obtiendrez représentera le nombre de Couronnes (c'est le nom de la monnaie en cours dans ces régions) dont vous disposez au début de votre mission",
+    "PARAGRAPHE_3": "Dans les ruines fumantes du monastère détruit, vous avez découvert une Carte Géographique qui vous permet de vous orienter. Cette carte est soigneusement rangée dans une poche intérieure de votre tunique.",
+    "PARAGRAPHE_4": "Vous avez également découvert l'un des objets suivants :",
+    "PARAGRAPHE_5": "Pour savoir quel est l'objet que vous avez découvert dans la liste ci-dessus, Appuyez sur le dé d'objet, l'application tirera un des objets au hasard.",
+    "VALIDER": "OUVRIR L'INVENTAIRE"
   }
 }

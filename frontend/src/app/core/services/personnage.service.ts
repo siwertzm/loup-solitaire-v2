@@ -15,6 +15,11 @@ export class PersonnageService {
     return this.http.get<PersonnageResume[]>(`${this.base}/personnages`);
   }
 
+  /** GET /personnages/{id} — fiche complète d'un personnage (inventaire inclus). */
+  recuperer(id: string): Observable<PersonnageResume> {
+    return this.http.get<PersonnageResume>(`${this.base}/personnages/${id}`);
+  }
+
   /** GET /auth/me — profil + personnages. */
   moi(): Observable<MoiResponse> {
     return this.http.get<MoiResponse>(`${this.base}/auth/me`);

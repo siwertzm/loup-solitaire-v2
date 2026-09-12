@@ -1,0 +1,318 @@
+// Équipement de départ — même palette et typo que la création de personnage.
+
+$foret: #2c3323;
+$parchemin: #ece2c8;
+$cuivre: #c2703a;
+$or: #d9a94a;
+$rouge: #e0705a;
+$vert: #4d6b23;
+
+@keyframes de-roule {
+  0% {
+    transform: rotate(-14deg) scale(0.86);
+  }
+  50% {
+    transform: rotate(12deg) scale(1.08);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+
+ion-content.equipement {
+  --background: #{$foret};
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ion-text-color: #{$parchemin};
+  color: $parchemin;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  button {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+  }
+}
+
+.ecran {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 6px 22px 0;
+  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
+}
+
+.entete {
+  flex: none;
+  padding: 12px 0 4px;
+
+  .surtitre {
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $cuivre;
+  }
+
+  .titre {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 6px 0 0;
+  }
+}
+
+.bloc {
+  background: rgba(0, 0, 0, 0.24);
+  border-radius: 14px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bloc-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(236, 226, 200, 0.5);
+}
+
+.cle {
+  font-family: 'Cinzel', serif;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  color: rgba(236, 226, 200, 0.35);
+}
+
+.entete-bloc {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  .compteur {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(236, 226, 200, 0.35);
+  }
+}
+
+.tirages {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.de-bloc {
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 12px;
+
+  .cle {
+    font-size: 9px;
+    letter-spacing: 0.13em;
+    color: rgba(236, 226, 200, 0.5);
+    text-align: center;
+  }
+
+  .total {
+    font-family: 'Cinzel', serif;
+    font-size: 34px;
+    line-height: 1.35;
+
+    &.or {
+      color: $or;
+    }
+  }
+
+  .detail {
+    font-size: 12px;
+    color: rgba(236, 226, 200, 0.4);
+  }
+
+  .nom-objet {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    line-height: 1.25;
+    color: $or;
+    text-align: center;
+  }
+}
+
+.de {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &.objet {
+    border: 1px solid rgba(194, 112, 58, 0.45);
+    background: rgba(194, 112, 58, 0.1);
+    color: $cuivre;
+  }
+
+  &.or {
+    border: 1px solid rgba(217, 169, 74, 0.5);
+    background: rgba(217, 169, 74, 0.12);
+    color: $or;
+  }
+
+  &.fige {
+    border-color: $cuivre;
+    background: rgba(194, 112, 58, 0.16);
+    color: $or;
+    cursor: default;
+  }
+
+  &.roule {
+    animation: de-roule 0.28s ease-in-out infinite;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.feuille {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding-bottom: 6px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.sac {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.zone {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cases {
+  display: grid;
+  gap: 7px;
+
+  &.deux {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.case-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 46px;
+  padding: 6px 5px;
+  border: 1px dashed rgba(236, 226, 200, 0.18);
+  border-radius: 9px;
+
+  .case-nom {
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    line-height: 1.2;
+    color: rgba(236, 226, 200, 0.28);
+  }
+
+  &.remplie {
+    border-style: solid;
+    border-color: rgba(236, 226, 200, 0.2);
+    background: rgba(236, 226, 200, 0.06);
+
+    .case-nom {
+      color: $parchemin;
+    }
+  }
+
+  &.trouvee {
+    border-color: $cuivre;
+    background: rgba(194, 112, 58, 0.16);
+
+    .case-nom {
+      color: $or;
+    }
+  }
+}
+
+.lignes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px;
+  background: rgba(236, 226, 200, 0.06);
+  border-left: 2px solid $cuivre;
+  border-radius: 0 9px 9px 0;
+
+  &.vetements {
+    border-left-color: $vert;
+  }
+
+  .ligne-nom {
+    flex: 1;
+    font-size: 13.5px;
+  }
+
+  .ligne-note {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: rgba(236, 226, 200, 0.4);
+  }
+}
+
+.pied {
+  flex: none;
+  padding: 14px 0 22px;
+
+  .erreur {
+    color: $rouge;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+}
+
+.valider {
+  width: 100%;
+  border: none;
+  border-radius: 11px;
+  padding: 15px;
+  background: rgba(236, 226, 200, 0.12);
+  color: rgba(236, 226, 200, 0.45);
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+
+  &.actif {
+    background: $cuivre;
+    color: $foret;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
