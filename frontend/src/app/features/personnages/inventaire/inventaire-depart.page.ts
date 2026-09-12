@@ -220,7 +220,16 @@ export class InventaireDepartPage {
   }
 
   supprimer(): void {
-    // TODO: logique de suppression du personnage
+    this.chargement.set(true);
+    this.personnages$.supprimer(this.personnageId).subscribe({
+      next: () => {
+        this.router.navigate(['/accueil'], { replaceUrl: true });
+      },
+      error: () => {
+        this.erreur.set('EQUIPEMENT.ERREUR_SUPPRESSION');
+        this.chargement.set(false);
+      },
+    });
   }
 
   private casesSac(categorie: 'OBJET' | 'REPAS', nbCases: number): Case[] {

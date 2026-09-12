@@ -135,7 +135,8 @@
     "OBJETS_SPECIAUX": "Objets spéciaux",
     "VALIDER": "PARTIR À L'AVENTURE",
     "SUPPRIMER": "SUPPRIMER LE PERSONNAGE",
-    "ERREUR_CHARGEMENT": "Impossible de charger l'équipement de ce personnage."
+    "ERREUR_CHARGEMENT": "Impossible de charger l'équipement de ce personnage.",
+    "ERREUR_SUPPRESSION": "Impossible de supprimer ce personnage."
   },
   "INTRO_INVENTAIRE": {
     "RETOUR": "‹ MENU",

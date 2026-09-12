@@ -42,7 +42,7 @@ ion-content.equipement {
 
 .entete {
   flex: none;
-  padding: 12px 0 12px;
+  padding: 12px 0 0px;
 
   .surtitre {
     font-family: 'Cinzel', serif;
@@ -56,7 +56,7 @@ ion-content.equipement {
     font-family: 'Cinzel', serif;
     font-size: 22px;
     font-weight: 600;
-    margin: 12px 0 0;
+    margin: 4px 0 0;
   }
 }
 
@@ -187,7 +187,6 @@ ion-content.equipement {
   display: flex;
   flex-direction: column;
   gap: 11px;
-  padding-bottom: 6px;
 
   &::-webkit-scrollbar {
     display: none;
@@ -280,14 +279,14 @@ ion-content.equipement {
     font-family: 'Cinzel', serif;
     font-size: 9px;
     letter-spacing: 0.12em;
-    color: rgba(236, 226, 200, 0.4);
+    color: $or;
   }
 }
 
 .pied {
   display: flex;
   flex-direction: column;
-  padding: 14px 0 22px;
+  padding: 1px 0 22px;
   gap: 10px;
 
   .erreur {
@@ -335,9 +334,5 @@ ion-content.equipement {
     background: rgba(255, 0, 0, 0);;
     color: $rouge;
     border: 2px solid $rouge;
-  }
-
-  &:disabled {
-    cursor: default;
   }
 }

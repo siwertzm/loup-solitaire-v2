@@ -27,6 +27,7 @@ import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
+import com.loupsolitaire.backend.repository.InventaireItemRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ObjetDepart;
@@ -60,6 +61,7 @@ public class PersonnageService {
 
     private final PersonnageRepository personnageRepository;
     private final DisciplineRepository disciplineRepository;
+    private final InventaireItemRepository inventaireItemRepository;
     private final ObjetRepository objetRepository;
     private final ChapitreRepository chapitreRepository;
     private final TableDeHasardService tableDeHasardService;
@@ -467,5 +469,12 @@ public class PersonnageService {
         }
 
         inventaireService.remplacerObjet(personnage, objetARetirer, 1, objetAAjouter, 1);
+    }
+
+    @Transactional
+    public void supprimerPersonnage(Personnage personnage) {
+        inventaireItemRepository.deleteByPersonnage(personnage);
+        combatRepository.deleteAll(combatRepository.findByPersonnage(personnage));
+        personnageRepository.delete(personnage);
     }
 }

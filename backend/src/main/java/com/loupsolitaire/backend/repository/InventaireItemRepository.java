@@ -20,4 +20,6 @@ public interface InventaireItemRepository extends JpaRepository<InventaireItem, 
     List<InventaireItem> findByPersonnage(@Param("personnage") Personnage personnage);
 
     Optional<InventaireItem> findByPersonnageAndObjetId(Personnage personnage, String objetId);
+
+    void deleteByPersonnage(Personnage personnage);
 }

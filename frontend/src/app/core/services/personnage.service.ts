@@ -25,6 +25,11 @@ export class PersonnageService {
     return this.http.get<MoiResponse>(`${this.base}/auth/me`);
   }
 
+  /** DELETE /personnages/{id} — supprime définitivement un personnage. */
+  supprimer(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/personnages/${id}`);
+  }
+
   /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habileté/endurance). */
   creer(
     nom: string,

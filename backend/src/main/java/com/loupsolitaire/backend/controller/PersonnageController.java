@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.loupsolitaire.backend.exception.AccesRefuseException;
@@ -236,6 +237,19 @@ public class PersonnageController {
 
         return personnageMapper.versReponse(personnage);
     }
+
+    /**
+     * Supprime un personnage.
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void supprimer(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+    Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+    personnageService.supprimerPersonnage(personnage);
+}
 
     private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
         Personnage personnage = personnageRepository.findById(id)
