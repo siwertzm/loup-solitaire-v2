@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular';
 
 import { PersonnageResume, ObjetResume } from '../../../core/models/personnage.model';
@@ -114,13 +114,18 @@ export class InventaireSheetComponent {
   );
 
   readonly retraitEnCours = signal<string | null>(null);
+  private readonly feuilleSac = viewChild<ElementRef<HTMLElement>>('feuilleSac');
 
   /**
    * Retire 1 exemplaire d'un objet possédé (DELETE /personnages/{id}/objets/{objetId}).
    * Recalcule l'HABILETÉ côté backend si c'était une arme — la réponse à jour
    * remplace directement `personnage`, tous les compteurs se recalculent seuls.
+   *
+   * `sliding` : référence du ion-item-sliding concerné, pour le refermer
+   * après coup (sinon le bouton "Retirer" reste affiché, ouvert, même une
+   * fois l'objet retiré) ; on remonte aussi le scroll en haut de la feuille.
    */
-  retirer(objetId: string): void {
+  retirer(objetId: string, sliding: IonItemSliding): void {
     const id = this.sheet.personnageId();
     if (!id || this.retraitEnCours()) return;
 
@@ -130,6 +135,8 @@ export class InventaireSheetComponent {
         this.personnage.set(p);
         this.retraitEnCours.set(null);
         this.sheet.notifierMiseAJour(p);
+        sliding.close();
+        this.feuilleSac()?.nativeElement.scrollTo({ top: 0 });
       },
       error: (err) => {
         console.error("Erreur lors du retrait de l'objet :", err);

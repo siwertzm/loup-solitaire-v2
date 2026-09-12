@@ -1,6 +1,6 @@
 @if (ouvert()) {
   <div class="voile-sac" (click)="fermer()">
-    <div class="feuille-sac" (click)="$event.stopPropagation()">
+    <div class="feuille-sac" #feuilleSac (click)="$event.stopPropagation()">
       <div class="poignee"></div>
 
       @if (chargement()) {
@@ -18,7 +18,7 @@
             </div>
           </div>
           @for (a of armesDetail(); track a.objetId) {
-            <ion-item-sliding>
+            <ion-item-sliding #slideA>
               <ion-item lines="none" class="sac-item-hote">
                 <div class="sac-ligne" [class.maitrisee]="a.maitrisee">
                   <span class="sac-nom">{{ a.nom }}</span>
@@ -30,7 +30,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="danger" [disabled]="retraitEnCours() === a.objetId" (click)="retirer(a.objetId)">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === a.objetId" (click)="retirer(a.objetId, slideA)">
                   Retirer
                 </ion-item-option>
               </ion-item-options>
@@ -50,7 +50,7 @@
             </div>
           </div>
           @for (o of objetsEtRepasDetail(); track o.objetId) {
-            <ion-item-sliding>
+            <ion-item-sliding #slideO>
               <ion-item lines="none" class="sac-item-hote">
                 <div class="sac-ligne">
                   <span class="sac-nom">{{ o.nom }}</span>
@@ -58,7 +58,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="danger" [disabled]="retraitEnCours() === o.objetId" (click)="retirer(o.objetId)">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === o.objetId" (click)="retirer(o.objetId, slideO)">
                   Retirer
                 </ion-item-option>
               </ion-item-options>
@@ -67,7 +67,7 @@
 
           <div class="sac-section-titre">OBJETS SPÉCIAUX (HORS LIMITE)</div>
           @for (s of objetsSpeciauxDetail(); track s.objetId) {
-            <ion-item-sliding>
+            <ion-item-sliding #slideS>
               <ion-item lines="none" class="sac-item-hote">
                 <div class="sac-ligne">
                   <span class="sac-nom">{{ s.nom }}</span>
@@ -75,7 +75,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="danger" [disabled]="retraitEnCours() === s.objetId" (click)="retirer(s.objetId)">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === s.objetId" (click)="retirer(s.objetId, slideS)">
                   Retirer
                 </ion-item-option>
               </ion-item-options>
