@@ -18,7 +18,7 @@
       } @else if (erreur()) {
         <div class="etat erreur">{{ erreur() | translate }}</div>
       } @else if (!cartes().length) {
-        <div class="etat">{{ 'ACCUEIL.AUCUNE_AVENTURE' | translate }}</div>
+        <div class="etat" [innerHTML]="'ACCUEIL.AUCUNE_AVENTURE' | translate"></div>
       } @else {
         @for (pj of cartes(); track pj.id) {
           <article class="carte">

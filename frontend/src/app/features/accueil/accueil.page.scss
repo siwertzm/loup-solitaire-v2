@@ -10,6 +10,12 @@ $cuivre: #c2703a;
 $or: #d9a94a;
 $sepia: #8a7a5e;
 
+:host ::ng-deep .etat strong {
+  font-size: 22px;
+  color: rgba(236, 226, 200, 0.6);
+  font-weight: bold;
+}
+
 ion-content.accueil {
   --background: #{$foret};
   --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
@@ -114,9 +120,10 @@ ion-content.accueil {
 }
 
 .etat {
-  padding: 20px 4px;
-  font-size: 15px;
+  padding: 40px 6px;
+  font-size: 18px;
   color: rgba(236, 226, 200, 0.6);
+  text-align: center;
 
   &.erreur {
     color: #e0705a;
