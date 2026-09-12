@@ -8,21 +8,32 @@
       } @else {
         <div class="sac-entete">
           <div class="sac-entete-titre">SAC À DOS</div>
-          <div class="sac-resume">
-            {{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }} · ARMES {{ armesCount() }}/{{ maxArmes }}
-          </div>
         </div>
 
         <div class="sac-contenu">
-          <div class="sac-section-titre">ARMES</div>
+          <div class="sac-section-titre">
+            ARMES
+            <div class="sac-resume">
+              {{ armesCount() }}/{{ maxArmes }}
+            </div>
+          </div>
           @for (a of armesDetail(); track a.objetId) {
-            <div class="sac-ligne">
+            <div class="sac-ligne" [class.maitrisee]="a.maitrisee">
               <span class="sac-nom">{{ a.nom }}</span>
-              <span class="sac-tag">{{ a.equipee ? 'ÉQUIPÉE' : 'AU SAC' }}</span>
+              @if (a.maitrisee) {
+                <span class="sac-tag">MAÎTRISÉE <span class="sac-bonus">+{{ bonusArmeMaitrisee }} HAB</span></span>
+              } @else {
+                <span class="sac-tag">ÉQUIPÉE</span>
+              }
             </div>
           }
 
-          <div class="sac-section-titre">OBJETS &amp; REPAS</div>
+          <div class="sac-section-titre">
+            OBJETS &amp; REPAS
+            <div class="sac-resume">
+              {{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }}
+            </div>
+          </div>
           @for (o of objetsEtRepasDetail(); track o.objetId) {
             <div class="sac-ligne">
               <span class="sac-nom">{{ o.nom }}</span>

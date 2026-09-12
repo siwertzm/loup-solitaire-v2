@@ -86,16 +86,17 @@ export class InventaireSheetComponent {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
-  // "équipée" : aucune notion d'arme équipée n'existe côté backend (juste
-  // "possédée" ou non) — on marque celle qui correspond à armeMaitrisee (le
-  // bonus d'HABILETÉ) si le personnage la possède, sinon la première arme
-  // par défaut. À ajuster si une vraie notion d'équipement est ajoutée un jour.
+  // "MAÎTRISÉE" : l'arme qui correspond à armeMaitrisee (Discipline Maîtrise
+  // des Armes) donne +2 HABILETÉ tant qu'elle est possédée — aligné sur
+  // InventaireService.BONUS_ARME_MAITRISEE (backend). Toutes les autres
+  // armes possédées sont simplement "ÉQUIPÉE" (pas de vraie notion
+  // d'emplacement équipé/au sac côté backend, juste "possédée").
+  readonly bonusArmeMaitrisee = 2;
+
   readonly armesDetail = computed(() => {
     const armes = this.inventaire().filter((i) => i.categorie === 'ARME');
-    const maitriseeId = this.personnage()?.armeMaitrisee ?? null;
-    const idxMaitrisee = armes.findIndex((a) => a.objetId === maitriseeId);
-    const idxEquipee = idxMaitrisee >= 0 ? idxMaitrisee : 0;
-    return armes.map((a, idx) => ({ ...a, equipee: idx === idxEquipee }));
+    const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+    return armes.map((a) => ({ ...a, maitrisee: maitriseeNom !== null && a.nom === maitriseeNom }));
   });
 
   readonly objetsEtRepasDetail = computed(() =>
