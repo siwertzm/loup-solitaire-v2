@@ -1,16 +1,35 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
     <header class="titre">
-      <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
-      <div class="principal">{{ 'INTRO_CREATION.SECTION_DISCIPLINES' | translate }}</div>
+      <div class="principal">{{ personnage()?.nom }}</div>
+      <div class="avatar">{{ initiale() }}</div>
     </header>
 
-    <div class="texte">
-      {{ 'INTRO_CREATION.TEXTE' | translate }}
+    <div class="texte-wrapper">
+      <div class="marque-page">
+        <span>{{ chapitre()?.id ?? 1 }}</span>
+      </div>
+      <div class="marque-page">
+        <span>{{ chapitre()?.id ?? 1 }}</span>
+      </div>
+      <div class="texte">
+        {{ chapitre()?.text }}
+      </div>
     </div>
 
     <div class="pied">
-      <button type="button" class="valider">{{ 'INTRO_CREATION.EQUIPEMENT' | translate }}</button>
+      <!-- Boucle sur les liens disponibles pour navigation -->
+      @for (lien of liens(); track lien.chapitreCibleId) {
+        <button
+          type="button"
+          class="valider"
+          [class.disponible]="lien.disponible"
+          [disabled]="!lien.disponible"
+          (click)="choisirLien(lien)"
+        >
+          {{ lien.chapitreCibleId }}
+        </button>
+      }
     </div>
   </div>
 </ion-content>

@@ -1,9 +1,13 @@
 // Écran d'introduction avant la création de personnage.
 
 $foret: #2c3323;
+$foret-clair: #3b442d;
 $parchemin: #ece2c8;
 $encre: #3a3226;
 $cuivre: #c2703a;
+$or: #d9a94a;
+$sepia: #8a7a5e;
+$rouge: #e0705a;
 
 ion-content.intro {
   --background: #{$foret};
@@ -25,42 +29,120 @@ ion-content.intro {
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
 }
 
-.retour {
-  flex: none;
-  align-self: flex-start;
-  background: none;
-  border: none;
-  padding: 8px 0;
-  color: rgba(236, 226, 200, 0.6);
-  font-size: 11.5px;
-  letter-spacing: 0.14em;
-  cursor: pointer;
-}
-
-.discipline {
-  h2 {
-    text-align: center;
-  }
-}
-
 .titre {
-  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
   padding: 8px 0 16px;
-  text-align: center;
-
-  .sur-titre {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.34em;
-    text-transform: uppercase;
-    color: $cuivre;
-  }
 
   .principal {
     font-family: 'Cinzel', serif;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 600;
     margin-top: 10px;
+  }
+
+  .stats-groupe {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .barre-stat {
+    position: relative;
+    height: 18px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #181c14;
+    border: 1px solid rgba(236, 226, 200, 0.15);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+
+    .remplissage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      border-radius: 999px;
+      transition: width 0.6s ease-in-out;
+    }
+
+    &.endurance {
+      background: #3d1411;
+      .remplissage {
+        background: linear-gradient(90deg, #96281c, $rouge);
+      }
+    }
+
+    &.habilite {
+      background: #182012;
+      .remplissage {
+        background: linear-gradient(90deg, $foret, $foret-clair);
+      }
+    }
+
+    .texte-stat {
+      position: relative;
+      z-index: 1;
+      padding-left: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #ece2c8;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  .avatar {
+    flex: none;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid $cuivre;
+    background: $foret-clair;
+    color: $cuivre;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    box-shadow: 0 2px 5px rgba(58, 50, 38, 0.35);
+  }
+}
+
+.texte-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px; /* Espace réservé en haut pour laisser dépasser l'onglet */
+}
+
+.marque-page {
+  position: absolute;
+  top: -58px;
+  left: 20px; /* Aligné vers la gauche comme sur la capture */
+  width: 50px;
+  height: 58px;
+  background: #f4c88c; /* Teinte parchemin dorée */
+  border-radius: 18px 18px 0 0; /* Bords arrondis sur le haut */
+  display: flex;
+  padding-top: 5px;
+  justify-content: center;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.205), inset 0 -3px 6px rgba(0, 0, 0, 0.541);
+  z-index: 1;
+
+  span {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 6px;
   }
 }
 
@@ -71,8 +153,8 @@ ion-content.intro {
   scrollbar-width: none;
   background: $parchemin;
   color: $encre;
-  border-radius: 14px;
-  padding: 22px;
+  border-radius: 20px;
+  padding: 18px 22px 22px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -80,6 +162,8 @@ ion-content.intro {
   line-height: 1.62;
   hyphens: none;
   text-wrap: pretty;
+  z-index: 1;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 
   &::-webkit-scrollbar {
     display: none;
@@ -88,34 +172,37 @@ ion-content.intro {
   p {
     margin: 0;
   }
-
-  .section {
-    font-family: 'Cinzel', serif;
-    font-size: 19px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 6px;
-    border-top: 1px solid rgba(58, 50, 38, 0.2);
-  }
 }
 
 .pied {
-  flex: none;
-  padding: 14px 0 22px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 colonnes de largeur égale */
+  gap: 12px;                            /* Espacement entre les boutons */
+  padding: 16px 0;
+
+  .valider {
+    width: 100%;
+    margin: 0;
+
+    /* Si le nombre total de boutons est impair (ex: 3 boutons), */
+    /* le dernier bouton se place sur toute la largeur et se centre */
+    &:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 6px); /* Conserve exactement la même largeur que les boutons du dessus */
+    }
+  }
 }
 
 .valider {
   width: 100%;
-  border: none;
   border-radius: 11px;
   padding: 15px;
-  background: $cuivre;
-  color: $foret;
-  font-size: 12.5px;
+  background: rgba(236, 226, 200, 0.103);
+  border: 2px solid $cuivre;
+  color: $cuivre;
+  font-size: 12px;
+  font-weight: bold;
   letter-spacing: 0.16em;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.705);
 }
