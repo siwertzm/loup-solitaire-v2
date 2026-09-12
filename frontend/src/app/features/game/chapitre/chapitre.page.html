@@ -79,17 +79,57 @@
     </div>
 
     <div class="pied">
-      <!-- Boucle sur les liens disponibles pour navigation -->
-      @for (lien of liens(); track lien.chapitreCibleId) {
-        <button
-          type="button"
-          class="valider"
-          [class.disponible]="lien.disponible"
-          [disabled]="!lien.disponible"
-          (click)="choisirLien(lien)"
-        >
-          {{ lien.chapitreCibleId }}
-        </button>
+      @if (aConditionHasard() && !hasardTermine()) {
+        <div class="tirage-hasard">
+          @if (hasardResultatVisible()) {
+            <span class="de hasard fige">
+              {{ faceHasard() }}
+            </span>
+          } @else {
+            <button
+              type="button"
+              class="de hasard"
+              [class.roule]="hasardRoule()"
+              [disabled]="hasardRoule()"
+              (click)="revelerHasard()"
+            >
+              {{ faceHasard() }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (!aConditionHasard() || hasardTermine()) {
+        @for (lien of liens(); track lien.chapitreCibleId) {
+          <button
+            type="button"
+            class="valider"
+            [disabled]="!lien.disponible"
+            (click)="choisirLien(lien)"
+          >
+            @if (lien.disponible) {
+              @if (lien.conditions.length > 0) {
+                @if (lien.conditions[0].type === 'DISCIPLINE') {
+                  {{ nomDiscipline(lien.conditions[0].targetId) }}
+                } @else {
+                  {{ lien.chapitreCibleId }}
+                }
+              } @else {
+                {{ lien.chapitreCibleId }}
+              }
+            } @else {
+              @if (lien.conditions.length > 0) {
+                @if (lien.conditions[0].type === 'DISCIPLINE') {
+                  {{ nomDiscipline(lien.conditions[0].targetId) }}
+                } @else if (lien.conditions[0].type === 'HASARD') {
+                  {{ lien.conditions[0].type }}
+                } @else {
+                  Condition requise
+                }
+              }
+            }
+          </button>
+        }
       }
     </div>
   </div>

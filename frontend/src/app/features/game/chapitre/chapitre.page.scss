@@ -125,7 +125,7 @@ ion-content.intro {
 
 .marque-pages {
   position: absolute;
-  top: -48px;
+  top: -38px;
   left: 20px;
 
   display: flex;
@@ -141,7 +141,7 @@ ion-content.intro {
   height: 70px;
 
   color: #000;
-  border-radius: 18px 18px 0 0;
+  border-radius: 12px 12px 0 0;
   box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.473);
 
   display: flex;
@@ -285,4 +285,67 @@ ion-content.intro {
   font-weight: bold;
   letter-spacing: 0.16em;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.705);
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    border-color: rgba(236, 226, 200, 0.5);
+    color: rgba(236, 226, 200, 0.6);
+    box-shadow: none;
+  }
+}
+
+@keyframes de-roule {
+  0% {
+    transform: rotate(-14deg) scale(0.86);
+  }
+
+  50% {
+    transform: rotate(12deg) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+
+.tirage-hasard {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.de {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+
+  &.hasard {
+    border: 1px solid rgba(217, 169, 74, 0.5);
+    background: rgba(217, 169, 74, 0.12);
+    color: $or;
+  }
+
+  &.roule {
+    animation: de-roule 0.28s ease-in-out infinite;
+  }
+
+  &.fige {
+    border-color: $or;
+    background: rgba(217, 169, 74, 0.18);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+  }
 }

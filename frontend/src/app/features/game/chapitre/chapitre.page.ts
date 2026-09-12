@@ -7,6 +7,8 @@ import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { ChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
 import { ChapitreService } from '../../../core/services/chapitre.service';
+import { DisciplineResume } from '../../../core/models/personnage.model';
+import { DisciplineService } from '../../../core/services/discipline.service';
 
 /**
  * Écran central du jeu : affiche le chapitre en cours et la fiche du personnage.
@@ -23,16 +25,20 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly router = inject(Router);
   private readonly chapitreService = inject(ChapitreService);
   private readonly personnageService = inject(PersonnageService);
+  private readonly disciplineService = inject(DisciplineService);
 
   readonly personnageId = signal<string | null>(null);
-  
+
   // Signal stockant les infos du personnage
   readonly personnage = signal<PersonnageResume | null>(null);
-  
+
   // Signal stockant le chapitre courant
   readonly chapitre = signal<ChapitreResponse | null>(null);
   readonly chargement = signal<boolean>(true);
   readonly erreur = signal<string | null>(null);
+
+  // Signal stockant toutes les disciplines disponibles
+  readonly toutesDisciplines = signal<DisciplineResume[]>([]);
 
   // Computed properties pour accéder facilement aux infos du personnage
   readonly nomPersonnage = computed(() => this.personnage()?.nom ?? '');
@@ -41,10 +47,12 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     if (!nom) return 'LS';
     return nom
       .split(/\s+/)
-      .map(mot => mot.charAt(0).toUpperCase())
+      .map((mot) => mot.charAt(0).toUpperCase())
       .join('');
   });
-  readonly habilite = computed(() => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0));
+  readonly habilite = computed(
+    () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
+  );
   readonly habiliteTemp = computed(() => this.personnage()?.habiliteTemp ?? 0);
   readonly enduranceActuelle = computed(() => this.personnage()?.enduranceActuelle ?? 0);
 
@@ -73,8 +81,57 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
 
+  // Signaux pour gérer le hasard (révélation et roulement)
+  readonly hasardRoule = signal(false);
+  readonly hasardResultatVisible = signal(false);
+  readonly hasardTermine = signal(false);
+  readonly faceHasard = signal<number | string>('?');
+
+  readonly aConditionHasard = computed(() =>
+    this.liens().some((lien) => lien.conditions.some((condition) => condition.type === 'HASARD')),
+  );
+
+  revelerHasard(): void {
+  if (
+    this.hasardRoule() ||
+    this.hasardResultatVisible() ||
+    this.hasardTermine()
+  ) {
+    return;
+  }
+
+  const valeur = this.chapitre()?.tirageHasard;
+
+  if (valeur === null || valeur === undefined) {
+    return;
+  }
+
+  // 1. Le dé roule
+  this.hasardRoule.set(true);
+
+  setTimeout(() => {
+    // 2. Le dé s'arrête sur la vraie valeur
+    this.faceHasard.set(valeur);
+    this.hasardRoule.set(false);
+    this.hasardResultatVisible.set(true);
+
+    // 3. On laisse le résultat affiché 2 secondes
+    setTimeout(() => {
+      this.hasardResultatVisible.set(false);
+      this.hasardTermine.set(true);
+    }, 2000);
+
+  }, 640);
+}
+
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
-    this.ongletActif.set(onglet);
+    // Si on reclique sur l'onglet déjà ouvert, on ferme l'encart
+    if (this.ongletActif() === onglet && onglet !== 'chapitre') {
+      this.ongletActif.set('chapitre');
+    } else {
+      this.ongletActif.set(onglet);
+    }
+
     this.ongletLeve.set(onglet);
 
     setTimeout(() => {
@@ -118,10 +175,18 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (p) => {
         this.personnage.set(p);
       },
-      error: (err) => console.error('Erreur lors du chargement du personnage :', err)
+      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
     });
 
-    // 2. Récupération du chapitre (GET /personnages/{id}/chapitre)
+    // 2. Récupération de toutes les disciplines disponibles (GET /disciplines)
+    this.disciplineService.lister().subscribe({
+      next: (disciplines) => {
+        this.toutesDisciplines.set(disciplines);
+      },
+      error: (err) => console.error('Erreur lors du chargement des disciplines :', err),
+    });
+
+    // 3. Récupération du chapitre (GET /personnages/{id}/chapitre)
     this.chapitreService.getChapitreCourant(id).subscribe({
       next: (data) => {
         this.chapitre.set(data);
@@ -133,6 +198,18 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargement.set(false);
       },
     });
+  }
+
+  nomDiscipline(id: string | null): string {
+    if (!id) {
+      return 'Discipline requise';
+    }
+
+    const discipline = this.toutesDisciplines().find(
+      (d) => d.id.toLowerCase() === id.toLowerCase(),
+    );
+
+    return discipline?.nom ?? id;
   }
 
   /**
@@ -149,8 +226,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargerToutesLesDonnees();
       },
       error: (err) => {
-        console.error('Erreur lors de l\'avancement vers le chapitre :', err);
-        this.erreur.set('Impossible d\'avancer vers ce chapitre.');
+        console.error("Erreur lors de l'avancement vers le chapitre :", err);
+        this.erreur.set("Impossible d'avancer vers ce chapitre.");
         this.chargement.set(false);
       },
     });
