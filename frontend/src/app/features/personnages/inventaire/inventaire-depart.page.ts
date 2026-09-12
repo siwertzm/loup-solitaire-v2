@@ -36,20 +36,25 @@ const ID_OR = 'or';
 const ID_CARTE = 'carte';
 const ID_COIN = 'coin';
 const ID_HACHE = 'hache';
+const SEUIL_OR_BONUS = 12;
+
+/** Icônes en PNG pour certains objets (remplace le SVG pour ceux-ci). */
+const IMAGES: Record<string, string> = {
+  casque: 'assets/icon/casque.png',
+  epee: 'assets/icon/epee.png',
+  glaive: 'assets/icon/epee.png',
+  cotte_de_mailles: 'assets/icon/cotte_de_mailles.png',
+  potion_de_soin: 'assets/icon/potion.png',
+  repas: 'assets/icon/repas.png',
+  or: 'assets/icon/or.png',
+};
 
 /** Icônes des objets de la table de départ (clé = objetId du backend). */
 const ICONES: Record<string, string[]> = {
   hache: ['M6 19l7-7', 'M13.5 4.5h6v5h-6z', 'M13.5 7h-2l-2 2 2.5 2.5 2-2z'],
-  glaive: ['M12 21V10', 'M12 3l2.5 4.5L12 10 9.5 7.5 12 3z', 'M9.5 12h5'],
-  epee: ['M18.5 3.5 9 13l2 2 9.5-9.5V3.5z', 'M9 13l-4.5 6.5 2 2L13 17'],
-  casque: ['M5 13a7 7 0 0 1 14 0v4H5v-4z', 'M12 6V3', 'M5 17h14'],
-  repas: ['M4 11h16', 'M5.5 11c0 4 2.9 7 6.5 7s6.5-3 6.5-7', 'M9 7.5c0-1.5 1.5-1.8 1.5-3.5M14 7.5c0-1.5 1.5-1.8 1.5-3.5'],
-  cotte_de_mailles: ['M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z', 'M9 9h6M9 12.5h6M10.5 16h3'],
   masse: ['M6 20l6-6', 'M16 2v2M16 12v2M10 8h2M20 8h2'],
-  potion_de_soin: ['M10 3h4v3.5l3 4.5v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7l3-4.5V3z', 'M7.5 14h9'],
   baton: ['M6 20L18 5', 'M16 3.5h3.5V7'],
-  lance: ['M12 21V9', 'M12 3l3 5H9l3-5z', 'M9.5 11.5h5'],
-  or: ['M6 8v4c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V8', 'M6 12.5v3.5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-3.5'],
+  lance: ['M12 21V9', 'M12 3l3 5H9l3-5z', 'M9.5 11.5h5']
 };
 
 const ORDRE_TABLE = [
@@ -80,6 +85,8 @@ export class InventaireDepartPage {
   private readonly personnageId = this.route.snapshot.paramMap.get('id')!;
 
   readonly nom = signal('');
+  readonly habilete = signal(0);
+  readonly endurance = signal(0);
   readonly chargement = signal(true);
   readonly erreur = signal<string | null>(null);
 
@@ -87,7 +94,7 @@ export class InventaireDepartPage {
   private readonly inventaire = signal<InventaireItem[]>([]);
 
   /** Pièces d'Or : null tant que le dé n'a pas été « lancé » (révélé). */
-  readonly or = signal<number | null>(null);
+  readonly or = signal<number | string | null>(null);
   readonly faceOr = signal<number | string>('?');
   readonly roulantOr = signal(false);
 
@@ -100,22 +107,35 @@ export class InventaireDepartPage {
   readonly objetRevele = computed(() => this.objet() !== null && !this.roulantObjet());
   readonly complet = computed(() => this.orRevele() && this.objetRevele());
 
-  /** Trait du dé d'objet : icône pendant/après le tirage, « ? » avant. */
+  readonly imageObjet = computed(() => {
+    const id = this.roulantObjet() ? this.faceObjet() : this.objet();
+    return id ? (IMAGES[id] ?? null) : null;
+  });
+
+  /** Trait du dé d'objet : icône SVG pendant/après le tirage (fallback si pas d'image). */
   readonly traitsObjet = computed(() => {
     const id = this.roulantObjet() ? this.faceObjet() : this.objet();
-    return id ? (ICONES[id] ?? []) : [];
+    if (!id || IMAGES[id]) return [];
+      return ICONES[id] ?? [];
   });
 
   private objetItem(): InventaireItem | null {
     // L'objet de départ aléatoire est le seul item hors équipement fixe.
+    // Cas particulier "or" : base 0-9 + bonus fixe +12, aucun chevauchement
+    // possible, donc quantite >= 12 signifie que le tirage bonus est tombé sur l'or.
     return (
-      this.inventaire().find(
-        (i) => ![ID_HACHE, ID_CARTE, ID_COIN, ID_OR].includes(i.objetId) && !(i.objetId === 'repas' && i.quantite === 1),
-      ) ?? null
+      this.inventaire().find((i) => {
+        if (i.objetId === ID_OR) return i.quantite >= SEUIL_OR_BONUS;
+        return ![ID_HACHE, ID_CARTE, ID_COIN].includes(i.objetId) && !(i.objetId === 'repas' && i.quantite === 1);
+      }) ?? null
     );
   }
 
-  readonly nomObjet = computed(() => this.objetItem()?.nom ?? '');
+  readonly nomObjet = computed(() => {
+    const item = this.objetItem();
+    if (!item) return '';
+    return item.objetId === ID_OR ? `${SEUIL_OR_BONUS} ${item.nom}s` : item.nom;
+  });
 
   readonly casesArmes = computed<Case[]>(() => {
     const armes = this.inventaire().filter((i) => i.categorie === 'ARME');
@@ -152,6 +172,8 @@ export class InventaireDepartPage {
     this.personnages$.recuperer(this.personnageId).subscribe({
       next: (p) => {
         this.nom.set(p.nom);
+        this.habilete.set(p.habilite);
+        this.endurance.set(p.enduranceActuelle);
         this.inventaire.set(p.inventaire ?? []);
         this.chargement.set(false);
       },
@@ -167,10 +189,13 @@ export class InventaireDepartPage {
     if (this.roulantOr() || this.or() !== null) return;
     const bourse = this.inventaire().find((i) => i.objetId === ID_OR);
     const valeur = bourse ? bourse.quantite : 0;
+    // Bonus "or" inclus dans le tirage de l'objet de départ (voir objetItem) :
+    // on distingue la part fixe du bonus dans l'affichage.
+    const affichage = valeur >= SEUIL_OR_BONUS ? `${SEUIL_OR_BONUS} + ${valeur - SEUIL_OR_BONUS}` : valeur;
     this.roulantOr.set(true);
     setTimeout(() => {
       this.faceOr.set(valeur);
-      this.or.set(valeur);
+      this.or.set(affichage);
       this.roulantOr.set(false);
     }, 640);
   }
@@ -192,6 +217,10 @@ export class InventaireDepartPage {
   partir(): void {
     if (!this.complet()) return;
     this.router.navigate(['/personnages', this.personnageId, 'chapitre'], { replaceUrl: true });
+  }
+
+  supprimer(): void {
+    // TODO: logique de suppression du personnage
   }
 
   private casesSac(categorie: 'OBJET' | 'REPAS', nbCases: number): Case[] {

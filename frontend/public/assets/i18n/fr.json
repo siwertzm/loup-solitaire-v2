@@ -126,7 +126,7 @@
     "TUNIQUE_ET_CAPE": "Tunique et cape de voyage",
     "TROUVE_DANS_LES_RUINES": "Trouvé dans les ruines",
     "PIECES_DOR": "Pièces d'Or",
-    "COURONNES": "Couronnes d'Or",
+    "COURONNES": "Couronnes",
     "ARMES": "Armes",
     "LIBRE": "libre",
     "SAC_A_DOS": "Sac à dos",
@@ -134,6 +134,7 @@
     "REPAS": "Repas",
     "OBJETS_SPECIAUX": "Objets spéciaux",
     "VALIDER": "PARTIR À L'AVENTURE",
+    "SUPPRIMER": "SUPPRIMER LE PERSONNAGE",
     "ERREUR_CHARGEMENT": "Impossible de charger l'équipement de ce personnage."
   },
   "INTRO_INVENTAIRE": {

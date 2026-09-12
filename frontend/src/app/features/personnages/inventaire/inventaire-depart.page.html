@@ -17,11 +17,15 @@
         <span class="cle">{{ 'EQUIPEMENT.TROUVE_DANS_LES_RUINES' | translate }}</span>
         @if (objetRevele()) {
           <span class="de fige objet">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              @for (trait of traitsObjet(); track $index) {
-                <path [attr.d]="trait"></path>
-              }
-            </svg>
+            @if (imageObjet(); as img) {
+              <img [src]="img" alt="" width="30" height="30" />
+            } @else {
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                @for (trait of traitsObjet(); track $index) {
+                  <path [attr.d]="trait"></path>
+                }
+              </svg>
+            }
           </span>
           <span class="nom-objet">{{ nomObjet() }}</span>
         } @else {
@@ -33,7 +37,9 @@
             aria-label="Révéler l'objet trouvé"
             (click)="revelerObjet()"
           >
-            @if (traitsObjet().length) {
+            @if (imageObjet(); as img) {
+              <img [src]="img" alt="" width="30" height="30" />
+            } @else if (traitsObjet().length) {
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 @for (trait of traitsObjet(); track $index) {
                   <path [attr.d]="trait"></path>
@@ -127,6 +133,9 @@
       @if (erreur()) {
         <div class="erreur">{{ erreur() | translate }}</div>
       }
+      <button type="button" class="supprimer actif" (click)="supprimer()">
+        {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
+      </button>
       <button type="button" class="valider" [class.actif]="complet()" [disabled]="!complet()" (click)="partir()">
         {{ 'EQUIPEMENT.VALIDER' | translate }}
       </button>
