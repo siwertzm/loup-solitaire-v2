@@ -1,0 +1,49 @@
+@if (ouvert()) {
+  <div class="voile-sac" (click)="fermer()">
+    <div class="feuille-sac" (click)="$event.stopPropagation()">
+      <div class="poignee"></div>
+
+      @if (chargement()) {
+        <div class="sac-chargement">Chargement…</div>
+      } @else {
+        <div class="sac-entete">
+          <div class="sac-entete-titre">SAC À DOS</div>
+          <div class="sac-resume">
+            {{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }} · ARMES {{ armesCount() }}/{{ maxArmes }}
+          </div>
+        </div>
+
+        <div class="sac-contenu">
+          <div class="sac-section-titre">ARMES</div>
+          @for (a of armesDetail(); track a.objetId) {
+            <div class="sac-ligne">
+              <span class="sac-nom">{{ a.nom }}</span>
+              <span class="sac-tag">{{ a.equipee ? 'ÉQUIPÉE' : 'AU SAC' }}</span>
+            </div>
+          }
+
+          <div class="sac-section-titre">OBJETS &amp; REPAS</div>
+          @for (o of objetsEtRepasDetail(); track o.objetId) {
+            <div class="sac-ligne">
+              <span class="sac-nom">{{ o.nom }}</span>
+              <span class="sac-tag">×{{ o.quantite }}</span>
+            </div>
+          }
+
+          <div class="sac-section-titre">OBJETS SPÉCIAUX (HORS LIMITE)</div>
+          @for (s of objetsSpeciauxDetail(); track s.objetId) {
+            <div class="sac-ligne">
+              <span class="sac-nom">{{ s.nom }}</span>
+              <span class="sac-tag">×{{ s.quantite }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="sac-pied">
+          <span class="sac-bourse-cle">BOURSE</span>
+          <span class="sac-bourse-valeur">{{ bourseCount() }} COURONNES D'OR</span>
+        </div>
+      }
+    </div>
+  </div>
+}

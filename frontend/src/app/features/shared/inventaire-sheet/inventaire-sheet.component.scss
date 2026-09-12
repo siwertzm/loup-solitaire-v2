@@ -1,0 +1,131 @@
+// Composant global monté à la racine : redéclare ses propres couleurs,
+// aucune dépendance à la page depuis laquelle il est ouvert.
+$parchemin: #ece2c8;
+$encre: #3a3226;
+$sepia: #8a7a5e;
+
+.voile-sac {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.feuille-sac {
+  width: 100%;
+  max-height: 80vh;
+  min-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: $parchemin;
+  color: $encre;
+  border-radius: 20px 20px 0 0;
+  padding: 10px 20px 24px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.poignee {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(58, 50, 38, 0.3);
+  margin: 6px auto 16px;
+}
+
+.sac-chargement {
+  text-align: center;
+  padding: 24px 0;
+  color: $sepia;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sac-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+
+  .sac-entete-titre {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .sac-resume {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: $sepia;
+    text-transform: uppercase;
+  }
+}
+
+.sac-section-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: $sepia;
+  text-transform: uppercase;
+  margin: 16px 0 8px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.sac-ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(58, 50, 38, 0.06);
+  border-radius: 12px;
+  margin-bottom: 8px;
+
+  .sac-nom {
+    font-size: 15px;
+  }
+
+  .sac-tag {
+    flex: none;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: $sepia;
+    text-transform: uppercase;
+  }
+}
+
+.sac-pied {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(58, 50, 38, 0.2);
+
+  .sac-bourse-cle {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: $sepia;
+    text-transform: uppercase;
+  }
+
+  .sac-bourse-valeur {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}

@@ -3,6 +3,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { ObjetChapResponse } from '../../../../core/models/chapitre.model';
 import { ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
 import { ChapitreService } from '../../../../core/services/chapitre.service';
+import { InventaireSheetService } from '../../../../core/services/inventaire-sheet.service';
 
 /**
  * Contenu de l'onglet "objets" de l'écran chapitre : la liste des objets
@@ -15,6 +16,10 @@ import { ChapitreService } from '../../../../core/services/chapitre.service';
  * réseau /disciplines, /objets, /personnages/{id}) ; ce composant se
  * contente de les afficher et de notifier le parent après un ramassage
  * réussi via `ramasse`, pour qu'il mette à jour sa propre fiche personnage.
+ *
+ * Le détail complet de l'inventaire (feuille "SAC À DOS") est un composant
+ * global partagé (shared/inventaire-sheet/), ouvrable depuis n'importe où
+ * dans l'appli — ce composant se contente de déclencher son ouverture.
  */
 @Component({
   selector: 'app-chapitre-objets',
@@ -25,6 +30,7 @@ import { ChapitreService } from '../../../../core/services/chapitre.service';
 })
 export class ChapitreObjetsComponent {
   private readonly chapitreService = inject(ChapitreService);
+  private readonly inventaireSheet = inject(InventaireSheetService);
 
   readonly objets = input.required<ObjetChapResponse[]>();
   readonly tousObjets = input.required<ObjetResume[]>();
@@ -122,5 +128,13 @@ export class ChapitreObjetsComponent {
         this.ramassageEnCours.set(null);
       },
     });
+  }
+
+  /** Ouvre la feuille "SAC À DOS" globale (voir shared/inventaire-sheet/). */
+  ouvrirSac(): void {
+    const id = this.personnageId();
+    if (id) {
+      this.inventaireSheet.ouvrir(id);
+    }
   }
 }
