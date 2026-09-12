@@ -6,14 +6,75 @@
     </header>
 
     <div class="texte-wrapper">
-      <div class="marque-page">
-        <span>{{ chapitre()?.id ?? 1 }}</span>
+      <div class="marque-pages">
+        <div
+          class="marque-page marque-page-chapitre"
+          [class.leve]="ongletLeve() === 'chapitre'"
+          (click)="selectionnerOnglet('chapitre')"
+        >
+          <span>{{ chapitre()?.id ?? 1 }}</span>
+        </div>
+
+        @if (objets().length > 0) {
+          <div
+            class="marque-page marque-page-objets"
+            [class.leve]="ongletLeve() === 'objets'"
+            (click)="selectionnerOnglet('objets')"
+          >
+            <img src="assets/icon/all_items.png" alt="Objets" />
+          </div>
+        }
+
+        @if (effets().length > 0) {
+          <div
+            class="marque-page marque-page-effets"
+            [class.leve]="ongletLeve() === 'effets'"
+            (click)="selectionnerOnglet('effets')"
+          >
+            <img src="assets/icon/effets.png" alt="Effets" />
+          </div>
+        }
       </div>
-      <div class="marque-page">
-        <span>{{ chapitre()?.id ?? 1 }}</span>
-      </div>
+
       <div class="texte">
-        {{ chapitre()?.text }}
+        @if (ongletActif() === 'objets') {
+          <div class="encart encart-objets">
+            <div class="encart-titre">OBJETS DISPONIBLES ICI</div>
+
+            @for (objet of objets(); track objet.objetId) {
+              <div class="objet-ligne">
+                <div class="objet-nom">
+                  {{ objet.nom }}
+                </div>
+
+                <div class="objet-quantite">
+                  @if (objet.valeur > 1) {
+                    x{{ objet.valeur }}
+                  }
+                </div>
+
+                <button type="button" class="objet-prendre">PRENDRE</button>
+              </div>
+            }
+          </div>
+        }
+
+        @if (ongletActif() === 'effets') {
+          <div class="encart encart-effets">
+            <div class="encart-titre">EFFETS</div>
+
+            @for (effet of effets(); track $index) {
+              <div class="effet-ligne">
+                <span>{{ effet.type }}</span>
+                <span>{{ effet.valeur }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="texte-contenu">
+          {{ chapitre()?.text }}
+        </div>
       </div>
     </div>
 

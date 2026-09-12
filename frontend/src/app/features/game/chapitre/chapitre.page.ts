@@ -70,6 +70,18 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
 
+  readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
+  readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
+
+  selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
+    this.ongletActif.set(onglet);
+    this.ongletLeve.set(onglet);
+
+    setTimeout(() => {
+      this.ongletLeve.set(null);
+    }, 300);
+  }
+
   ngOnInit(): void {
     this.initialiserId();
   }
