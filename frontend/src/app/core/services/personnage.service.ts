@@ -30,6 +30,17 @@ export class PersonnageService {
     return this.http.delete<void>(`${this.base}/personnages/${id}`);
   }
 
+  /**
+   * DELETE /personnages/{id}/objets/{objetId}?quantite=N
+   * Retire N exemplaires (1 par défaut) d'un objet possédé. Recalcule
+   * l'HABILETÉ côté backend si c'était une arme.
+   */
+  retirerObjet(personnageId: string, objetId: string, quantite = 1): Observable<PersonnageResume> {
+    return this.http.delete<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/objets/${objetId}?quantite=${quantite}`,
+    );
+  }
+
   /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habileté/endurance). */
   creer(
     nom: string,

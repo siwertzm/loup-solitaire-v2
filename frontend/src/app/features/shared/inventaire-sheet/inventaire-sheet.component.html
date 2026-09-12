@@ -18,14 +18,23 @@
             </div>
           </div>
           @for (a of armesDetail(); track a.objetId) {
-            <div class="sac-ligne" [class.maitrisee]="a.maitrisee">
-              <span class="sac-nom">{{ a.nom }}</span>
-              @if (a.maitrisee) {
-                <span class="sac-tag">MAÎTRISÉE <span class="sac-bonus">+{{ bonusArmeMaitrisee }} HAB</span></span>
-              } @else {
-                <span class="sac-tag">ÉQUIPÉE</span>
-              }
-            </div>
+            <ion-item-sliding>
+              <ion-item lines="none" class="sac-item-hote">
+                <div class="sac-ligne" [class.maitrisee]="a.maitrisee">
+                  <span class="sac-nom">{{ a.nom }}</span>
+                  @if (a.maitrisee) {
+                    <span class="sac-tag">MAÎTRISÉE <span class="sac-bonus">+{{ bonusArmeMaitrisee }} HAB</span></span>
+                  } @else {
+                    <span class="sac-tag">ÉQUIPÉE</span>
+                  }
+                </div>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === a.objetId" (click)="retirer(a.objetId)">
+                  Retirer
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
           }
 
           <div class="sac-section-titre">
@@ -35,18 +44,36 @@
             </div>
           </div>
           @for (o of objetsEtRepasDetail(); track o.objetId) {
-            <div class="sac-ligne">
-              <span class="sac-nom">{{ o.nom }}</span>
-              <span class="sac-tag">×{{ o.quantite }}</span>
-            </div>
+            <ion-item-sliding>
+              <ion-item lines="none" class="sac-item-hote">
+                <div class="sac-ligne">
+                  <span class="sac-nom">{{ o.nom }}</span>
+                  <span class="sac-tag">×{{ o.quantite }}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === o.objetId" (click)="retirer(o.objetId)">
+                  Retirer
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
           }
 
           <div class="sac-section-titre">OBJETS SPÉCIAUX (HORS LIMITE)</div>
           @for (s of objetsSpeciauxDetail(); track s.objetId) {
-            <div class="sac-ligne">
-              <span class="sac-nom">{{ s.nom }}</span>
-              <span class="sac-tag">×{{ s.quantite }}</span>
-            </div>
+            <ion-item-sliding>
+              <ion-item lines="none" class="sac-item-hote">
+                <div class="sac-ligne">
+                  <span class="sac-nom">{{ s.nom }}</span>
+                  <span class="sac-tag">×{{ s.quantite }}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="danger" [disabled]="retraitEnCours() === s.objetId" (click)="retirer(s.objetId)">
+                  Retirer
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
           }
         </div>
 

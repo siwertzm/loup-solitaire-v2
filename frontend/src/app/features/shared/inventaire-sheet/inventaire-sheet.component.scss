@@ -92,12 +92,12 @@ $vert: #6f8c3f;
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: rgba(58, 50, 38, 0.06);
+  background: #e1d8be;
   border-radius: 12px;
   margin-bottom: 8px;
 
   &.maitrisee {
-    background: rgba(157, 191, 92, 0.18);
+    background: #dddbb5;
   }
 
   .sac-nom {
@@ -144,4 +144,34 @@ $vert: #6f8c3f;
     font-size: 14px;
     font-weight: 700;
   }
+}
+
+/*******************************************
+ *  Swipe-to-remove (ion-item-sliding) — l'hôte Ionic reste transparent,
+ *  tout le visuel vient de .sac-ligne déjà stylée ci-dessus.
+ *******************************************/
+ion-item-sliding {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.sac-item-hote {
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  --min-height: auto;
+
+  .sac-ligne {
+    width: 100%;
+    margin-bottom: 0;
+    border-radius: 0px;
+  }
+}
+
+ion-item-option {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
 }

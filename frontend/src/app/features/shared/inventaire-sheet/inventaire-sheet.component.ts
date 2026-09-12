@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular';
 
 import { PersonnageResume, ObjetResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -17,7 +18,7 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
 @Component({
   selector: 'app-inventaire-sheet',
   standalone: true,
-  imports: [],
+  imports: [IonItemSliding, IonItem, IonItemOptions, IonItemOption],
   templateUrl: './inventaire-sheet.component.html',
   styleUrl: './inventaire-sheet.component.scss',
 })
@@ -106,6 +107,30 @@ export class InventaireSheetComponent {
   readonly objetsSpeciauxDetail = computed(() =>
     this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX'),
   );
+
+  readonly retraitEnCours = signal<string | null>(null);
+
+  /**
+   * Retire 1 exemplaire d'un objet possédé (DELETE /personnages/{id}/objets/{objetId}).
+   * Recalcule l'HABILETÉ côté backend si c'était une arme — la réponse à jour
+   * remplace directement `personnage`, tous les compteurs se recalculent seuls.
+   */
+  retirer(objetId: string): void {
+    const id = this.sheet.personnageId();
+    if (!id || this.retraitEnCours()) return;
+
+    this.retraitEnCours.set(objetId);
+    this.personnageService.retirerObjet(id, objetId, 1).subscribe({
+      next: (p) => {
+        this.personnage.set(p);
+        this.retraitEnCours.set(null);
+      },
+      error: (err) => {
+        console.error("Erreur lors du retrait de l'objet :", err);
+        this.retraitEnCours.set(null);
+      },
+    });
+  }
 
   fermer(): void {
     this.sheet.fermer();
