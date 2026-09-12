@@ -215,12 +215,20 @@ ion-content.intro {
 }
 
 .encart-titre {
-
   font-family: 'Cinzel', serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.22em;
   color: $sepia;
+}
+
+.sac-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: $sepia;
+  margin-top: 8px;
 }
 
 .objet-ligne {
@@ -231,6 +239,9 @@ ion-content.intro {
 
 .objet-nom {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 15px;
 }
 
@@ -253,6 +264,12 @@ ion-content.intro {
   font-family: 'Cinzel', serif;
   font-size: 9px;
   letter-spacing: 0.16em;
+
+  &:disabled {
+    border-color: rgba(58, 50, 38, 0.25);
+    color: rgba(58, 50, 38, 0.4);
+    cursor: default;
+  }
 }
 
 .pied {
@@ -358,7 +375,6 @@ ion-content.intro {
 .sac {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
   color: $foret;
   opacity: 0.7;
 }

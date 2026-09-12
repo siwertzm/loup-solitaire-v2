@@ -31,6 +31,17 @@ export class ChapitreService {
   }
 
   /**
+   * POST /personnages/{id}/chapitre/revenir-apres-defaite
+   * Permet de revenir au chapitre précédent après une défaite en combat (coûte 1 Pièce Premium).
+   */
+  revenirApresDefaite(personnageId: string): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/chapitre/revenir-apres-defaite`,
+      {}
+    );
+  }
+
+  /**
    * POST /personnages/{id}/objets/{objetId}
    * Ramasse 1 exemplaire d'un objet optionnel proposé par le chapitre courant.
    * Le backend revalide que l'objet est bien disponible ici ; un appel = +1 exemplaire.
@@ -39,17 +50,6 @@ export class ChapitreService {
     return this.http.post<PersonnageResume>(
       `${this.base}/personnages/${personnageId}/objets/${objetId}`,
       {},
-    );
-  }
-
-  /**
-   * POST /personnages/{id}/chapitre/revenir-apres-defaite
-   * Permet de revenir au chapitre précédent après une défaite en combat (coûte 1 Pièce Premium).
-   */
-  revenirApresDefaite(personnageId: string): Observable<PersonnageResume> {
-    return this.http.post<PersonnageResume>(
-      `${this.base}/personnages/${personnageId}/chapitre/revenir-apres-defaite`,
-      {}
     );
   }
 }

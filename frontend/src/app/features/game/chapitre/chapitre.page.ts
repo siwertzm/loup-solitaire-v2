@@ -76,7 +76,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly disciplines = computed(() => this.personnage()?.disciplines ?? []);
   readonly inventaire = computed(() => this.personnage()?.inventaire ?? []);
 
-  // Compteurs du "sac" — alignés sur InventaireService (backend) :
+    // Compteurs du "sac" — alignés sur InventaireService (backend) :
   // MAX_ARMES=2, MAX_OBJETS_ET_REPAS=8 (partagé entre OBJET et REPAS), MAX_BOURSE=50.
   readonly maxArmes = 2;
   readonly maxObjetsEtRepas = 8;
@@ -114,6 +114,12 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ennemis = computed(() => this.chapitre()?.ennemis ?? []);
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
+
+  // Quantité restante à ramasser par objet optionnel (objetId -> valeur).
+  // GET /chapitre renvoie la quantité proposée par le chapitre, pas ce qu'il
+  // reste après ramassage : on la décrémente localement à chaque prise réussie.
+  readonly restants = signal<Record<string, number>>({});
+  readonly ramassageEnCours = signal<string | null>(null);
 
   readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
@@ -233,6 +239,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (data) => {
         this.chapitre.set(data);
 
+        const init: Record<string, number> = {};
+        data.objets.forEach((o) => (init[o.objetId] = o.valeur));
+        this.restants.set(init);
+
         this.ongletActif.set('chapitre');
         this.ongletLeve.set(null);
 
@@ -263,6 +273,15 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     return discipline?.nom ?? id;
   }
 
+  /**
+   * Catégorie d'un objet (ARME/OBJET/OBJETS_SPECIAUX/REPAS/BOURSE), résolue
+   * via le catalogue GET /objets : ObjetChapResponse (les objets d'un
+   * chapitre) ne porte pas la catégorie, seulement objetId/nom/valeur/optionnel.
+   */
+  categorieObjet(objetId: string): string | null {
+    return this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.categorie ?? null;
+  }
+
   nomObjet(id: string | null): string {
     if (!id) {
       return 'Objet requis';
@@ -271,6 +290,36 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     const objet = this.tousObjets().find((o) => o.id.toLowerCase() === id.toLowerCase());
 
     return objet?.nom ?? id;
+  }
+
+  /** Quantité restante à ramasser pour un objet optionnel du chapitre. */
+  restant(objetId: string): number {
+    return this.restants()[objetId] ?? 0;
+  }
+
+  /**
+   * Ramasse 1 exemplaire d'un objet optionnel proposé par le chapitre.
+   * Décrémente la quantité restante localement une fois le ramassage confirmé
+   * par le backend, et rafraîchit la fiche personnage (inventaire à jour).
+   */
+  prendreObjet(objet: { objetId: string; optionnel: boolean }): void {
+    const id = this.personnageId();
+    if (!id || !objet.optionnel) return;
+    if (this.restant(objet.objetId) <= 0) return;
+    if (this.ramassageEnCours()) return;
+
+    this.ramassageEnCours.set(objet.objetId);
+    this.chapitreService.ramasserObjet(id, objet.objetId).subscribe({
+      next: (p) => {
+        this.personnage.set(p);
+        this.restants.update((r) => ({ ...r, [objet.objetId]: Math.max(0, this.restant(objet.objetId) - 1) }));
+        this.ramassageEnCours.set(null);
+      },
+      error: (err) => {
+        console.error("Erreur lors du ramassage de l'objet :", err);
+        this.ramassageEnCours.set(null);
+      },
+    });
   }
 
   /**

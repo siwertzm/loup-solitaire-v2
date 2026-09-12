@@ -44,19 +44,50 @@
             @for (objet of objets(); track objet.objetId) {
               <div class="objet-ligne">
                 <div class="objet-nom">
+                  @let categorie = categorieObjet(objet.objetId);
+                  @if (categorie === 'ARME') {
+                    <div class="logo">
+                      <img src="assets/icon/epee.png" alt="Armes" />
+                    </div>
+                  } @else if (categorie === 'OBJET' || categorie === 'OBJET_SPECIAUX') {
+                    <div class="logo">
+                      <img src="assets/icon/objets.png" alt="Objets" />
+                    </div>
+                  } @else if (categorie === 'REPAS') {
+                    <div class="logo">
+                      <img src="assets/icon/repas.png" alt="Repas" />
+                    </div>
+                  } @else if (categorie === 'BOURSE') {
+                    <div class="logo">
+                      <img src="assets/icon/or.png" alt="Bourse" />
+                    </div>
+                  }
                   {{ objet.nom }}
                 </div>
 
                 <div class="objet-quantite">
-                  @if (objet.valeur > 1) {
-                    x{{ objet.valeur }}
+                  @if (restant(objet.objetId) > 0) {
+                    x{{ restant(objet.objetId) }}
                   }
                 </div>
 
-                <button type="button" class="objet-prendre">PRENDRE</button>
+                @if (!objet.optionnel) {
+                  <button type="button" class="objet-prendre" disabled>AUTOMATIQUE</button>
+                } @else if (restant(objet.objetId) > 0) {
+                  <button
+                    type="button"
+                    class="objet-prendre"
+                    [disabled]="ramassageEnCours() === objet.objetId"
+                    (click)="prendreObjet(objet)"
+                  >
+                    PRENDRE
+                  </button>
+                } @else {
+                  <button type="button" class="objet-prendre" disabled>VIDE</button>
+                }
               </div>
             }
-
+            <div class="sac-titre">INVENTAIRE</div>
             <div class="sac">
               <div class="typeObj">
                 <div class="logo">
