@@ -1,13 +1,13 @@
 {
   "COMMUN": {
     "CHARGEMENT": "Chargement…",
-    "OUI": "oui",
-    "NON": "non"
+    "OUI": "Oui",
+    "NON": "Non"
   },
   "AUTH": {
     "LOGIN": {
       "TITRE": "Connexion",
-      "CHAMP_IDENTIFIANT": "Username ou email",
+      "CHAMP_IDENTIFIANT": "Nom d'utilisateur ou e-mail",
       "CHAMP_MOT_DE_PASSE": "Mot de passe",
       "BOUTON_CONNEXION": "Se connecter",
       "LIEN_INSCRIPTION": "Pas encore de compte ? S'inscrire",
@@ -15,14 +15,14 @@
     },
     "REGISTER": {
       "TITRE": "Inscription",
-      "SUCCES_TEXTE": "Compte créé. Un email de vérification a été envoyé : clique sur le lien qu'il contient avant de pouvoir te connecter.",
+      "SUCCES_TEXTE": "Compte créé. Un e-mail de vérification vous a été envoyé : cliquez sur le lien qu'il contient avant de pouvoir vous connecter.",
       "BOUTON_ALLER_LOGIN": "Aller à la connexion",
       "CHAMP_USERNAME": "Nom d'utilisateur",
-      "CHAMP_EMAIL": "Email",
+      "CHAMP_EMAIL": "E-mail",
       "CHAMP_PASSWORD": "Mot de passe (8 caractères min.)",
       "BOUTON_CREER_COMPTE": "Créer mon compte",
       "LIEN_CONNEXION": "Déjà un compte ? Se connecter",
-      "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou email déjà utilisé."
+      "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou e-mail déjà utilisé."
     }
   },
   "ACCUEIL": {
@@ -32,7 +32,7 @@
     "TITRE_LIGNE2": "des Ténèbres",
     "SOUS_TITRE": "Loup Solitaire",
     "CHARGEMENT": "Chargement…",
-    "AUCUNE_AVENTURE": "<strong>Les Maîtres des Ténèbres ont attaqué</strong><br>le monastère Kai dans lequel de jeunes prodiges<br>tels que vous sont initiés à l'art de la guerre.<br>Vous êtes le seul survivant de la bataille,<br> et une mission vitale vous incombe désormais :<br>avertir le roi de Sommerlund<br>que les Maîtres des Ténèbres<br> ont décimé l'élite guerrière du pays.<br>Les ennemis qui ont juré votre perte<br>feront tout pour vous en empêcher.",
+    "AUCUNE_AVENTURE": "<strong>Les Maîtres des Ténèbres ont attaqué</strong><br>le monastère Kaï dans lequel de jeunes prodiges<br>tels que vous sont initiés à l'art de la guerre.<br>Vous êtes le seul survivant de la bataille,<br>et une mission vitale vous incombe désormais :<br>avertir le roi de Sommerlund<br>que les Maîtres des Ténèbres<br>ont décimé l'élite guerrière du pays.<br>Les ennemis qui ont juré votre perte<br>feront tout pour vous en empêcher.",
     "CHAPITRE_PREFIXE": "CHAP.",
     "HABILETE": "HABILETÉ",
     "ENDURANCE": "ENDURANCE",
@@ -41,19 +41,19 @@
     "NOUVEAU_PERSONNAGE": "NOUVEAU PERSONNAGE",
     "REGLES_DU_JEU": "RÈGLES DU JEU",
     "PIED": "Progression sauvegardée sur l'appareil",
-    "ERREUR_CHARGEMENT": "Impossible de charger tes personnages."
+    "ERREUR_CHARGEMENT": "Impossible de charger vos personnages."
   },
   "PROFIL": {
     "RETOUR": "‹ ACCUEIL",
     "CHARGEMENT": "Chargement…",
     "LIGNE_PERSONNAGES": "PERSONNAGES",
-    "LIGNE_EMAIL_VERIFIE": "EMAIL VÉRIFIÉ",
+    "LIGNE_EMAIL_VERIFIE": "E-MAIL VÉRIFIÉ",
     "LIGNE_PIECES_PREMIUM": "PIÈCES PREMIUM",
     "LIGNE_MEMBRE_DEPUIS": "MEMBRE DEPUIS",
     "MEMBRE_DEPUIS_VALEUR": "mars 2026",
     "MODIFIER": "MODIFIER MON PROFIL",
     "DECONNEXION": "SE DÉCONNECTER",
-    "ERREUR_CHARGEMENT": "Impossible de charger ton profil."
+    "ERREUR_CHARGEMENT": "Impossible de charger votre profil."
   },
   "PROFIL_EDITION": {
     "RETOUR": "‹ PROFIL",
@@ -61,10 +61,10 @@
     "CHARGEMENT": "Chargement…",
     "SECTION_COMPTE": "COMPTE",
     "CHAMP_USERNAME": "NOM D'UTILISATEUR",
-    "AIDE_USERNAME": "Entre 3 et 30 caractères.",
-    "CHAMP_EMAIL": "EMAIL",
-    "AIDE_EMAIL": "Adresse email invalide.",
-    "RENVOYER_VERIFICATION": "Email non vérifié — renvoyer le lien",
+    "AIDE_USERNAME": "Utilisez entre 3 et 30 caractères.",
+    "CHAMP_EMAIL": "E-MAIL",
+    "AIDE_EMAIL": "Adresse e-mail invalide.",
+    "RENVOYER_VERIFICATION": "E-mail non vérifié — renvoyer le lien",
     "ENREGISTRER": "ENREGISTRER",
     "SECTION_MOT_DE_PASSE": "MOT DE PASSE",
     "CHAMP_MDP_ACTUEL": "MOT DE PASSE ACTUEL",
@@ -72,14 +72,14 @@
     "AIDE_MDP_NOUVEAU": "8 caractères minimum.",
     "CHAMP_MDP_CONFIRMATION": "CONFIRMATION",
     "CHANGER_MDP": "CHANGER LE MOT DE PASSE",
-    "ERREUR_CHARGEMENT": "Impossible de charger ton profil.",
+    "ERREUR_CHARGEMENT": "Impossible de charger votre profil.",
     "ERREUR_MAJ": "La mise à jour a échoué.",
     "ERREUR_MDP_DIFFERENTS": "Les deux mots de passe ne correspondent pas.",
     "SUCCES_MDP": "Mot de passe modifié.",
-    "SUCCES_VERIFICATION": "Email de vérification renvoyé.",
+    "SUCCES_VERIFICATION": "E-mail de vérification renvoyé.",
     "ERREUR_VERIFICATION": "L'envoi a échoué.",
     "SUCCES_PROFIL_MAJ": "Profil mis à jour.",
-    "SUCCES_PROFIL_MAJ_EMAIL": "Profil mis à jour. Vérifie ta nouvelle adresse email.",
+    "SUCCES_PROFIL_MAJ_EMAIL": "Profil mis à jour. Vérifiez votre nouvelle adresse e-mail.",
     "ERREUR_MDP_ACTUEL": "Mot de passe actuel incorrect.",
     "ERREUR_MDP_MODIFICATION": "La modification a échoué."
   },
@@ -101,10 +101,10 @@
     "FERMER": "FERMER",
     "VALIDER": "COMMENCER L'AVENTURE",
     "ERREUR_CHARGEMENT_DISCIPLINES": "Impossible de charger les disciplines.",
-    "ERREUR_NOM_MANQUANT": "Donne un nom à ton personnage.",
-    "ERREUR_TIRAGE_MANQUANT": "Lance les deux dés pour tirer tes caractéristiques.",
-    "ERREUR_TROP_DE_DISCIPLINES": "Exactement {{n}} disciplines : retires-en une d'abord.",
-    "ERREUR_NOMBRE_DISCIPLINES": "Choisis exactement {{n}} disciplines.",
+    "ERREUR_NOM_MANQUANT": "Donnez un nom à votre personnage.",
+    "ERREUR_TIRAGE_MANQUANT": "Lancez les deux dés pour tirer vos caractéristiques.",
+    "ERREUR_TROP_DE_DISCIPLINES": "Exactement {{n}} disciplines : retirez-en une d'abord.",
+    "ERREUR_NOMBRE_DISCIPLINES": "Choisissez exactement {{n}} disciplines.",
     "ERREUR_CREATION": "La création a échoué."
   },
   "INTRO_CREATION": {
@@ -112,13 +112,15 @@
     "SUR_TITRE": "Avant de partir",
     "TITRE": "Règles du jeu",
     "PARAGRAPHE_1": "Au cours de l'initiation qui vous a permis de devenir un Seigneur Kaï, vous avez acquis une force exceptionnelle ; les deux éléments essentiels de cette force sont représentés par votre <b>HABILETÉ</b> AU COMBAT et VOTRE <b>ENDURANCE</b>. Avant d'entreprendre votre mission, il vous faudra mesurer exactement le degré d'efficacité de votre entraînement.",
-    "PARAGRAPHE_HABILETE": "En appuyant sur le dé d'HABILETÉ, l'application tire pour vous un chiffre entre 0 et 9. Ce chiffre est automatiquement ajouté à 10, et le total s'inscrit directement dans la case HABILETÉ de votre personnage (si par exemple l'application tire le chiffre 4, vos points d'HABILETÉ seront de 14). Lorsque vous aurez à combattre, il faudra mesurer votre HABILETÉ à celle de votre adversaire. Il est donc souhaitable que votre total d'HABILETÉ soit le plus élevé possible.",
+    "PARAGRAPHE_HABILETE": "En appuyant sur le dé d'HABILETÉ, l'application tire pour vous un chiffre entre 0 et 9. Ce chiffre est automatiquement ajouté à 10, et le total s'inscrit directement dans la case HABILETÉ de votre personnage (si, par exemple, l'application tire le chiffre 4, vos points d'HABILETÉ seront de 14). Lorsque vous aurez à combattre, il faudra mesurer votre HABILETÉ à celle de votre adversaire. Il est donc souhaitable que votre total d'HABILETÉ soit le plus élevé possible.",
     "PARAGRAPHE_ENDURANCE": "En appuyant sur le dé d'ENDURANCE, l'application tire pour vous un second chiffre entre 0 et 9. Ce chiffre est automatiquement ajouté à 20, et le total s'inscrit directement dans la case ENDURANCE de votre personnage (à titre d'exemple, si l'application tire le chiffre 6, le total de vos points d'ENDURANCE sera de 26).",
     "PARAGRAPHE_MORT": "Si vous êtes blessé lors d'un combat, vous perdrez des points d'ENDURANCE et si jamais votre ENDURANCE tombe à zéro, vous saurez alors que vous venez d'être tué et que votre aventure est terminée. Au cours de votre mission, vous aurez la possibilité de récupérer des points d'ENDURANCE mais votre total d'ENDURANCE ne pourra en aucun cas dépasser celui dont vous disposiez au départ de votre mission.",
     "SECTION_DISCIPLINES": "Les Disciplines Kaï",
-    "PARAGRAPHE_DISCIPLINES": "Au cours des siècles, les Moines Kaï ont appris à maîtriser toutes les techniques du guerrier. Ces techniques sont connues sous le nom de Disciplines Kaï et enseignées aux Seigneurs Kaï. Pour votre part, vous n'avez été initié qu'à cinq des techniques décrites ci-dessous. Il vous appartient de choisir vous-même ces cinq disciplines. Chaque Discipline Kaï peut vous être utile à un moment ou à un autre de votre quête et votre choix devra être le plus judicieux possible : dans certaines circonstances, une habile mise en pratique de l'une de ces techniques peut vous sauver la vie.",
+    "PARAGRAPHE_DISCIPLINES": "Au cours des siècles, les Moines Kaï ont appris à maîtriser toutes les techniques du guerrier. Ces techniques sont connues sous le nom de disciplines Kaï et enseignées aux Seigneurs Kaï. Pour votre part, vous n'avez été initié qu'à cinq des techniques décrites ci-dessous. Il vous appartient de choisir vous-même ces cinq disciplines. Chaque Discipline Kaï peut vous être utile à un moment ou à un autre de votre quête et votre choix devra être le plus judicieux possible : dans certaines circonstances, une habile mise en pratique de l'une de ces techniques peut vous sauver la vie.",
     "PARAGRAPHE_DISCIPLINES_2": "Si vous remplissez avec succès la mission qui vous est assignée dans ce premier livre de la série du Loup Solitaire, vous aurez le droit d'ajouter une Discipline Kaï supplémentaire à celles que vous possédez déjà. Lorsque vous vous lancerez dans la nouvelle aventure que vous propose le prochain volume de la série (intitulé La Traversée Infernale), vous pourrez ainsi faire usage de six disciplines Kaï (les cinq premières étant acquises une bonne fois pour toutes), de même que des Objets Spéciaux que vous aurez décidé de conserver au cours de votre première mission. Sachez en effet que, de livre en livre, votre expérience grandira chaque fois que vous aurez accompli une mission : vous pourrez, de cette façon, espérer atteindre un jour la complète maîtrise de l'art et de la science des Moines Kaï.",
-    "VALIDER": "CRÉER MON PERSONNAGE"
+    "VALIDER": "CRÉER MON PERSONNAGE",
+    "DISCIPLINES": "DISCIPLINES",
+    "EQUIPEMENT": "ÉQUIPEMENT"
   },
   "EQUIPEMENT": {
     "SURTITRE": "Équipement de départ",
@@ -142,11 +144,33 @@
     "RETOUR": "‹ MENU",
     "SUR_TITRE": "Avant de commencer",
     "TITRE": "Équipement de départ",
-    "PARAGRAPHE_1": "Au départ de votre aventure, vous êtes vêtu d'une tunique et d'une cape de Seigneur Kaï, toutes deux de couleur verte. Le matériel dont vous disposez pour assurer votre survie est par ailleurs réduit au minimum. Vous possédez une Hache et un Sac à Dos qui contient un Repas",
-    "PARAGRAPHE_2": "Vous disposez également, accrochée à votre ceinture, d'une Bourse de Cuir qui contient des Pièces d'Or. En appuyant sur le dé de Pièces d'Or, l'application tire pour vous un chiffre entre 0 et 9. Le chiffre que vous obtiendrez représentera le nombre de Couronnes (c'est le nom de la monnaie en cours dans ces régions) dont vous disposez au début de votre mission",
-    "PARAGRAPHE_3": "Dans les ruines fumantes du monastère détruit, vous avez découvert une Carte Géographique qui vous permet de vous orienter. Cette carte est soigneusement rangée dans une poche intérieure de votre tunique.",
+    "PARAGRAPHE_1": "Au départ de votre aventure, vous êtes vêtu d'une tunique et d'une cape de Seigneur Kaï, toutes deux de couleur verte. Le matériel dont vous disposez pour assurer votre survie est par ailleurs réduit au minimum. Vous possédez une hache et un sac à dos qui contient un repas",
+    "PARAGRAPHE_2": "Vous disposez également, accrochée à votre ceinture, d'une bourse de cuir qui contient des pièces d'or. En appuyant sur le dé de pièces d'or, l'application tire pour vous un chiffre entre 0 et 9. Le chiffre que vous obtiendrez représentera le nombre de Couronnes (c'est le nom de la monnaie en cours dans ces régions) dont vous disposez au début de votre mission",
+    "PARAGRAPHE_3": "Dans les ruines fumantes du monastère détruit, vous avez découvert une carte géographique qui vous permet de vous orienter. Cette carte est soigneusement rangée dans une poche intérieure de votre tunique.",
     "PARAGRAPHE_4": "Vous avez également découvert l'un des objets suivants :",
-    "PARAGRAPHE_5": "Pour savoir quel est l'objet que vous avez découvert dans la liste ci-dessus, Appuyez sur le dé d'objet, l'application tirera un des objets au hasard.",
+    "PARAGRAPHE_5": "Pour savoir quel est l'objet que vous avez découvert dans la liste ci-dessus, appuyez sur le dé d'objet : l'application tirera un des objets au hasard.",
     "VALIDER": "OUVRIR L'INVENTAIRE"
+  },
+  "INTRO_EQUIPEMENT": {
+    "RETOUR": "‹ MENU",
+    "PARAGRAPHE_1": "Vous disposez de votre équipement, il vous faut savoir comment il se répartit afin que vous puissiez le transporter plus aisément.",
+    "ARMES": "Armes",
+    "PARAGRAPHE_ARMES": "Vous ne pouvez pas emporter plus de deux armes.",
+    "SAC_A_DOS": "Sac à dos",
+    "PARAGRAPHE_SAC_A_DOS": "Les objets doivent obligatoirement être rangés dans le sac à dos, mais la place y est comptée et vous ne pouvez y transporter que huit objets (Repas inclus).",
+    "OBJETS_SPECIAUX": "Objets spéciaux",
+    "PARAGRAPHE_OBJETS_SPECIAUX": "Les objets spéciaux ne sont pas rangés dans votre sac à dos. Lorsque vous aurez la possibilité d'acquérir l'un de ces objets spéciaux, il vous sera indiqué de quelle manière il convient de le transporter.",
+    "OR": "Pièces d'Or",
+    "PARAGRAPHE_OR": "Elles sont toujours rangées dans la bourse attachée à votre ceinture. Cette bourse ne peut pas contenir plus de cinquante Pièces d'Or en tout.",
+    "NOURRITURE": "Nourriture",
+    "PARAGRAPHE_NOURRITURE": "Vous transportez votre nourriture dans votre sac à dos et chaque repas compte pour un objet.",
+    "PARAGRAPHE_2": "Tous les objets qui peuvent vous être utiles et que vous aurez la possibilité d'acquérir au cours de votre aventure sont indiqués avec leur initiale en lettre capitale. Chaque fois que vous déciderez d'emporter l'un de ces objets avec vous, il vous faudra l'ajouter à votre inventaire. Ces acquisitions seront rangées dans votre sac à dos sauf s'il vous est spécifié qu'il s'agit d'un objet spécial.",
+    "TITRE_2": "Comment utiliser votre équipement ?",
+    "PARAGRAPHE_ARMES_2": "Les armes vous aident à combattre vos ennemis. Si vous avez choisi la discipline de la Maîtrise des Armes et que vous disposez de l'arme qui vous a été attribuée, vous aurez le droit d'ajouter 2 points à votre total d'HABILETÉ. Si vous êtes obligé de combattre sans arme, vous devrez déduire 4 points de votre total d'HABILETÉ et vous battre à mains nues. Si vous découvrez une arme au cours de votre aventure, vous pouvez la garder et l'utiliser, mais rappelez-vous que vous n'avez pas le droit de posséder plus de deux armes à la fois.",
+    "PARAGRAPHE_SAC_A_DOS_2": "Au cours de votre quête, vous découvrirez divers objets qui pourraient se révéler utiles et que vous souhaiterez peut-être conserver (rappelez-vous que vous ne pouvez transporter que huit objets dans votre sac à dos). Vous avez le droit à tout moment d'échanger l'un de ces objets ou tout simplement de vous en débarrasser, mais il vous est interdit de le faire lorsque vous êtes engagé dans un combat.",
+    "PARAGRAPHE_OBJETS_SPECIAUX_2": "Chacun de ces objets possède des propriétés bien particulières. Parfois, ces propriétés vous seront décrites au moment même de la découverte de l'objet, d'autres fois, il vous faudra attendre qu'elles se révèlent au cours de votre aventure. Pour vous aider à trouver votre chemin, vous disposez d'une carte que vous avez sauvée des cendres du monastère détruit.",
+    "PARAGRAPHE_OR_2": "La monnaie en cours dans le royaume est la Couronne, qui se présente sous la forme d'une petite pièce d'or. Au cours de votre aventure, vous pourrez utiliser ces Couronnes pour vos frais de transport ou de nourriture, mais également, si besoin est, pour corrompre certains personnages peu scrupuleux. Nombre de créatures que vous serez amené à rencontrer possèdent des Couronnes d'or. Chaque fois que vous tuerez l'une de ces créatures, vous aurez le droit de vous emparer de ses pièces d'or et de les conserver dans votre bourse.",
+    "PARAGRAPHE_NOURRITURE_2": "Tout au long de votre quête, vous aurez besoin de vous nourrir à intervalles réguliers. S'il ne vous reste plus de vivres lorsque vous serez dans l'obligation de prendre un repas, vous perdrez 3 points d'ENDURANCE. Mais si vous avez choisi, parmi les disciplines Kaï, celle de la chasse, vous n'aurez pas à rayer un repas de votre liste d'équipement chaque fois que vous devrez manger. La potion de guérison vous rend 4 points d'ENDURANCE lorsque vous la buvez après un combat. Mais vous ne disposez que d'une seule dose. Si, au cours de votre aventure, vous venez à découvrir d'autres potions, leurs effets vous seront indiqués en temps utile. Toutes les Potions de Guérison doivent être rangées dans votre sac à dos.",
+    "COMBAT": "REGLES DE COMBAT"
   }
 }

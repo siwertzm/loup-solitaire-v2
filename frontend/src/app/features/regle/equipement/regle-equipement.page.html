@@ -1,0 +1,61 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'INTRO_CREATION.EQUIPEMENT' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p [innerHTML]="'INTRO_EQUIPEMENT.PARAGRAPHE_1' | translate"></p>
+
+      <div class="section">{{ 'INTRO_EQUIPEMENT.ARMES' | translate }}</div>
+
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_ARMES' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.SAC_A_DOS' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_SAC_A_DOS' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.OBJETS_SPECIAUX' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_OBJETS_SPECIAUX' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.OR' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_OR' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.NOURRITURE' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_NOURRITURE' | translate }}
+      </p>
+      <div class="section">{{ 'INTRO_EQUIPEMENT.TITRE_2' | translate }}</div>
+      <h3>{{ 'INTRO_EQUIPEMENT.ARMES' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_ARMES_2' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.SAC_A_DOS' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_SAC_A_DOS_2' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.OBJETS_SPECIAUX' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_OBJETS_SPECIAUX_2' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.OR' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_OR_2' | translate }}
+      </p>
+      <h3>{{ 'INTRO_EQUIPEMENT.NOURRITURE' | translate }}</h3>
+      <p>
+        {{ 'INTRO_EQUIPEMENT.PARAGRAPHE_NOURRITURE_2' | translate }}
+      </p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="continuer()">{{ 'INTRO_EQUIPEMENT.COMBAT' | translate }}</button>
+    </div>
+  </div>
+</ion-content>

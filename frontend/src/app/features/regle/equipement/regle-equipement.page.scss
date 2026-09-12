@@ -17,11 +17,18 @@ ion-content.intro {
   }
 }
 
+h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 19px;
+  font-weight: 600;
+  text-align: center;
+}
+
 .ecran {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 24px 22px 0;
+  padding: 6px 22px 0;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
 }
 
@@ -35,6 +42,12 @@ ion-content.intro {
   font-size: 11.5px;
   letter-spacing: 0.14em;
   cursor: pointer;
+}
+
+.discipline {
+  h2 {
+    text-align: center;
+  }
 }
 
 .titre {
@@ -69,7 +82,7 @@ ion-content.intro {
   padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 6px;
   font-size: 16.5px;
   line-height: 1.62;
   hyphens: none;
@@ -89,7 +102,6 @@ ion-content.intro {
     font-weight: 600;
     text-align: center;
     margin-top: 6px;
-    padding-top: 16px;
     border-top: 1px solid rgba(58, 50, 38, 0.2);
   }
 }

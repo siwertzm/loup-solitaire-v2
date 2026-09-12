@@ -18,6 +18,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/accueil/accueil.page').then((m) => m.AccueilPage),
   },
   {
+    path: 'regle/intro',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/regle/intro/regle-intro.page').then((m) => m.RegleIntroPage),
+  },
+  {
+    path: 'regle/disciplines',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/regle/discipline/regle-discipline.page').then((m) => m.RegleDisciplinePage),
+  },
+  {
+    path: 'regle/equipement',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/regle/equipement/regle-equipement.page').then((m) => m.RegleEquipementPage),
+  },
+  {
     path: 'profil',
     canActivate: [authGuard],
     loadComponent: () => import('./features/profil/profil.page').then((m) => m.ProfilPage),

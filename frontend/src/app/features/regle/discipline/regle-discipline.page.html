@@ -1,0 +1,44 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'INTRO_CREATION.SECTION_DISCIPLINES' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p [innerHTML]="'INTRO_CREATION.PARAGRAPHE_DISCIPLINES' | translate"></p>
+
+      <div class="section"></div>
+      @if (chargement()) {
+        <p>Chargement des disciplines...</p>
+      } @else if (erreur()) {
+        <p>{{ erreur() }}</p>
+      } @else {
+        <div class="disciplines">
+          @for (discipline of disciplines(); track discipline.id) {
+            <article class="discipline">
+              <h2>{{ discipline.nom }}</h2>
+              <p [innerHTML]="discipline.description"></p>
+            </article>
+          }
+        </div>
+      }
+      <div class="section"></div>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_DISCIPLINES_2' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_ENDURANCE' | translate }}
+      </p>
+      <p>
+        {{ 'INTRO_CREATION.PARAGRAPHE_MORT' | translate }}
+      </p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="continuer()">{{ 'INTRO_CREATION.EQUIPEMENT' | translate }}</button>
+    </div>
+  </div>
+</ion-content>

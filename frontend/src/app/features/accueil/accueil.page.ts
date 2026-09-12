@@ -84,7 +84,7 @@ export class AccueilPage implements ViewWillEnter {
   }
 
   regles(): void {
-    this.router.navigate(['/regles']);
+    this.router.navigate(['/regle/intro']);
   }
 
   profil(): void {

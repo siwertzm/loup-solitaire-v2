@@ -21,7 +21,7 @@ ion-content.intro {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 24px 22px 0;
+  padding: 6px 22px 0;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
 }
 
@@ -35,6 +35,12 @@ ion-content.intro {
   font-size: 11.5px;
   letter-spacing: 0.14em;
   cursor: pointer;
+}
+
+.discipline {
+  h2 {
+    text-align: center;
+  }
 }
 
 .titre {
@@ -89,7 +95,6 @@ ion-content.intro {
     font-weight: 600;
     text-align: center;
     margin-top: 6px;
-    padding-top: 16px;
     border-top: 1px solid rgba(58, 50, 38, 0.2);
   }
 }
