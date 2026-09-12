@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,6 +11,7 @@ import { DisciplineResume } from '../../../core/models/personnage.model';
 import { DisciplineService } from '../../../core/services/discipline.service';
 import { ObjetResume } from '../../../core/models/personnage.model';
 import { ObjetService } from '../../../core/services/objet.service';
+import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 import { ChapitreObjetsComponent } from './objets/chapitre-objets.component';
 
 /**
@@ -35,6 +36,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly personnageService = inject(PersonnageService);
   private readonly disciplineService = inject(DisciplineService);
   private readonly objetService = inject(ObjetService);
+  private readonly inventaireSheet = inject(InventaireSheetService);
 
   readonly personnageId = signal<string | null>(null);
 
@@ -143,6 +145,19 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     setTimeout(() => {
       this.ongletLeve.set(null);
     }, 300);
+  }
+
+  constructor() {
+    // La feuille "SAC À DOS" (globale, montée à la racine) garde sa propre
+    // copie de la fiche personnage : un ramassage/retrait fait depuis elle
+    // ne met pas à jour automatiquement celle de cette page. On synchronise
+    // ici dès que la feuille notifie une mise à jour pour CE personnage.
+    effect(() => {
+      const nouveau = this.inventaireSheet.personnageMisAJour();
+      if (nouveau && nouveau.id === this.personnageId()) {
+        this.personnage.set(nouveau);
+      }
+    });
   }
 
   ngOnInit(): void {

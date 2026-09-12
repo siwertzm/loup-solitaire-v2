@@ -4,6 +4,7 @@ $parchemin: #ece2c8;
 $encre: #3a3226;
 $sepia: #8a7a5e;
 $vert: #6f8c3f;
+$rouge: #b0392e;
 
 .voile-sac {
   position: fixed;
@@ -120,6 +121,21 @@ $vert: #6f8c3f;
     display: block;
     color: $vert;
     font-size: 9px;
+
+    &.sac-malus {
+      color: $rouge;
+    }
+  }
+}
+
+.sac-ligne-vide {
+  background: rgba(176, 57, 46, 0.08);
+  border: 1.5px dashed rgba(176, 57, 46, 0.45);
+
+  .sac-nom {
+    font-style: italic;
+    color: $rouge;
+    opacity: 0.8;
   }
 }
 

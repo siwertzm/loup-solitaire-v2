@@ -100,6 +100,11 @@ export class InventaireSheetComponent {
     return armes.map((a) => ({ ...a, maitrisee: maitriseeNom !== null && a.nom === maitriseeNom }));
   });
 
+  // Aligné sur InventaireService.MALUS_SANS_ARME (backend) : sans arme du
+  // tout, l'HABILETÉ effective est habiliteBase - 4 ("Main nue").
+  readonly malusSansArme = -4;
+  readonly aucuneArme = computed(() => this.armesDetail().length === 0);
+
   readonly objetsEtRepasDetail = computed(() =>
     this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS'),
   );
@@ -124,6 +129,7 @@ export class InventaireSheetComponent {
       next: (p) => {
         this.personnage.set(p);
         this.retraitEnCours.set(null);
+        this.sheet.notifierMiseAJour(p);
       },
       error: (err) => {
         console.error("Erreur lors du retrait de l'objet :", err);

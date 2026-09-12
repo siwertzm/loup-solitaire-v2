@@ -36,6 +36,12 @@
               </ion-item-options>
             </ion-item-sliding>
           }
+          @if (aucuneArme()) {
+            <div class="sac-ligne sac-ligne-vide">
+              <span class="sac-nom">Vide</span>
+              <span class="sac-tag">Main nue <span class="sac-bonus sac-malus">{{ malusSansArme }} HAB</span></span>
+            </div>
+          }
 
           <div class="sac-section-titre">
             OBJETS &amp; REPAS
