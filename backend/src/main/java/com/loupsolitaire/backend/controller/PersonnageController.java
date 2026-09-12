@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,6 +83,7 @@ public class PersonnageController {
 
     // Fiche personnage complete (reprise d'une partie).
     @GetMapping("/{id}")
+    @Transactional
     public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
         return personnageMapper.versReponse(personnage);
@@ -92,6 +94,7 @@ public class PersonnageController {
     // chapitre (voir PersonnageService.avancerVersChapitre) : consulter cet
     // ecran plusieurs fois ne le fait jamais changer.
     @GetMapping("/{id}/chapitre")
+    @Transactional
     public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
         return chapitreMapper.versReponse(personnage.getChapitreActuel().getId(), personnage);
@@ -103,6 +106,7 @@ public class PersonnageController {
     // reinitialiser l'habilite temporaire : n'applique pas encore les
     // effets/ennemis/objets du nouveau chapitre (etape suivante).
     @PostMapping("/{id}/chapitre/{chapitreCibleId}")
+    @Transactional
     public PersonnageResponse avancerVersChapitre(
             @PathVariable UUID id,
             @PathVariable Integer chapitreCibleId,
@@ -120,6 +124,7 @@ public class PersonnageController {
     // Integer) : Spring privilegie toujours le match litteral, pas de
     // conflit de routage.
     @PostMapping("/{id}/chapitre/revenir-apres-defaite")
+    @Transactional
     public PersonnageResponse revenirApresDefaite(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -136,6 +141,7 @@ public class PersonnageController {
     // 1 coin (non retire, illimite pour le MVP1) pour restaurer
     // l'endurance a fond et repasser mort a false.
     @PostMapping("/{id}/ressusciter")
+    @Transactional
     public PersonnageResponse ressusciter(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -151,6 +157,7 @@ public class PersonnageController {
     // de ramasser un objet non propose ici, et la quantite vient toujours
     // du chapitre lui-meme, jamais du client.
     @PostMapping("/{id}/objets/{objetId}")
+    @Transactional
     public PersonnageResponse ajouterObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
@@ -167,6 +174,7 @@ public class PersonnageController {
     // Endpoint de test/debug symetrique : retire un objet possede, sans
     // jamais appliquer d'effet de consommable (voir /consommer ci-dessous).
     @DeleteMapping("/{id}/objets/{objetId}")
+    @Transactional
     public PersonnageResponse retirerObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
@@ -185,6 +193,7 @@ public class PersonnageController {
     // d'Alether...) : applique son effet PUIS le retire de l'inventaire.
     // Contrairement a DELETE /objets/{objetId}, celui-ci modifie les stats.
     @PostMapping("/{id}/objets/{objetId}/consommer")
+    @Transactional
     public PersonnageResponse consommerObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
@@ -204,6 +213,7 @@ public class PersonnageController {
     // (voir PersonnageResponse.volEnAttente pour savoir si un choix est
     // requis, et lequel).
     @PostMapping("/{id}/vol/{objetId}")
+    @Transactional
     public PersonnageResponse resoudreVol(
             @PathVariable UUID id,
             @PathVariable String objetId,
@@ -223,6 +233,7 @@ public class PersonnageController {
     // ECHANGE) : impossible d'echanger n'importe quoi n'importe ou.
     // Cas d'usage : chapitre 307 (Marteau de Guerre de l'ermite).
     @PostMapping("/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}")
+    @Transactional
     public PersonnageResponse echangerObjet(
             @PathVariable UUID id,
             @PathVariable String objetAAjouterId,
@@ -243,6 +254,7 @@ public class PersonnageController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
     public void supprimer(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {

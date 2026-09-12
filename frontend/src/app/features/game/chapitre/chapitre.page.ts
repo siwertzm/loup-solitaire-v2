@@ -76,6 +76,38 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly disciplines = computed(() => this.personnage()?.disciplines ?? []);
   readonly inventaire = computed(() => this.personnage()?.inventaire ?? []);
 
+  // Compteurs du "sac" — alignés sur InventaireService (backend) :
+  // MAX_ARMES=2, MAX_OBJETS_ET_REPAS=8 (partagé entre OBJET et REPAS), MAX_BOURSE=50.
+  readonly maxArmes = 2;
+  readonly maxObjetsEtRepas = 8;
+  readonly maxBourse = 50;
+
+  readonly armesCount = computed(() =>
+    this.inventaire()
+      .filter((i) => i.categorie === 'ARME')
+      .reduce((total, i) => total + i.quantite, 0),
+  );
+
+  readonly objetsCount = computed(() =>
+    this.inventaire()
+      .filter((i) => i.categorie === 'OBJET')
+      .reduce((total, i) => total + i.quantite, 0),
+  );
+
+  readonly repasCount = computed(() =>
+    this.inventaire()
+      .filter((i) => i.categorie === 'REPAS')
+      .reduce((total, i) => total + i.quantite, 0),
+  );
+
+  readonly objetsEtRepasCount = computed(() => this.objetsCount() + this.repasCount());
+
+  readonly bourseCount = computed(() =>
+    this.inventaire()
+      .filter((i) => i.categorie === 'BOURSE')
+      .reduce((total, i) => total + i.quantite, 0),
+  );
+
   // Computed properties du chapitre
   readonly liens = computed(() => this.chapitre()?.liens ?? []);
   readonly objets = computed(() => this.chapitre()?.objets ?? []);

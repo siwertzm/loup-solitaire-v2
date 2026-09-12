@@ -56,6 +56,37 @@
                 <button type="button" class="objet-prendre">PRENDRE</button>
               </div>
             }
+
+            <div class="sac">
+              <div class="typeObj">
+                <div class="logo">
+                  <img src="assets/icon/epee.png" alt="Armes" />
+                </div>
+                <div class="cont">{{ armesCount() }}/{{ maxArmes }}</div>
+              </div>
+
+              <div class="typeObj">
+                <div class="logo">
+                  <img src="assets/icon/potion.png" alt="Objets" />
+                </div>
+                <div class="nbr">{{ objetsCount() }}</div>
+                <div class="logo">
+                  <img src="assets/icon/repas.png" alt="Repas" />
+                </div>
+                <div class="nbr2">{{ repasCount() }}</div>
+                <div class="logo">
+                  <img src="assets/icon/sac.png" alt="Sac" />
+                </div>
+                <div class="cont">{{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }}</div>
+              </div>
+
+              <div class="typeObj">
+                <div class="logo">
+                  <img src="assets/icon/or.png" alt="Bourse" />
+                </div>
+                <div class="cont">{{ bourseCount() }}/{{ maxBourse }}</div>
+              </div>
+            </div>
           </div>
         }
 

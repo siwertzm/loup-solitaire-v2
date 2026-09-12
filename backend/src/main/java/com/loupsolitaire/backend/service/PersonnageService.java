@@ -473,7 +473,7 @@ public class PersonnageService {
 
     @Transactional
     public void supprimerPersonnage(Personnage personnage) {
-        inventaireItemRepository.deleteByPersonnage(personnage);
+        inventaireItemRepository.deleteByPersonnageId(personnage.getId());
         combatRepository.deleteAll(combatRepository.findByPersonnage(personnage));
         personnageRepository.delete(personnage);
     }

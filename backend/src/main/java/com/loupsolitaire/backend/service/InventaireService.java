@@ -49,7 +49,7 @@ public class InventaireService {
 
     // Pour la fiche personnage : consultation en lecture seule.
     public List<InventaireItem> listerInventaire(Personnage personnage) {
-        return inventaireItemRepository.findByPersonnage(personnage);
+        return inventaireItemRepository.findByPersonnageId(personnage.getId());
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class InventaireService {
 
         if (quantiteAjoutee > 0) {
             InventaireItem item = inventaireItemRepository
-                    .findByPersonnageAndObjetId(personnage, objet.getId())
+                    .findByPersonnageIdAndObjetId(personnage.getId(), objet.getId())
                     .orElseGet(() -> {
                         InventaireItem nouveau = new InventaireItem();
                         nouveau.setPersonnage(personnage);
@@ -118,7 +118,7 @@ public class InventaireService {
         }
 
         InventaireItem item = inventaireItemRepository
-                .findByPersonnageAndObjetId(personnage, objet.getId())
+                .findByPersonnageIdAndObjetId(personnage.getId(), objet.getId())
                 .orElseThrow(() -> new IllegalStateException(
                         "Le personnage ne possede pas " + objet.getId() + ", impossible d'en retirer"));
 
@@ -160,7 +160,7 @@ public class InventaireService {
     // facon PERMANENTE (voir EffetChapitreService), pas seulement lors
     // d'un ajout/retrait d'arme.
     public void recalculerHabiliteArmes(Personnage personnage) {
-        List<InventaireItem> armes = inventaireItemRepository.findByPersonnage(personnage).stream()
+        List<InventaireItem> armes = inventaireItemRepository.findByPersonnageId(personnage.getId()).stream()
                 .filter(item -> item.getObjet().getCategorie() == CategorieObjet.ARME)
                 .toList();
 
@@ -191,7 +191,7 @@ public class InventaireService {
     // Objets deja possedes dans le meme groupe de limite que la categorie
     // donnee (ex. pour REPAS, inclut aussi les OBJET).
     private List<InventaireItem> itemsDuGroupe(Personnage personnage, CategorieObjet categorie) {
-        return inventaireItemRepository.findByPersonnage(personnage).stream()
+        return inventaireItemRepository.findByPersonnageId(personnage.getId()).stream()
                 .filter(item -> memeGroupe(item.getObjet().getCategorie(), categorie))
                 .toList();
     }

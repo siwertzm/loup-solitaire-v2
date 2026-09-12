@@ -69,7 +69,7 @@ class InventaireServiceTest {
     @Test
     void ajouteUnNouvelObjetAvecSaQuantiteEtAppliqueSesBonus() {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, repas, 1);
@@ -87,7 +87,7 @@ class InventaireServiceTest {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
         InventaireItem ligneExistante = creerLigne(repas, 2);
 
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas"))
                 .thenReturn(Optional.of(ligneExistante));
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -100,7 +100,7 @@ class InventaireServiceTest {
     @Test
     void nAppliqueAucuneLimitePourLesObjetsSpeciaux() {
         Objet carte = creerObjet("carte", CategorieObjet.OBJETS_SPECIAUX);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "carte")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "carte")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, carte, 1);
@@ -131,7 +131,7 @@ class InventaireServiceTest {
         InventaireItem ligneHache = creerLigne(hache, 1);
         InventaireItem ligneGlaive = creerLigne(glaive, 1);
 
-        when(inventaireItemRepository.findByPersonnage(personnage))
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId()))
                 .thenReturn(List.of(ligneHache, ligneGlaive));
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, lance, 1);
@@ -150,9 +150,9 @@ class InventaireServiceTest {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
         Objet laumspur = creerObjet("laumspur", CategorieObjet.OBJET);
 
-        when(inventaireItemRepository.findByPersonnage(personnage))
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId()))
                 .thenReturn(List.of(creerLigne(repas, 4), creerLigne(laumspur, 2)));
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "laumspur"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "laumspur"))
                 .thenReturn(Optional.of(creerLigne(laumspur, 2)));
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -169,9 +169,9 @@ class InventaireServiceTest {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
         Objet pierrePrecieuse = creerObjet("pierre_precieuse", CategorieObjet.BOURSE);
 
-        when(inventaireItemRepository.findByPersonnage(personnage))
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId()))
                 .thenReturn(List.of(creerLigne(or, 30), creerLigne(pierrePrecieuse, 15)));
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, or, 10);
@@ -188,7 +188,7 @@ class InventaireServiceTest {
     void retireUneQuantitePartielleSansSupprimerLaLigneNiToucherLeBonus() {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
         InventaireItem ligne = creerLigne(or, 10);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or"))
                 .thenReturn(Optional.of(ligne));
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -203,7 +203,7 @@ class InventaireServiceTest {
     void supprimeLaLigneQuandLaQuantiteTombeAZeroEtRetireLeBonus() {
         Objet casque = creerObjet("casque", CategorieObjet.OBJETS_SPECIAUX);
         InventaireItem ligne = creerLigne(casque, 1);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "casque"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "casque"))
                 .thenReturn(Optional.of(ligne));
 
         inventaireService.retirerObjet(personnage, casque, 1);
@@ -216,7 +216,7 @@ class InventaireServiceTest {
     @Test
     void refuseDeRetirerUnObjetNonPossede() {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> inventaireService.retirerObjet(personnage, or, 5))
                 .isInstanceOf(IllegalStateException.class);
@@ -225,7 +225,7 @@ class InventaireServiceTest {
     @Test
     void refuseDeRetirerPlusQueLaQuantitePossedee() {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "or"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or"))
                 .thenReturn(Optional.of(creerLigne(or, 3)));
 
         assertThatThrownBy(() -> inventaireService.retirerObjet(personnage, or, 10))
@@ -250,10 +250,10 @@ class InventaireServiceTest {
     void appliqueMoins4QuandLaDerniereArmeEstRetiree() {
         Objet hache = creerObjet("hache", CategorieObjet.ARME);
         InventaireItem ligne = creerLigne(hache, 1);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "hache"))
                 .thenReturn(Optional.of(ligne));
         // Apres suppression de la ligne, l'inventaire ne contient plus d'arme.
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of());
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId())).thenReturn(List.of());
 
         inventaireService.retirerObjet(personnage, hache, 1);
 
@@ -264,9 +264,9 @@ class InventaireServiceTest {
     @Test
     void nAppliqueAucunAjustementAvecUneArmeNonMaitrisee() {
         Objet hache = creerObjet("hache", CategorieObjet.ARME);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "hache")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of(creerLigne(hache, 1)));
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId())).thenReturn(List.of(creerLigne(hache, 1)));
 
         inventaireService.ajouterObjet(personnage, hache, 1);
 
@@ -278,9 +278,9 @@ class InventaireServiceTest {
     void appliquePlus2QuandLArmeMaitriseeEstAjoutee() {
         Objet epee = creerObjet("epee", CategorieObjet.ARME);
         personnage.setArmeMaitrisee(epee);
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "epee")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "epee")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of(creerLigne(epee, 1)));
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId())).thenReturn(List.of(creerLigne(epee, 1)));
 
         inventaireService.ajouterObjet(personnage, epee, 1);
 
@@ -290,8 +290,8 @@ class InventaireServiceTest {
     @Test
     void neRecalculeRienPourUnObjetNonArme() {
         Objet repas = creerObjet("repas", CategorieObjet.REPAS);
-        when(inventaireItemRepository.findByPersonnage(personnage)).thenReturn(List.of());
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "repas")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId())).thenReturn(List.of());
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas")).thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         inventaireService.ajouterObjet(personnage, repas, 1);
@@ -311,11 +311,11 @@ class InventaireServiceTest {
         InventaireItem ligneHache = creerLigne(hache, 1);
         Objet glaive = creerObjet("glaive", CategorieObjet.ARME);
 
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "hache"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "hache"))
                 .thenReturn(Optional.of(ligneHache));
-        when(inventaireItemRepository.findByPersonnage(personnage))
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId()))
                 .thenReturn(List.of(creerLigne(glaive, 1)));
-        when(inventaireItemRepository.findByPersonnageAndObjetId(personnage, "lance"))
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "lance"))
                 .thenReturn(Optional.empty());
         when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
