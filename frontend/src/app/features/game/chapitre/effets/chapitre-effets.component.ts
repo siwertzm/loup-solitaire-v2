@@ -105,11 +105,11 @@ export class ChapitreEffetsComponent {
 
   /** Unique condition DISCIPLINE ou OBJET d'un effet HABILETE, s'il y en a une. */
   conditionDisciplineOuObjet(effet: EffetResponse): CondResponse | null {
-    if (effet.conditions.length !== 1) {
+    if (effet.conditions.length == 0) {
       return null;
     }
     const condition = effet.conditions[0];
-    return condition.type === 'DISCIPLINE' || condition.type === 'OBJET' ? condition : null;
+    return condition.type === 'DISCIPLINE' || condition.type === 'OBJET' || condition.type === 'PERMANENT' ? condition : null;
   }
 
   /** true si le malus a été évité (discipline/objet requis bien possédé). */

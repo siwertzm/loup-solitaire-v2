@@ -6008,13 +6008,7 @@
   {
     "text": "Tandis que la créature meurt, son corps se dissout lentement en un liquide verdâtre et pestilentiel. Vous remarquez alors que les herbes et les plantes parmi lesquelles se répand cette substance se fanent et meurent aussitôt. Quelques instants plus tard, une grosse Pierre Précieuse apparaît sur le sol, près du cadavre décomposé : apparemment sa valeur doit être considérable. Si vous souhaitez prendre cette Pierre, rendez-vous au 76. Si vous préférez quitter les lieux aussi vite que possible, rendez-vous au 118.",
     "combat": false,
-    "objet": [
-      {
-        "id": "pierre_precieuse",
-        "valeur": 1,
-        "optionnel": true
-      }
-    ],
+    "objet": [],
     "effet": null,
     "ennemi": null,
     "lien": [
