@@ -147,6 +147,50 @@ class ChapitreMapperTest {
     }
 
     @Test
+    void filtreLesEffetsDontLaConditionDeHasardNestPasRemplie() {
+        Chapitre chapitre = creerChapitre(36, "texte", false);
+
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.ENDURANCE);
+        effet.setValeur(-2);
+        Cond hasard = new Cond();
+        hasard.setType(TypeCondition.HASARD);
+        hasard.setValeur("[0, 4]");
+        effet.setConditions(List.of(hasard));
+        chapitre.setEffets(List.of(effet));
+
+        when(chapitreRepository.findById(36)).thenReturn(Optional.of(chapitre));
+        when(conditionService.estDisponible(hasard, personnage)).thenReturn(false);
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(36, personnage);
+
+        assertThat(reponse.effets()).isEmpty();
+    }
+
+    @Test
+    void conserveLesEffetsDontLaConditionDeHasardEstRemplie() {
+        Chapitre chapitre = creerChapitre(36, "texte", false);
+
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.ENDURANCE);
+        effet.setValeur(-2);
+        Cond hasard = new Cond();
+        hasard.setType(TypeCondition.HASARD);
+        hasard.setValeur("[0, 4]");
+        effet.setConditions(List.of(hasard));
+        chapitre.setEffets(List.of(effet));
+
+        when(chapitreRepository.findById(36)).thenReturn(Optional.of(chapitre));
+        when(conditionService.estDisponible(hasard, personnage)).thenReturn(true);
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(36, personnage);
+
+        assertThat(reponse.effets()).hasSize(1);
+        assertThat(reponse.effets().get(0).type()).isEqualTo("ENDURANCE");
+        assertThat(reponse.effets().get(0).valeur()).isEqualTo(-2);
+    }
+
+    @Test
     void mappeLesLiensAvecLeChapitreCibleEtLeursConditions() {
         Chapitre chapitre = creerChapitre(0, "texte", false);
         Chapitre cible = creerChapitre(1, "texte cible", false);

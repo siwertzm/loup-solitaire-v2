@@ -15,6 +15,7 @@ import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.ObjetChap;
 import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
+import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.response.ChapitreResponse;
@@ -55,6 +56,7 @@ public class ChapitreMapper {
                 .toList();
 
         List<EffetResponse> effets = chapitre.getEffets().stream()
+                .filter(e -> estEffetActif(e, personnage))
                 .map(e -> versReponseEffet(e, personnage))
                 .toList();
 
@@ -93,6 +95,12 @@ public class ChapitreMapper {
         }
 
         return new ObjetChapResponse(objetId, objetChap.getObjet().getNom(), valeur, objetChap.isOptionnel());
+    }
+
+    private boolean estEffetActif(Effet effet, Personnage personnage) {
+        return effet.getConditions().stream()
+                .filter(c -> c.getType() == TypeCondition.HASARD)
+                .allMatch(c -> conditionService.estDisponible(c, personnage));
     }
 
     private EffetResponse versReponseEffet(Effet effet, Personnage personnage) {
