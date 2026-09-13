@@ -108,46 +108,55 @@
       }
 
       @if (!aConditionHasard() || hasardTermine()) {
-        @for (lien of liens(); track lien.chapitreCibleId) {
-          <button
-            type="button"
-            class="valider"
-            [disabled]="!lien.disponible"
-            (click)="choisirLien(lien)"
-          >
-            @if (lien.disponible) {
-              @if (lien.conditions.length > 0) {
-                @if (lien.conditions[0].type === 'DISCIPLINE') {
-                  {{ nomDiscipline(lien.conditions[0].targetId) }}
-                } @else if (lien.conditions[0].type === 'OBJET') {
-                  {{ nomObjet(lien.conditions[0].targetId) }}
-                } @else if (lien.conditions[0].type === 'BOURSE') {
-                  {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}s
+        @if (volEnAttente()) {
+          <!-- Vol en attente de résolution : le backend refuse tout
+               avancerVersChapitre tant que POST /vol/{objetId} n'a pas été
+               appelé (voir ChapitreEffetsComponent, onglet Effets). -->
+          <button type="button" class="valider" (click)="allerChoisirVol()">
+            CHOISIR
+          </button>
+        } @else {
+          @for (lien of liens(); track lien.chapitreCibleId) {
+            <button
+              type="button"
+              class="valider"
+              [disabled]="!lien.disponible"
+              (click)="choisirLien(lien)"
+            >
+              @if (lien.disponible) {
+                @if (lien.conditions.length > 0) {
+                  @if (lien.conditions[0].type === 'DISCIPLINE') {
+                    {{ nomDiscipline(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'OBJET') {
+                    {{ nomObjet(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'BOURSE') {
+                    {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}s
+                  } @else {
+                    {{ lien.chapitreCibleId }}
+                  }
                 } @else {
                   {{ lien.chapitreCibleId }}
                 }
               } @else {
-                {{ lien.chapitreCibleId }}
-              }
-            } @else {
-              @if (lien.conditions.length > 0) {
-                @if (lien.conditions[0].type === 'DISCIPLINE') {
-                  {{ nomDiscipline(lien.conditions[0].targetId) }}
-                } @else if (lien.conditions[0].type === 'HASARD') {
-                  {{ lien.conditions[0].type }}
-                } @else if (lien.conditions[0].type === 'OBJET') {
-                  {{ nomObjet(lien.conditions[0].targetId) }}
-                } @else if (lien.conditions[0].type === 'BOURSE') {
-                  {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
-                } @else if (lien.conditions[0].type === 'ENDURANCE') {
-                  {{ lien.conditions[0].valeur }} Endurances requises
-                }
-                @else {
-                  Condition requise
+                @if (lien.conditions.length > 0) {
+                  @if (lien.conditions[0].type === 'DISCIPLINE') {
+                    {{ nomDiscipline(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'HASARD') {
+                    {{ lien.conditions[0].type }}
+                  } @else if (lien.conditions[0].type === 'OBJET') {
+                    {{ nomObjet(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'BOURSE') {
+                    {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'ENDURANCE') {
+                    {{ lien.conditions[0].valeur }} Endurances requises
+                  }
+                  @else {
+                    Condition requise
+                  }
                 }
               }
-            }
-          </button>
+            </button>
+          }
         }
       }
     </div>

@@ -87,6 +87,22 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
 
+  // Un vol en attente (voir <app-chapitre-effets>) bloque avancerVersChapitre
+  // côté backend (400 : "Un vol est en attente de resolution"). Tant qu'il
+  // n'est pas résolu, on remplace les liens du pied de page par un bouton
+  // "CHOISIR" qui renvoie vers l'onglet Effets, où se trouve déjà le popup
+  // de résolution (voir ChapitreEffetsComponent.ouvrirChoixVol).
+  readonly volEnAttente = computed(() => this.personnage()?.volEnAttente ?? null);
+
+  /** Ouvre (sans le refermer si déjà ouvert) l'onglet Effets pour que le
+   * joueur résolve son vol en attente — pas de toggle ici, contrairement à
+   * selectionnerOnglet(), pour garantir que l'onglet s'affiche à coup sûr. */
+  allerChoisirVol(): void {
+    this.ongletActif.set('effets');
+    this.ongletLeve.set('effets');
+    setTimeout(() => this.ongletLeve.set(null), 300);
+  }
+
   readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
   readonly ongletObjetsClique = signal(false);
