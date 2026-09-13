@@ -148,8 +148,31 @@
           }
         </div>
       </div>
+    } @else if (effet.type.toUpperCase() === 'ECHANGE' && conditionEchange(effet); as condition) {
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">ÉCHANGE</span>
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (echangeDejaFait(condition)) {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              ÉCHANGÉ
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirEchange(effet)">
+              ÉCHANGER
+            </button>
+          }
+        </div>
+      </div>
     } @else {
-      <!-- Autres cas (ECHANGE) -->
+      <!-- Cas non rencontrés dans ce tome -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
@@ -201,4 +224,36 @@
       <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">ANNULER</button>
     </div>
   </div>
+}
+
+@if (echangePopupEffet(); as effet) {
+  @if (conditionEchange(effet); as condition) {
+    <div class="voile-plein" (click)="fermerEchange()">
+      <div class="popup-plein" (click)="$event.stopPropagation()">
+        <div class="popup-plein-titre">ÉCHANGER CONTRE {{ nomObjet(condition.targetId!) }}</div>
+        <p class="popup-plein-texte">Choisissez ce que vous cédez en échange.</p>
+
+        @for (item of itemsEligiblesEchange(condition); track item.objetId) {
+          <div class="popup-plein-ligne">
+            <span class="popup-plein-nom">{{ item.nom }}</span>
+            @if (item.quantite > 1) {
+              <span class="popup-plein-quantite">×{{ item.quantite }}</span>
+            }
+            <button
+              type="button"
+              class="popup-plein-retirer"
+              [disabled]="echangeEnCours() === item.objetId"
+              (click)="confirmerEchange(condition.targetId!, item.objetId)"
+            >
+              Échanger
+            </button>
+          </div>
+        } @empty {
+          <p class="popup-plein-texte">Vous n'avez rien à échanger ici.</p>
+        }
+
+        <button type="button" class="popup-plein-annuler" (click)="fermerEchange()">ANNULER</button>
+      </div>
+    </div>
+  }
 }

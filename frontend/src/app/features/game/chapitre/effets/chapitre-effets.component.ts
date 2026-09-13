@@ -240,4 +240,76 @@ export class ChapitreEffetsComponent {
       },
     });
   }
+
+  // --- Effet ECHANGE -----------------------------------------------------
+  // Cas unique dans ce tome (chapitre 307) : un objet précis est proposé
+  // (targetId de l'unique condition de l'effet), à condition d'échanger
+  // contre un objet DÉJÀ possédé de la MÊME catégorie (vérifié aussi côté
+  // backend, voir PersonnageService.echangerObjet). L'effet est toujours
+  // renvoyé par l'API (non filtré, comme VOL/HABILETE) : on détecte que
+  // l'échange a déjà eu lieu en vérifiant que l'objet proposé est possédé.
+
+  /** Unique condition (ARME/OBJET) d'un effet ECHANGE : cible l'objet proposé. */
+  conditionEchange(effet: EffetResponse): CondResponse | null {
+    if (effet.conditions.length !== 1) {
+      return null;
+    }
+    return effet.conditions[0];
+  }
+
+  /** true si l'objet proposé est déjà dans l'inventaire (échange déjà fait). */
+  echangeDejaFait(condition: CondResponse): boolean {
+    if (!condition.targetId) {
+      return false;
+    }
+    return this.inventaire().some(
+      (i) => i.objetId.toLowerCase() === condition.targetId!.toLowerCase() && i.quantite > 0,
+    );
+  }
+
+  /** Catégorie de l'objet proposé, résolue via le catalogue (GET /objets). */
+  private categorieObjetPropose(targetId: string): string | null {
+    return this.tousObjets().find((o) => o.id.toLowerCase() === targetId.toLowerCase())?.categorie ?? null;
+  }
+
+  /** Objets déjà possédés de la même catégorie que l'objet proposé (à céder en échange). */
+  itemsEligiblesEchange(condition: CondResponse): InventaireItem[] {
+    if (!condition.targetId) {
+      return [];
+    }
+    const categorie = this.categorieObjetPropose(condition.targetId);
+    return this.inventaire().filter((i) => i.categorie === categorie && i.quantite > 0);
+  }
+
+  /** Effet ECHANGE actuellement affiché dans le popup de choix (null = fermé). */
+  readonly echangePopupEffet = signal<EffetResponse | null>(null);
+  readonly echangeEnCours = signal<string | null>(null);
+
+  ouvrirEchange(effet: EffetResponse): void {
+    this.echangePopupEffet.set(effet);
+  }
+
+  fermerEchange(): void {
+    this.echangePopupEffet.set(null);
+  }
+
+  /** Confirme l'échange : objetARetirerId cédé contre l'objet proposé. */
+  confirmerEchange(objetAAjouterId: string, objetARetirerId: string): void {
+    const id = this.personnageId();
+    if (!id || this.echangeEnCours()) return;
+
+    this.echangeEnCours.set(objetARetirerId);
+    this.personnageService.echangerObjet(id, objetAAjouterId, objetARetirerId).subscribe({
+      next: (p) => {
+        this.effetTraite.emit(p);
+        this.inventaireSheet.notifierMiseAJour(p);
+        this.echangeEnCours.set(null);
+        this.fermerEchange();
+      },
+      error: (err) => {
+        console.error("Erreur lors de l'échange d'objet :", err);
+        this.echangeEnCours.set(null);
+      },
+    });
+  }
 }

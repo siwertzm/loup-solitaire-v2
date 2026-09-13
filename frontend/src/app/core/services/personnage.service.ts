@@ -82,6 +82,24 @@ export class PersonnageService {
     );
   }
 
+  /**
+   * POST /personnages/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}
+   * Échange volontaire d'objet, uniquement proposé explicitement par le
+   * chapitre courant (Effet ECHANGE). Cas d'usage unique dans ce tome :
+   * chapitre 307, le Marteau de Guerre de l'ermite contre une arme déjà
+   * possédée. Le backend vérifie que les deux objets sont de même catégorie.
+   */
+  echangerObjet(
+    personnageId: string,
+    objetAAjouterId: string,
+    objetARetirerId: string,
+  ): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/objets/${objetAAjouterId}/echanger-contre/${objetARetirerId}`,
+      {},
+    );
+  }
+
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
   majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);
