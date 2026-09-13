@@ -117,6 +117,11 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
     ),
   );
+
+  readonly bonusBouclierPsychique = computed(() =>
+    (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'BOUCLIER_PSYCHIQUE') ?? false)
+  );
+
   readonly bonusGarde = computed(() => (this.combat()?.dernierTour?.reductionPourcent ?? 0) > 0);
   readonly bonusObjets = computed(
     () => this.personnage()?.inventaire.some((item) => item.categorie === 'OBJET' && item.quantite > 0) ?? false,

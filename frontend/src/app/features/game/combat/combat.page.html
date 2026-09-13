@@ -64,12 +64,17 @@
             }
             @if (bonusPuissancePsychique()) {
               <span class="bonus-picto bonus-psychique" title="Puissance psychique" aria-label="Puissance psychique">
-                <img src="/assets/icon/effets.png" alt="" />
+                <img src="/assets/icon/puissance.png" alt="" />
+              </span>
+            }
+            @if (bonusBouclierPsychique()) {
+              <span class="bonus-picto bonus-bouclier" title="Bouclier psychique" aria-label="Bouclier psychique">
+                <img src="/assets/icon/bulle.png" alt="" />
               </span>
             }
             @if (bonusGarde()) {
               <span class="bonus-picto bonus-garde" [attr.title]="'Garde : réduction de ' + combat()?.dernierTour?.reductionPourcent + '%'" aria-label="Bonus de garde">
-                <img src="/assets/icon/cotte_de_mailles.png" alt="" />
+                <img src="/assets/icon/bouclier.png" alt="" />
               </span>
             }
         </div>
