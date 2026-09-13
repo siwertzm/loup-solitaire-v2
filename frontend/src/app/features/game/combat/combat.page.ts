@@ -330,7 +330,13 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
             this.actionEnCours.set(false);
           }, 850);
         } else {
-          afficherResultat();
+          if (action === 'FUITE') {
+            this.combat.set(c);
+            this.combatEnAttente = null;
+            this.jouerFile(messages);
+          } else {
+            afficherResultat();
+          }
         }
       },
       error: (err) => {
@@ -486,6 +492,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   private prochain(): void {
     if (!this.file.length) {
+      if (this.statut() === 'FUITE') {
+        this.terminer();
+        return;
+      }
       const fin = this.statut() !== 'EN_COURS';
       this.phase.set(fin ? 'FIN' : 'MENU');
       if (!fin) this.msg.set('');
