@@ -69,6 +69,19 @@ export class PersonnageService {
     });
   }
 
+  /**
+   * POST /personnages/{id}/vol/{objetId}
+   * Résout un vol en attente (Effet VOL, valeur=1) : le joueur choisit quel
+   * objet/arme perdre parmi ceux autorisés par la portée du vol
+   * (`Personnage.volEnAttente` : "ARME" ou "TOUT").
+   */
+  resoudreVol(personnageId: string, objetId: string): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/vol/${objetId}`,
+      {},
+    );
+  }
+
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
   majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);

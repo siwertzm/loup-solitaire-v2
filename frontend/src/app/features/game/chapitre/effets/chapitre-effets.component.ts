@@ -1,8 +1,14 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 
 import { CondResponse, EffetResponse } from '../../../../core/models/chapitre.model';
-import { DisciplineResume, ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
+import {
+  DisciplineResume,
+  InventaireItem,
+  ObjetResume,
+  PersonnageResume,
+} from '../../../../core/models/personnage.model';
 import { InventaireSheetService } from '../../../../core/services/inventaire-sheet.service';
+import { PersonnageService } from '../../../../core/services/personnage.service';
 
 /**
  * Contenu de l'onglet "effets" de l'écran chapitre : la liste des effets
@@ -22,6 +28,7 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
 })
 export class ChapitreEffetsComponent {
   private readonly inventaireSheet = inject(InventaireSheetService);
+  private readonly personnageService = inject(PersonnageService);
 
   readonly effets = input.required<EffetResponse[]>();
   readonly personnage = input<PersonnageResume | null>(null);
@@ -144,5 +151,93 @@ export class ChapitreEffetsComponent {
   nomObjet(targetId: string): string {
     const objet = this.tousObjets().find((o) => o.id.toLowerCase() === targetId.toLowerCase());
     return objet?.nom ?? targetId;
+  }
+
+  // --- Effet VOL ---------------------------------------------------------
+  // La "valeur" code une PORTÉE de perte, pas une quantité (voir
+  // EffetChapitreService, backend) :
+  //   10 -> tout (sac + armes) ; 8 -> tout le sac ; 2+cond ARME -> toutes
+  //   les armes : ces 3 cas sont résolus AUTOMATIQUEMENT par le backend à
+  //   l'arrivée sur le chapitre, rien à faire ici à part informer.
+  //   1 (+cond ARME ou non) -> "au choix" : pose Personnage.volEnAttente
+  //   ("ARME" ou "TOUT"), à résoudre via POST /vol/{objetId} avant de
+  //   pouvoir continuer.
+
+  /** true si la portée du vol est restreinte aux armes (condition ARME présente). */
+  private volPorteeArme(effet: EffetResponse): boolean {
+    return effet.conditions.some((c) => c.type === 'ARME');
+  }
+
+  /** true si ce vol nécessite un choix du joueur (valeur=1). */
+  volInteractif(effet: EffetResponse): boolean {
+    return effet.valeur === 1;
+  }
+
+  /** true si CE vol précis est celui actuellement en attente de résolution. */
+  volEnAttentePourEffet(effet: EffetResponse): boolean {
+    if (!this.volInteractif(effet)) {
+      return false;
+    }
+    const attente = this.personnage()?.volEnAttente;
+    return attente === (this.volPorteeArme(effet) ? 'ARME' : 'TOUT');
+  }
+
+  /** Description humaine du vol, quelle que soit sa portée. */
+  libelleVol(effet: EffetResponse): string {
+    if (this.volInteractif(effet)) {
+      return this.volPorteeArme(effet)
+        ? 'Choisissez l\u2019arme que vous perdez'
+        : 'Choisissez l\u2019objet que vous perdez';
+    }
+    if (effet.valeur === 10) {
+      return 'Sac et armes';
+    }
+    if (effet.valeur === 8) {
+      return 'Sac à dos';
+    }
+    if (this.volPorteeArme(effet)) {
+      return 'Vous perdez toutes vos armes';
+    }
+    return 'Vol';
+  }
+
+  /** Objets/armes éligibles à la perte pour CE vol (portée ARME ou TOUT). */
+  itemsEligiblesVol(effet: EffetResponse): InventaireItem[] {
+    const categoriesTout: InventaireItem['categorie'][] = ['ARME', 'OBJET', 'REPAS'];
+    return this.inventaire().filter((i) =>
+      i.quantite > 0 && (this.volPorteeArme(effet) ? i.categorie === 'ARME' : categoriesTout.includes(i.categorie)),
+    );
+  }
+
+  /** Effet VOL actuellement affiché dans le popup de choix (null = fermé). */
+  readonly volPopupEffet = signal<EffetResponse | null>(null);
+  readonly volEnCours = signal<string | null>(null);
+
+  ouvrirChoixVol(effet: EffetResponse): void {
+    this.volPopupEffet.set(effet);
+  }
+
+  fermerChoixVol(): void {
+    this.volPopupEffet.set(null);
+  }
+
+  /** Confirme la perte de l'objet choisi (POST /personnages/{id}/vol/{objetId}). */
+  choisirObjetVole(objetId: string): void {
+    const id = this.personnageId();
+    if (!id || this.volEnCours()) return;
+
+    this.volEnCours.set(objetId);
+    this.personnageService.resoudreVol(id, objetId).subscribe({
+      next: (p) => {
+        this.effetTraite.emit(p);
+        this.inventaireSheet.notifierMiseAJour(p);
+        this.volEnCours.set(null);
+        this.fermerChoixVol();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la résolution du vol :', err);
+        this.volEnCours.set(null);
+      },
+    });
   }
 }

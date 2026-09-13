@@ -120,8 +120,36 @@
           }
         </div>
       </div>
+    } @else if (effet.type.toUpperCase() === 'VOL') {
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">VOL</span>
+            <span class="effet-description">{{ libelleVol(effet) }}</span>
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (volEnAttentePourEffet(effet)) {
+            <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirChoixVol(effet)">
+              CHOISIR
+            </button>
+          } @else if (volInteractif(effet)) {
+            <button type="button" class="effet-badge effet-badge-auto" disabled>
+              RÉSOLU
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-endurance" disabled>
+              PERDU
+            </button>
+          }
+        </div>
+      </div>
     } @else {
-      <!-- Autres cas (VOL, ECHANGE) -->
+      <!-- Autres cas (ECHANGE) -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
@@ -144,3 +172,33 @@
     }
   }
 </div>
+
+@if (volPopupEffet(); as effet) {
+  <div class="voile-plein" (click)="fermerChoixVol()">
+    <div class="popup-plein" (click)="$event.stopPropagation()">
+      <div class="popup-plein-titre">{{ libelleVol(effet) }}</div>
+      <p class="popup-plein-texte">Choisissez ce que vous perdez.</p>
+
+      @for (item of itemsEligiblesVol(effet); track item.objetId) {
+        <div class="popup-plein-ligne">
+          <span class="popup-plein-nom">{{ item.nom }}</span>
+          @if (item.quantite > 1) {
+            <span class="popup-plein-quantite">×{{ item.quantite }}</span>
+          }
+          <button
+            type="button"
+            class="popup-plein-retirer"
+            [disabled]="volEnCours() === item.objetId"
+            (click)="choisirObjetVole(item.objetId)"
+          >
+            Perdre
+          </button>
+        </div>
+      } @empty {
+        <p class="popup-plein-texte">Vous n'avez rien à perdre ici.</p>
+      }
+
+      <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">ANNULER</button>
+    </div>
+  </div>
+}
