@@ -32,14 +32,20 @@
       @if (!objet.optionnel) {
         <button type="button" class="objet-prendre" disabled>AUTOMATIQUE</button>
       } @else if (restant(objet.objetId) > 0) {
-        <button
-          type="button"
-          class="objet-prendre"
-          [disabled]="ramassageEnCours() === objet.objetId"
-          (click)="prendreObjet(objet)"
-        >
-          PRENDRE
-        </button>
+        @if (estPlein(categorieObjet(objet.objetId))) {
+          <button type="button" class="objet-prendre objet-prendre-plein" (click)="prendreObjet(objet)">
+            PLEIN
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="objet-prendre"
+            [disabled]="ramassageEnCours() === objet.objetId"
+            (click)="prendreObjet(objet)"
+          >
+            PRENDRE
+          </button>
+        }
       } @else {
         <button type="button" class="objet-prendre" disabled>VIDE</button>
       }
@@ -78,3 +84,33 @@
     </div>
   </div>
 </div>
+
+@if (popupCategorie(); as categorie) {
+  <div class="voile-plein" (click)="fermerPopup()">
+    <div class="popup-plein" (click)="$event.stopPropagation()">
+      <div class="popup-plein-titre">{{ libelleCategorie(categorie) }} COMPLET</div>
+      <p class="popup-plein-texte">Retire un objet pour faire de la place.</p>
+
+      @for (item of itemsDeCategorie(categorie); track item.objetId) {
+        <div class="popup-plein-ligne" [class.maitrisee]="item.maitrisee">
+          <span class="popup-plein-nom">{{ item.nom }}</span>
+          @if (item.maitrisee) {
+            <span class="popup-plein-tag">MAÎTRISÉE <span class="popup-plein-bonus">+{{ bonusArmeMaitrisee }} HAB</span></span>
+          } @else if (item.quantite > 1) {
+            <span class="popup-plein-quantite">×{{ item.quantite }}</span>
+          }
+          <button
+            type="button"
+            class="popup-plein-retirer"
+            [disabled]="retraitPopupEnCours() === item.objetId"
+            (click)="retirerPourLiberer(item.objetId)"
+          >
+            Retirer
+          </button>
+        </div>
+      }
+
+      <button type="button" class="popup-plein-annuler" (click)="fermerPopup()">ANNULER</button>
+    </div>
+  </div>
+}

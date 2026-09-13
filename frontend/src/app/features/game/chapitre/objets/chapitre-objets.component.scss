@@ -4,6 +4,9 @@
 // composants de l'écran chapitre suivent (ex. onglet effets).
 $sepia: #8a7a5e;
 $rouge: #e0705a;
+$or: #c2903a;
+$encre: #3a3226;
+$parchemin: #ece2c8;
 
 .inventaire {
   display: flex;
@@ -70,6 +73,12 @@ $rouge: #e0705a;
     color: rgba(58, 50, 38, 0.4);
     cursor: default;
   }
+
+  &.objet-prendre-plein {
+    border-color: $or;
+    color: $or;
+    background: rgba(194, 144, 58, 0.1);
+  }
 }
 
 /*******************************************
@@ -114,4 +123,117 @@ $rouge: #e0705a;
   padding-right: 2px;
   font-size: 15px;
   font-weight: 800;
+}
+
+/*******************************************
+ *  Popup "catégorie pleine" — libérer de la place
+ *******************************************/
+.voile-plein {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  padding: 24px;
+}
+
+.popup-plein {
+  width: 100%;
+  max-width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: $parchemin;
+  color: $encre;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.popup-plein-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: $or;
+  text-align: center;
+}
+
+.popup-plein-texte {
+  font-size: 13.5px;
+  color: $sepia;
+  text-align: center;
+  margin: 8px 0 16px;
+}
+
+.popup-plein-ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(58, 50, 38, 0.06);
+  border-radius: 10px;
+  margin-bottom: 8px;
+
+  &.maitrisee {
+    background: rgba(157, 191, 92, 0.18);
+  }
+}
+
+.popup-plein-tag {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: $sepia;
+  text-transform: uppercase;
+}
+
+.popup-plein-bonus {
+  color: #6f8c3f;
+  font-size: 8.5px;
+}
+
+.popup-plein-nom {
+  flex: 1;
+  font-size: 14.5px;
+}
+
+.popup-plein-quantite {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: $sepia;
+}
+
+.popup-plein-retirer {
+  flex: none;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid $rouge;
+  border-radius: 6px;
+  color: $rouge;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.popup-plein-annuler {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(58, 50, 38, 0.3);
+  border-radius: 10px;
+  color: $sepia;
+  font-family: 'Cinzel', serif;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
 }

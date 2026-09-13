@@ -1,8 +1,9 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 
 import { ObjetChapResponse } from '../../../../core/models/chapitre.model';
-import { ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
+import { InventaireItem, ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
 import { ChapitreService } from '../../../../core/services/chapitre.service';
+import { PersonnageService } from '../../../../core/services/personnage.service';
 import { InventaireSheetService } from '../../../../core/services/inventaire-sheet.service';
 
 /**
@@ -30,6 +31,7 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
 })
 export class ChapitreObjetsComponent {
   private readonly chapitreService = inject(ChapitreService);
+  private readonly personnageService = inject(PersonnageService);
   private readonly inventaireSheet = inject(InventaireSheetService);
 
   readonly objets = input.required<ObjetChapResponse[]>();
@@ -92,6 +94,65 @@ export class ChapitreObjetsComponent {
   }
 
   /**
+   * Un objet ne peut pas toujours être ramassé même si le chapitre en
+   * propose : si la catégorie correspondante de l'inventaire est déjà au
+   * plafond (armes, objets+repas, bourse — alignés sur InventaireService
+   * backend), il faut d'abord en libérer un. OBJETS_SPECIAUX n'a pas de
+   * plafond (voir InventaireService.limitePour), toujours faux ici.
+   */
+  estPlein(categorie: string | null): boolean {
+    switch (categorie) {
+      case 'ARME':
+        return this.armesCount() >= this.maxArmes;
+      case 'OBJET':
+      case 'REPAS':
+        return this.objetsEtRepasCount() >= this.maxObjetsEtRepas;
+      case 'BOURSE':
+        return this.bourseCount() >= this.maxBourse;
+      default:
+        return false;
+    }
+  }
+
+  /** Objets actuellement possédés dans une catégorie (pour le popup "libérer de la place"). */
+  // Aligné sur InventaireSheetComponent : même logique "MAÎTRISÉE" (+2 HAB),
+  // comparaison par NOM (PersonnageMapper envoie armeMaitrisee comme nom, pas objetId).
+  readonly bonusArmeMaitrisee = 2;
+
+  itemsDeCategorie(categorie: string | null): (InventaireItem & { maitrisee?: boolean })[] {
+    if (categorie === 'ARME') {
+      const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+      return this.inventaire()
+        .filter((i) => i.categorie === 'ARME')
+        .map((i) => ({ ...i, maitrisee: maitriseeNom !== null && i.nom === maitriseeNom }));
+    }
+    if (categorie === 'OBJET' || categorie === 'REPAS') {
+      return this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
+    }
+    return this.inventaire().filter((i) => i.categorie === categorie);
+  }
+
+  libelleCategorie(categorie: string | null): string {
+    switch (categorie) {
+      case 'ARME':
+        return 'ARMES';
+      case 'OBJET':
+      case 'REPAS':
+        return 'OBJETS & REPAS';
+      case 'BOURSE':
+        return 'BOURSE';
+      default:
+        return '';
+    }
+  }
+
+  /** Catégorie affichée dans le popup de libération de place ; null = fermé. */
+  readonly popupCategorie = signal<string | null>(null);
+  /** Objet du chapitre qu'on essayait de ramasser quand le popup s'est ouvert. */
+  private readonly objetEnAttente = signal<{ objetId: string; optionnel: boolean } | null>(null);
+  readonly retraitPopupEnCours = signal<string | null>(null);
+
+  /**
    * Catégorie d'un objet (ARME/OBJET/OBJETS_SPECIAUX/REPAS/BOURSE), résolue
    * via le catalogue GET /objets : ObjetChapResponse (les objets d'un
    * chapitre) ne porte pas la catégorie, seulement objetId/nom/valeur/optionnel.
@@ -106,15 +167,29 @@ export class ChapitreObjetsComponent {
   }
 
   /**
-   * Ramasse 1 exemplaire d'un objet optionnel proposé par le chapitre.
-   * Décrémente la quantité restante localement une fois le ramassage confirmé
-   * par le backend, et notifie le parent (fiche personnage à jour).
+   * Ramasse 1 exemplaire d'un objet optionnel proposé par le chapitre — sauf
+   * si la catégorie est déjà pleine, auquel cas on ouvre le popup de
+   * libération de place au lieu d'appeler l'API (qui refuserait de toute
+   * façon, InventaireService plafonne aussi côté serveur).
    */
   prendreObjet(objet: { objetId: string; optionnel: boolean }): void {
-    const id = this.personnageId();
-    if (!id || !objet.optionnel) return;
+    if (!objet.optionnel) return;
     if (this.restant(objet.objetId) <= 0) return;
     if (this.ramassageEnCours()) return;
+
+    const categorie = this.categorieObjet(objet.objetId);
+    if (this.estPlein(categorie)) {
+      this.objetEnAttente.set(objet);
+      this.popupCategorie.set(categorie);
+      return;
+    }
+
+    this.executerRamassage(objet);
+  }
+
+  private executerRamassage(objet: { objetId: string; optionnel: boolean }): void {
+    const id = this.personnageId();
+    if (!id) return;
 
     this.ramassageEnCours.set(objet.objetId);
     this.chapitreService.ramasserObjet(id, objet.objetId).subscribe({
@@ -128,6 +203,36 @@ export class ChapitreObjetsComponent {
         this.ramassageEnCours.set(null);
       },
     });
+  }
+
+  /** Retire 1 exemplaire depuis le popup, puis termine le ramassage initial une fois la place libérée. */
+  retirerPourLiberer(objetId: string): void {
+    const id = this.personnageId();
+    if (!id || this.retraitPopupEnCours()) return;
+
+    this.retraitPopupEnCours.set(objetId);
+    this.personnageService.retirerObjet(id, objetId, 1).subscribe({
+      next: (p) => {
+        this.ramasse.emit(p);
+        this.inventaireSheet.notifierMiseAJour(p);
+        this.retraitPopupEnCours.set(null);
+
+        const enAttente = this.objetEnAttente();
+        this.fermerPopup();
+        if (enAttente) {
+          this.executerRamassage(enAttente);
+        }
+      },
+      error: (err) => {
+        console.error("Erreur lors du retrait de l'objet :", err);
+        this.retraitPopupEnCours.set(null);
+      },
+    });
+  }
+
+  fermerPopup(): void {
+    this.popupCategorie.set(null);
+    this.objetEnAttente.set(null);
   }
 
   /** Ouvre la feuille "SAC À DOS" globale (voir shared/inventaire-sheet/). */
