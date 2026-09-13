@@ -10,6 +10,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -73,6 +74,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly valeurDeAttaque = signal<number | string>('?');
   readonly texteDe = signal('');
   readonly libelleDe = signal("JET D'ATTAQUE");
+  readonly bonusSelectionne = signal<BonusSelectionne>(null);
 
   private file: Message[] = [];
   private combatEnAttente: CombatResponse | null = null;
@@ -126,6 +128,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly bonusObjets = computed(
     () => this.personnage()?.inventaire.some((item) => item.categorie === 'OBJET' && item.quantite > 0) ?? false,
   );
+
+  ouvrirExplicationBonus(bonus: Exclude<BonusSelectionne, null>): void {
+    this.bonusSelectionne.set(bonus);
+  }
+
+  fermerExplicationBonus(): void {
+    this.bonusSelectionne.set(null);
+  }
 
   readonly statut = computed(() => this.combat()?.statut ?? 'EN_COURS');
   readonly fuitePossible = computed(() => this.combat()?.fuitePossible ?? false);

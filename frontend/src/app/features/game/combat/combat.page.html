@@ -52,30 +52,30 @@
         <!-- bonus du joueur, au-dessus de la plaque de vie -->
         <div class="bonus-joueur" aria-label="Bonus actifs">
             @if (bonusHabiliteTemp() > 0) {
-              <span class="bonus-picto bonus-temp" [attr.title]="'Bonus d\'habileté temporaire : +' + bonusHabiliteTemp()" aria-label="Bonus d'habileté temporaire">
+              <button type="button" class="bonus-picto bonus-temp" title="Bonus d'habileté temporaire" aria-label="Bonus d'habileté temporaire" (click)="ouvrirExplicationBonus('habilite')">
                 <img src="/assets/icon/potion.png" alt="" />
                 <small>+{{ bonusHabiliteTemp() }}</small>
-              </span>
+              </button>
             }
             @if (bonusArmeMaitrisee(); as arme) {
-              <span class="bonus-picto bonus-arme" [attr.title]="'Arme maîtrisée : ' + arme" aria-label="Arme maîtrisée">
+              <button type="button" class="bonus-picto bonus-arme" [attr.title]="'Arme maîtrisée : ' + arme" aria-label="Arme maîtrisée" (click)="ouvrirExplicationBonus('arme')">
                 <img src="/assets/icon/epee.png" alt="" />
-              </span>
+              </button>
             }
             @if (bonusPuissancePsychique()) {
-              <span class="bonus-picto bonus-psychique" title="Puissance psychique" aria-label="Puissance psychique">
+              <button type="button" class="bonus-picto bonus-psychique" title="Puissance psychique" aria-label="Puissance psychique" (click)="ouvrirExplicationBonus('puissance')">
                 <img src="/assets/icon/puissance.png" alt="" />
-              </span>
+              </button>
             }
             @if (bonusBouclierPsychique()) {
-              <span class="bonus-picto bonus-bouclier" title="Bouclier psychique" aria-label="Bouclier psychique">
+              <button type="button" class="bonus-picto bonus-bouclier" title="Bouclier psychique" aria-label="Bouclier psychique" (click)="ouvrirExplicationBonus('bouclier')">
                 <img src="/assets/icon/bulle.png" alt="" />
-              </span>
+              </button>
             }
             @if (bonusGarde()) {
-              <span class="bonus-picto bonus-garde" [attr.title]="'Garde : réduction de ' + combat()?.dernierTour?.reductionPourcent + '%'" aria-label="Bonus de garde">
+              <button type="button" class="bonus-picto bonus-garde" [attr.title]="'Garde : réduction de ' + combat()?.dernierTour?.reductionPourcent + '%'" aria-label="Bonus de garde" (click)="ouvrirExplicationBonus('garde')">
                 <img src="/assets/icon/bouclier.png" alt="" />
-              </span>
+              </button>
             }
         </div>
 
@@ -93,6 +93,36 @@
           </div>
           <div class="chiffres">{{ enduranceJoueur() }} / {{ enduranceMaxJoueur() }}</div>
         </div>
+
+        @if (bonusSelectionne(); as bonus) {
+          <div class="voile-bonus" (click)="fermerExplicationBonus()">
+            <section class="popup-bonus" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+              <button type="button" class="popup-bonus-fermer" aria-label="Fermer" (click)="fermerExplicationBonus()">×</button>
+              @switch (bonus) {
+                @case ('habilite') {
+                  <h2>Habileté temporaire</h2>
+                  <p>Votre habileté est augmentée de <strong>+{{ bonusHabiliteTemp() }}</strong> pour la durée prévue de cet effet.</p>
+                }
+                @case ('arme') {
+                  <h2>Arme maîtrisée</h2>
+                  <p>Vous possédez et maîtrisez l'arme <strong>{{ bonusArmeMaitrisee() }}</strong>. Son bonus d'habileté est actif.</p>
+                }
+                @case ('puissance') {
+                  <h2>Puissance psychique</h2>
+                  <p>Cette discipline ajoute <strong>+2 HABILETÉ</strong> à vos attaques contre cet ennemi.</p>
+                }
+                @case ('bouclier') {
+                  <h2>Bouclier psychique</h2>
+                  <p>Cette discipline vous protège contre les attaques mentales des ennemis.</p>
+                }
+                @case ('garde') {
+                  <h2>Bonus de garde</h2>
+                  <p>Votre prochaine riposte est réduite de <strong>{{ combat()?.dernierTour?.reductionPourcent }}%</strong>.</p>
+                }
+              }
+            </section>
+          </div>
+        }
       </div>
 
       <!-- BOÎTE DE DIALOGUE -->
