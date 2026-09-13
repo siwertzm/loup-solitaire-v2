@@ -70,7 +70,38 @@
         <div class="cadre">
 
           @if (phase() === 'TEXTE') {
-            <p class="texte">{{ texte() }}</p>
+            @if (deAttaqueVisible()) {
+              <div class="de-attaque" aria-live="polite" aria-label="Dé d'attaque">
+                <p class="de-attaque-texte">{{ texteDe() }}</p>
+                <span class="de-attaque-label">{{ libelleDe() }}</span>
+                <span class="de-attaque-face" [class.roule]="deAttaqueRoule()">
+                  {{ valeurDeAttaque() }}
+                </span>
+              </div>
+            } @else if (statsEnnemi(); as stats) {
+              <div class="stats-ennemi" aria-label="Statistiques de l'ennemi">
+                <div class="stats-ennemi-entete">
+                  <span class="stats-ennemi-ligne"></span>
+                  <span class="stats-ennemi-titre">CARACTÉRISTIQUES</span>
+                  <span class="stats-ennemi-ligne"></span>
+                </div>
+
+                <div class="stats-ennemi-grille">
+                  <div class="stat-ennemi stat-habilete">
+                    <span class="stat-ennemi-label">HABILETÉ</span>
+                    <strong>{{ stats.habilite }}</strong>
+                    <span class="stat-ennemi-sous-titre">attaque</span>
+                  </div>
+                  <div class="stat-ennemi stat-endurance">
+                    <span class="stat-ennemi-label">ENDURANCE</span>
+                    <strong>{{ stats.endurance }}</strong>
+                    <span class="stat-ennemi-sous-titre">résistance</span>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <p class="texte">{{ texte() }}</p>
+            }
             <div class="curseur" [class.clignote]="!tapeEnCours()">{{ tapeEnCours() ? '' : '▼' }}</div>
           }
 

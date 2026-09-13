@@ -15,6 +15,14 @@ type Cible = 'ennemi' | 'joueur' | null;
 interface Message {
   txt: string;
   hit?: Cible;
+  actualiser?: 'ennemi' | 'joueur';
+  de?: {
+    valeur: number;
+  };
+  stats?: {
+    habilite: number;
+    endurance: number;
+  };
 }
 
 /**
@@ -59,10 +67,21 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly tape = signal<number>(0);
   readonly tapeEnCours = signal<boolean>(false);
   readonly hit = signal<Cible>(null);
+  readonly statsEnnemi = signal<Message['stats'] | null>(null);
+  readonly deAttaqueVisible = signal(false);
+  readonly deAttaqueRoule = signal(false);
+  readonly valeurDeAttaque = signal<number | string>('?');
+  readonly texteDe = signal('');
+  readonly libelleDe = signal("JET D'ATTAQUE");
 
   private file: Message[] = [];
+  private combatEnAttente: CombatResponse | null = null;
+  private personnageEnAttente: PersonnageResume | null = null;
+  private joueurVieAppliquee = true;
   private timerTape: ReturnType<typeof setInterval> | null = null;
   private timerHit: ReturnType<typeof setTimeout> | null = null;
+  private timerDeFaces: ReturnType<typeof setInterval> | null = null;
+  private timerDe: ReturnType<typeof setTimeout> | null = null;
 
   readonly texte = computed(() => (this.tapeEnCours() ? this.msg().slice(0, this.tape()) : this.msg()));
 
@@ -129,6 +148,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   ngOnDestroy(): void {
     if (this.timerTape) clearInterval(this.timerTape);
     if (this.timerHit) clearTimeout(this.timerHit);
+    if (this.timerDeFaces) clearInterval(this.timerDeFaces);
+    if (this.timerDe) clearTimeout(this.timerDe);
   }
 
   private initialiserId(): void {
@@ -196,7 +217,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       if (ennemi) {
         this.jouerFile([
           { txt: `${ennemi.nom} vous barre la route !` },
-          { txt: `HABILETÉ ${ennemi.habilite} — ENDURANCE ${ennemi.enduranceMax}.` },
+          {
+            txt: `HABILETÉ ${ennemi.habilite} — ENDURANCE ${ennemi.enduranceMax}.`,
+            stats: { habilite: ennemi.habilite, endurance: ennemi.enduranceMax },
+          },
         ]);
       } else {
         this.phase.set('MENU');
@@ -249,20 +273,71 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     const ennemiAvant = this.ennemiActif();
     const enduranceJoueurAvant = this.enduranceJoueur();
 
+    if (action === 'ATTAQUE' || action === 'DEFENSE') {
+      this.phase.set('TEXTE');
+      this.msg.set('');
+      this.deAttaqueVisible.set(true);
+      this.deAttaqueRoule.set(true);
+      this.texteDe.set(
+        action === 'ATTAQUE' ? `${this.nomJoueur()} porte son attaque !` : `${this.nomJoueur()} lève sa garde.`,
+      );
+      this.libelleDe.set(action === 'ATTAQUE' ? "JET D'ATTAQUE" : 'JET DE DÉFENSE');
+      this.valeurDeAttaque.set('?');
+      this.timerDeFaces = setInterval(() => {
+        this.valeurDeAttaque.set(Math.floor(Math.random() * 10));
+      }, 90);
+    }
+
     this.combatService.jouerTour(id, action, objetId).subscribe({
       next: (c) => {
-        this.actionEnCours.set(false);
         const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant);
-        this.combat.set(c);
-        // Recharge le personnage (endurance à jour, objet consommé retiré du sac).
-        this.personnageService.recuperer(id).subscribe({
-          next: (p) => this.personnage.set(p),
-          error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
-        });
-        this.jouerFile(messages);
+
+        const afficherResultat = () => {
+          this.actionEnCours.set(false);
+          this.combatEnAttente = c;
+          this.joueurVieAppliquee = false;
+          this.personnageService.recuperer(id).subscribe({
+            next: (p) => {
+              this.personnageEnAttente = p;
+              if (this.joueurVieAppliquee) {
+                this.personnage.set(p);
+              }
+            },
+            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
+          });
+          this.deAttaqueVisible.set(false);
+          this.jouerFile(action === 'ATTAQUE' ? messages.slice(1) : messages);
+        };
+
+        if (action === 'ATTAQUE' || action === 'DEFENSE') {
+          const tirage = action === 'ATTAQUE' ? c.dernierTour?.tirageAttaque : c.dernierTour?.tirageDefense;
+          this.file = messages.slice(1);
+          this.combatEnAttente = c;
+          this.joueurVieAppliquee = false;
+          this.personnageService.recuperer(id).subscribe({
+            next: (p) => {
+              this.personnageEnAttente = p;
+              if (this.joueurVieAppliquee) {
+                this.personnage.set(p);
+              }
+            },
+            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
+          });
+          this.timerDe = setTimeout(() => {
+            if (this.timerDeFaces) clearInterval(this.timerDeFaces);
+            this.valeurDeAttaque.set(tirage ?? '?');
+            this.deAttaqueRoule.set(false);
+            this.actionEnCours.set(false);
+          }, 850);
+        } else {
+          afficherResultat();
+        }
       },
       error: (err) => {
         this.actionEnCours.set(false);
+        if (this.timerDeFaces) clearInterval(this.timerDeFaces);
+        this.deAttaqueVisible.set(false);
+        this.deAttaqueRoule.set(false);
         console.error('Erreur lors du tour de combat :', err);
         this.jouerFile([{ txt: "Une erreur est survenue, réessayez." }]);
       },
@@ -290,9 +365,15 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (action === 'ATTAQUE') {
-      messages.push({ txt: `${this.nomJoueur()} porte son attaque !` });
+      messages.push({
+        txt: `${this.nomJoueur()} porte son attaque !`,
+        de: { valeur: tour.tirageAttaque ?? 0 },
+      });
     } else if (action === 'DEFENSE') {
-      messages.push({ txt: `${this.nomJoueur()} lève sa garde.` });
+      messages.push({
+        txt: `${this.nomJoueur()} lève sa garde.`,
+        de: { valeur: tour.tirageDefense ?? 0 },
+      });
     }
 
     if (tour.degatsInfliges !== null) {
@@ -300,6 +381,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       messages.push({
         txt: degats > 0 ? `${nomEnnemi} perd ${degats} points d'ENDURANCE.` : `${nomEnnemi} pare le coup. Aucun dégât.`,
         hit: degats > 0 ? 'ennemi' : null,
+        actualiser: 'ennemi',
       });
     }
 
@@ -310,9 +392,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     if (tour.degatsSubis !== null) {
       const degats = -tour.degatsSubis;
-      if (action === 'ATTAQUE') {
-        messages.push({ txt: `${nomEnnemi} riposte !` });
-      }
+      messages.push({
+        txt: `${nomEnnemi} riposte !`,
+        de: { valeur: tour.tirageRiposte ?? 0 },
+      });
       let txt: string;
       if (degats <= 0) {
         txt = 'Vous esquivez le coup.';
@@ -321,7 +404,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       } else {
         txt = `Vous perdez ${degats} points d'ENDURANCE.`;
       }
-      messages.push({ txt, hit: degats > 0 ? 'joueur' : null });
+      messages.push({ txt, hit: degats > 0 ? 'joueur' : null, actualiser: 'joueur' });
     }
 
     if (action === 'DEFENSE' && tour.bonusHabiliteObtenu) {
@@ -343,6 +426,13 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   avancer(event?: Event): void {
     if (event && (event.target as HTMLElement)?.closest('button')) return;
     if (this.phase() !== 'TEXTE') return;
+
+    if (this.deAttaqueVisible()) {
+      if (this.deAttaqueRoule()) return;
+      this.deAttaqueVisible.set(false);
+      this.prochain();
+      return;
+    }
 
     if (this.tapeEnCours()) {
       if (this.timerTape) clearInterval(this.timerTape);
@@ -380,6 +470,20 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.prochain();
   }
 
+  private appliquerMiseAJourEnAttente(cible?: Message['actualiser']): void {
+    if (this.combatEnAttente && cible) {
+      this.combat.set(this.combatEnAttente);
+      this.combatEnAttente = null;
+    }
+    if (cible === 'joueur') {
+      this.joueurVieAppliquee = true;
+      if (this.personnageEnAttente) {
+        this.personnage.set(this.personnageEnAttente);
+        this.personnageEnAttente = null;
+      }
+    }
+  }
+
   private prochain(): void {
     if (!this.file.length) {
       const fin = this.statut() !== 'EN_COURS';
@@ -389,6 +493,27 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     const m = this.file.shift()!;
+    this.appliquerMiseAJourEnAttente(m.actualiser);
+
+    if (m.de) {
+      if (this.timerDeFaces) clearInterval(this.timerDeFaces);
+      if (this.timerDe) clearTimeout(this.timerDe);
+      this.phase.set('TEXTE');
+      this.texteDe.set(m.txt);
+      this.libelleDe.set('JET DE RIPOSTE');
+      this.deAttaqueVisible.set(true);
+      this.deAttaqueRoule.set(true);
+      this.valeurDeAttaque.set('?');
+      this.timerDeFaces = setInterval(() => {
+        this.valeurDeAttaque.set(Math.floor(Math.random() * 10));
+      }, 90);
+      this.timerDe = setTimeout(() => {
+        if (this.timerDeFaces) clearInterval(this.timerDeFaces);
+        this.valeurDeAttaque.set(m.de!.valeur);
+        this.deAttaqueRoule.set(false);
+      }, 850);
+      return;
+    }
 
     if (m.hit) {
       this.hit.set(m.hit);
@@ -398,6 +523,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.phase.set('TEXTE');
     this.msg.set(m.txt);
+    this.statsEnnemi.set(m.stats ?? null);
     this.taper(m.txt);
   }
 
