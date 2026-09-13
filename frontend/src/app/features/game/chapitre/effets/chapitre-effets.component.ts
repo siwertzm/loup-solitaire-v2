@@ -119,6 +119,28 @@ export class ChapitreEffetsComponent {
     return condition.type === 'DISCIPLINE' || condition.type === 'OBJET' || condition.type === 'PERMANENT' ? condition : null;
   }
 
+  /** Unique condition ASSAUT_MAX d'un effet HABILETE, s'il y en a une (ex.
+   * chapitre 283 : bonus/malus limité aux N premiers assauts du combat).
+   * Calculé et appliqué EN TEMPS RÉEL par CombatService selon
+   * Combat.assautsLivres — jamais figé à l'arrivée sur le chapitre comme
+   * les autres conditions HABILETE, donc aucun état "évité" à afficher ici. */
+  conditionAssautMax(effet: EffetResponse): CondResponse | null {
+    if (effet.conditions.length !== 1) {
+      return null;
+    }
+    const condition = effet.conditions[0];
+    return condition.type === 'ASSAUT_MAX' ? condition : null;
+  }
+
+  /** Libellé humain pour une condition ASSAUT_MAX ("1" -> "Premier assaut"). */
+  libelleAssautMax(condition: CondResponse): string {
+    const n = Number(condition.valeur);
+    if (n === 1) {
+      return 'Premier assaut';
+    }
+    return Number.isFinite(n) ? `${n} premiers assauts` : 'Assaut limité';
+  }
+
   /** true si le malus a été évité (discipline/objet requis bien possédé). */
   effetEvite(condition: CondResponse): boolean {
     if (!condition.targetId) {
