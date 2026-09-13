@@ -269,6 +269,20 @@ public class PersonnageService {
         reinitialiserHabiliteTemp(personnage);
         appliquerGuerison(personnage, nouveauChapitre);
 
+        // Objets OBLIGATOIRES (optionnel=false) du chapitre : appliques en
+        // PREMIER, avant les effets. Necessaire pour des chapitres comme le
+        // 184 (le joueur trouve 4 Repas ET doit en consommer 1 dans le meme
+        // chapitre) : si l'effet REPAS s'appliquait avant ce gain, un
+        // personnage arrivant sans Repas perdrait -3 ENDURANCE au lieu de
+        // consommer un des 4 Repas qu'il vient de trouver. Les autres cas
+        // (76/236/304/307) ne dependent pas de l'ordre, ce changement est
+        // donc sans risque pour eux (positif = ajout, negatif = paiement/
+        // destruction). Les objets optionnels restent visibles via GET
+        // /chapitre et se ramassent manuellement via POST /objets/{objetId}.
+        nouveauChapitre.getObjets().stream()
+                .filter(objetChap -> !objetChap.isOptionnel())
+                .forEach(objetChap -> appliquerObjetChap(personnage, nouveauChapitre, objetChap));
+
         // Effets du nouveau chapitre : appliques UNE SEULE FOIS ici, a
         // l'arrivee (pas a chaque GET /chapitre).
         boolean aUnEffetRepas = nouveauChapitre.getEffets().stream()
@@ -291,15 +305,6 @@ public class PersonnageService {
         nouveauChapitre.getEffets().stream()
                 .filter(effet -> effet.getType() == TypeEffet.VOL)
                 .forEach(effet -> effetChapitreService.appliquerEffetVol(personnage, effet));
-
-        // Objets du chapitre : seuls les OBLIGATOIRES (optionnel=false)
-        // sont appliques automatiquement ici (positif = ajout, negatif =
-        // paiement/destruction, ex. chapitres 246/262/236). Les objets
-        // optionnels restent visibles via GET /chapitre et se ramassent
-        // manuellement via POST /objets/{objetId}, deja existant.
-        nouveauChapitre.getObjets().stream()
-                .filter(objetChap -> !objetChap.isOptionnel())
-                .forEach(objetChap -> appliquerObjetChap(personnage, nouveauChapitre, objetChap));
     }
 
     // MVP1 : apres une DEFAITE en combat, le joueur peut payer 1 coin pour
