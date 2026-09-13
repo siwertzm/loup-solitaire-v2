@@ -1,0 +1,66 @@
+// Composant global : redéclare ses propres couleurs (cohérentes avec le
+// reste de l'appli), aucune dépendance à la page qui l'inclut.
+$foret-fonce: #1c2116;
+$foret: #2c3323;
+$or: #d9a94a;
+$sepia: #8a7a5e;
+
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  width: 100%;
+
+  align-items: stretch;
+  background: radial-gradient(
+    ellipse 140% 170% at 50% 30%,
+    $foret-fonce 0%,
+    $foret 100%
+  );
+  border-top: 1px solid rgba($or, 0.45);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
+  border-radius: 12px 12px 0 0;
+  padding: 8px 24px calc(8px + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+}
+
+.nav-icon {
+  width: 25px;
+  height: 25px;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  background: transparent;
+  border: none;
+
+  color: rgba(236, 226, 200, 0.7);
+  text-decoration: none;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  span {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  &.actif {
+    color: $or;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+  }
+}

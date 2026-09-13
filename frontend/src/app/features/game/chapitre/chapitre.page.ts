@@ -13,6 +13,7 @@ import { ObjetResume } from '../../../core/models/personnage.model';
 import { ObjetService } from '../../../core/services/objet.service';
 import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 import { ChapitreObjetsComponent } from './objets/chapitre-objets.component';
+import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 
 /**
  * Écran central du jeu : affiche le chapitre en cours et la fiche du personnage.
@@ -25,7 +26,7 @@ import { ChapitreObjetsComponent } from './objets/chapitre-objets.component';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, TranslatePipe, ChapitreObjetsComponent],
+  imports: [IonContent, TranslatePipe, ChapitreObjetsComponent, NavBarComponent],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
 })

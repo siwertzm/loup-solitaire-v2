@@ -1,0 +1,27 @@
+<nav class="nav-bar">
+  <a
+    class="nav-item"
+    [routerLink]="['/personnages', personnageId(), 'chapitre']"
+    routerLinkActive="actif"
+  >
+    <img src="assets/icon/parchemin.png" alt="chapitre" class="nav-icon" />
+    <span>CHAPITRE</span>
+  </a>
+
+  <!-- FICHE : pas encore d'écran dédié -->
+  <button type="button" class="nav-item" disabled>
+    <img src="assets/icon/profil.png" alt="fiche" class="nav-icon" />
+    <span>FICHE</span>
+  </button>
+
+  <button type="button" class="nav-item" (click)="ouvrirSac()">
+    <img src="assets/icon/sac.png" alt="sac" class="nav-icon" />
+    <span>SAC</span>
+  </button>
+
+  <!-- JOURNAL : pas encore d'écran dédié -->
+  <button type="button" class="nav-item" disabled>
+    <img src="assets/icon/chemin.png" alt="journal" class="nav-icon" />
+    <span>JOURNAL</span>
+  </button>
+</nav>
