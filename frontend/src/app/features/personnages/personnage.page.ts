@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular';
+import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -25,7 +25,7 @@ interface DisciplineAffichee {
   templateUrl: './personnage.page.html',
   styleUrl: './personnage.page.scss',
 })
-export class PersonnagePage {
+export class PersonnagePage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly personnageService = inject(PersonnageService);
@@ -70,6 +70,15 @@ export class PersonnagePage {
   }
 
   constructor() {
+    this.disciplineService.lister().subscribe({
+      next: (disciplines) => this.toutesDisciplines.set(disciplines),
+    });
+  }
+
+  // Ionic garde les pages en cache dans la pile de navigation : sans ce hook,
+  // revenir sur cette page après un effet de chapitre (endurance...) réafficherait
+  // les anciennes valeurs au lieu de recharger la fiche depuis le backend.
+  ionViewWillEnter(): void {
     const id = this.personnageId();
     if (!id) {
       this.erreur.set('PERSONNAGE.ERREUR_ID_MANQUANT');
@@ -77,6 +86,8 @@ export class PersonnagePage {
       return;
     }
 
+    this.chargement.set(true);
+    this.erreur.set(null);
     this.personnageService.recuperer(id).subscribe({
       next: (personnage) => {
         this.personnage.set(personnage);
@@ -86,10 +97,6 @@ export class PersonnagePage {
         this.erreur.set('PERSONNAGE.ERREUR_CHARGEMENT');
         this.chargement.set(false);
       },
-    });
-
-    this.disciplineService.lister().subscribe({
-      next: (disciplines) => this.toutesDisciplines.set(disciplines),
     });
   }
 

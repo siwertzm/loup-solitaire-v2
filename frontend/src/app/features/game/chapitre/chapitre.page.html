@@ -42,6 +42,14 @@
         }
       </div>
 
+      @if (aConditionHasard() && hasardTermine()) {
+        <div class="marque-pages marque-pages-droite">
+          <div class="marque-page marque-page-hasard">
+            <span class="de hasard fige">{{ faceHasard() }}</span>
+          </div>
+        </div>
+      }
+
       <div class="texte">
         @if (ongletActif() === 'objets') {
           <div class="encart encart-objets">

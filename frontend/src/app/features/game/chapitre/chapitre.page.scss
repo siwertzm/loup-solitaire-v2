@@ -142,6 +142,11 @@ ion-content.intro {
   z-index: 1;
 }
 
+.marque-pages-droite {
+  left: auto;
+  right: 65px;
+}
+
 .marque-page {
   position: relative;
 
@@ -206,6 +211,21 @@ ion-content.intro {
 
 .marque-page-effets {
   background: #d9a94a;
+}
+
+.marque-page-hasard {
+  background: $or;
+  align-items: flex-start;
+  padding-top: 7px;
+
+  .de {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+    color: $encre;
+    border: 2px solid $encre;
+    border-radius: 30%;
+  }
 }
 
 .marque-page-objets,

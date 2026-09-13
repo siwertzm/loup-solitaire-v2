@@ -91,6 +91,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
   readonly ongletObjetsClique = signal(false);
   private readonly chapitreObjetCliqueKey = 'loup-solitaire:chapitre-objet-clique';
+  private readonly chapitreHasardTermineKey = 'loup-solitaire:chapitre-hasard-termine';
 
   // Signaux pour gérer le hasard (révélation et roulement)
   readonly hasardRoule = signal(false);
@@ -98,8 +99,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly hasardTermine = signal(false);
   readonly faceHasard = signal<number | string>('?');
 
-  readonly aConditionHasard = computed(() =>
-    this.liens().some((lien) => lien.conditions.some((condition) => condition.type === 'HASARD')),
+  readonly aConditionHasard = computed(
+    () =>
+      this.liens().some((lien) => lien.conditions.some((condition) => condition.type === 'HASARD')) ||
+      this.effets().some((effet) => effet.conditions.some((condition) => condition.type === 'HASARD')),
   );
 
   revelerHasard(): void {
@@ -126,6 +129,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       setTimeout(() => {
         this.hasardResultatVisible.set(false);
         this.hasardTermine.set(true);
+        this.enregistrerChapitreHasardTermine();
       }, 2000);
     }, 640);
   }
@@ -229,10 +233,11 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.ongletLeve.set(null);
         this.ongletObjetsClique.set(this.chapitreObjetDejaClique(data.id));
 
+        const hasardDejaTermine = this.chapitreHasardDejaTermine(data.id);
         this.hasardRoule.set(false);
         this.hasardResultatVisible.set(false);
-        this.hasardTermine.set(false);
-        this.faceHasard.set('?');
+        this.hasardTermine.set(hasardDejaTermine);
+        this.faceHasard.set(hasardDejaTermine ? (data.tirageHasard ?? '?') : '?');
 
         this.chargement.set(false);
       },
@@ -273,6 +278,29 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     const valeur = localStorage.getItem(this.chapitreObjetCliqueKey);
     const chapitreId = valeur === null ? NaN : Number(valeur);
     return Number.isFinite(chapitreId) ? chapitreId : null;
+  }
+
+  private chapitreHasardDejaTermine(chapitreId: number): boolean {
+    return this.lireChapitreHasardTermine() === this.chapitreHasardTermineValeur(chapitreId);
+  }
+
+  private enregistrerChapitreHasardTermine(): void {
+    const chapitreId = this.chapitre()?.id;
+    if (chapitreId === undefined) {
+      return;
+    }
+
+    localStorage.setItem(this.chapitreHasardTermineKey, this.chapitreHasardTermineValeur(chapitreId));
+  }
+
+  private lireChapitreHasardTermine(): string | null {
+    return localStorage.getItem(this.chapitreHasardTermineKey);
+  }
+
+  // Inclut le personnageId : deux personnages passant par le même chapitre
+  // (même id numérique) ne doivent pas partager cet état.
+  private chapitreHasardTermineValeur(chapitreId: number): string {
+    return `${this.personnageId()}:${chapitreId}`;
   }
 
   nomObjet(id: string | null): string {
