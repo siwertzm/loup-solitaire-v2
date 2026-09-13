@@ -27,6 +27,35 @@
           }
         </div>
       </div>
+    } @else if (effet.type.toUpperCase() === 'ENDURANCE') {
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">{{ effet.type }}</span>
+            
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (effet.valeur !== null && effet.valeur > 0) {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              FULL END
+            </button>
+          } @else if (effet.valeur !== null && effet.valeur < 0) {
+            <button type="button" class="effet-badge effet-badge-endurance" disabled>
+              {{ effet.valeur }} END
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-auto" disabled>
+              AUTOMATIQUE
+            </button>
+          }
+        </div>
+
+      </div>
     } @else {
       <!-- Autres types d'effets (HABILETE, ENDURANCE, VOL, ECHANGE) -->
       <div class="effet-ligne">

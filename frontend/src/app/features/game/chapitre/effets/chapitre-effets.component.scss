@@ -81,6 +81,12 @@ $parchemin: #ece2c8;
     color: rgba(58, 50, 38, 0.5);
   }
 
+  &.effet-badge-endurance {
+    border: 1px solid $rouge;
+    color: $rouge;
+    background: rgba(224, 112, 90, 0.12);
+  }
+
   &.effet-badge-chasse {
     border: 1px solid $vert;
     color: $vert;
