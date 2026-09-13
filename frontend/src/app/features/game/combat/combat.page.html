@@ -1,0 +1,123 @@
+<ion-content [fullscreen]="true" [scrollY]="false">
+  @if (chargement()) {
+    <div class="combat-chargement">Chargement du combat…</div>
+  } @else if (erreur()) {
+    <div class="combat-chargement">{{ erreur() }}</div>
+  } @else {
+    <div class="combat" [class]="'combat fond-' + fond">
+
+      <!-- ARÈNE -->
+      <div class="arene">
+        <div class="decor" [class]="'decor decor-' + fond">
+          <div class="ciel"></div>
+          <div class="halo"></div>
+          <div class="crete-1"></div>
+          <div class="crete-2"></div>
+          <div class="brume"></div>
+          <div class="vignette"></div>
+        </div>
+
+        @if (ennemiActif(); as ennemi) {
+          <!-- plaque de vie ennemie -->
+          <div class="plaque plaque-ennemi">
+            <div class="plaque-titre">
+              <span class="nom">{{ ennemi.nom }}</span>
+              <span class="hab">HAB {{ ennemi.habilite }}</span>
+            </div>
+            <div class="plaque-barre">
+              <span class="etiquette">END</span>
+              <div class="jauge">
+                <div class="remplissage" [class]="'remplissage ' + classeBarreEnnemi()" [style.width.%]="pctEnnemi()"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ennemi -->
+          <div class="socle socle-ennemi"></div>
+          <div class="combattant combattant-ennemi" [class.touche]="hit() === 'ennemi'">
+            <div class="entree-ennemi">
+              <img class="illustration" src="/assets/illustrations/ennemi.png" alt="" />
+            </div>
+          </div>
+        }
+
+        <!-- héros -->
+        <div class="socle socle-heros"></div>
+        <div class="combattant combattant-heros" [class.touche]="hit() === 'joueur'">
+          <div class="entree-heros">
+            <img class="illustration" src="/assets/illustrations/loup-solitaire.png" alt="" />
+          </div>
+        </div>
+
+        <!-- plaque de vie du joueur -->
+        <div class="plaque plaque-joueur">
+          <div class="plaque-titre">
+            <span class="nom">{{ nomJoueur() }}</span>
+            <span class="hab">HAB {{ habiliteJoueur() }}</span>
+          </div>
+          <div class="plaque-barre">
+            <span class="etiquette">END</span>
+            <div class="jauge">
+              <div class="remplissage" [class]="'remplissage ' + classeBarreJoueur()" [style.width.%]="pctJoueur()"></div>
+            </div>
+          </div>
+          <div class="chiffres">{{ enduranceJoueur() }} / {{ enduranceMaxJoueur() }}</div>
+        </div>
+      </div>
+
+      <!-- BOÎTE DE DIALOGUE -->
+      <div class="dialogue" (click)="avancer($event)">
+        <div class="cadre">
+
+          @if (phase() === 'TEXTE') {
+            <p class="texte">{{ texte() }}</p>
+            <div class="curseur" [class.clignote]="!tapeEnCours()">{{ tapeEnCours() ? '' : '▼' }}</div>
+          }
+
+          @if (phase() === 'MENU' && statut() === 'EN_COURS') {
+            <div class="menu">
+              <div class="invite">
+                <span class="question">Que fait {{ nomJoueur() }} ?</span>
+                <span class="assaut">ASSAUT {{ round() }}</span>
+              </div>
+              <div class="actions">
+                <button type="button" class="action principale" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">ATTAQUER</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">DÉFENSE</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('OBJET')">SAC</button>
+                <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">FUITE</button>
+              </div>
+            </div>
+          }
+
+          @if (phase() === 'FIN') {
+            <p class="texte">{{ texte() }}</p>
+            <button type="button" class="fin" [class.defaite]="statut() === 'DEFAITE'" (click)="terminer()">{{ libelleFin() }}</button>
+          }
+
+        </div>
+      </div>
+
+    </div>
+
+    @if (sacOuvert()) {
+      <div class="voile-sac-combat" (click)="fermerSac()">
+        <div class="popup-sac-combat" (click)="$event.stopPropagation()">
+          <div class="popup-sac-titre">UTILISER UN OBJET</div>
+
+          @for (item of objetsConsommables(); track item.objetId) {
+            <button type="button" class="popup-sac-ligne" (click)="choisirObjet(item)">
+              <span class="popup-sac-nom">{{ item.nom }}</span>
+              @if (item.effetLabel) {
+                <span class="popup-sac-effet">{{ item.effetLabel }}</span>
+              }
+            </button>
+          } @empty {
+            <p class="popup-sac-vide">Aucun objet utilisable dans ce combat.</p>
+          }
+
+          <button type="button" class="popup-sac-annuler" (click)="fermerSac()">ANNULER</button>
+        </div>
+      </div>
+    }
+  }
+</ion-content>

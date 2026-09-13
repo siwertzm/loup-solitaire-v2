@@ -100,6 +100,19 @@ export class PersonnageService {
     );
   }
 
+  /**
+   * POST /personnages/{id}/chapitre/revenir-apres-defaite
+   * Suite à une DEFAITE en combat (endurance à 0 pendant un tour) : renvoie
+   * le personnage au dernier chapitre "sûr" (coûte 1 pièce premium côté
+   * backend). Distinct de ressusciter() : ne change pas de chapitre.
+   */
+  revenirApresDefaite(personnageId: string): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/chapitre/revenir-apres-defaite`,
+      {},
+    );
+  }
+
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
   majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);
