@@ -13,6 +13,7 @@ import { ObjetResume } from '../../../core/models/personnage.model';
 import { ObjetService } from '../../../core/services/objet.service';
 import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 import { ChapitreObjetsComponent } from './objets/chapitre-objets.component';
+import { ChapitreEffetsComponent } from './effets/chapitre-effets.component';
 import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 
 /**
@@ -26,7 +27,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, RouterLink, ChapitreObjetsComponent, NavBarComponent],
+  imports: [IonContent, RouterLink, ChapitreObjetsComponent, ChapitreEffetsComponent, NavBarComponent],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
 })

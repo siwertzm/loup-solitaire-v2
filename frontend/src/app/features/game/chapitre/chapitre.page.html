@@ -59,14 +59,14 @@
 
         @if (ongletActif() === 'effets') {
           <div class="encart encart-effets">
-            <div class="encart-titre">EFFETS</div>
+            <div class="encart-titre">EFFETS DU CHAPITRE</div>
 
-            @for (effet of effets(); track $index) {
-              <div class="effet-ligne">
-                <span>{{ effet.type }}</span>
-                <span>{{ effet.valeur }}</span>
-              </div>
-            }
+            <app-chapitre-effets
+              [effets]="effets()"
+              [personnage]="personnage()"
+              [personnageId]="personnageId()"
+              (effetTraite)="personnage.set($event)"
+            />
           </div>
         }
 

@@ -40,6 +40,8 @@ export interface ObjetResume {
 // PLATE (objetId/nom/categorie/quantite), pas d'objet imbriqué.
 export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'BOURSE';
 
+export type CategorieEffet = 'ENDURANCE' | 'HABILETE' | 'ECHANGE' | 'REPAS' | 'VOL';
+
 export interface InventaireItem {
   objetId: string;
   nom: string;

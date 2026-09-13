@@ -55,7 +55,7 @@ public class ChapitreMapper {
                 .toList();
 
         List<EffetResponse> effets = chapitre.getEffets().stream()
-                .map(this::versReponseEffet)
+                .map(e -> versReponseEffet(e, personnage))
                 .toList();
 
         List<LienResponse> liens = chapitre.getLiens().stream()
@@ -95,11 +95,16 @@ public class ChapitreMapper {
         return new ObjetChapResponse(objetId, objetChap.getObjet().getNom(), valeur, objetChap.isOptionnel());
     }
 
-    private EffetResponse versReponseEffet(Effet effet) {
+    private EffetResponse versReponseEffet(Effet effet, Personnage personnage) {
         List<CondResponse> conditions = effet.getConditions().stream()
                 .map(this::versReponseCond)
                 .toList();
-        return new EffetResponse(effet.getType().name(), effet.getValeur(), conditions);
+        String resultat = null;
+        if (effet.getType() == com.loupsolitaire.backend.model.enums.TypeEffet.REPAS
+                && personnage.getDernierStatutRepas() != null) {
+            resultat = personnage.getDernierStatutRepas().name();
+        }
+        return new EffetResponse(effet.getType().name(), effet.getValeur(), conditions, resultat);
     }
 
     private LienResponse versReponseLien(Lien lien, Personnage personnage) {

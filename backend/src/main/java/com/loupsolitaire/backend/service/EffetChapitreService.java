@@ -15,6 +15,7 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.PorteeVol;
+import com.loupsolitaire.backend.model.enums.StatutRepas;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 
@@ -58,6 +59,8 @@ public class EffetChapitreService {
         boolean possedeChasse = personnage.getDisciplines().stream()
                 .anyMatch(d -> d.getId() == IdDiscipline.CHASSE);
         if (possedeChasse) {
+            personnage.setDernierStatutRepas(StatutRepas.CHASSE);
+            personnageRepository.save(personnage);
             return;
         }
 
@@ -67,12 +70,15 @@ public class EffetChapitreService {
 
         if (repas.isPresent()) {
             inventaireService.retirerObjet(personnage, repas.get().getObjet(), 1);
+            personnage.setDernierStatutRepas(StatutRepas.REPAS_CONSOMME);
+            personnageRepository.save(personnage);
         } else {
             int nouvelleEndurance = Math.max(0, personnage.getEnduranceActuelle() + MALUS_SANS_REPAS);
             personnage.setEnduranceActuelle(nouvelleEndurance);
             if (nouvelleEndurance <= 0) {
                 personnage.setMort(true);
             }
+            personnage.setDernierStatutRepas(StatutRepas.MALUS_ENDURANCE);
             personnageRepository.save(personnage);
         }
     }

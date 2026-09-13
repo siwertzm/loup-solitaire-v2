@@ -15,6 +15,7 @@ export interface EffetResponse {
   type: string;
   valeur: number | null;
   conditions: CondResponse[];
+  resultat?: string | null;
 }
 
 export interface LienResponse {

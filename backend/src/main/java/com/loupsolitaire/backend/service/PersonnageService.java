@@ -275,6 +275,9 @@ public class PersonnageService {
                 .anyMatch(effet -> effet.getType() == TypeEffet.REPAS);
         if (aUnEffetRepas) {
             effetChapitreService.appliquerEffetRepas(personnage);
+        } else {
+            personnage.setDernierStatutRepas(null);
+            personnageRepository.save(personnage);
         }
 
         nouveauChapitre.getEffets().stream()

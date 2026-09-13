@@ -124,6 +124,26 @@ class ChapitreMapperTest {
         assertThat(reponse.effets().get(0).valeur()).isEqualTo(-1);
         assertThat(reponse.effets().get(0).conditions()).hasSize(1);
         assertThat(reponse.effets().get(0).conditions().get(0).type()).isEqualTo("PERMANENT");
+        assertThat(reponse.effets().get(0).resultat()).isNull();
+    }
+
+    @Test
+    void mappeEffetRepasAvecSonStatut() {
+        Chapitre chapitre = creerChapitre(37, "texte", false);
+
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.REPAS);
+        effet.setValeur(-1);
+        chapitre.setEffets(List.of(effet));
+
+        personnage.setDernierStatutRepas(com.loupsolitaire.backend.model.enums.StatutRepas.REPAS_CONSOMME);
+        when(chapitreRepository.findById(37)).thenReturn(Optional.of(chapitre));
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(37, personnage);
+
+        assertThat(reponse.effets()).hasSize(1);
+        assertThat(reponse.effets().get(0).type()).isEqualTo("REPAS");
+        assertThat(reponse.effets().get(0).resultat()).isEqualTo("REPAS_CONSOMME");
     }
 
     @Test

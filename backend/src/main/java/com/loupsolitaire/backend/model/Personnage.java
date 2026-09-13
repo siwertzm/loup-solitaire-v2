@@ -117,6 +117,11 @@ public class Personnage {
     @Enumerated(EnumType.STRING)
     private PorteeVol volEnAttente;
 
+    // Dernier resultat de l'effet REPAS applique a l'arrivee sur le chapitre
+    // (CHASSE, REPAS_CONSOMME, MALUS_ENDURANCE).
+    @Enumerated(EnumType.STRING)
+    private com.loupsolitaire.backend.model.enums.StatutRepas dernierStatutRepas;
+
     // true des que l'ENDURANCE tombe a 0 HORS combat (effet ENDURANCE ou
     // REPAS d'un chapitre, voir EffetChapitreService). Bloque alors toute
     // action jusqu'a resurrection (PersonnageService.ressusciter). La mort

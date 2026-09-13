@@ -1,0 +1,53 @@
+<div class="effets">
+  @for (effet of effets(); track $index) {
+    @if (effet.type.toUpperCase() === 'REPAS') {
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/repas.png" alt="Repas" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">Prendre un Repas</span>
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (statutRepas(effet) === 'CHASSE') {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              CHASSE
+            </button>
+          } @else if (statutRepas(effet) === 'REPAS_CONSOMME') {
+            <button type="button" class="effet-badge effet-badge-auto" disabled>
+              -1 REPAS
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-auto" disabled>
+              -3 END
+            </button>
+          }
+        </div>
+      </div>
+    } @else {
+      <!-- Autres types d'effets (HABILETE, ENDURANCE, VOL, ECHANGE) -->
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">{{ effet.type }}</span>
+            @if (effet.valeur !== null) {
+              <span class="effet-description">Valeur : {{ effet.valeur }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="effet-action">
+          <button type="button" class="effet-badge effet-badge-auto" disabled>
+            AUTOMATIQUE
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
