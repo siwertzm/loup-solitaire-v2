@@ -33,7 +33,7 @@ export class AccueilPage implements ViewWillEnter {
       ...p,
       actif: p.id === this.actifId(),
       habileteTotale: p.habilite + (p.habiliteTemp ?? 0),
-      initiale: p.nom.charAt(0).toUpperCase(),
+      initiale: p.nom.charAt(0).toUpperCase() || 'LS',
     })),
   );
 
