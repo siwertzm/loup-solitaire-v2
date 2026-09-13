@@ -424,7 +424,7 @@ $beige: #e0d3b4;
 .cadre {
   box-sizing: border-box;
   height: 100%;
-  padding: 16px 18px;
+  padding: 8px 14px 7px;
   display: flex;
   flex-direction: column;
   background: $parchemin;
@@ -441,6 +441,7 @@ $beige: #e0d3b4;
   font-size: 18.5px;
   line-height: 1.5;
   color: $encre;
+  white-space: pre-line;
   text-wrap: pretty;
 }
 
@@ -510,14 +511,14 @@ $beige: #e0d3b4;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 18px;
+  gap: 7px;
   color: $encre;
 }
 
 .stats-ennemi-entete {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
 }
 
 .stats-ennemi-ligne {
@@ -535,14 +536,14 @@ $beige: #e0d3b4;
   font-family: 'Cinzel', serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   color: #8a4c2d;
 }
 
 .stats-ennemi-grille {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
 }
 
 .stat-ennemi {
@@ -551,8 +552,8 @@ $beige: #e0d3b4;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 86px;
-  padding: 10px 8px;
+  min-height: 63px;
+  padding: 5px 6px;
   border: 1px solid rgba(58, 50, 38, 0.35);
   border-radius: 10px;
   background: rgba(255, 249, 226, 0.42);
@@ -569,9 +570,9 @@ $beige: #e0d3b4;
 
   strong {
     position: relative;
-    margin-top: 3px;
+    margin-top: 1px;
     font-family: 'Cinzel', serif;
-    font-size: 29px;
+    font-size: 24px;
     line-height: 1;
     font-weight: 700;
   }
@@ -585,14 +586,14 @@ $beige: #e0d3b4;
 }
 
 .stat-ennemi-label {
-  font-size: 9px;
+  font-size: 7px;
   font-weight: 700;
   letter-spacing: 0.13em;
 }
 
 .stat-ennemi-sous-titre {
-  margin-top: 4px;
-  font-size: 8px;
+  margin-top: 2px;
+  font-size: 6px;
   letter-spacing: 0.1em;
   color: #8a7a5e;
 }

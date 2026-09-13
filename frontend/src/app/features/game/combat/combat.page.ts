@@ -360,7 +360,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (action === 'FUITE') {
-      messages.push({ txt: 'Vous rompez le combat et disparaissez dans les fougères.' });
+      messages.push({ txt: 'Vous rompez le combat et disparaissez !!' });
       return messages;
     }
 
@@ -400,7 +400,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       if (degats <= 0) {
         txt = 'Vous esquivez le coup.';
       } else if (action === 'DEFENSE' && tour.reductionPourcent) {
-        txt = `Vous perdez ${degats} points d'ENDURANCE (garde amortie de ${tour.reductionPourcent}%).`;
+        txt = `Vous perdez ${degats} points d'ENDURANCE \n( Garde amortie de ${tour.reductionPourcent}% ).`;
       } else {
         txt = `Vous perdez ${degats} points d'ENDURANCE.`;
       }
@@ -409,7 +409,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     if (action === 'DEFENSE' && tour.bonusHabiliteObtenu) {
       messages.push({
-        txt: `Vous saisissez une ouverture : +${tour.bonusHabiliteObtenu} HABILETÉ pour votre prochaine attaque.`,
+        txt: `Vous saisissez une ouverture :\n +${tour.bonusHabiliteObtenu} HABILITÉ pour votre prochaine attaque.`,
       });
     }
 

@@ -7,6 +7,7 @@ import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { ChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
 import { ChapitreService } from '../../../core/services/chapitre.service';
+import { CombatService } from '../../../core/services/combat.service';
 import { DisciplineResume } from '../../../core/models/personnage.model';
 import { DisciplineService } from '../../../core/services/discipline.service';
 import { ObjetResume } from '../../../core/models/personnage.model';
@@ -35,6 +36,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly chapitreService = inject(ChapitreService);
+  private readonly combatService = inject(CombatService);
   private readonly personnageService = inject(PersonnageService);
   private readonly disciplineService = inject(DisciplineService);
   private readonly objetService = inject(ObjetService);
@@ -86,6 +88,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ennemis = computed(() => this.chapitre()?.ennemis ?? []);
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
+  readonly combatDisponible = signal(false);
 
   // Un vol en attente (voir <app-chapitre-effets>) bloque avancerVersChapitre
   // côté backend (400 : "Un vol est en attente de resolution"). Tant qu'il
@@ -244,6 +247,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     this.chapitreService.getChapitreCourant(id).subscribe({
       next: (data) => {
         this.chapitre.set(data);
+        this.actualiserCombatDisponible(data.combat, id);
 
         this.ongletActif.set('chapitre');
         this.ongletLeve.set(null);
@@ -261,6 +265,23 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         console.error('Erreur lors de la récupération du chapitre :', err);
         this.erreur.set('Impossible de charger le chapitre en cours.');
         this.chargement.set(false);
+      },
+    });
+  }
+
+  private actualiserCombatDisponible(estChapitreCombat: boolean, personnageId: string): void {
+    if (!estChapitreCombat) {
+      this.combatDisponible.set(false);
+      return;
+    }
+
+    // Un combat résolu reste rattaché au chapitre, mais ne doit plus
+    // remplacer les liens par le bouton COMBAT au retour sur cette page.
+    this.combatService.recuperer(personnageId).subscribe({
+      next: (combat) => this.combatDisponible.set(combat.statut === 'EN_COURS'),
+      error: (err) => {
+        // 404 signifie que le combat n'a pas encore été démarré.
+        this.combatDisponible.set(err.status === 404);
       },
     });
   }
