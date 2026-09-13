@@ -3145,7 +3145,11 @@
           "type": "objet",
           "targetId": "torche",
           "valeur": "-1"
-        }]
+          },{
+          "type": "objet",
+          "targetId": "briquet_amadou",
+          "valeur": "-1"
+          }]
       }
     ],
     "lien": [

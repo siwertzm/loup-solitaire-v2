@@ -56,8 +56,72 @@
         </div>
 
       </div>
+    } @else if (effet.type.toUpperCase() === 'HABILETE' && effet.conditions.length === 0) {
+      <!-- Modificateur d'HABILETÉ sans condition : toujours temporaire
+           (habiliteTemp côté backend), le temps du combat qui suit. -->
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">HABILETÉ</span>
+            <span class="effet-description">Pendant ce combat</span>
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (effet.valeur !== null && effet.valeur > 0) {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              +{{ effet.valeur }} HAB
+            </button>
+          } @else if (effet.valeur !== null && effet.valeur < 0) {
+            <button type="button" class="effet-badge effet-badge-endurance" disabled>
+              {{ effet.valeur }} HAB
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-auto" disabled>
+              AUTOMATIQUE
+            </button>
+          }
+        </div>
+      </div>
+    } @else if (effet.type.toUpperCase() === 'HABILETE' && conditionDisciplineOuObjet(effet); as condition) {
+      <!-- Sémantique inversée : le malus ne s'applique que si le
+           personnage NE POSSÈDE PAS la discipline/l'objet ciblé. L'API
+           renvoie l'effet dans tous les cas (voir commentaire du composant),
+           d'où le badge "ÉVITÉ" quand il est bien possédé. -->
+      <div class="effet-ligne">
+        <div class="effet-nom">
+          <div class="logo">
+            <img src="assets/icon/effets.png" alt="Effet" />
+          </div>
+          <div class="effet-texte">
+            <span class="effet-titre">HABILETÉ</span>
+            <span class="effet-description">
+              @if (condition.type === 'DISCIPLINE' && effetEvite(condition) ) {
+                {{ nomDiscipline(condition.targetId!) }}
+              } @else if (condition.type === 'OBJET' && effetEvite(condition)) {
+                Si vous n'avez pas {{ nomObjet(condition.targetId!) }}
+              }
+            </span>
+          </div>
+        </div>
+
+        <div class="effet-action">
+          @if (effetEvite(condition)) {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              ÉVITÉ
+            </button>
+          } @else {
+            <button type="button" class="effet-badge effet-badge-endurance" disabled>
+              {{ effet.valeur }} HAB
+            </button>
+          }
+        </div>
+      </div>
     } @else {
-      <!-- Autres types d'effets (HABILETE, ENDURANCE, VOL, ECHANGE) -->
+      <!-- Autres cas (HABILETE avec condition PERMANENT, VOL, ECHANGE) -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">

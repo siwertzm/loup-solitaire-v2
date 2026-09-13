@@ -50,8 +50,9 @@ $parchemin: #ece2c8;
 
 .effet-texte {
   display: flex;
-  flex-direction: column;
-  gap: 1px;
+  align-items: center;
+  gap: 7px;
+  margin-top: 3px;
 }
 
 .effet-titre {
@@ -62,6 +63,7 @@ $parchemin: #ece2c8;
 .effet-description {
   font-size: 11px;
   color: $sepia;
+  margin-top: 3px;
 }
 
 .effet-action {
