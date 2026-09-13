@@ -110,6 +110,7 @@ $rouge: #b0392e;
   }
 
   .sac-nom {
+    font-family: 'Cinzel', serif;
     font-size: 15px;
   }
 
@@ -118,7 +119,7 @@ $rouge: #b0392e;
     display: flex;
     gap: 4px;
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0.1em;
     color: $sepia;
     text-transform: uppercase;
@@ -128,7 +129,8 @@ $rouge: #b0392e;
   .sac-bonus {
     display: block;
     color: $vert;
-    font-size: 9px;
+    font-size: 12px;
+    margin-right: 6px;
 
     &.sac-malus {
       color: $rouge;
@@ -157,7 +159,7 @@ $rouge: #b0392e;
 
   .sac-bourse-cle {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0.14em;
     color: $sepia;
     text-transform: uppercase;
@@ -210,7 +212,7 @@ ion-item-option {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 40;
+  z-index: 1100;
   padding: 24px;
 }
 

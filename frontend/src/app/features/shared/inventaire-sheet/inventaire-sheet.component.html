@@ -1,4 +1,4 @@
-@if (ouvert()) {
+@if (ouvert() && !objetAConfirmer()) {
   <div class="voile-sac" (click)="fermer()">
     <div class="feuille-sac" #feuilleSac (click)="$event.stopPropagation()">
       <div class="poignee"></div>
@@ -59,10 +59,10 @@
                 >
                   <span class="sac-nom">{{ o.nom }}</span>
                   <span class="sac-tag">
-                    ×{{ o.quantite }}
                     @if (o.effetLabel) {
                       <span class="sac-bonus">{{ o.effetLabel }}</span>
                     }
+                    ×{{ o.quantite }}
                   </span>
                 </div>
               </ion-item>

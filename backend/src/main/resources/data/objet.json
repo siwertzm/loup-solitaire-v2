@@ -159,7 +159,7 @@
   {
     "id": "essence_alether",
     "nom": "Essence d'Alether",
-    "description": "Une essence d'Alether, une puissante potion qui a la propriété d'accroître votre force.",
+    "description": "Une essence d'Alether, une puissante potion qui a la propriété d'accroître votre force. (Bonus sur le chapitre actuelle)",
     "categorie": "objet",
     "effet": [
       {
