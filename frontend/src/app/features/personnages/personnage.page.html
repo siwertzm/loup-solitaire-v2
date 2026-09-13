@@ -1,44 +1,57 @@
 <ion-content [fullscreen]="true" class="equipement">
   <div class="ecran">
     <div class="entete">
-      <div class="surtitre">{{ 'EQUIPEMENT.SURTITRE' | translate }}</div>
-      <h1 class="titre">{{ nom() }}</h1>
+      <div class="avatar">{{ initiale() }}</div>
+      <div class="identite">
+        <h1 class="titre">{{ nom() }}</h1>
+        <div class="sous-titre">Novice de l'Ordre Kaï · Chapitre {{ chapitre() }}</div>
+      </div>
     </div>
 
     <div class="tirages">
-      <div class="bloc de-bloc">
+      <div class="bloc stat-card habilete-card">
         <span class="cle">HABILITE</span>
-          <span class="de fige objet">
-            {{ habilite() }}
-          </span>
-          <span class="nom-objet">{{ habiliteMax() }} MAX</span>
+        <span class="stat-value">{{ habilite() }}</span>
+        <span class="stat-detail">{{ habiliteMax() }} Max</span>
       </div>
 
-      <div class="bloc de-bloc">
+      <div class="bloc stat-card endurance-card">
         <span class="cle">ENDURANCE</span>
-          <span class="de fige objet">
-            {{ endurance() }}
-          </span>
-          <span class="nom-objet">{{ enduranceMax() }} MAX</span>
+        <span class="stat-value">{{ endurance() }}</span>
+        <span class="stat-detail">{{ enduranceMax() }} Max</span>
       </div>
 
-      <div class="bloc de-bloc">
-        <span class="cle">COURONNES</span>
-          <span class="de fige objet">
-            {{ couronnes() }}
-          </span>
-          <span class="nom-objet">50 MAX</span>
+      <div class="bloc stat-card or-card">
+        <span class="cle">OR</span>
+        <span class="stat-value">{{ couronnes() }}</span>
+        <span class="stat-detail">50 Max</span>
       </div>
     </div>
 
     <div class="feuille">
-      <div class="bloc">
-        <span class="bloc-titre">DISCIPLINES KAÏ</span>
+      <div class="disciplines">
+        <span class="bloc-titre">
+          <div>DISCIPLINES KAÏ</div>
+          <div>5/5</div>
+        </span>
         <div class="lignes">
           @for (discipline of disciplinesAffichees(); track discipline.id) {
             <div class="ligne">
-              <span class="ligne-nom">{{ discipline.nom }}</span>
-              <span class="ligne-note">{{ discipline.description }}</span>
+              <div class="discipline-libelle">
+                <span class="ligne-nom">{{ discipline.nom }}</span>
+                @if (discipline.id === 'MAITRISE_ARMES' && armeMaitrisee()) {
+                  <span class="arme-maitrisee">{{ armeMaitrisee() }}</span>
+                }
+              </div>
+              <button
+                type="button"
+                class="info"
+                aria-label="Afficher le détail de la discipline"
+                title="Afficher le détail"
+                (click)="ouvrirDescription(discipline)"
+              >
+                <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+              </button>
             </div>
           }
         </div>
@@ -46,4 +59,30 @@
     </div>
   </div>
   <app-nav-bar [personnageId]="personnageId()!" />
+
+  @if (description(); as discipline) {
+    <div class="voile" (click)="fermerDescription()">
+      <div class="popup" (click)="$event.stopPropagation()">
+        <div class="surtitre">DISCIPLINE KAÏ</div>
+        <div class="popup-titre">{{ discipline.nom }}</div>
+        <p class="popup-texte">{{ discipline.description }}</p>
+        @if (discipline.id === 'MAITRISE_ARMES' && armeMaitrisee()) {
+          <div class="popup-arme-maitrisee">Arme maîtrisée : {{ armeMaitrisee() }}</div>
+        }
+        <button type="button" class="fermer" (click)="fermerDescription()">FERMER</button>
+      </div>
+    </div>
+  }
+
+  <div class="pied">
+      @if (erreur()) {
+        <div class="erreur">{{ erreur() | translate }}</div>
+      }
+      <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="supprimer()">
+        {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
+      </button>
+      <button type="button" class="valider" (click)="menu()">
+        CHANGER DE PERSONNAGE
+      </button>
+    </div>
 </ion-content>

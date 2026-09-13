@@ -1,31 +1,49 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Connexion</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="auth-page" [fullscreen]="true">
+  <main class="login-shell">
+    <section class="login-card" aria-labelledby="login-title">
+      <header class="titre-jeu">
+        <div class="sur-titre">{{ 'ACCUEIL.SUR_TITRE' | translate }}</div>
+        <h1 id="login-title">{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
+        <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
+      </header>
+      <h2>Connexion</h2>
+      <p class="introduction">Reprends ton aventure là où tu l'as laissée.</p>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="form" (ngSubmit)="soumettre()">
-    <ion-item>
-      <ion-label position="stacked">Username ou email</ion-label>
-      <ion-input formControlName="identifiant" type="text" autocomplete="username"></ion-input>
-    </ion-item>
+      <form [formGroup]="form" (ngSubmit)="soumettre()">
+        <div class="champ">
+          <label for="identifiant">Username ou email</label>
+          <ion-input
+            id="identifiant"
+            formControlName="identifiant"
+            type="text"
+            autocomplete="username"
+            placeholder="Ton identifiant"
+          ></ion-input>
+        </div>
 
-    <ion-item>
-      <ion-label position="stacked">Mot de passe</ion-label>
-      <ion-input formControlName="password" type="password" autocomplete="current-password"></ion-input>
-    </ion-item>
+        <div class="champ">
+          <label for="password">Mot de passe</label>
+          <ion-input
+            id="password"
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Ton mot de passe"
+          ></ion-input>
+        </div>
 
-    @if (erreur()) {
-      <ion-note color="danger">{{ erreur() }}</ion-note>
-    }
+        @if (erreur()) {
+          <ion-note class="erreur">{{ erreur() }}</ion-note>
+        }
 
-    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="form.invalid || enCours()">
-      Se connecter
-    </ion-button>
-  </form>
+        <ion-button expand="block" type="submit" class="connexion" [disabled]="form.invalid || enCours()">
+          {{ enCours() ? 'Connexion...' : 'Entrer dans l\'aventure' }}
+        </ion-button>
+      </form>
 
-  <ion-button expand="block" fill="clear" routerLink="/auth/register">
-    Pas encore de compte ? S'inscrire
-  </ion-button>
+      <div class="separateur"><span>OU</span></div>
+
+      <a class="inscription" routerLink="/auth/register">Pas encore de compte ? <strong>S'inscrire</strong></a>
+    </section>
+  </main>
 </ion-content>

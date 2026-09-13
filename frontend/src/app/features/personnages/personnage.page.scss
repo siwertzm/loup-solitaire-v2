@@ -36,27 +36,50 @@ ion-content.equipement {
   display: flex;
   flex-direction: column;
   gap: 11px;
-  padding: 24px 22px 0;
+  padding: 24px 22px 130px;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
 }
 
 .entete {
   flex: none;
-  padding: 12px 0 0px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0 12px;
 
-  .surtitre {
+  .avatar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    border: 2px solid $cuivre;
+    border-radius: 50%;
+    color: $or;
     font-family: 'Cinzel', serif;
-    font-size: 10.5px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: $cuivre;
+    font-size: 23px;
   }
 
-  .titre {
-    font-family: 'Cinzel', serif;
-    font-size: 22px;
-    font-weight: 600;
-    margin: 4px 0 0;
+  .identite {
+    min-width: 0;
+
+    .titre {
+      overflow: hidden;
+      margin: 0;
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sous-titre {
+      margin-top: 4px;
+      color: rgba(236, 226, 200, 0.55);
+      font-size: 16px;
+      font-style: italic;
+    }
   }
 }
 
@@ -69,9 +92,18 @@ ion-content.equipement {
   gap: 8px;
 }
 
+.disciplines {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+  gap: 12px;
+}
+
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 18px;
+  display: flex;
+  justify-content: space-between;
   letter-spacing: 0.18em;
   color: rgba(236, 226, 200, 0.5);
 }
@@ -103,40 +135,43 @@ ion-content.equipement {
   gap: 11px;
 }
 
-.de-bloc {
+.stat-card {
+  min-width: 0;
+  min-height: 98px;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 11px 12px;
+  gap: 0;
+  padding: 12px 13px 11px;
+  border-radius: 12px;
+  text-align: center;
 
   .cle {
     font-size: 9px;
-    letter-spacing: 0.13em;
-    color: rgba(236, 226, 200, 0.5);
-    text-align: center;
+    letter-spacing: 0.1em;
+    color: rgba(236, 226, 200, 0.55);
   }
 
-  .total {
+  .stat-value {
     font-family: 'Cinzel', serif;
-    font-size: 34px;
-    line-height: 1.35;
-
-    &.or {
-      color: $or;
-    }
+    font-size: 27px;
+    line-height: 1;
   }
 
-  .detail {
-    font-size: 12px;
+  .stat-detail {
+    font-size: 11px;
     color: rgba(236, 226, 200, 0.4);
   }
 
-  .nom-objet {
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    line-height: 1.25;
+  &.habilete-card .stat-value {
+    color: #9dbf5c;
+  }
+
+  &.endurance-card .stat-value {
+    color: $rouge;
+  }
+
+  &.or-card .stat-value {
     color: $or;
-    text-align: center;
   }
 }
 
@@ -182,7 +217,6 @@ ion-content.equipement {
 .feuille {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
@@ -254,7 +288,7 @@ ion-content.equipement {
 .lignes {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 }
 
 .ligne {
@@ -275,30 +309,139 @@ ion-content.equipement {
     font-size: 13.5px;
   }
 
+  .discipline-libelle {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    gap: 2px;
+  }
+
+  .arme-maitrisee {
+    font-size: 14px;
+    color: $or;
+  }
+
   .ligne-note {
     font-family: 'Cinzel', serif;
     font-size: 9px;
     letter-spacing: 0.12em;
     color: $or;
   }
+
+  .info {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 50%;
+    background: none;
+    color: rgba(236, 226, 200, 0.65);
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 18px;
+      vertical-align: middle;
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: $cuivre;
+      color: $or;
+    }
+  }
+}
+
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: rgba(12, 14, 9, 0.66);
+}
+
+.popup {
+  width: 100%;
+  max-width: 420px;
+  max-height: 70%;
+  overflow-y: auto;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: $parchemin;
+  color: #3a3226;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+
+  .surtitre {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #8a7a5e;
+  }
+
+  .popup-titre {
+    margin: 8px 0 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  .popup-texte {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .popup-arme-maitrisee {
+    margin-top: 16px;
+    padding: 9px 11px;
+    border-left: 2px solid $cuivre;
+    background: rgba(194, 112, 58, 0.12);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .fermer {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: $foret;
+    color: $parchemin;
+    font-family: 'Cinzel', serif;
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    cursor: pointer;
+  }
 }
 
 .pied {
+  position: fixed;
+  right: 0;
+  bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  z-index: 20;
   display: flex;
-  flex-direction: column;
-  padding: 1px 0 22px;
+  padding: 12px 22px;
   gap: 10px;
 
   .erreur {
+    position: absolute;
+    right: 22px;
+    bottom: calc(100% + 4px);
+    left: 22px;
     color: $rouge;
     font-size: 14px;
-    margin-bottom: 10px;
     text-align: center;
   }
 }
 
 .valider {
-  width: 100%;
+  flex: 1;
   border: none;
   border-radius: 11px;
   padding: 15px;
@@ -319,7 +462,7 @@ ion-content.equipement {
 }
 
 .supprimer {
-  width: 100%;
+  flex: 1;
   border: none;
   border-radius: 11px;
   padding: 15px;

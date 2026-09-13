@@ -1,44 +1,50 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Inscription</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="auth-page" [fullscreen]="true">
+  <main class="register-shell">
+    <section class="register-card" aria-labelledby="register-title">
+      <header class="titre-jeu">
+        <div class="sur-titre">{{ 'ACCUEIL.SUR_TITRE' | translate }}</div>
+        <h1 id="register-title">{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
+        <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
+      </header>
 
-<ion-content class="ion-padding">
   @if (succes()) {
-    <p>
-      Compte créé. Un email de vérification a été envoyé : clique sur le lien
-      qu'il contient avant de pouvoir te connecter.
-    </p>
-    <ion-button expand="block" (click)="allerVersLogin()">Aller à la connexion</ion-button>
+    <div class="succes" role="status">
+      <div class="succes-symbole" aria-hidden="true">✓</div>
+      <h2>Compte créé</h2>
+      <p>Un email de vérification a été envoyé. Clique sur le lien qu'il contient avant de te connecter.</p>
+      <ion-button expand="block" class="action-principale" (click)="allerVersLogin()">Aller à la connexion</ion-button>
+    </div>
   } @else {
+    <h2>Inscription</h2>
+    <p class="introduction">Commence une nouvelle aventure.</p>
     <form [formGroup]="form" (ngSubmit)="soumettre()">
-      <ion-item>
-        <ion-label position="stacked">Nom d'utilisateur</ion-label>
-        <ion-input formControlName="username" type="text" autocomplete="username"></ion-input>
-      </ion-item>
+      <div class="champ">
+        <label for="username">Nom d'utilisateur</label>
+        <ion-input id="username" formControlName="username" type="text" autocomplete="username" placeholder="Ton nom d'aventurier"></ion-input>
+      </div>
 
-      <ion-item>
-        <ion-label position="stacked">Email</ion-label>
-        <ion-input formControlName="email" type="email" autocomplete="email"></ion-input>
-      </ion-item>
+      <div class="champ">
+        <label for="email">Email</label>
+        <ion-input id="email" formControlName="email" type="email" autocomplete="email" placeholder="Ton adresse email"></ion-input>
+      </div>
 
-      <ion-item>
-        <ion-label position="stacked">Mot de passe (8 caractères min.)</ion-label>
-        <ion-input formControlName="password" type="password" autocomplete="new-password"></ion-input>
-      </ion-item>
+      <div class="champ">
+        <label for="register-password">Mot de passe <span>8 caractères minimum</span></label>
+        <ion-input id="register-password" formControlName="password" type="password" autocomplete="new-password" placeholder="Choisis un mot de passe"></ion-input>
+      </div>
 
       @if (erreur()) {
-        <ion-note color="danger">{{ erreur() }}</ion-note>
+        <ion-note class="erreur">{{ erreur() }}</ion-note>
       }
 
-      <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="form.invalid || enCours()">
-        Créer mon compte
+      <ion-button expand="block" type="submit" class="action-principale" [disabled]="form.invalid || enCours()">
+        {{ enCours() ? 'Création...' : 'Créer mon compte' }}
       </ion-button>
     </form>
 
-    <ion-button expand="block" fill="clear" routerLink="/auth/login">
-      Déjà un compte ? Se connecter
-    </ion-button>
+    <div class="separateur"><span>OU</span></div>
+    <a class="retour-login" routerLink="/auth/login">Déjà un compte ? <strong>Se connecter</strong></a>
   }
+    </section>
+  </main>
 </ion-content>

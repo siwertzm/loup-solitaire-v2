@@ -1,13 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonItem,
-  IonLabel,
   IonInput,
   IonButton,
   IonNote,
@@ -22,16 +18,13 @@ import { AuthService } from '../../../core/services/auth.service';
     ReactiveFormsModule,
     RouterLink,
     IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonLabel,
     IonInput,
     IonButton,
     IonNote,
+    TranslatePipe,
   ],
   templateUrl: './register.page.html',
+  styleUrl: './register.page.scss',
 })
 export class RegisterPage {
   private readonly fb = inject(FormBuilder);

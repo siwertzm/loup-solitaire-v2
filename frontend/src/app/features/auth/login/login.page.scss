@@ -1,0 +1,196 @@
+$foret: #2c3323;
+$foret-fonce: #171c13;
+$parchemin: #ece2c8;
+$cuivre: #c2703a;
+$or: #d9a94a;
+$rouge: #e0705a;
+
+ion-content.auth-page {
+  --background: #{$foret};
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ion-text-color: #{$parchemin};
+  color: $parchemin;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+}
+
+.login-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 32px 22px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%),
+    radial-gradient(100% 70% at 50% 100%, rgba(0, 0, 0, 0.45), transparent 65%);
+}
+
+.login-card {
+  width: min(100%, 390px);
+  padding: 30px 26px 24px;
+  border: 1px solid rgba(217, 169, 74, 0.18);
+  border-radius: 18px;
+  background: rgba(20, 26, 16, 0.76);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), inset 0 1px rgba(236, 226, 200, 0.06);
+  backdrop-filter: blur(8px);
+  text-align: center;
+}
+
+.titre-jeu {
+  margin-bottom: 26px;
+
+  .sur-titre {
+    color: $cuivre;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+  }
+
+  h1 {
+    margin: 8px 0 4px;
+    color: $parchemin;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(24px, 7vw, 31px);
+    font-weight: 600;
+    line-height: 1.12;
+    text-transform: uppercase;
+  }
+
+  .sous-titre {
+    color: rgba(236, 226, 200, 0.62);
+    font-size: 15px;
+    font-style: italic;
+  }
+}
+
+h2 {
+  margin: 0 0 4px;
+  color: $or;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.surtitre {
+  color: $cuivre;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+}
+
+h1 {
+  margin: 8px 0 4px;
+  color: $parchemin;
+  font-family: 'Cinzel', serif;
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.introduction {
+  margin: 0 0 26px;
+  color: rgba(236, 226, 200, 0.58);
+  font-size: 16px;
+  font-style: italic;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.champ {
+  text-align: left;
+
+  label {
+    display: block;
+    margin: 0 0 7px 2px;
+    color: rgba(236, 226, 200, 0.68);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  ion-input {
+    --background: rgba(236, 226, 200, 0.07);
+    --border-color: rgba(236, 226, 200, 0.18);
+    --border-radius: 10px;
+    --color: #{$parchemin};
+    --highlight-color: #{$cuivre};
+    --padding-bottom: 13px;
+    --padding-end: 14px;
+    --padding-start: 14px;
+    --padding-top: 13px;
+    --placeholder-color: rgba(236, 226, 200, 0.32);
+    border: 1px solid rgba(236, 226, 200, 0.16);
+    border-radius: 10px;
+  }
+}
+
+.erreur {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid rgba(224, 112, 90, 0.35);
+  border-radius: 8px;
+  background: rgba(224, 112, 90, 0.1);
+  color: $rouge;
+  font-size: 14px;
+  text-align: left;
+}
+
+.connexion {
+  --background: #{$cuivre};
+  --background-activated: #{$or};
+  --border-radius: 10px;
+  --color: #{$foret-fonce};
+  --padding-bottom: 17px;
+  --padding-top: 17px;
+  margin-top: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.separateur {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 18px;
+  color: rgba(236, 226, 200, 0.3);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+
+  &::before,
+  &::after {
+    flex: 1;
+    height: 1px;
+    background: rgba(236, 226, 200, 0.14);
+    content: '';
+  }
+}
+
+.inscription {
+  color: rgba(236, 226, 200, 0.58);
+  font-size: 15px;
+  text-decoration: none;
+
+  strong {
+    color: $or;
+    font-weight: 500;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-shell {
+    padding: 20px 14px;
+  }
+
+  .login-card {
+    padding: 24px 18px 20px;
+  }
+}
