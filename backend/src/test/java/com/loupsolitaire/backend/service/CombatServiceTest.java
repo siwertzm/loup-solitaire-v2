@@ -25,6 +25,7 @@ import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.CombatEnnemi;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Ennemi;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
@@ -34,6 +35,7 @@ import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
+import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -124,6 +126,20 @@ class CombatServiceTest {
         Lien lien = new Lien();
         lien.setConditions(List.of(cond));
         return lien;
+    }
+
+    // Effet HABILETE dont l'unique condition est ASSAUT_MAX (ex. chapitre
+    // 283 : bonus qui ne s'applique que durant les N premiers assauts).
+    private Effet creerEffetHabiliteAssautMax(int valeur, int assautMax) {
+        Cond cond = new Cond();
+        cond.setType(TypeCondition.ASSAUT_MAX);
+        cond.setValeur(String.valueOf(assautMax));
+
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.HABILETE);
+        effet.setValeur(valeur);
+        effet.setConditions(List.of(cond));
+        return effet;
     }
 
     // Stub commun : le combat en cours est retrouve tel quel (pas recree).
@@ -349,6 +365,50 @@ class CombatServiceTest {
         personnage.setDisciplines(List.of(puissancePsychique));
         CombatEnnemi ce = creerCombatEnnemi(ennemi, 0, 10);
         Combat combat = creerCombatEnCours(chapitre, List.of(ce));
+        stuberCombatExistant(personnage, chapitre, combat);
+
+        // Pas de bonus : rapportAttaque = 10 - 5 = 5
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.degatsInfliges(5, 6)).thenReturn(-1);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-1);
+
+        TourJoue tourJoue = combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
+
+        assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(5);
+    }
+
+    // Chapitre 283 : "+2 HABILETE lors du premier assaut seulement"
+    // (Effet HABILETE, unique condition ASSAUT_MAX=1).
+    @Test
+    void jouerTourAttaqueAppliqueLeBonusAssautMaxLorsDuPremierAssaut() {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Chapitre chapitre = creerChapitreCombat(283, List.of(ennemi), null);
+        chapitre.setEffets(List.of(creerEffetHabiliteAssautMax(2, 1)));
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        CombatEnnemi ce = creerCombatEnnemi(ennemi, 0, 10);
+        Combat combat = creerCombatEnCours(chapitre, List.of(ce));
+        combat.setAssautsLivres(0); // premier assaut : le bonus doit s'appliquer
+        stuberCombatExistant(personnage, chapitre, combat);
+
+        // rapportAttaque = (10 + 2 bonus assaut_max) - 5 = 7
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.degatsInfliges(7, 6)).thenReturn(-1);
+        when(tableCombatService.degatsSubis(7, 4)).thenReturn(-1);
+
+        TourJoue tourJoue = combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
+
+        assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(7);
+    }
+
+    @Test
+    void jouerTourAttaqueN_appliquePasLeBonusAssautMaxApresLePremierAssaut() {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Chapitre chapitre = creerChapitreCombat(283, List.of(ennemi), null);
+        chapitre.setEffets(List.of(creerEffetHabiliteAssautMax(2, 1)));
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        CombatEnnemi ce = creerCombatEnnemi(ennemi, 0, 10);
+        Combat combat = creerCombatEnCours(chapitre, List.of(ce));
+        combat.setAssautsLivres(1); // deuxieme assaut : le bonus ne doit plus s'appliquer
         stuberCombatExistant(personnage, chapitre, combat);
 
         // Pas de bonus : rapportAttaque = 10 - 5 = 5

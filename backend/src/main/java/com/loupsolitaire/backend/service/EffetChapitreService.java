@@ -113,9 +113,17 @@ public class EffetChapitreService {
                 }
             }
             default -> {
-                // ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE, FUITE, HASARD,
-                // ARME, BOURSE, ENDURANCE : combat non construit, ou non
-                // rencontre sur un effet HABILETE dans ce tome. Ignore.
+                // ASSAUT_ECHEC, ENDURANCE_PERDUE, FUITE, HASARD, ARME, BOURSE,
+                // ENDURANCE : non rencontre sur un effet HABILETE dans ce tome.
+                // ASSAUT_MAX (chapitre 283) est un cas a part : voir
+                // CombatService.bonusHabiliteAssautMax. Ce n'est PAS un
+                // modificateur fixe pour toute la duree du chapitre (donc
+                // PAS habiliteTemp ici), mais un bonus qui ne s'applique QUE
+                // lors du premier assaut du combat ("La surprise de votre
+                // attaque vous permet d'ajouter 2 points [...] lors du
+                // premier assaut") ; il doit donc etre recalcule a chaque
+                // tour en fonction de Combat.assautsLivres, pas fige a
+                // l'arrivee sur le chapitre comme les autres effets HABILETE.
             }
         }
     }

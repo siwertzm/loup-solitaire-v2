@@ -13,6 +13,7 @@ import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.CombatEnnemi;
 import com.loupsolitaire.backend.model.Cond;
+import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Ennemi;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
@@ -22,6 +23,7 @@ import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
+import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -159,12 +161,13 @@ public class CombatService {
     }
 
     private ResultatTour jouerAttaque(Personnage personnage, Combat combat) {
+        Chapitre chapitre = recupererChapitre(combat.getChapitreId());
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
         Ennemi ennemi = ennemiActif.getEnnemi();
         int habEnnemi = ennemi.getHabilite();
 
         int bonusUtilise = combat.getBonusHabiliteEnAttente();
-        int habJoueur = habiliteEffective(personnage, ennemi) + bonusUtilise;
+        int habJoueur = habiliteEffective(personnage, ennemi, chapitre, combat) + bonusUtilise;
         int rapportAttaque = habJoueur - habEnnemi;
         int tirageAttaque = tableDeHasardService.tirerChiffre();
         int degatsInfliges = tableCombatService.degatsInfliges(rapportAttaque, tirageAttaque);
@@ -184,7 +187,7 @@ public class CombatService {
 
         // L'ennemi riposte : pas de bonus d'HABILITE sur la defense du
         // joueur ici (le bonus ne joue que sur SA propre attaque).
-        int rapportRiposte = habiliteEffective(personnage, ennemi) - habEnnemi;
+        int rapportRiposte = habiliteEffective(personnage, ennemi, chapitre, combat) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
@@ -194,6 +197,7 @@ public class CombatService {
     }
 
     private ResultatTour jouerDefense(Personnage personnage, Combat combat) {
+        Chapitre chapitre = recupererChapitre(combat.getChapitreId());
         CombatEnnemi ennemiActif = ennemiActifRequis(combat);
         Ennemi ennemi = ennemiActif.getEnnemi();
         int habEnnemi = ennemi.getHabilite();
@@ -206,7 +210,7 @@ public class CombatService {
         combat.setBonusHabiliteEnAttente(bonus);
         combat.setAssautsLivres(combat.getAssautsLivres() + 1);
 
-        int rapportRiposte = (habiliteEffective(personnage, ennemi) + bonus) - habEnnemi;
+        int rapportRiposte = (habiliteEffective(personnage, ennemi, chapitre, combat) + bonus) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsBruts = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         int degatsReduits = (int) Math.round(degatsBruts * (100.0 - reduction) / 100.0);
@@ -238,7 +242,8 @@ public class CombatService {
 
         // Le bonus d'une DEFENSE precedente reste en reserve pour la
         // prochaine ATTAQUE : consommer un objet ne le consomme pas.
-        int rapportRiposte = habiliteEffective(personnage, ennemi) - habEnnemi;
+        Chapitre chapitre = recupererChapitre(combat.getChapitreId());
+        int rapportRiposte = habiliteEffective(personnage, ennemi, chapitre, combat) - habEnnemi;
         int tirageRiposte = tableDeHasardService.tirerChiffre();
         int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
         appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
@@ -309,15 +314,38 @@ public class CombatService {
     // valeur de base (Personnage.habilite + habiliteTemp) plus le bonus de
     // la Discipline Kai Puissance Psychique (+2), sauf si l'ennemi y
     // resiste (Ennemi.resistances, ex. serpent_aile, gluatre,
-    // vordak_puissant). Le bonus est donc recalcule a chaque appel plutot
-    // que fixe une fois pour toutes : necessaire pour un combat a
-    // plusieurs ennemis ou chacun peut avoir une resistance differente.
-    private int habiliteEffective(Personnage personnage, Ennemi ennemi) {
+    // vordak_puissant), plus un eventuel bonus HABILETE conditionne par
+    // ASSAUT_MAX (voir bonusHabiliteAssautMax). Le tout est recalcule a
+    // chaque appel plutot que fixe une fois pour toutes : necessaire pour
+    // un combat a plusieurs ennemis (resistance differente par ennemi) et
+    // pour un bonus qui ne s'applique que sur certains assauts.
+    private int habiliteEffective(Personnage personnage, Ennemi ennemi, Chapitre chapitre, Combat combat) {
         int base = personnage.getHabilite() + personnage.getHabiliteTemp();
         if (possedePuissancePsychique(personnage) && !resisteAPuissancePsychique(ennemi)) {
             base += 2;
         }
+        base += bonusHabiliteAssautMax(chapitre, combat);
         return base;
+    }
+
+    // Cas particulier des effets HABILETE dont l'UNIQUE condition est
+    // ASSAUT_MAX (ex. chapitre 283 : "+2 HABILETE lors du premier assaut
+    // seulement"). Contrairement aux autres conditions d'un effet HABILETE
+    // (DISCIPLINE/OBJET/PERMANENT), gerees une fois pour toutes a l'arrivee
+    // sur le chapitre par EffetChapitreService (habiliteTemp fige pour toute
+    // la duree du chapitre), ASSAUT_MAX depend du NOMBRE D'ASSAUTS DEJA
+    // LIVRES dans CE combat : il faut donc le recalculer a chaque tour.
+    // Combat.assautsLivres compte les assauts deja joues (0 avant le
+    // premier) : ASSAUT_MAX=1 ("le premier assaut") s'applique donc tant
+    // que assautsLivres < 1.
+    private int bonusHabiliteAssautMax(Chapitre chapitre, Combat combat) {
+        return chapitre.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.HABILETE)
+                .filter(effet -> effet.getConditions().size() == 1
+                        && effet.getConditions().get(0).getType() == TypeCondition.ASSAUT_MAX)
+                .filter(effet -> combat.getAssautsLivres() < parseValeur(effet.getConditions().get(0)))
+                .mapToInt(Effet::getValeur)
+                .sum();
     }
 
     private boolean possedePuissancePsychique(Personnage personnage) {
