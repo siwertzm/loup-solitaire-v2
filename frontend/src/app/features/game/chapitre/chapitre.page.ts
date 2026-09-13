@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, OnInit, signal } from '@angular/co
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
-import { TranslatePipe } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -27,7 +26,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, RouterLink, TranslatePipe, ChapitreObjetsComponent, NavBarComponent],
+  imports: [IonContent, RouterLink, ChapitreObjetsComponent, NavBarComponent],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
 })
@@ -89,6 +88,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
+  readonly ongletObjetsClique = signal(false);
 
   // Signaux pour gérer le hasard (révélation et roulement)
   readonly hasardRoule = signal(false);
@@ -129,6 +129,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   }
 
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
+    if (onglet === 'objets') {
+      this.ongletObjetsClique.set(true);
+    }
+
     // Si on reclique sur l'onglet déjà ouvert, on ferme l'encart
     if (this.ongletActif() === onglet && onglet !== 'chapitre') {
       this.ongletActif.set('chapitre');
@@ -220,6 +224,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
         this.ongletActif.set('chapitre');
         this.ongletLeve.set(null);
+        this.ongletObjetsClique.set(false);
 
         this.hasardRoule.set(false);
         this.hasardResultatVisible.set(false);

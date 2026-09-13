@@ -166,6 +166,34 @@ ion-content.intro {
   &.leve {
     transform: translateY(-14px);
   }
+
+  &.attente-clic-objets {
+    animation: marque-page-attente 3.8s ease-in-out infinite;
+  }
+}
+
+@keyframes marque-page-attente {
+  0%,
+  68%,
+  100% {
+    transform: translateY(0);
+  }
+
+  4% {
+    transform: translateY(-14px);
+  }
+
+  8% {
+    transform: translateY(0);
+  }
+
+  12% {
+    transform: translateY(-14px);
+  }
+
+  16% {
+    transform: translateY(0);
+  }
 }
 
 .marque-page-chapitre {

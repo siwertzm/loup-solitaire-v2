@@ -23,6 +23,7 @@
         @if (objets().length > 0) {
           <div
             class="marque-page marque-page-objets"
+            [class.attente-clic-objets]="!ongletObjetsClique()"
             [class.leve]="ongletLeve() === 'objets'"
             (click)="selectionnerOnglet('objets')"
           >
