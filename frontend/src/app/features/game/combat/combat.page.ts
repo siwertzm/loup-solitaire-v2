@@ -3,9 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 
 import { ActionCombat, CombatEnnemiResponse, CombatResponse, ResultatTourResponse } from '../../../core/models/combat.model';
-import { InventaireItem, ObjetResume, PersonnageResume } from '../../../core/models/personnage.model';
+import { PersonnageResume } from '../../../core/models/personnage.model';
 import { CombatService } from '../../../core/services/combat.service';
-import { ObjetService } from '../../../core/services/objet.service';
+import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
@@ -38,7 +38,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   private readonly router = inject(Router);
   private readonly combatService = inject(CombatService);
   private readonly personnageService = inject(PersonnageService);
-  private readonly objetService = inject(ObjetService);
+  private readonly inventaireSheet = inject(InventaireSheetService);
 
   /** Fond d'arène : foret | brume | crepuscule | pierre | gravure. */
   readonly fond = 'foret';
@@ -46,14 +46,12 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   readonly personnageId = signal<string | null>(null);
   readonly personnage = signal<PersonnageResume | null>(null);
-  readonly tousObjets = signal<ObjetResume[]>([]);
   readonly combat = signal<CombatResponse | null>(null);
 
   readonly chargement = signal<boolean>(true);
   readonly erreur = signal<string | null>(null);
   /** Empêche de spammer les boutons pendant qu'un tour est en cours d'envoi. */
   readonly actionEnCours = signal<boolean>(false);
-  readonly sacOuvert = signal<boolean>(false);
 
   // --- Boîte de dialogue (machine à écrire) -------------------------------
   readonly phase = signal<Phase>('TEXTE');
@@ -117,25 +115,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
   });
 
-  /** Objets consommables en combat (catégorie OBJET, avec un effet défini). */
-  readonly objetsConsommables = computed(() => {
-    const catalogue = this.tousObjets();
-    const inventaire = this.personnage()?.inventaire ?? [];
-    return inventaire
-      .filter((i) => i.categorie === 'OBJET' && i.quantite > 0)
-      .map((i) => {
-        const c = catalogue.find((o) => o.id.toLowerCase() === i.objetId.toLowerCase());
-        const effetLabel = c && c.effets.length > 0 ? this.libelleEffet(c.effets[0]) : null;
-        return { ...i, effetLabel, utilisable: !!effetLabel };
-      })
-      .filter((i) => i.utilisable);
-  });
-
-  private libelleEffet(effet: { type: string; valeur: number }): string {
-    const libelle = effet.type === 'HABILETE' ? 'HABILETÉ' : 'ENDURANCE';
-    return `+${effet.valeur} ${libelle}`;
-  }
-
   ngOnInit(): void {
     this.initialiserId();
   }
@@ -172,11 +151,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
       error: (err) => console.error('Erreur lors du chargement du personnage :', err),
-    });
-
-    this.objetService.lister().subscribe({
-      next: (objets) => this.tousObjets.set(objets),
-      error: (err) => console.error('Erreur lors du chargement des objets :', err),
     });
 
     // Idempotent côté backend : renvoie le combat déjà EN_COURS (ou résolu)
@@ -252,11 +226,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   agir(action: ActionCombat): void {
     if (this.phase() !== 'MENU' || this.statut() !== 'EN_COURS' || this.actionEnCours()) return;
 
-    if (action === 'OBJET') {
-      this.sacOuvert.set(true);
-      return;
-    }
-
     if (action === 'FUITE' && !this.fuitePossible()) {
       this.jouerFile([{ txt: 'Impossible de rompre ce combat.' }]);
       return;
@@ -265,13 +234,11 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.appellerTour(action);
   }
 
-  choisirObjet(item: InventaireItem): void {
-    this.sacOuvert.set(false);
-    this.appellerTour('OBJET', item.objetId);
-  }
-
-  fermerSac(): void {
-    this.sacOuvert.set(false);
+  ouvrirSac(): void {
+    const id = this.personnageId();
+    if (id) {
+      this.inventaireSheet.ouvrir(id);
+    }
   }
 
   private appellerTour(action: ActionCombat, objetId?: string): void {
@@ -281,14 +248,11 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.actionEnCours.set(true);
     const ennemiAvant = this.ennemiActif();
     const enduranceJoueurAvant = this.enduranceJoueur();
-    const nomObjetUtilise = objetId
-      ? this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.nom ?? objetId
-      : null;
 
     this.combatService.jouerTour(id, action, objetId).subscribe({
       next: (c) => {
         this.actionEnCours.set(false);
-        const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant, nomObjetUtilise);
+        const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant);
         this.combat.set(c);
         // Recharge le personnage (endurance à jour, objet consommé retiré du sac).
         this.personnageService.recuperer(id).subscribe({
@@ -311,7 +275,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     combat: CombatResponse,
     ennemiAvant: CombatEnnemiResponse | null,
     enduranceJoueurAvant: number,
-    nomObjetUtilise: string | null,
   ): Message[] {
     const tour = combat.dernierTour;
     const nomEnnemi = ennemiAvant?.nom ?? "l'ennemi";
@@ -330,8 +293,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       messages.push({ txt: `${this.nomJoueur()} porte son attaque !` });
     } else if (action === 'DEFENSE') {
       messages.push({ txt: `${this.nomJoueur()} lève sa garde.` });
-    } else if (action === 'OBJET') {
-      messages.push({ txt: `${this.nomJoueur()} utilise ${nomObjetUtilise ?? 'un objet'}.` });
     }
 
     if (tour.degatsInfliges !== null) {

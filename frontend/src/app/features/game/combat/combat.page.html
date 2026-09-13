@@ -83,7 +83,7 @@
               <div class="actions">
                 <button type="button" class="action principale" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">ATTAQUER</button>
                 <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">DÉFENSE</button>
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('OBJET')">SAC</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="ouvrirSac()">SAC</button>
                 <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">FUITE</button>
               </div>
             </div>
@@ -99,25 +99,5 @@
 
     </div>
 
-    @if (sacOuvert()) {
-      <div class="voile-sac-combat" (click)="fermerSac()">
-        <div class="popup-sac-combat" (click)="$event.stopPropagation()">
-          <div class="popup-sac-titre">UTILISER UN OBJET</div>
-
-          @for (item of objetsConsommables(); track item.objetId) {
-            <button type="button" class="popup-sac-ligne" (click)="choisirObjet(item)">
-              <span class="popup-sac-nom">{{ item.nom }}</span>
-              @if (item.effetLabel) {
-                <span class="popup-sac-effet">{{ item.effetLabel }}</span>
-              }
-            </button>
-          } @empty {
-            <p class="popup-sac-vide">Aucun objet utilisable dans ce combat.</p>
-          }
-
-          <button type="button" class="popup-sac-annuler" (click)="fermerSac()">ANNULER</button>
-        </div>
-      </div>
-    }
   }
 </ion-content>
