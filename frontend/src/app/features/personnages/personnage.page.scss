@@ -419,6 +419,44 @@ ion-content.equipement {
   }
 }
 
+.popup-suppression {
+  .popup-titre {
+    color: $rouge;
+  }
+
+  .popup-texte {
+    color: #3a3226;
+  }
+}
+
+.popup-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+
+  button {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+
+  .popup-annuler {
+    border: 1px solid rgba(58, 50, 38, 0.28);
+    background: transparent;
+    color: #3a3226;
+  }
+
+  .popup-confirmer {
+    border: 1px solid $rouge;
+    background: $rouge;
+    color: $parchemin;
+  }
+}
+
 .pied {
   position: fixed;
   right: 0;

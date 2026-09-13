@@ -1,7 +1,13 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
     <header class="titre">
-      <div class="avatar">{{ initiale() }}</div>
+      <a
+        class="avatar"
+        [routerLink]="['/personnage', personnageId()]"
+        aria-label="Ouvrir la fiche du personnage"
+      >
+        {{ initiale() }}
+      </a>
     </header>
 
     <div class="texte-wrapper">

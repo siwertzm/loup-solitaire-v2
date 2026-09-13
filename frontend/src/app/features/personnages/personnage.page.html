@@ -12,7 +12,7 @@
       <div class="bloc stat-card habilete-card">
         <span class="cle">HABILITE</span>
         <span class="stat-value">{{ habilite() }}</span>
-        <span class="stat-detail">{{ habiliteMax() }} Max</span>
+        <span class="stat-detail">{{ habiliteMax() }} Base</span>
       </div>
 
       <div class="bloc stat-card endurance-card">
@@ -78,11 +78,25 @@
       @if (erreur()) {
         <div class="erreur">{{ erreur() | translate }}</div>
       }
-      <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="supprimer()">
+      <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="ouvrirConfirmationSuppression()">
         {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
       </button>
       <button type="button" class="valider" (click)="menu()">
         CHANGER DE PERSONNAGE
       </button>
     </div>
+
+  @if (confirmationSuppression()) {
+    <div class="voile voile-suppression" (click)="annulerSuppression()">
+      <div class="popup popup-suppression" (click)="$event.stopPropagation()">
+        <div class="surtitre">ATTENTION</div>
+        <div class="popup-titre">Supprimer {{ nom() }} ?</div>
+        <p class="popup-texte">Cette aventure et toute sa progression seront définitivement supprimées.</p>
+        <div class="popup-actions">
+          <button type="button" class="popup-annuler" (click)="annulerSuppression()">ANNULER</button>
+          <button type="button" class="popup-confirmer" (click)="confirmerSuppression()">SUPPRIMER</button>
+        </div>
+      </div>
+    </div>
+  }
 </ion-content>

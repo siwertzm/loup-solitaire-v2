@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -26,7 +27,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, TranslatePipe, ChapitreObjetsComponent, NavBarComponent],
+  imports: [IonContent, RouterLink, TranslatePipe, ChapitreObjetsComponent, NavBarComponent],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
 })
@@ -43,6 +44,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   // Signal stockant les infos du personnage
   readonly personnage = signal<PersonnageResume | null>(null);
+  readonly initiale = computed(() => this.nomPersonnage().trim().charAt(0).toUpperCase() || 'LS');
 
   // Signal stockant tous les objets disponibles (catalogue, pour nomObjet()
   // et transmis à <app-chapitre-objets> pour la résolution des icônes)
@@ -58,14 +60,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   // Computed properties pour accéder facilement aux infos du personnage
   readonly nomPersonnage = computed(() => this.personnage()?.nom ?? '');
-  readonly initiale = computed(() => {
-    const nom = this.personnage()?.nom?.trim();
-    if (!nom) return 'LS';
-    return nom
-      .split(/\s+/)
-      .map((mot) => mot.charAt(0).toUpperCase())
-      .join('');
-  });
+  
   readonly habilite = computed(
     () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
   );

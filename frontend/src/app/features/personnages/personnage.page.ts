@@ -36,9 +36,10 @@ export class PersonnagePage {
   readonly chargement = signal(true);
   readonly erreur = signal<string | null>(null);
   readonly suppressionEnCours = signal(false);
+  readonly confirmationSuppression = signal(false);
 
   readonly nom = computed(() => this.personnage()?.nom ?? '');
-  readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || 'V');
+  readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || 'LS');
   readonly chapitre = computed(() => this.personnage()?.chapitreActuelId ?? 1);
   readonly habilite = computed(() => this.personnage()?.habilite ?? 0);
   readonly habiliteMax = computed(() => this.personnage()?.habiliteBase ?? 0);
@@ -96,10 +97,23 @@ export class PersonnagePage {
     this.router.navigate(['/accueil'], { replaceUrl: true });
   }
 
-  supprimer(): void {
+  ouvrirConfirmationSuppression(): void {
+    if (!this.suppressionEnCours()) {
+      this.confirmationSuppression.set(true);
+    }
+  }
+
+  annulerSuppression(): void {
+    if (!this.suppressionEnCours()) {
+      this.confirmationSuppression.set(false);
+    }
+  }
+
+  confirmerSuppression(): void {
     const id = this.personnageId();
     if (!id || this.suppressionEnCours()) return;
 
+    this.confirmationSuppression.set(false);
     this.suppressionEnCours.set(true);
     this.erreur.set(null);
     this.personnageService.supprimer(id).subscribe({
