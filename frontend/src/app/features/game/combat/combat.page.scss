@@ -264,6 +264,57 @@ $beige: #e0d3b4;
   border-radius: 14px 4px 14px 4px;
 }
 
+.bonus-joueur {
+  position: absolute;
+  right: 25px;
+  bottom: 99px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  min-height: 22px;
+}
+
+.bonus-picto {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 22px;
+  border: 1px solid rgba(58, 50, 38, 0.38);
+  border-radius: 5px;
+  background: rgba(255, 249, 226, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(217, 169, 74, 0.28);
+
+  img {
+    width: 17px;
+    height: 17px;
+    object-fit: contain;
+  }
+
+  small {
+    position: absolute;
+    right: -4px;
+    bottom: -5px;
+    min-width: 13px;
+    padding: 1px 2px;
+    border-radius: 4px;
+    background: #4d6330;
+    color: #f4ecd8;
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    line-height: 1;
+    text-align: center;
+  }
+}
+
+.bonus-temp { border-color: rgba(217, 169, 74, 0.8); }
+.bonus-arme { border-color: rgba(78, 95, 49, 0.7); }
+.bonus-psychique { border-color: rgba(117, 83, 139, 0.65); }
+.bonus-garde { border-color: rgba(162, 84, 42, 0.7); }
+.bonus-objet { border-color: rgba(138, 122, 94, 0.7); }
+
 .plaque-titre {
   display: flex;
   align-items: baseline;

@@ -49,6 +49,31 @@
           </div>
         </div>
 
+        <!-- bonus du joueur, au-dessus de la plaque de vie -->
+        <div class="bonus-joueur" aria-label="Bonus actifs">
+            @if (bonusHabiliteTemp() > 0) {
+              <span class="bonus-picto bonus-temp" [attr.title]="'Bonus d\'habileté temporaire : +' + bonusHabiliteTemp()" aria-label="Bonus d'habileté temporaire">
+                <img src="/assets/icon/potion.png" alt="" />
+                <small>+{{ bonusHabiliteTemp() }}</small>
+              </span>
+            }
+            @if (bonusArmeMaitrisee(); as arme) {
+              <span class="bonus-picto bonus-arme" [attr.title]="'Arme maîtrisée : ' + arme" aria-label="Arme maîtrisée">
+                <img src="/assets/icon/epee.png" alt="" />
+              </span>
+            }
+            @if (bonusPuissancePsychique()) {
+              <span class="bonus-picto bonus-psychique" title="Puissance psychique" aria-label="Puissance psychique">
+                <img src="/assets/icon/effets.png" alt="" />
+              </span>
+            }
+            @if (bonusGarde()) {
+              <span class="bonus-picto bonus-garde" [attr.title]="'Garde : réduction de ' + combat()?.dernierTour?.reductionPourcent + '%'" aria-label="Bonus de garde">
+                <img src="/assets/icon/cotte_de_mailles.png" alt="" />
+              </span>
+            }
+        </div>
+
         <!-- plaque de vie du joueur -->
         <div class="plaque plaque-joueur">
           <div class="plaque-titre">

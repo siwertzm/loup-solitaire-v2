@@ -97,6 +97,30 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   );
   readonly enduranceJoueur = computed(() => this.personnage()?.enduranceActuelle ?? 0);
   readonly enduranceMaxJoueur = computed(() => this.personnage()?.enduranceMax ?? 1);
+  readonly bonusHabiliteTemp = computed(() => this.personnage()?.habiliteTemp ?? 0);
+  readonly bonusArmeMaitrisee = computed(() => {
+    const personnage = this.personnage();
+    if (!personnage?.armeMaitrisee) return null;
+
+    const armePossedee = personnage.inventaire.find(
+      (item) =>
+        item.categorie === 'ARME' &&
+        item.quantite > 0 &&
+        item.objetId.toLowerCase() === personnage.armeMaitrisee?.toLowerCase(),
+    );
+
+    return armePossedee?.nom ?? null;
+  });
+  readonly bonusPuissancePsychique = computed(() =>
+    (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE') ?? false) &&
+    !(this.ennemiActif()?.resistances ?? []).some(
+      (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+    ),
+  );
+  readonly bonusGarde = computed(() => (this.combat()?.dernierTour?.reductionPourcent ?? 0) > 0);
+  readonly bonusObjets = computed(
+    () => this.personnage()?.inventaire.some((item) => item.categorie === 'OBJET' && item.quantite > 0) ?? false,
+  );
 
   readonly statut = computed(() => this.combat()?.statut ?? 'EN_COURS');
   readonly fuitePossible = computed(() => this.combat()?.fuitePossible ?? false);

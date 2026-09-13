@@ -15,6 +15,7 @@ export interface CombatEnnemiResponse {
   enduranceActuelle: number;
   actif: boolean;
   vaincu: boolean;
+  resistances: string[];
 }
 
 /**

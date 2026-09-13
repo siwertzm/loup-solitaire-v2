@@ -7,5 +7,6 @@ public record CombatEnnemiResponse(
         int enduranceMax,
         int enduranceActuelle,
         boolean actif,
-        boolean vaincu) {
+        boolean vaincu,
+        java.util.List<String> resistances) {
 }

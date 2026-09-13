@@ -88,6 +88,9 @@ public class CombatMapper {
                 ce.getEnnemi().getEndurance(),
                 ce.getEnduranceActuelle(),
                 actif,
-                vaincu);
+                vaincu,
+                ce.getEnnemi().getResistances().stream()
+                    .map(discipline -> discipline.getId().name())
+                    .toList());
     }
 }
