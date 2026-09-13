@@ -101,6 +101,14 @@ $rouge: #b0392e;
     background: #dddbb5;
   }
 
+  &.consommable {
+    cursor: pointer;
+
+    &:active {
+      background: rgba(157, 191, 92, 0.18);
+    }
+  }
+
   .sac-nom {
     font-size: 15px;
   }
@@ -190,4 +198,87 @@ ion-item-option {
   font-family: 'Cinzel', serif;
   font-size: 11px;
   letter-spacing: 0.08em;
+}
+
+/*******************************************
+ *  Popup "consommer" — confirmation avec description + effet
+ *******************************************/
+.voile-consommer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  padding: 24px;
+}
+
+.popup-consommer {
+  width: 100%;
+  max-width: 320px;
+  background: $parchemin;
+  color: $encre;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.popup-consommer-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.popup-consommer-description {
+  font-size: 13.5px;
+  color: $sepia;
+  text-align: center;
+  margin: 10px 0 0;
+  line-height: 1.4;
+}
+
+.popup-consommer-effet {
+  margin: 14px auto 0;
+  padding: 6px 14px;
+  width: fit-content;
+  background: rgba(157, 191, 92, 0.18);
+  border-radius: 999px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: $vert;
+}
+
+.popup-consommer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.popup-consommer-annuler,
+.popup-consommer-confirmer {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+}
+
+.popup-consommer-annuler {
+  background: transparent;
+  border: 1px solid rgba(58, 50, 38, 0.3);
+  color: $sepia;
+}
+
+.popup-consommer-confirmer {
+  background: $vert;
+  border: 1px solid $vert;
+  color: $parchemin;
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }

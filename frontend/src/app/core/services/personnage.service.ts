@@ -41,6 +41,19 @@ export class PersonnageService {
     );
   }
 
+  /**
+   * POST /personnages/{id}/objets/{objetId}/consommer
+   * Applique l'effet de l'objet (endurance/habileté, voir ObjetService
+   * backend) PUIS le retire de l'inventaire — contrairement à retirerObjet,
+   * modifie les stats du personnage. Réservé à la catégorie OBJET.
+   */
+  consommerObjet(personnageId: string, objetId: string): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/objets/${objetId}/consommer`,
+      {},
+    );
+  }
+
   /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habileté/endurance). */
   creer(
     nom: string,

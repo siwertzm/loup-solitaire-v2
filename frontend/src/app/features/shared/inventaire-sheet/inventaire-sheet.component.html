@@ -52,9 +52,18 @@
           @for (o of objetsEtRepasDetail(); track o.objetId) {
             <ion-item-sliding #slideO>
               <ion-item lines="none" class="sac-item-hote">
-                <div class="sac-ligne">
+                <div
+                  class="sac-ligne"
+                  [class.consommable]="o.consommable"
+                  (click)="o.consommable && demanderConsommation(o, slideO)"
+                >
                   <span class="sac-nom">{{ o.nom }}</span>
-                  <span class="sac-tag">×{{ o.quantite }}</span>
+                  <span class="sac-tag">
+                    ×{{ o.quantite }}
+                    @if (o.effetLabel) {
+                      <span class="sac-bonus">{{ o.effetLabel }}</span>
+                    }
+                  </span>
                 </div>
               </ion-item>
               <ion-item-options side="end">
@@ -88,6 +97,36 @@
           <span class="sac-bourse-valeur">{{ bourseCount() }} COURONNES D'OR</span>
         </div>
       }
+    </div>
+  </div>
+}
+
+@if (objetAConfirmer(); as objet) {
+  <div class="voile-consommer" (click)="annulerConsommation()">
+    <div class="popup-consommer" (click)="$event.stopPropagation()">
+      <div class="popup-consommer-titre">{{ objet.nom }}</div>
+
+      @if (objet.description) {
+        <p class="popup-consommer-description">{{ objet.description }}</p>
+      }
+
+      @if (objet.effetLabel) {
+        <div class="popup-consommer-effet">{{ objet.effetLabel }}</div>
+      }
+
+      <div class="popup-consommer-actions">
+        <button type="button" class="popup-consommer-annuler" (click)="annulerConsommation()">
+          ANNULER
+        </button>
+        <button
+          type="button"
+          class="popup-consommer-confirmer"
+          [disabled]="consommationEnCours() === objet.objetId"
+          (click)="confirmerConsommation()"
+        >
+          CONSOMMER
+        </button>
+      </div>
     </div>
   </div>
 }

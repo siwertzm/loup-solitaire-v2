@@ -23,11 +23,17 @@ export interface DisciplineResume {
 }
 
 // Aligné sur backend/.../response/ObjetResponse.java (GET /objets).
+export interface EffetObjet {
+  type: 'ENDURANCE' | 'HABILETE';
+  valeur: number;
+}
+
 export interface ObjetResume {
   id: string;
   nom: string;
   description: string | null;
   categorie: CategorieObjet;
+  effets: EffetObjet[];
 }
 
 // Aligné sur backend/.../response/InventaireItemResponse.java — structure

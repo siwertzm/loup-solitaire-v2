@@ -105,16 +105,80 @@ export class InventaireSheetComponent {
   readonly malusSansArme = -4;
   readonly aucuneArme = computed(() => this.armesDetail().length === 0);
 
-  readonly objetsEtRepasDetail = computed(() =>
-    this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS'),
-  );
+  readonly objetsEtRepasDetail = computed(() => {
+    const items = this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
+    return items.map((i) => {
+      const catalogue = this.tousObjets().find((o) => o.id.toLowerCase() === i.objetId.toLowerCase());
+      // Consommable : catégorie OBJET avec au moins un effet défini (ex.
+      // Potion de guérison, Laumspur, Essence d'Alether) — les REPAS et les
+      // OBJET sans effet (torche, message, savon...) ne le sont pas.
+      const consommable = catalogue?.categorie === 'OBJET' && catalogue.effets.length > 0;
+      const effetLabel = consommable ? this.libelleEffet(catalogue!.effets[0]) : null;
+      return { ...i, consommable, effetLabel, description: catalogue?.description ?? null };
+    });
+  });
+
+  private libelleEffet(effet: { type: string; valeur: number }): string {
+    const libelle = effet.type === 'HABILETE' ? 'HABILETÉ' : 'ENDURANCE';
+    return `+${effet.valeur} ${libelle}`;
+  }
 
   readonly objetsSpeciauxDetail = computed(() =>
     this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX'),
   );
 
   readonly retraitEnCours = signal<string | null>(null);
+  readonly consommationEnCours = signal<string | null>(null);
   private readonly feuilleSac = viewChild<ElementRef<HTMLElement>>('feuilleSac');
+
+  /** Objet en attente de confirmation dans le popup "consommer" ; null = fermé. */
+  readonly objetAConfirmer = signal<{
+    objetId: string;
+    nom: string;
+    description: string | null;
+    effetLabel: string | null;
+    sliding: IonItemSliding;
+  } | null>(null);
+
+  /** Ouvre le popup de confirmation (n'appelle pas encore l'API). */
+  demanderConsommation(objet: {
+    objetId: string;
+    nom: string;
+    description: string | null;
+    effetLabel: string | null;
+  }, sliding: IonItemSliding): void {
+    this.objetAConfirmer.set({ ...objet, sliding });
+  }
+
+  annulerConsommation(): void {
+    this.objetAConfirmer.set(null);
+  }
+
+  /**
+   * Consomme 1 exemplaire (potion, Laumspur, essence d'Alether...) :
+   * applique l'effet PUIS retire l'objet — POST /objets/{objetId}/consommer
+   * fait les deux côté backend en une seule transaction.
+   */
+  confirmerConsommation(): void {
+    const attente = this.objetAConfirmer();
+    const id = this.sheet.personnageId();
+    if (!attente || !id || this.consommationEnCours()) return;
+
+    this.consommationEnCours.set(attente.objetId);
+    this.personnageService.consommerObjet(id, attente.objetId).subscribe({
+      next: (p) => {
+        this.personnage.set(p);
+        this.consommationEnCours.set(null);
+        this.sheet.notifierMiseAJour(p);
+        attente.sliding.close();
+        this.objetAConfirmer.set(null);
+      },
+      error: (err) => {
+        console.error("Erreur lors de la consommation de l'objet :", err);
+        this.consommationEnCours.set(null);
+      },
+    });
+  }
 
   /**
    * Retire 1 exemplaire d'un objet possédé (DELETE /personnages/{id}/objets/{objetId}).
