@@ -33,7 +33,6 @@ import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ObjetDepart;
-import com.loupsolitaire.backend.service.record.ResultatAjout;
 
 import lombok.RequiredArgsConstructor;
 
@@ -296,7 +295,7 @@ public class PersonnageService {
         // manuellement via POST /objets/{objetId}, deja existant.
         nouveauChapitre.getObjets().stream()
                 .filter(objetChap -> !objetChap.isOptionnel())
-                .forEach(objetChap -> appliquerObjetChap(personnage, nouveauChapitre, objetChap));
+                .forEach(objetChap -> appliquerObjetChap(personnage, objetChap));
     }
 
     // MVP1 : apres une DEFAITE en combat, le joueur peut payer 1 coin pour
@@ -401,36 +400,10 @@ public class PersonnageService {
         personnageRepository.save(personnage);
     }
 
-    private void appliquerObjetChap(Personnage personnage, Chapitre chapitre, ObjetChap objetChap) {
+    private void appliquerObjetChap(Personnage personnage, ObjetChap objetChap) {
         int valeur = objetChap.getValeur();
         if (valeur > 0) {
-            ResultatAjout resultat = inventaireService.ajouterObjet(personnage, objetChap.getObjet(), valeur);
-
-            if (!objetChap.isOptionnel()) {
-                // Trace ce qui a REELLEMENT ete applique (peut etre < valeur si
-                // la categorie etait deja pleine a l'arrivee) : necessaire pour
-                // que ChapitreMapper puisse annoncer le manque au frontend, et
-                // pour que le joueur puisse le completer plus tard (voir
-                // ramasserObjetDuChapitre) une fois de la place liberee.
-                //
-                // Reecrit a chaque nouvelle arrivee sur ce chapitre (pas
-                // cumule entre plusieurs visites) : coherent avec le
-                // comportement existant "applique a l'arrivee, pas de memoire
-                // long terme entre deux passages sur le meme paragraphe".
-                Optional<ObjetChapitreRamasse> existant = objetChapitreRamasseRepository
-                        .findByPersonnageIdAndChapitreIdAndObjetId(
-                                personnage.getId(), chapitre.getId(), objetChap.getObjet().getId());
-
-                ObjetChapitreRamasse ramasse = existant.orElseGet(() -> {
-                    ObjetChapitreRamasse nouveau = new ObjetChapitreRamasse();
-                    nouveau.setPersonnage(personnage);
-                    nouveau.setChapitre(chapitre);
-                    nouveau.setObjet(objetChap.getObjet());
-                    return nouveau;
-                });
-                ramasse.setQuantite(resultat.quantiteAjoutee());
-                objetChapitreRamasseRepository.save(ramasse);
-            }
+            inventaireService.ajouterObjet(personnage, objetChap.getObjet(), valeur);
         } else if (valeur < 0) {
             // Le Lien menant a ce chapitre garantit deja la possession
             // suffisante (condition bourse/objet), mais retirerObjet
@@ -439,18 +412,13 @@ public class PersonnageService {
         }
     }
 
-    // Ramassage MANUEL (POST /objets/{objetId}) :
-    // - objet OPTIONNEL : ajoute 1 exemplaire par appel (comportement
-    //   historique).
-    // - objet OBLIGATOIRE avec un manque trace (voir appliquerObjetChap) :
-    //   complete ce qui n'avait pas pu etre applique automatiquement a
-    //   l'arrivee (categorie pleine a ce moment-la). Le frontend propose ce
-    //   bouton uniquement quand GET /chapitre annonce un reste > 0 sur un
-    //   objet obligatoire.
-    //
-    // Securise dans les deux cas contre un joueur qui tenterait de se
-    // donner n'importe quel objet du catalogue - verifie que l'objet est
-    // bien propose par le chapitre ACTUEL.
+    // Ramassage MANUEL d'un objet optionnel (POST /objets/{objetId}) :
+    // securise contre un joueur qui tenterait de se donner n'importe quel
+    // objet du catalogue - verifie que l'objet est bien propose par le
+    // chapitre ACTUEL. Ajoute toujours 1 exemplaire par appel (meme
+    // principe que l'equipement de depart) : pour un objet dont la donnee
+    // du chapitre indique "valeur=2" (ex. chapitre 20, 2 Repas), le
+    // frontend doit appeler cet endpoint deux fois.
     @Transactional
     public void ramasserObjetDuChapitre(Personnage personnage, Objet objet) {
         verifierPasMort(personnage);
@@ -468,20 +436,13 @@ public class PersonnageService {
         // le meme objet a l'infini sur le meme chapitre (voir ObjetChapitreRamasse).
         Optional<ObjetChapitreRamasse> existant = objetChapitreRamasseRepository
                 .findByPersonnageIdAndChapitreIdAndObjetId(personnage.getId(), chapitreActuelId, objet.getId());
-        int dejaApplique = existant.map(ObjetChapitreRamasse::getQuantite).orElse(0);
+        int dejaPris = existant.map(ObjetChapitreRamasse::getQuantite).orElse(0);
 
-        if (dejaApplique >= objetChap.getValeur()) {
+        if (dejaPris >= objetChap.getValeur()) {
             throw new IllegalArgumentException(
                     "Vous avez deja ramasse tous les exemplaires de " + objet.getId()
                             + " disponibles sur ce chapitre");
         }
-
-        // Optionnel : 1 a la fois (ecran de ramassage, "PRENDRE" repete).
-        // Obligatoire : complete tout le manque en un appel (ecran "PLEIN",
-        // un seul clic une fois la place liberee).
-        int quantiteDemandee = objetChap.isOptionnel() ? 1 : objetChap.getValeur() - dejaApplique;
-
-        ResultatAjout resultat = inventaireService.ajouterObjet(personnage, objet, quantiteDemandee);
 
         ObjetChapitreRamasse ramasse = existant.orElseGet(() -> {
             ObjetChapitreRamasse nouveau = new ObjetChapitreRamasse();
@@ -491,8 +452,10 @@ public class PersonnageService {
             nouveau.setQuantite(0);
             return nouveau;
         });
-        ramasse.setQuantite(ramasse.getQuantite() + resultat.quantiteAjoutee());
+        ramasse.setQuantite(ramasse.getQuantite() + 1);
         objetChapitreRamasseRepository.save(ramasse);
+
+        inventaireService.ajouterObjet(personnage, objet, 1);
     }
 
     // Echange volontaire (ex. chapitre 307 : le Marteau de Guerre de
@@ -536,6 +499,7 @@ public class PersonnageService {
     @Transactional
     public void supprimerPersonnage(Personnage personnage) {
         inventaireItemRepository.deleteByPersonnageId(personnage.getId());
+        objetChapitreRamasseRepository.deleteByPersonnageId(personnage.getId());
         combatRepository.deleteAll(combatRepository.findByPersonnage(personnage));
         personnageRepository.delete(personnage);
     }

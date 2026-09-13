@@ -40,6 +40,7 @@ import com.loupsolitaire.backend.repository.CombatRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.ObjetChapitreRamasseRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
+import com.loupsolitaire.backend.repository.InventaireItemRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
 
@@ -50,6 +51,8 @@ class PersonnageServiceTest {
     private PersonnageRepository personnageRepository;
     @Mock
     private DisciplineRepository disciplineRepository;
+    @Mock
+    private InventaireItemRepository inventaireItemRepository;
     @Mock
     private ObjetRepository objetRepository;
     @Mock
@@ -1000,7 +1003,6 @@ class PersonnageServiceTest {
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
         when(tableDeHasardService.tirerChiffre()).thenReturn(0);
-        when(inventaireService.ajouterObjet(p, or, 6)).thenReturn(new ResultatAjout(or, 6, 6, List.of()));
 
         personnageService.avancerVersChapitre(p, 1);
 
@@ -1057,7 +1059,6 @@ class PersonnageServiceTest {
         chapitre0.setObjets(List.of(creerObjetChap(repas, 2, true))); // "valeur=2" dans la donnee
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
-        when(inventaireService.ajouterObjet(p, repas, 1)).thenReturn(new ResultatAjout(repas, 1, 1, List.of()));
 
         personnageService.ramasserObjetDuChapitre(p, repas);
 
@@ -1103,28 +1104,6 @@ class PersonnageServiceTest {
     }
 
     @Test
-    void completeLeManqueEnUnSeulAppelPourUnObjetObligatoire() {
-        Personnage p = new Personnage();
-        p.setChapitreActuel(chapitre0);
-        Objet or = objetsParId.get("or");
-        chapitre0.setObjets(List.of(creerObjetChap(or, 6, false))); // obligatoire, valeur=6
-
-        ObjetChapitreRamasse dejaApplique = new ObjetChapitreRamasse();
-        dejaApplique.setQuantite(2); // seuls 2/6 avaient pu etre appliques a l'arrivee (categorie pleine alors)
-
-        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
-        when(objetChapitreRamasseRepository.findByPersonnageIdAndChapitreIdAndObjetId(any(), eq(0), eq("or")))
-                .thenReturn(Optional.of(dejaApplique));
-        when(inventaireService.ajouterObjet(p, or, 4)).thenReturn(new ResultatAjout(or, 4, 4, List.of()));
-
-        personnageService.ramasserObjetDuChapitre(p, or);
-
-        // Complete tout le manque (6-2=4) en un seul appel, contrairement a un
-        // objet optionnel qui ajoute toujours 1 exemplaire a la fois.
-        verify(inventaireService).ajouterObjet(p, or, 4);
-    }
-
-    @Test
     void refuseDeRamasserSiLePersonnageEstMort() {
         Personnage p = new Personnage();
         p.setChapitreActuel(chapitre0);
@@ -1135,5 +1114,23 @@ class PersonnageServiceTest {
                 .hasMessageContaining("mort");
 
         verify(chapitreRepository, never()).findById(any());
+    }
+
+    // =========================================================
+    // Suppression de personnage
+    // =========================================================
+
+    @Test
+    void supprimerPersonnageNettoieObjetChapitreRamasseAvantDeSupprimer() {
+        Personnage p = new Personnage();
+
+        personnageService.supprimerPersonnage(p);
+
+        // Sans ce nettoyage, la contrainte de cle etrangere sur
+        // objet_chapitre_ramasse.personnage_id bloque la suppression du
+        // personnage (violation FK observee en prod).
+        verify(objetChapitreRamasseRepository).deleteByPersonnageId(p.getId());
+        verify(inventaireItemRepository).deleteByPersonnageId(p.getId());
+        verify(personnageRepository).delete(p);
     }
 }

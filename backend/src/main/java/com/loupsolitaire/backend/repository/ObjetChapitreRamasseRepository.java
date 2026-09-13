@@ -16,4 +16,9 @@ public interface ObjetChapitreRamasseRepository extends JpaRepository<ObjetChapi
     // Recupere tout en un appel pour un chapitre donne, pour calculer les
     // quantites restantes de tous ses objets optionnels sans une requete par objet.
     List<ObjetChapitreRamasse> findByPersonnageIdAndChapitreId(UUID personnageId, Integer chapitreId);
+
+    // Necessaire avant PersonnageRepository.delete(personnage) : sans ca, la
+    // contrainte de cle etrangere personnage_id bloque la suppression du
+    // personnage (violation FK, voir PersonnageService.supprimerPersonnage).
+    void deleteByPersonnageId(UUID personnageId);
 }
