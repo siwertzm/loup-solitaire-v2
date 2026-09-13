@@ -5,6 +5,7 @@
 $sepia: #8a7a5e;
 $rouge: #e0705a;
 $or: #c2903a;
+$vert: #6f8c3f;
 $encre: #3a3226;
 $parchemin: #ece2c8;
 
@@ -181,6 +182,17 @@ $parchemin: #ece2c8;
   }
 }
 
+.popup-plein-nom {
+  flex: 1;
+  font-size: 14.5px;
+}
+
+.popup-plein-quantite {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: $sepia;
+}
+
 .popup-plein-tag {
   flex: none;
   display: flex;
@@ -194,19 +206,8 @@ $parchemin: #ece2c8;
 }
 
 .popup-plein-bonus {
-  color: #6f8c3f;
+  color: $vert;
   font-size: 8.5px;
-}
-
-.popup-plein-nom {
-  flex: 1;
-  font-size: 14.5px;
-}
-
-.popup-plein-quantite {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  color: $sepia;
 }
 
 .popup-plein-retirer {

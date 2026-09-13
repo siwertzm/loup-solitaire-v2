@@ -29,25 +29,29 @@
         }
       </div>
 
-      @if (!objet.optionnel) {
-        <button type="button" class="objet-prendre" disabled>AUTOMATIQUE</button>
-      } @else if (restant(objet.objetId) > 0) {
-        @if (estPlein(categorieObjet(objet.objetId))) {
-          <button type="button" class="objet-prendre objet-prendre-plein" (click)="prendreObjet(objet)">
-            PLEIN
-          </button>
-        } @else {
-          <button
-            type="button"
-            class="objet-prendre"
-            [disabled]="ramassageEnCours() === objet.objetId"
-            (click)="prendreObjet(objet)"
-          >
-            PRENDRE
-          </button>
-        }
+      @if (restant(objet.objetId) <= 0) {
+        <button type="button" class="objet-prendre" disabled>
+          {{ objet.optionnel ? 'VIDE' : 'AUTOMATIQUE' }}
+        </button>
+      } @else if (objet.optionnel && estPlein(categorieObjet(objet.objetId))) {
+        <button type="button" class="objet-prendre objet-prendre-plein" (click)="prendreObjet(objet)">
+          PLEIN
+        </button>
+      } @else if (!objet.optionnel) {
+        <!-- Obligatoire avec un manque (categorie pleine a l'arrivee) : meme
+             bouton PLEIN que pour un optionnel plein, cliquable pour completer. -->
+        <button type="button" class="objet-prendre objet-prendre-plein" (click)="prendreObjet(objet)">
+          PLEIN
+        </button>
       } @else {
-        <button type="button" class="objet-prendre" disabled>VIDE</button>
+        <button
+          type="button"
+          class="objet-prendre"
+          [disabled]="ramassageEnCours() === objet.objetId"
+          (click)="prendreObjet(objet)"
+        >
+          PRENDRE
+        </button>
       }
     </div>
   }

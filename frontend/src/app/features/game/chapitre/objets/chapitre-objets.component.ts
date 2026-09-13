@@ -21,6 +21,16 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
  * Le détail complet de l'inventaire (feuille "SAC À DOS") est un composant
  * global partagé (shared/inventaire-sheet/), ouvrable depuis n'importe où
  * dans l'appli — ce composant se contente de déclencher son ouverture.
+ *
+ * Objets à valeur positive proposés par un chapitre, OPTIONNELS ou non :
+ * - OPTIONNEL (bouton PRENDRE) : le joueur choisit, 1 exemplaire par clic.
+ * - OBLIGATOIRE (bouton AUTOMATIQUE) : appliqué tout seul à l'arrivée sur le
+ *   chapitre (voir PersonnageService.avancerVersChapitre). Si la catégorie
+ *   était déjà pleine à ce moment-là, une partie peut ne pas avoir pu être
+ *   appliquée : GET /chapitre le signale alors comme un "restant" au même
+ *   titre qu'un objet optionnel (voir ChapitreMapper côté backend), et le
+ *   bouton devient cliquable (même popup "catégorie pleine" que pour un
+ *   optionnel), pour compléter le manque une fois de la place libérée.
  */
 @Component({
   selector: 'app-chapitre-objets',
@@ -39,7 +49,7 @@ export class ChapitreObjetsComponent {
   readonly personnage = input<PersonnageResume | null>(null);
   readonly personnageId = input<string | null>(null);
 
-  /** Émis avec la fiche personnage à jour après un ramassage réussi. */
+  /** Émis avec la fiche personnage à jour après un ramassage/retrait réussi. */
   readonly ramasse = output<PersonnageResume>();
 
   readonly inventaire = computed(() => this.personnage()?.inventaire ?? []);
@@ -76,9 +86,14 @@ export class ChapitreObjetsComponent {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
-  // Quantité restante à ramasser par objet optionnel (objetId -> valeur).
-  // GET /chapitre renvoie la quantité proposée par le chapitre, pas ce qu'il
-  // reste après ramassage : on la décrémente localement à chaque prise réussie.
+  // Aligné sur InventaireSheetComponent : même logique "MAÎTRISÉE" (+2 HAB),
+  // comparaison par NOM (PersonnageMapper envoie armeMaitrisee comme nom, pas objetId).
+  readonly bonusArmeMaitrisee = 2;
+
+  // Quantité restante à ramasser/compléter par objet du chapitre (objetId ->
+  // valeur). GET /chapitre renvoie déjà ce "restant" calculé côté serveur
+  // (déclaré - déjà pris/appliqué), optionnel ou non : on la décrémente
+  // localement à chaque prise réussie pour un retour visuel immédiat.
   readonly restants = signal<Record<string, number>>({});
   readonly ramassageEnCours = signal<string | null>(null);
 
@@ -91,6 +106,20 @@ export class ChapitreObjetsComponent {
       this.objets().forEach((o) => (init[o.objetId] = o.valeur));
       this.restants.set(init);
     });
+  }
+
+  /**
+   * Catégorie d'un objet (ARME/OBJET/OBJETS_SPECIAUX/REPAS/BOURSE), résolue
+   * via le catalogue GET /objets : ObjetChapResponse (les objets d'un
+   * chapitre) ne porte pas la catégorie, seulement objetId/nom/valeur/optionnel.
+   */
+  categorieObjet(objetId: string): string | null {
+    return this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.categorie ?? null;
+  }
+
+  /** Quantité restante à ramasser/compléter pour un objet du chapitre. */
+  restant(objetId: string): number {
+    return this.restants()[objetId] ?? 0;
   }
 
   /**
@@ -115,10 +144,6 @@ export class ChapitreObjetsComponent {
   }
 
   /** Objets actuellement possédés dans une catégorie (pour le popup "libérer de la place"). */
-  // Aligné sur InventaireSheetComponent : même logique "MAÎTRISÉE" (+2 HAB),
-  // comparaison par NOM (PersonnageMapper envoie armeMaitrisee comme nom, pas objetId).
-  readonly bonusArmeMaitrisee = 2;
-
   itemsDeCategorie(categorie: string | null): (InventaireItem & { maitrisee?: boolean })[] {
     if (categorie === 'ARME') {
       const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
@@ -148,32 +173,17 @@ export class ChapitreObjetsComponent {
 
   /** Catégorie affichée dans le popup de libération de place ; null = fermé. */
   readonly popupCategorie = signal<string | null>(null);
-  /** Objet du chapitre qu'on essayait de ramasser quand le popup s'est ouvert. */
+  /** Objet du chapitre qu'on essayait de ramasser/compléter quand le popup s'est ouvert. */
   private readonly objetEnAttente = signal<{ objetId: string; optionnel: boolean } | null>(null);
   readonly retraitPopupEnCours = signal<string | null>(null);
 
   /**
-   * Catégorie d'un objet (ARME/OBJET/OBJETS_SPECIAUX/REPAS/BOURSE), résolue
-   * via le catalogue GET /objets : ObjetChapResponse (les objets d'un
-   * chapitre) ne porte pas la catégorie, seulement objetId/nom/valeur/optionnel.
-   */
-  categorieObjet(objetId: string): string | null {
-    return this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.categorie ?? null;
-  }
-
-  /** Quantité restante à ramasser pour un objet optionnel du chapitre. */
-  restant(objetId: string): number {
-    return this.restants()[objetId] ?? 0;
-  }
-
-  /**
-   * Ramasse 1 exemplaire d'un objet optionnel proposé par le chapitre — sauf
-   * si la catégorie est déjà pleine, auquel cas on ouvre le popup de
+   * Ramasse (optionnel) ou complète (obligatoire) un objet du chapitre —
+   * sauf si la catégorie est déjà pleine, auquel cas on ouvre le popup de
    * libération de place au lieu d'appeler l'API (qui refuserait de toute
    * façon, InventaireService plafonne aussi côté serveur).
    */
   prendreObjet(objet: { objetId: string; optionnel: boolean }): void {
-    if (!objet.optionnel) return;
     if (this.restant(objet.objetId) <= 0) return;
     if (this.ramassageEnCours()) return;
 
@@ -195,7 +205,13 @@ export class ChapitreObjetsComponent {
     this.chapitreService.ramasserObjet(id, objet.objetId).subscribe({
       next: (p) => {
         this.ramasse.emit(p);
-        this.restants.update((r) => ({ ...r, [objet.objetId]: Math.max(0, this.restant(objet.objetId) - 1) }));
+        // Optionnel : le backend n'ajoute jamais qu'1 exemplaire par appel.
+        // Obligatoire : le backend complète tout le manque en un appel, on
+        // repasse donc directement à 0 plutôt que de décrémenter de 1.
+        this.restants.update((r) => ({
+          ...r,
+          [objet.objetId]: objet.optionnel ? Math.max(0, this.restant(objet.objetId) - 1) : 0,
+        }));
         this.ramassageEnCours.set(null);
       },
       error: (err) => {

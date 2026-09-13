@@ -81,11 +81,13 @@ public class ChapitreMapper {
         String objetId = objetChap.getObjet().getId();
         int valeur = objetChap.getValeur();
 
-        // Uniquement pour les objets OPTIONNELS : les obligatoires sont
-        // appliques une seule fois automatiquement a l'arrivee sur le
-        // chapitre (voir PersonnageService.avancerVersChapitre), valeur y
-        // garde son sens original (montant applique), pas "restant a prendre".
-        if (objetChap.isOptionnel()) {
+        // Uniquement pour les valeurs POSITIVES (un ajout, pas un paiement/
+        // vol a valeur negative, qui n'a pas de notion de "restant a
+        // prendre") : optionnel ET obligatoire sont maintenant traces dans
+        // ObjetChapitreRamasse (voir PersonnageService.appliquerObjetChap
+        // pour les obligatoires — la categorie pouvait etre pleine a
+        // l'arrivee — et ramasserObjetDuChapitre pour les deux cas).
+        if (valeur > 0) {
             int dejaPris = dejaPrisParObjet.getOrDefault(objetId, 0);
             valeur = Math.max(0, objetChap.getValeur() - dejaPris);
         }

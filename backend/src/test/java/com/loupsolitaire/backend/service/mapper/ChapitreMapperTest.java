@@ -254,6 +254,35 @@ class ChapitreMapperTest {
     }
 
     @Test
+    void laValeurDUnObjetObligatoireRefleteAussiCeQuiNaPasEteApplique() {
+        Chapitre chapitre = creerChapitre(20, "texte", false);
+        Objet or = new Objet();
+        or.setId("or");
+        or.setNom("Or");
+
+        ObjetChap objetChap = new ObjetChap();
+        objetChap.setObjet(or);
+        objetChap.setValeur(6); // le chapitre en donne 6 automatiquement
+        objetChap.setOptionnel(false);
+        chapitre.setObjets(List.of(objetChap));
+
+        ObjetChapitreRamasse dejaApplique = new ObjetChapitreRamasse();
+        dejaApplique.setObjet(or);
+        dejaApplique.setQuantite(2); // seuls 2/6 ont pu etre appliques a l'arrivee (bourse pleine alors)
+
+        when(chapitreRepository.findById(20)).thenReturn(Optional.of(chapitre));
+        when(objetChapitreRamasseRepository.findByPersonnageIdAndChapitreId(any(), eq(20)))
+                .thenReturn(List.of(dejaApplique));
+
+        ChapitreResponse reponse = chapitreMapper.versReponse(20, personnage);
+
+        // 6 declares - 2 deja appliques automatiquement = 4 restant a completer
+        // manuellement (voir PersonnageService.ramasserObjetDuChapitre).
+        assertThat(reponse.objets().get(0).valeur()).isEqualTo(4);
+        assertThat(reponse.objets().get(0).optionnel()).isFalse();
+    }
+
+    @Test
     void echoueSiLeChapitreEstIntrouvable() {
         when(chapitreRepository.findById(999)).thenReturn(Optional.empty());
 
