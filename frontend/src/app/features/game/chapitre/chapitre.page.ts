@@ -89,6 +89,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ongletActif = signal<'chapitre' | 'combat' | 'objets' | 'effets'>('chapitre');
   readonly ongletLeve = signal<'chapitre' | 'combat' | 'objets' | 'effets' | null>(null);
   readonly ongletObjetsClique = signal(false);
+  private readonly chapitreObjetCliqueKey = 'loup-solitaire:chapitre-objet-clique';
 
   // Signaux pour gérer le hasard (révélation et roulement)
   readonly hasardRoule = signal(false);
@@ -131,6 +132,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
     if (onglet === 'objets') {
       this.ongletObjetsClique.set(true);
+      this.enregistrerChapitreObjetClique();
     }
 
     // Si on reclique sur l'onglet déjà ouvert, on ferme l'encart
@@ -224,7 +226,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
         this.ongletActif.set('chapitre');
         this.ongletLeve.set(null);
-        this.ongletObjetsClique.set(false);
+        this.ongletObjetsClique.set(this.chapitreObjetDejaClique(data.id));
 
         this.hasardRoule.set(false);
         this.hasardResultatVisible.set(false);
@@ -251,6 +253,25 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     );
 
     return discipline?.nom ?? id;
+  }
+
+  private chapitreObjetDejaClique(chapitreId: number): boolean {
+    return this.lireChapitreObjetClique() === chapitreId;
+  }
+
+  private enregistrerChapitreObjetClique(): void {
+    const chapitreId = this.chapitre()?.id;
+    if (chapitreId === undefined) {
+      return;
+    }
+
+    localStorage.setItem(this.chapitreObjetCliqueKey, String(chapitreId));
+  }
+
+  private lireChapitreObjetClique(): number | null {
+    const valeur = localStorage.getItem(this.chapitreObjetCliqueKey);
+    const chapitreId = valeur === null ? NaN : Number(valeur);
+    return Number.isFinite(chapitreId) ? chapitreId : null;
   }
 
   nomObjet(id: string | null): string {
