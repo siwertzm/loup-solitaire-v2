@@ -28,6 +28,12 @@ export class InventaireSheetComponent {
   private readonly objetService = inject(ObjetService);
 
   readonly ouvert = computed(() => this.sheet.personnageId() !== null);
+  readonly enFermeture = signal(false);
+  readonly fermetureParGlissement = signal(false);
+  readonly visible = computed(() => this.ouvert() || this.enFermeture());
+  readonly glissementActif = signal(false);
+  readonly deplacementGlissement = signal(0);
+  private pointDepartGlissement = 0;
 
   readonly personnage = signal<PersonnageResume | null>(null);
   readonly tousObjets = signal<ObjetResume[]>([]);
@@ -209,7 +215,47 @@ export class InventaireSheetComponent {
     });
   }
 
+  commencerGlissement(event: PointerEvent): void {
+    if (this.enFermeture() || !this.ouvert()) return;
+
+    this.pointDepartGlissement = event.clientY;
+    this.glissementActif.set(true);
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
+  deplacerGlissement(event: PointerEvent): void {
+    if (!this.glissementActif()) return;
+
+    this.deplacementGlissement.set(Math.max(0, event.clientY - this.pointDepartGlissement));
+    event.preventDefault();
+  }
+
+  terminerGlissement(event: PointerEvent): void {
+    if (!this.glissementActif()) return;
+
+    const distance = Math.max(0, event.clientY - this.pointDepartGlissement);
+    this.glissementActif.set(false);
+
+    if (distance >= 120) {
+      this.fermetureParGlissement.set(true);
+      this.fermer();
+      return;
+    }
+
+    this.deplacementGlissement.set(0);
+  }
+
   fermer(): void {
-    this.sheet.fermer();
+    if (this.enFermeture() || !this.ouvert()) return;
+
+    const dureeFermeture = this.fermetureParGlissement() ? 250 : 650;
+    this.enFermeture.set(true);
+    window.setTimeout(() => {
+      this.sheet.fermer();
+      this.enFermeture.set(false);
+      this.fermetureParGlissement.set(false);
+      this.deplacementGlissement.set(0);
+    }, dureeFermeture);
   }
 }

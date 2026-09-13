@@ -1,0 +1,49 @@
+<ion-content [fullscreen]="true" class="equipement">
+  <div class="ecran">
+    <div class="entete">
+      <div class="surtitre">{{ 'EQUIPEMENT.SURTITRE' | translate }}</div>
+      <h1 class="titre">{{ nom() }}</h1>
+    </div>
+
+    <div class="tirages">
+      <div class="bloc de-bloc">
+        <span class="cle">HABILITE</span>
+          <span class="de fige objet">
+            {{ habilite() }}
+          </span>
+          <span class="nom-objet">{{ habiliteMax() }} MAX</span>
+      </div>
+
+      <div class="bloc de-bloc">
+        <span class="cle">ENDURANCE</span>
+          <span class="de fige objet">
+            {{ endurance() }}
+          </span>
+          <span class="nom-objet">{{ enduranceMax() }} MAX</span>
+      </div>
+
+      <div class="bloc de-bloc">
+        <span class="cle">COURONNES</span>
+          <span class="de fige objet">
+            {{ couronnes() }}
+          </span>
+          <span class="nom-objet">50 MAX</span>
+      </div>
+    </div>
+
+    <div class="feuille">
+      <div class="bloc">
+        <span class="bloc-titre">DISCIPLINES KAÏ</span>
+        <div class="lignes">
+          @for (discipline of disciplinesAffichees(); track discipline.id) {
+            <div class="ligne">
+              <span class="ligne-nom">{{ discipline.nom }}</span>
+              <span class="ligne-note">{{ discipline.description }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-nav-bar [personnageId]="personnageId()!" />
+</ion-content>

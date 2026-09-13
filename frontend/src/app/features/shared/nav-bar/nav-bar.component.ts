@@ -1,6 +1,5 @@
 import { Component, inject, input } from '@angular/core';
-import { IonIcon } from '@ionic/angular';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 
@@ -26,17 +25,23 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [IonIcon, RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss',
 })
 export class NavBarComponent {
   private readonly inventaireSheet = inject(InventaireSheetService);
+  private readonly router = inject(Router);
 
   /** Nécessaire pour construire le lien vers le chapitre et ouvrir le bon sac. */
   readonly personnageId = input.required<string>();
 
   ouvrirSac(): void {
     this.inventaireSheet.ouvrir(this.personnageId());
+  }
+
+  personnage(): void {
+    // Navigation vers la page du personnage
+   this.router.navigate(['/personnage', this.personnageId()], { replaceUrl: true });
   }
 }

@@ -1,7 +1,13 @@
-@if (ouvert() && !objetAConfirmer()) {
-  <div class="voile-sac" (click)="fermer()">
-    <div class="feuille-sac" #feuilleSac (click)="$event.stopPropagation()">
-      <div class="poignee"></div>
+@if (visible() && !objetAConfirmer()) {
+  <div class="voile-sac" [class.fermeture]="enFermeture()" (click)="fermer()">
+    <div class="feuille-sac" [class.fermeture]="enFermeture()" [class.fermeture-rapide]="fermetureParGlissement()" [class.glissement]="glissementActif()" [style.transform]="glissementActif() ? 'translateY(' + deplacementGlissement() + 'px)' : null" [style.--sheet-close-start]="deplacementGlissement() + 'px'" #feuilleSac (click)="$event.stopPropagation()">
+      <div
+        class="poignee"
+        (pointerdown)="commencerGlissement($event)"
+        (pointermove)="deplacerGlissement($event)"
+        (pointerup)="terminerGlissement($event)"
+        (pointercancel)="terminerGlissement($event)"
+      ></div>
 
       @if (chargement()) {
         <div class="sac-chargement">Chargement…</div>

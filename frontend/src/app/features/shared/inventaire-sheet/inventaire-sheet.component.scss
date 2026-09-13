@@ -13,6 +13,7 @@ $rouge: #b0392e;
   display: flex;
   align-items: flex-end;
   z-index: 1000;
+  animation: voile-sac-apparition 0.35s ease-out both;
 }
 
 .feuille-sac {
@@ -27,18 +28,83 @@ $rouge: #b0392e;
   padding: 10px 20px 24px;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
   font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  animation: feuille-sac-apparition 0.65s cubic-bezier(0.22, 0.8, 0.28, 1) both;
 
   &::-webkit-scrollbar {
     display: none;
   }
 }
 
+.voile-sac.fermeture {
+  animation: none;
+}
+
+.feuille-sac.fermeture {
+  animation: feuille-sac-disparition 0.65s cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
+.feuille-sac.fermeture-rapide {
+  animation-duration: 0.25s;
+  animation-timing-function: linear;
+}
+
+.feuille-sac.glissement {
+  animation: none;
+}
+
+@keyframes voile-sac-apparition {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes feuille-sac-apparition {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes feuille-sac-disparition {
+  from {
+    transform: translateY(var(--sheet-close-start, 0px));
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voile-sac,
+  .voile-sac.fermeture,
+  .feuille-sac,
+  .feuille-sac.fermeture {
+    animation-duration: 0.01ms;
+  }
+}
+
 .poignee {
   width: 40px;
   height: 4px;
+  box-sizing: border-box;
   border-radius: 999px;
   background: rgba(58, 50, 38, 0.3);
+  background-clip: content-box;
   margin: 6px auto 16px;
+  touch-action: none;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .sac-chargement {
