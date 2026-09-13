@@ -87,6 +87,10 @@ export class InventaireSheetComponent {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
+  readonly objetsSpeciauxCount = computed(() =>
+    this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX').length,
+  );
+
   readonly bourseCount = computed(() =>
     this.inventaire()
       .filter((i) => i.categorie === 'BOURSE')
