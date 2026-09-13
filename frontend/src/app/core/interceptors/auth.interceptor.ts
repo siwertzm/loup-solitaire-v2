@@ -43,16 +43,29 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       // Token d'accès expiré (15 min par défaut) : on tente un refresh silencieux
       // puis on rejoue la requête initiale avec le nouveau token.
+      //
+      // IMPORTANT : le catchError ci-dessous est placé AVANT le switchMap et ne
+      // capture donc QUE l'échec de authService.refresh() lui-même (refresh
+      // token invalide/expiré/révoqué -> déconnexion forcée justifiée). Si on le
+      // plaçait après (comme avant), il capturait AUSSI l'échec de la requête
+      // REJOUÉE : or un 401 peut très bien être un 401 "métier" sans rapport
+      // avec l'expiration du token (ex. PUT /auth/me/password avec un mauvais
+      // mot de passe actuel -> BadCredentialsException -> 401). Dans ce cas le
+      // refresh réussissait silencieusement, la requête rejouée échouait de
+      // nouveau avec 401 pour la même raison (mauvais mot de passe), et
+      // l'ancien code interprétait à tort ce second échec comme une session
+      // invalide -> déconnexion + redirection vers /auth/login. Désormais, une
+      // erreur de la requête rejouée est simplement retransmise à l'appelant
+      // (ex. ProfilEditionPage), sans provoquer de déconnexion.
       return authService.refresh().pipe(
-        switchMap((res) => {
-          const rejouee = req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } });
-          return next(rejouee);
-        }),
         catchError((erreurRefresh: unknown) => {
-          // Refresh token lui-même invalide/expiré/révoqué : déconnexion forcée.
           authService.clearSessionLocale();
           router.navigate(['/auth/login']);
           return throwError(() => erreurRefresh);
+        }),
+        switchMap((res) => {
+          const rejouee = req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } });
+          return next(rejouee);
         }),
       );
     }),
