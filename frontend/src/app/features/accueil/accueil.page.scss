@@ -118,6 +118,50 @@ ion-content.accueil {
   &::-webkit-scrollbar {
     display: none;
   }
+
+  // ion-item-sliding remplace .carte comme enfant direct flex/scroll-snap
+  // (voir plus bas) depuis l'ajout du swipe-to-delete façon sac à dos.
+  ion-item-sliding {
+    display: block;
+    flex: none;
+    width: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    border-radius: 14px;
+    overflow: hidden;
+
+    &.carte-ouverte {
+      .carte {
+        border-radius: 0;
+      }
+    }
+  }
+}
+
+// Neutralise le chrome par défaut d'ion-item pour que .carte (son unique
+// enfant) s'affiche comme si elle était toujours directement dans le flex
+// du carrousel — même recette que .sac-item-hote dans InventaireSheetComponent.
+.carte-item-hote {
+  display: block;
+  width: 100%;
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  --inner-border-width: 0;
+  --border-width: 0;
+  --min-height: auto;
+}
+
+ion-item-option {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+ion-item-options {
+  --ion-item-border-color: transparent;
+  --ion-border-color: transparent;
 }
 
 .etat {
@@ -132,9 +176,8 @@ ion-content.accueil {
 }
 
 .carte {
-  flex: none;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
+  width: 100%;
+  box-sizing: border-box;
   background: $parchemin;
   color: $encre;
   border: 1px solid transparent;

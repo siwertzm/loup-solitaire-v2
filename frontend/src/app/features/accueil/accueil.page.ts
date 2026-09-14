@@ -1,6 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
+import {
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
+  ViewWillEnter,
+} from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -13,7 +21,7 @@ addIcons({ 'person-circle-outline': personCircleOutline });
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [IonContent, IonIcon, TranslatePipe],
+  imports: [IonContent, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, TranslatePipe],
   templateUrl: './accueil.page.html',
   styleUrl: './accueil.page.scss',
 })
@@ -85,6 +93,11 @@ export class AccueilPage implements ViewWillEnter {
     this.enFin.set(el.scrollTop + el.clientHeight >= el.scrollHeight - 6);
   }
 
+  onCarteGlissement(event: CustomEvent<{ amount: number; ratio: number }>): void {
+    const sliding = event.currentTarget as HTMLElement;
+    sliding.classList.toggle('carte-ouverte', event.detail.amount > 0 && event.detail.ratio >= 0.9);
+  }
+
   jouer(p: PersonnageResume): void {
     this.actifId.set(p.id);
     this.router.navigate(['/personnages', p.id, 'chapitre']);
@@ -99,11 +112,12 @@ export class AccueilPage implements ViewWillEnter {
     this.jouer(p);
   }
 
-  ouvrirConfirmationSuppression(personnageId: string): void {
+  ouvrirConfirmationSuppression(personnageId: string, sliding?: IonItemSliding): void {
     if (!this.suppressionEnCoursId()) {
       this.erreurSuppression.set(null);
       this.confirmationSuppressionId.set(personnageId);
     }
+    sliding?.close();
   }
 
   annulerSuppression(): void {
