@@ -262,19 +262,25 @@ ion-content.intro {
 }
 
 .encart {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 14px 20px;
+  background: $parchemin;
   border-bottom: 1px solid rgba(58, 50, 38, 0.2);
+  box-shadow: 0 4px 8px rgba(58, 50, 38, 0.12);
 }
 
 .encart-objets {
-  background: #c2703a48;
+  background: #e0c2a0;
 }
 
 .encart-effets {
-  background: #d9a94a42;
+  background: #e7d3a7;
 }
 
 .encart-titre {
