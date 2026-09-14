@@ -125,6 +125,13 @@ ion-content.intro {
   }
 }
 
+// Réutilisable : assombrit/désactive un élément quand le personnage est
+// mort (voir ChapitrePage.mort). Même principe que sur personnage.page.scss.
+.grise {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
 .texte-wrapper {
   position: relative;
   flex: 1;
