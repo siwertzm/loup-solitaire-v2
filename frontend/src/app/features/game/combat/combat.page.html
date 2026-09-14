@@ -36,14 +36,14 @@
           <div class="socle socle-ennemi"></div>
           <div class="combattant combattant-ennemi" [class.touche]="hit() === 'ennemi'">
             <div class="entree-ennemi">
-              <img class="illustration" src="/assets/illustrations/ennemi.png" alt="" />
+              <img class="illustration" [class.vaincu]="ennemiVaincu()" src="/assets/illustrations/ennemi.png" alt="" />
             </div>
           </div>
         }
 
         <!-- héros -->
         <div class="socle socle-heros"></div>
-        <div class="combattant combattant-heros" [class.touche]="hit() === 'joueur'">
+        <div class="combattant combattant-heros" [class.touche]="hit() === 'joueur'" [class.vaincu]="joueurVaincu()">
           <div class="entree-heros">
             <img class="illustration" src="/assets/illustrations/loup.png" alt="" />
           </div>
@@ -182,7 +182,6 @@
 
           @if (phase() === 'FIN') {
             <p class="texte">{{ texte() }}</p>
-            <button type="button" class="fin" [class.defaite]="statut() === 'DEFAITE'" (click)="terminer()">{{ libelleFin() }}</button>
           }
 
         </div>

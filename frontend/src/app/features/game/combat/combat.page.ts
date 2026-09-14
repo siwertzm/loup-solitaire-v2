@@ -15,6 +15,8 @@ type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde'
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
   txt: string;
+  defaite?: boolean;
+  ennemiVaincu?: boolean;
   hit?: Cible;
   actualiser?: 'ennemi' | 'joueur';
   de?: {
@@ -61,6 +63,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly erreur = signal<string | null>(null);
   /** Empêche de spammer les boutons pendant qu'un tour est en cours d'envoi. */
   readonly actionEnCours = signal<boolean>(false);
+  readonly joueurVaincu = signal(false);
+  readonly ennemiVaincu = signal(false);
 
   // --- Boîte de dialogue (machine à écrire) -------------------------------
   readonly phase = signal<Phase>('TEXTE');
@@ -90,7 +94,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   // --- Données dérivées ---------------------------------------------------
   readonly ennemiActif = computed<CombatEnnemiResponse | null>(() => {
     const c = this.combat();
-    return c?.ennemis.find((e) => e.actif) ?? c?.ennemis.find((e) => !e.vaincu) ?? null;
+    if (!c) return null;
+
+    return (
+      c.ennemis.find((e) => e.actif) ??
+      c.ennemis.find((e) => !e.vaincu) ??
+      c.ennemis.find((e) => e.vaincu) ??
+      null
+    );
   });
 
   readonly nomJoueur = computed(() => this.personnage()?.nom ?? 'Loup Solitaire');
@@ -204,6 +215,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.chargement.set(true);
     this.erreur.set(null);
+    this.joueurVaincu.set(false);
+    this.ennemiVaincu.set(false);
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
@@ -243,7 +256,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // Jamais d'écran FIN à bouton pour une défaite (voir prochain()),
       // même en rouvrant un combat déjà résolu : le tap sur ce message
       // renvoie directement au chapitre, où ChapitrePage affiche REVENIR.
-      this.jouerFile([{ txt: 'Vous avez été vaincu.' }]);
+      this.jouerFile([{ txt: 'Vous avez été vaincu.', defaite: true }]);
       return;
     }
 
@@ -435,7 +448,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     const ennemiVaincu = ennemiAvant && combat.ennemis.find((e) => e.id === ennemiAvant.id)?.vaincu;
     if (action === 'ATTAQUE' && ennemiVaincu) {
-      messages.push({ txt: `${nomEnnemi} s'effondre, vaincu.` });
+      messages.push({ txt: `${nomEnnemi} s'effondre, vaincu.`, ennemiVaincu: true });
     }
 
     if (tour.degatsSubis !== null) {
@@ -465,7 +478,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (combat.statut === 'DEFAITE') {
-      messages.push({ txt: 'Vous avez été vaincu.' });
+      messages.push({ txt: 'Vous avez été vaincu.', defaite: true });
     } else if (combat.statut === 'INTERROMPU') {
       messages.push({ txt: 'Le combat est interrompu ; le récit continue.' });
     }
@@ -476,6 +489,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   /** Touche sur la boîte de dialogue : termine la frappe, puis passe au message suivant. */
   avancer(event?: Event): void {
     if (event && (event.target as HTMLElement)?.closest('button')) return;
+    if (this.phase() === 'FIN') {
+      this.terminer();
+      return;
+    }
     if (this.phase() !== 'TEXTE') return;
 
     if (this.deAttaqueVisible()) {
@@ -533,7 +550,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   private prochain(): void {
     if (!this.file.length) {
-      if (this.statut() === 'FUITE' || this.statut() === 'DEFAITE') {
+      if (this.statut() !== 'EN_COURS') {
         // Ni l'un ni l'autre ne passe par l'écran FIN à bouton : le dernier
         // message de la boîte de dialogue ("Vous rompez le combat...' /
         // "Vous avez été vaincu.") suffit, un tap dessus renvoie
@@ -543,14 +560,19 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
         this.terminer();
         return;
       }
-      const fin = this.statut() !== 'EN_COURS';
-      this.phase.set(fin ? 'FIN' : 'MENU');
-      if (!fin) this.msg.set('');
+      this.phase.set('MENU');
+      this.msg.set('');
       return;
     }
 
     const m = this.file.shift()!;
     this.appliquerMiseAJourEnAttente(m.actualiser);
+    if (m.ennemiVaincu) {
+      this.ennemiVaincu.set(true);
+    }
+    if (m.defaite) {
+      this.joueurVaincu.set(true);
+    }
 
     if (m.de) {
       if (this.timerDeFaces) clearInterval(this.timerDeFaces);

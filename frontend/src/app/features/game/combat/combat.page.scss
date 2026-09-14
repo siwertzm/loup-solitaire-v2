@@ -483,11 +483,20 @@ $beige: #e0d3b4;
   height: 110px;
 }
 
+.combattant-ennemi .illustration.vaincu {
+  animation: combat-ennemi-vaincu 0.55s ease forwards;
+}
+
 .combattant-heros {
   left: 0px;
   bottom: 70px;
   width: 200px;
   height: 200px;
+
+  &.vaincu {
+    animation: combat-heros-vaincu 0.7s cubic-bezier(0.55, 0, 0.9, 0.35) forwards;
+    pointer-events: none;
+  }
 }
 
 .entree-ennemi,
@@ -516,6 +525,16 @@ $beige: #e0d3b4;
 @keyframes combat-entree-heros {
   from { opacity: 0; transform: translateX(-54px); }
   to   { opacity: 1; transform: none; }
+}
+
+@keyframes combat-ennemi-vaincu {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(12px); }
+}
+
+@keyframes combat-heros-vaincu {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
 }
 
 /****************************
