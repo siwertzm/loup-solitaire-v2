@@ -107,20 +107,61 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly erreurRessusciter = signal<string | null>(null);
 
   /**
-   * POST /personnages/{id}/ressusciter — reste sur ce même chapitre
-   * (contrairement à une défaite en combat, hors scope ici : voir
-   * CombatPage). Recharge ensuite le chapitre pour réafficher ses liens.
+   * Lien "retour" propre aux chapitres de mort NARRATIVE (ex. 53 -> 47,
+   * 108 -> 129...) : dans les données du livre, ces chapitres ne gardent
+   * qu'un seul lien restant après filtrage de la page de fin de partie,
+   * conditionné par la possession d'une Pièce Premium ("coin"). C'est ce
+   * lien qu'il faut suivre après ressusciter(), pas rester sur place.
+   *
+   * Les chapitres où la mort vient d'une perte d'endurance (effet/repas
+   * sur un chapitre "normal") n'ont pas ce genre de lien : le fallback
+   * (rester sur le même chapitre) s'applique alors. Certains chapitres de
+   * mort narrative n'ont eux-mêmes pas ce lien (ex. 2102, dernier jet du
+   * marécage sans "seconde chance" prévue par le livre) : le fallback
+   * s'applique aussi dans ce cas, ce qui est le comportement correct.
+   */
+  private trouverLienRetourNarratif(): LienResponse | null {
+    return (
+      this.liens().find(
+        (lien) => lien.conditions[0]?.type === 'OBJET' && lien.conditions[0]?.targetId === 'coin',
+      ) ?? null
+    );
+  }
+
+  /**
+   * POST /personnages/{id}/ressusciter.
+   * - Mort narrative (lien de retour détecté) : on avance ensuite vers ce
+   *   lien précis, comme le ferait le livre papier.
+   * - Mort par perte d'endurance (pas de lien de retour) : on recharge
+   *   simplement le chapitre courant, sans en changer.
    */
   ressusciter(): void {
     const id = this.personnageId();
     if (!id || this.ressusciterEnCours()) return;
 
+    const lienRetour = this.trouverLienRetourNarratif();
+
     this.ressusciterEnCours.set(true);
     this.erreurRessusciter.set(null);
     this.personnageService.ressusciter(id).subscribe({
       next: () => {
-        this.ressusciterEnCours.set(false);
-        this.chargerToutesLesDonnees();
+        if (!lienRetour) {
+          this.ressusciterEnCours.set(false);
+          this.chargerToutesLesDonnees();
+          return;
+        }
+
+        this.chapitreService.avancerVersChapitre(id, lienRetour.chapitreCibleId).subscribe({
+          next: () => {
+            this.ressusciterEnCours.set(false);
+            this.chargerToutesLesDonnees();
+          },
+          error: (err) => {
+            console.error("Erreur lors de l'avancement après résurrection :", err);
+            this.ressusciterEnCours.set(false);
+            this.erreurRessusciter.set("Impossible d'avancer après la résurrection.");
+          },
+        });
       },
       error: (err) => {
         console.error('Erreur lors de la résurrection :', err);

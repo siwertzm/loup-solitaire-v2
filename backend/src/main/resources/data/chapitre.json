@@ -531,6 +531,13 @@
           "valeur": "[9, 9]",
           "targetId": null
         }]
+      },{
+        "page": "172",
+        "cond": [{
+          "type": "objet",
+          "valeur": "1",
+          "targetId": "coin"
+        }]
       }
     ],
     "id": 2102,
