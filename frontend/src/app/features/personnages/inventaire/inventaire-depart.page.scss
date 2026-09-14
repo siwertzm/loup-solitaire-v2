@@ -69,6 +69,20 @@ ion-content.equipement {
   gap: 8px;
 }
 
+.intro-equipement {
+  display: flex;
+  gap: 11px;
+
+  .bloc {
+    flex: 1;
+    min-width: 0;
+
+    &:only-child {
+      flex-basis: 100%;
+    }
+  }
+}
+
 .bloc-titre {
   font-family: 'Cinzel', serif;
   font-size: 10px;
@@ -268,6 +282,16 @@ ion-content.equipement {
 
   &.vetements {
     border-left-color: $vert;
+  }
+
+  &.arme-maitrisee {
+    border-left-color: $or;
+    background: rgba(217, 169, 74, 0.1);
+
+    .ligne-nom {
+      color: $or;
+      font-family: 'Cinzel', serif;
+    }
   }
 
   .ligne-nom {

@@ -92,6 +92,11 @@ export class InventaireDepartPage {
 
   /** Contenu réel de l'inventaire renvoyé par l'API. */
   private readonly inventaire = signal<InventaireItem[]>([]);
+  readonly disciplines = signal<string[]>([]);
+  readonly armeMaitrisee = signal<string | null>(null);
+  readonly afficheArmeMaitrisee = computed(
+    () => this.disciplines().includes('MAITRISE_ARMES') && !!this.armeMaitrisee(),
+  );
 
   /** Pièces d'Or : null tant que le dé n'a pas été « lancé » (révélé). */
   readonly or = signal<number | string | null>(null);
@@ -174,6 +179,8 @@ export class InventaireDepartPage {
         this.nom.set(p.nom);
         this.habilete.set(p.habilite);
         this.endurance.set(p.enduranceActuelle);
+        this.disciplines.set(p.disciplines ?? []);
+        this.armeMaitrisee.set(p.armeMaitrisee ?? null);
         this.inventaire.set(p.inventaire ?? []);
         this.chargement.set(false);
       },

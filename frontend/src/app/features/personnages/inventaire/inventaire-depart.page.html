@@ -5,11 +5,22 @@
       <h1 class="titre">{{ nom() }}</h1>
     </div>
 
-    <div class="bloc">
-      <span class="bloc-titre">{{ 'EQUIPEMENT.VETEMENTS' | translate }}</span>
-      <div class="ligne vetements">
-        <span class="ligne-nom">{{ 'EQUIPEMENT.TUNIQUE_ET_CAPE' | translate }}</span>
+    <div class="intro-equipement">
+      <div class="bloc">
+        <span class="bloc-titre">{{ 'EQUIPEMENT.VETEMENTS' | translate }}</span>
+        <div class="ligne vetements">
+          <span class="ligne-nom">{{ 'EQUIPEMENT.TUNIQUE_ET_CAPE' | translate }}</span>
+        </div>
       </div>
+
+      @if (afficheArmeMaitrisee()) {
+        <div class="bloc arme-maitrisee-bloc">
+          <span class="bloc-titre">ARME MAÎTRISÉE</span>
+          <div class="ligne arme-maitrisee">
+            <span class="ligne-nom">{{ armeMaitrisee() }}</span>
+          </div>
+        </div>
+      }
     </div>
 
     <div class="tirages">
