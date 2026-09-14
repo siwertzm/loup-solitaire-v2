@@ -28,6 +28,17 @@ export class AccueilPage implements ViewWillEnter {
   /** Le premier personnage de la liste est celui que l'on « reprend ». */
   readonly actifId = signal<string | null>(null);
 
+  // Suppression depuis la carte d'un personnage mort : confirmation avant
+  // action destructive, comme sur PersonnagePage. On stocke l'id concerné
+  // (pas juste un booléen) car plusieurs cartes peuvent être mortes en même
+  // temps dans le carrousel.
+  readonly confirmationSuppressionId = signal<string | null>(null);
+  readonly suppressionEnCoursId = signal<string | null>(null);
+  readonly erreurSuppression = signal<string | null>(null);
+  readonly nomEnConfirmation = computed(
+    () => this.personnages().find((p) => p.id === this.confirmationSuppressionId())?.nom ?? '',
+  );
+
   readonly cartes = computed(() =>
     this.personnages().map((p) => ({
       ...p,
@@ -77,6 +88,53 @@ export class AccueilPage implements ViewWillEnter {
   jouer(p: PersonnageResume): void {
     this.actifId.set(p.id);
     this.router.navigate(['/personnages', p.id, 'chapitre']);
+  }
+
+  /**
+   * Personnage mort : renvoie vers ChapitrePage plutôt que de dupliquer ici
+   * la logique de résurrection (POST /ressusciter + cas du lien de retour
+   * narratif) déjà centralisée là-bas.
+   */
+  ressusciter(p: PersonnageResume): void {
+    this.jouer(p);
+  }
+
+  ouvrirConfirmationSuppression(personnageId: string): void {
+    if (!this.suppressionEnCoursId()) {
+      this.erreurSuppression.set(null);
+      this.confirmationSuppressionId.set(personnageId);
+    }
+  }
+
+  annulerSuppression(): void {
+    if (!this.suppressionEnCoursId()) {
+      this.confirmationSuppressionId.set(null);
+      this.erreurSuppression.set(null);
+    }
+  }
+
+  confirmerSuppression(): void {
+    const id = this.confirmationSuppressionId();
+    if (!id || this.suppressionEnCoursId()) return;
+
+    this.suppressionEnCoursId.set(id);
+    this.erreurSuppression.set(null);
+    this.personnages$.supprimer(id).subscribe({
+      next: () => {
+        this.personnages.update((liste) => liste.filter((p) => p.id !== id));
+        if (this.actifId() === id) {
+          this.actifId.set(this.personnages()[0]?.id ?? null);
+        }
+        this.suppressionEnCoursId.set(null);
+        this.confirmationSuppressionId.set(null);
+      },
+      // Popup laissée ouverte (pas de confirmationSuppressionId.set(null))
+      // pour permettre de réessayer sans rouvrir la confirmation.
+      error: () => {
+        this.erreurSuppression.set('EQUIPEMENT.ERREUR_SUPPRESSION');
+        this.suppressionEnCoursId.set(null);
+      },
+    });
   }
 
   nouveauPersonnage(): void {

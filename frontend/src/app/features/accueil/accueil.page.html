@@ -22,7 +22,7 @@
       } @else {
         @for (pj of cartes(); track pj.id) {
           <article class="carte">
-            <div class="entete">
+            <div class="entete" [class.grise]="pj.mort">
               <div class="identite">
                 <div class="avatar">{{ pj.initiale }}</div>
                 <div class="nom">{{ pj.nom }}</div>
@@ -30,7 +30,7 @@
               <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
             </div>
 
-            <div class="stats">
+            <div class="stats" [class.grise]="pj.mort">
               <div class="stat">
                 <span class="cle">{{ 'ACCUEIL.HABILETE' | translate }}</span>
                 <span class="valeur">{{ pj.habileteTotale }}</span>
@@ -41,9 +41,28 @@
               </div>
             </div>
 
-            <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
-              {{ pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate) }}
-            </button>
+            @if (pj.mort) {
+              <!-- La résurrection elle-même (avec le cas du lien de retour
+                   narratif) reste sur ChapitrePage : ce bouton s'y contente
+                   de renvoyer plutôt que de dupliquer cette logique ici. -->
+              <div class="actions-mort">
+                <button type="button" class="jouer actif" (click)="ressusciter(pj)">
+                  RESSUSCITER
+                </button>
+                <button
+                  type="button"
+                  class="supprimer"
+                  [disabled]="suppressionEnCoursId() === pj.id"
+                  (click)="ouvrirConfirmationSuppression(pj.id)"
+                >
+                  SUPPRIMER
+                </button>
+              </div>
+            } @else {
+              <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
+                {{ pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate) }}
+              </button>
+            }
           </article>
         }
       }
@@ -54,4 +73,21 @@
 
     <div class="pied">{{ 'ACCUEIL.PIED' | translate }}</div>
   </div>
+
+  @if (confirmationSuppressionId()) {
+    <div class="voile" (click)="annulerSuppression()">
+      <div class="popup popup-suppression" (click)="$event.stopPropagation()">
+        <div class="surtitre">ATTENTION</div>
+        <div class="popup-titre">Supprimer {{ nomEnConfirmation() }} ?</div>
+        <p class="popup-texte">Cette aventure et toute sa progression seront définitivement supprimées.</p>
+        @if (erreurSuppression()) {
+          <p class="popup-texte popup-erreur">{{ erreurSuppression() | translate }}</p>
+        }
+        <div class="popup-actions">
+          <button type="button" class="popup-annuler" [disabled]="!!suppressionEnCoursId()" (click)="annulerSuppression()">ANNULER</button>
+          <button type="button" class="popup-confirmer" [disabled]="!!suppressionEnCoursId()" (click)="confirmerSuppression()">SUPPRIMER</button>
+        </div>
+      </div>
+    </div>
+  }
 </ion-content>
