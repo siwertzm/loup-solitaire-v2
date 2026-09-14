@@ -163,15 +163,12 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     return this.classeBarre(e && e.enduranceMax ? e.enduranceActuelle / e.enduranceMax : 1);
   });
 
-  /** Libellé du bouton final, selon l'issue du combat. */
-  readonly libelleFin = computed(() => {
-    switch (this.statut()) {
-      case 'DEFAITE':
-        return 'REVENIR (1 PIÈCE PREMIUM)';
-      default:
-        return 'POURSUIVRE';
-    }
-  });
+  /**
+   * Libellé du bouton final. DEFAITE n'atteint jamais cet écran (voir
+   * prochain() / combatCharge()) : ce bouton ne concerne donc plus que
+   * VICTOIRE/INTERROMPU, d'où le seul libellé restant.
+   */
+  readonly libelleFin = computed(() => 'POURSUIVRE');
 
   ngOnInit(): void {
     this.initialiserId();
@@ -242,6 +239,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.combat.set(c);
     this.chargement.set(false);
 
+    if (c.statut === 'DEFAITE') {
+      // Jamais d'écran FIN à bouton pour une défaite (voir prochain()),
+      // même en rouvrant un combat déjà résolu : le tap sur ce message
+      // renvoie directement au chapitre, où ChapitrePage affiche REVENIR.
+      this.jouerFile([{ txt: 'Vous avez été vaincu.' }]);
+      return;
+    }
+
     if (c.statut !== 'EN_COURS') {
       // Combat déjà résolu (écran rouvert après coup) : pas de rejouer la
       // scène, direction l'écran de fin.
@@ -275,8 +280,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     switch (statut) {
       case 'VICTOIRE':
         return 'Vous avez déjà triomphé de cet adversaire.';
-      case 'DEFAITE':
-        return 'Vous avez été vaincu lors de cet affrontement.';
       case 'FUITE':
         return 'Vous avez déjà fui ce combat.';
       default:
@@ -459,7 +462,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (combat.statut === 'DEFAITE') {
-      messages.push({ txt: "Votre ENDURANCE tombe à zéro. Le voyage s'arrête ici." });
+      messages.push({ txt: 'Vous avez été vaincu.' });
     } else if (combat.statut === 'INTERROMPU') {
       messages.push({ txt: 'Le combat est interrompu ; le récit continue.' });
     }
@@ -488,21 +491,17 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.prochain();
   }
 
+  /**
+   * Point de sortie unique de l'écran de combat, quel que soit le statut
+   * (VICTOIRE via l'écran FIN, FUITE ou DEFAITE via prochain() qui saute
+   * cet écran). Pour DEFAITE, revenirApresDefaite() n'est PLUS appelé
+   * ici : ChapitrePage détecte combatEnDefaite() et affiche son propre
+   * bouton REVENIR (1 PIÈCE PREMIUM), qui appelle cette méthode — évite un
+   * appel en double si le joueur revient sur cet écran de combat résolu.
+   */
   terminer(): void {
     const id = this.personnageId();
     if (!id) return;
-
-    if (this.statut() === 'DEFAITE') {
-      this.personnageService.revenirApresDefaite(id).subscribe({
-        next: () => this.router.navigate(['/personnages', id, 'chapitre']),
-        error: (err) => {
-          console.error('Erreur lors du retour après défaite :', err);
-          this.router.navigate(['/personnages', id, 'chapitre']);
-        },
-      });
-      return;
-    }
-
     this.router.navigate(['/personnages', id, 'chapitre']);
   }
 
@@ -531,7 +530,13 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   private prochain(): void {
     if (!this.file.length) {
-      if (this.statut() === 'FUITE') {
+      if (this.statut() === 'FUITE' || this.statut() === 'DEFAITE') {
+        // Ni l'un ni l'autre ne passe par l'écran FIN à bouton : le dernier
+        // message de la boîte de dialogue ("Vous rompez le combat...' /
+        // "Vous avez été vaincu.") suffit, un tap dessus renvoie
+        // directement au chapitre. Pour DEFAITE, c'est ChapitrePage qui
+        // affiche ensuite REVENIR (1 PIÈCE PREMIUM) et appelle
+        // revenirApresDefaite() — pas cet écran.
         this.terminer();
         return;
       }

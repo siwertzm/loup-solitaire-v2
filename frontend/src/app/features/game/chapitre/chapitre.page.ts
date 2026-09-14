@@ -89,6 +89,16 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
   readonly combatDisponible = signal(false);
+  // Mort HORS combat (voir plus bas) et mort EN combat (Combat.statut =
+  // DEFAITE, voir CombatService.appliquerDegatsAuJoueur côté backend) sont
+  // toutes deux reflétées par le même Personnage.mort — mais leur remède
+  // diffère : ressusciter() (rester sur ce chapitre) échoue volontairement
+  // côté backend si une DEFAITE est en attente (voir
+  // PersonnageService.ressusciter) puisque cette mort-là exige de reculer
+  // au chapitre précédent via CombatPage.terminer() ->
+  // revenirApresDefaite(). Ce signal permet donc au pied de page de
+  // proposer le bon bouton plutôt que de laisser ressusciter() échouer.
+  readonly combatEnDefaite = signal(false);
 
   // Un vol en attente (voir <app-chapitre-effets>) bloque avancerVersChapitre
   // côté backend (400 : "Un vol est en attente de resolution"). Tant qu'il
@@ -126,6 +136,34 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         (lien) => lien.conditions[0]?.type === 'OBJET' && lien.conditions[0]?.targetId === 'coin',
       ) ?? null
     );
+  }
+
+  /**
+   * Mort EN combat (combatEnDefaite()) : ressusciter() échouerait
+   * volontairement côté backend (voir PersonnageService.ressusciter). Le
+   * remède est revenirApresDefaite() (même appel que CombatPage.terminer()
+   * sur DEFAITE), qui recule au chapitre précédent ET remet mort=false —
+   * on recharge donc ensuite le chapitre en place, sans navigation.
+   */
+  revenirApresDefaite(): void {
+    const id = this.personnageId();
+    if (!id || this.ressusciterEnCours()) return;
+
+    this.ressusciterEnCours.set(true);
+    this.erreurRessusciter.set(null);
+    this.personnageService.revenirApresDefaite(id).subscribe({
+      next: () => {
+        this.ressusciterEnCours.set(false);
+        this.chargerToutesLesDonnees();
+      },
+      error: (err) => {
+        console.error('Erreur lors du retour après défaite :', err);
+        this.ressusciterEnCours.set(false);
+        this.erreurRessusciter.set(
+          err?.error?.message ?? "Impossible de revenir pour l'instant.",
+        );
+      },
+    });
   }
 
   /**
@@ -348,16 +386,21 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private actualiserCombatDisponible(estChapitreCombat: boolean, personnageId: string): void {
     if (!estChapitreCombat) {
       this.combatDisponible.set(false);
+      this.combatEnDefaite.set(false);
       return;
     }
 
     // Un combat résolu reste rattaché au chapitre, mais ne doit plus
     // remplacer les liens par le bouton COMBAT au retour sur cette page.
     this.combatService.recuperer(personnageId).subscribe({
-      next: (combat) => this.combatDisponible.set(combat.statut === 'EN_COURS'),
+      next: (combat) => {
+        this.combatDisponible.set(combat.statut === 'EN_COURS');
+        this.combatEnDefaite.set(combat.statut === 'DEFAITE');
+      },
       error: (err) => {
         // 404 signifie que le combat n'a pas encore été démarré.
         this.combatDisponible.set(err.status === 404);
+        this.combatEnDefaite.set(false);
       },
     });
   }

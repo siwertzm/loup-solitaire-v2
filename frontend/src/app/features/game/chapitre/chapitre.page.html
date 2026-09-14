@@ -117,26 +117,49 @@
 
       @if (!aConditionHasard() || hasardTermine()) {
         @if (mort()) {
-          <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
-               le backend refuse avancer/ramasser/consommer/échanger tant
-               que POST /ressusciter n'a pas été appelé. -->
           <div class="mort">
-            <p class="mort-texte">Vous êtes mort.</p>
-            @if (erreurRessusciter()) {
-              <p class="mort-erreur">{{ erreurRessusciter() }}</p>
-            }
-            <button
-              type="button"
-              class="valider"
-              [disabled]="ressusciterEnCours()"
-              (click)="ressusciter()"
-            >
-              @if (ressusciterEnCours()) {
-                RÉSURRECTION...
-              } @else {
-                RESSUSCITER x1 PIÈCE PREMIUM
+            @if (combatEnDefaite()) {
+              <!-- Mort EN combat (Combat.statut = DEFAITE) : ressusciter()
+                   échouerait volontairement côté backend. Le remède est
+                   revenirApresDefaite(), qui recule au chapitre précédent
+                   (rechargé ici même, sans navigation). -->
+              <p class="mort-texte">Vous avez été vaincu au combat.</p>
+              @if (erreurRessusciter()) {
+                <p class="mort-erreur">{{ erreurRessusciter() }}</p>
               }
-            </button>
+              <button
+                type="button"
+                class="valider"
+                [disabled]="ressusciterEnCours()"
+                (click)="revenirApresDefaite()"
+              >
+                @if (ressusciterEnCours()) {
+                  RETOUR...
+                } @else {
+                  RESSUSCITER x1 PIÈCE PREMIUM
+                }
+              </button>
+            } @else {
+              <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
+                   le backend refuse avancer/ramasser/consommer/échanger tant
+                   que POST /ressusciter n'a pas été appelé. -->
+              <p class="mort-texte">Vous êtes mort.</p>
+              @if (erreurRessusciter()) {
+                <p class="mort-erreur">{{ erreurRessusciter() }}</p>
+              }
+              <button
+                type="button"
+                class="valider"
+                [disabled]="ressusciterEnCours()"
+                (click)="ressusciter()"
+              >
+                @if (ressusciterEnCours()) {
+                  RÉSURRECTION...
+                } @else {
+                  RESSUSCITER x1 PIÈCE PREMIUM
+                }
+              </button>
+            }
           </div>
         } @else if (volEnAttente()) {
           <!-- Vol en attente de résolution : le backend refuse tout
