@@ -1,6 +1,13 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
     <header class="titre">
+      <div class="stats-groupe">
+        <div class="barre-stat endurance">
+          <div class="remplissage" [style.width.%]="endurancePourcentage()"></div>
+          <span class="texte-stat">ENDURANCE {{ enduranceActuelle() }}/{{ enduranceMax() }}</span>
+        </div>
+      </div>
+ 
       <a
         class="avatar"
         [routerLink]="['/personnage', personnageId()]"
