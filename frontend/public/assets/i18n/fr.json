@@ -148,7 +148,30 @@
     "PARAGRAPHE_2": "Vous disposez également, accrochée à votre ceinture, d'une bourse de cuir qui contient des pièces d'or. En appuyant sur le dé de pièces d'or, l'application tire pour vous un chiffre entre 0 et 9. Le chiffre que vous obtiendrez représentera le nombre de Couronnes (c'est le nom de la monnaie en cours dans ces régions) dont vous disposez au début de votre mission",
     "PARAGRAPHE_3": "Dans les ruines fumantes du monastère détruit, vous avez découvert une carte géographique qui vous permet de vous orienter. Cette carte est soigneusement rangée dans une poche intérieure de votre tunique.",
     "PARAGRAPHE_4": "Vous avez également découvert l'un des objets suivants :",
-    "PARAGRAPHE_5": "Pour savoir quel est l'objet que vous avez découvert dans la liste ci-dessus, appuyez sur le dé d'objet : l'application tirera un des objets au hasard.",
+    "ELEMENTS_BOURSE": {
+      "BOURSE": "Bourse en cuir",
+      "OR": "Pièces d'or"
+    },
+    "EQUIPEMENT_DEPART": {
+      "TUNIQUE": "Tunique",
+      "CAPE": "Cape",
+      "HACHE": "Hache",
+      "REPAS": "Repas"
+    },
+    "OBJETS": {
+      "GLAIVE": "Glaive",
+      "EPEE": "Épée",
+      "CASQUE": "Casque",
+      "REPAS": "Repas",
+      "COTTE_DE_MAILLES": "Cotte de mailles",
+      "MASSE_D_ARMES": "Masse d'armes",
+      "POTION_DE_SOIN": "Potion de soin",
+      "BATON": "Bâton",
+      "LANCE": "Lance",
+      "PIECES_D_OR": "Pièces d'or"
+    },
+    "PARAGRAPHE_5": "Pour savoir quel est l'objet que vous avez découvert dans la liste ci-dessus, appuyez sur le dé d'objet :",
+    "PARAGRAPHE_6": "L'application tirera un des objets au hasard.",
     "VALIDER": "OUVRIR L'INVENTAIRE"
   },
   "INTRO_EQUIPEMENT": {

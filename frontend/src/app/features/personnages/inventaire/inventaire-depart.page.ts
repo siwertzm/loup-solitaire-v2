@@ -47,6 +47,10 @@ const IMAGES: Record<string, string> = {
   potion_de_soin: 'assets/icon/potion.png',
   repas: 'assets/icon/repas.png',
   or: 'assets/icon/or.png',
+  hache: 'assets/icon/hache.png',
+  masse: 'assets/icon/masse.png',
+  baton: 'assets/icon/baton.png',
+  lance: 'assets/icon/lance.png',
 };
 
 /** Icônes des objets de la table de départ (clé = objetId du backend). */

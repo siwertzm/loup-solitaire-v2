@@ -83,6 +83,101 @@ ion-content.intro {
     margin: 0;
   }
 
+  .objets-possibles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 4px 0;
+  }
+
+  .elements-bourse {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 4px 0;
+  }
+
+  .equipement-depart {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 4px 0;
+  }
+
+  .element-bourse {
+    min-width: 0;
+    min-height: 50px;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border: 1px solid rgba(59, 68, 45, 0.22);
+    border-left: 3px solid $cuivre;
+    border-radius: 8px;
+    background: rgba(59, 68, 45, 0.08);
+  }
+
+  .element-bourse .objet-icone {
+    width: 34px;
+    height: 34px;
+
+    img {
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .objet-possible {
+    min-width: 0;
+    min-height: 43px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    border: 1px solid rgba(58, 50, 38, 0.16);
+    border-left: 3px solid $cuivre;
+    border-radius: 8px;
+    background: rgba(58, 50, 38, 0.06);
+  }
+
+  .objet-icone {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(194, 112, 58, 0.14);
+    color: $cuivre;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+
+    img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+  }
+
+  .objet-nom {
+    min-width: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    line-height: 1.15;
+  }
+
+  .objet-detail {
+    color: $cuivre;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
   .section {
     font-family: 'Cinzel', serif;
     font-size: 19px;

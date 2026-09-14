@@ -7,19 +7,54 @@
 
     <div class="texte">
       <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_1' | translate"></p>
-      <p>
-        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_2' | translate }}
-      </p>
-      <p>
-        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_3' | translate }}
-      </p>
-      <p>
-        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_4' | translate }}
-      </p>
+      <div class="equipement-depart" aria-label="Équipement de départ">
+        @for (element of equipementDepart; track element.cle) {
+          <div class="objet-possible">
+            <div class="objet-icone">
+              @if (element.icone) {
+                <img [src]="element.icone" [alt]="element.cle | translate" />
+              } @else {
+                <span>{{ element.initiale }}</span>
+              }
+            </div>
+            <span class="objet-nom">{{ element.cle | translate }}</span>
+          </div>
+        }
+      </div>
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_2' | translate"></p>
+      <div class="elements-bourse" aria-label="Bourse et pièces d'or">
+        @for (element of elementsBourse; track element.cle) {
+          <div class="objet-possible">
+            <div class="objet-icone">
+              <img [src]="element.icone" [alt]="element.cle | translate" />
+            </div>
+            <span class="objet-nom">{{ element.cle | translate }}</span>
+          </div>
+        }
+      </div>
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_3' | translate"></p>
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_4' | translate"></p>
 
-      <p>
-        {{ 'INTRO_INVENTAIRE.PARAGRAPHE_5' | translate }}
-      </p>
+      <div class="objets-possibles" aria-label="Objets pouvant être découverts">
+        @for (objet of objetsPossibles; track objet.cle) {
+          <div class="objet-possible">
+            <div class="objet-icone">
+              @if (objet.icone) {
+                <img [src]="objet.icone" [alt]="objet.cle | translate" />
+              } @else {
+                <span>{{ objet.initiale }}</span>
+              }
+            </div>
+            <span class="objet-nom">{{ objet.cle | translate }}</span>
+            @if (objet.detail) {
+              <span class="objet-detail">{{ objet.detail }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_5' | translate"></p>
+      <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_6' | translate"></p>
     </div>
 
     <div class="pied">
