@@ -297,6 +297,30 @@ ion-content.intro {
   gap: 12px;                            /* Espacement entre les boutons */
   padding: 16px 0;
 
+  .mort {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mort-texte {
+    margin: 0;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $rouge;
+  }
+
+  .mort-erreur {
+    margin: 0;
+    font-size: 11px;
+    color: $rouge;
+    text-align: center;
+  }
+
   .valider {
     width: 100%;
     margin: 0;

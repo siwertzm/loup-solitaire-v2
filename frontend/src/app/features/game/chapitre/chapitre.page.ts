@@ -97,6 +97,41 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   // de résolution (voir ChapitreEffetsComponent.ouvrirChoixVol).
   readonly volEnAttente = computed(() => this.personnage()?.volEnAttente ?? null);
 
+  // Mort HORS combat (chapitre de mort narrative, ou perte d'endurance via
+  // un effet/repas de chapitre — voir Personnage.mort). Prend le pas sur
+  // tout le reste du pied de page (liens, vol en attente, combat) : le
+  // backend refuse toute action tant que le personnage n'a pas été
+  // ressuscité (voir PersonnageService.verifierPasMort côté backend).
+  readonly mort = computed(() => this.personnage()?.mort ?? false);
+  readonly ressusciterEnCours = signal(false);
+  readonly erreurRessusciter = signal<string | null>(null);
+
+  /**
+   * POST /personnages/{id}/ressusciter — reste sur ce même chapitre
+   * (contrairement à une défaite en combat, hors scope ici : voir
+   * CombatPage). Recharge ensuite le chapitre pour réafficher ses liens.
+   */
+  ressusciter(): void {
+    const id = this.personnageId();
+    if (!id || this.ressusciterEnCours()) return;
+
+    this.ressusciterEnCours.set(true);
+    this.erreurRessusciter.set(null);
+    this.personnageService.ressusciter(id).subscribe({
+      next: () => {
+        this.ressusciterEnCours.set(false);
+        this.chargerToutesLesDonnees();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la résurrection :', err);
+        this.ressusciterEnCours.set(false);
+        this.erreurRessusciter.set(
+          err?.error?.message ?? "Impossible de ressusciter pour l'instant.",
+        );
+      },
+    });
+  }
+
   /** Ouvre (sans le refermer si déjà ouvert) l'onglet Effets pour que le
    * joueur résolve son vol en attente — pas de toggle ici, contrairement à
    * selectionnerOnglet(), pour garantir que l'onglet s'affiche à coup sûr. */
@@ -355,7 +390,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
    */
   choisirLien(lien: LienResponse): void {
     const id = this.personnageId();
-    if (!id || !lien.disponible) return;
+    if (!id || !lien.disponible || this.mort()) return;
 
     this.chargement.set(true);
     this.chapitreService.avancerVersChapitre(id, lien.chapitreCibleId).subscribe({

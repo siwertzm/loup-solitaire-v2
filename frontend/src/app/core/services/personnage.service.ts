@@ -113,6 +113,23 @@ export class PersonnageService {
     );
   }
 
+  /**
+   * POST /personnages/{id}/ressusciter
+   * Suite à une mort HORS combat (chapitre de mort narrative, ou perte
+   * d'endurance via un effet/repas de chapitre — voir Personnage.mort) :
+   * restaure l'endurance au maximum et repasse mort à false, mais reste
+   * sur le MÊME chapitre (contrairement à revenirApresDefaite, réservé à
+   * la mort en combat). Coûte 1 pièce premium côté backend. Le backend
+   * refuse (400) si une défaite de combat est en attente sur ce chapitre :
+   * il faut alors passer par revenirApresDefaite à la place.
+   */
+  ressusciter(personnageId: string): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(
+      `${this.base}/personnages/${personnageId}/ressusciter`,
+      {},
+    );
+  }
+
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
   majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);

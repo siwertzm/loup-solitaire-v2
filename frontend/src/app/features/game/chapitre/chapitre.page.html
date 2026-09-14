@@ -20,7 +20,7 @@
           <span>{{ chapitre()?.id ?? 1 }}</span>
         </div>
 
-        @if (objets().length > 0) {
+        @if (objets().length > 0 && !mort()) {
           <div
             class="marque-page marque-page-objets"
             [class.attente-clic-objets]="!ongletObjetsClique()"
@@ -31,7 +31,7 @@
           </div>
         }
 
-        @if (effets().length > 0) {
+        @if (effets().length > 0 && !mort()) {
           <div
             class="marque-page marque-page-effets"
             [class.leve]="ongletLeve() === 'effets'"
@@ -108,7 +108,29 @@
       }
 
       @if (!aConditionHasard() || hasardTermine()) {
-        @if (volEnAttente()) {
+        @if (mort()) {
+          <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
+               le backend refuse avancer/ramasser/consommer/échanger tant
+               que POST /ressusciter n'a pas été appelé. -->
+          <div class="mort">
+            <p class="mort-texte">Vous êtes mort.</p>
+            @if (erreurRessusciter()) {
+              <p class="mort-erreur">{{ erreurRessusciter() }}</p>
+            }
+            <button
+              type="button"
+              class="valider"
+              [disabled]="ressusciterEnCours()"
+              (click)="ressusciter()"
+            >
+              @if (ressusciterEnCours()) {
+                RÉSURRECTION...
+              } @else {
+                RESSUSCITER x1 PIÈCES PREMIUM
+              }
+            </button>
+          </div>
+        } @else if (volEnAttente()) {
           <!-- Vol en attente de résolution : le backend refuse tout
                avancerVersChapitre tant que POST /vol/{objetId} n'a pas été
                appelé (voir ChapitreEffetsComponent, onglet Effets). -->
