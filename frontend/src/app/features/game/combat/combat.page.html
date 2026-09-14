@@ -18,14 +18,26 @@
         </div>
 
         @if (ennemiActif(); as ennemi) {
-          <!-- plaque de vie ennemie, avec effet de pile de cartes en combat
-               multi-ennemis : la pile entière s'efface/apparaît en même
-               temps que l'illustration (voir ennemiVaincu()). -->
-          <div
-            class="pile-plaque-ennemi"
-            [class]="'pile-plaque-ennemi pile-' + tailleFilePile()"
-            [class.vaincu]="ennemiVaincu()"
-          >
+          <!-- Effet de pile : signale qu'il reste d'autres ennemis en
+               attente dans ce même combat (voir CombatService côté
+               backend, cartesOmbreEnnemis côté TS). Rendues AVANT la
+               plaque réelle pour rester dessous par défaut ; le z-index
+               explicite de chaque carte fait foi dans tous les cas. -->
+          @for (carte of cartesOmbreEnnemis(); track $index) {
+            <div
+              class="plaque-ennemi-ombre"
+              [style.transform]="'translate(' + carte.decalage + 'px, ' + carte.decalage + 'px) rotate(' + carte.rotation + 'deg)'"
+              [style.opacity]="carte.opacite"
+              [style.z-index]="carte.z"
+            ></div>
+          }
+
+          <!-- plaque de vie ennemie : masquée en même temps que les cartes
+               fantômes à la mort de l'ennemi (ennemiVaincu), pas seulement
+               les cartes derrière — sinon elle restait affichée seule,
+               comme "une carte qui traîne" une fois la pile disparue. Elle
+               ne réapparaît qu'avec le nouvel ennemi (nouvelEnnemi). -->
+          @if (!ennemiVaincu()) {
             <div class="plaque plaque-ennemi">
               <div class="plaque-titre">
                 <span class="nom">{{ ennemi.nom }}</span>
@@ -38,7 +50,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          }
 
           <!-- ennemi -->
           <div class="socle socle-ennemi"></div>

@@ -127,6 +127,38 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   });
 
   readonly nomJoueur = computed(() => this.personnage()?.nom ?? 'Loup Solitaire');
+  /**
+   * Ennemis pas encore vaincus (actif inclus), pour l'effet visuel de
+   * "pile de cartes" derrière la plaque de vie ennemie. PAS un computed
+   * sur combat() : toutes les cartes disparaissent ensemble à l'instant où
+   * l'ennemi actif s'effondre (voir prochain(), m.ennemiVaincu -> 0), et ne
+   * réapparaissent qu'au complet quand le suivant est annoncé
+   * (m.nouvelEnnemi) — pas de disparition progressive, une à une.
+   */
+  readonly ennemisRestantsAffiches = signal(0);
+
+  /**
+   * Une carte fantôme par ennemi en attente derrière l'actif : pile totale
+   * = ennemisRestantsAffiches() (la plaque visible compte pour 1, donc
+   * N-1 cartes fantômes ici). Pas de plafond : 3 ennemis restants → pile
+   * de 3 (2 cartes fantômes), 4 → pile de 4 (3 cartes fantômes), etc.
+   */
+  readonly cartesOmbreEnnemis = computed(() => {
+    const n = Math.max(0, this.ennemisRestantsAffiches() - 1);
+    return Array.from({ length: n }, (_, i) => {
+      const rang = i + 1;
+      return {
+        decalage: rang * 7,
+        rotation: -rang * 3,
+        opacite: Math.max(0.3, 1 - rang * 0.2),
+        // Toujours positif (voir .plaque-ennemi { z-index: 10 } dans le
+        // scss) : un z-index négatif place l'élément SOUS tout le décor de
+        // fond de l'arène (.decor > div, en z-index auto = 0 implicite),
+        // ce qui rendait les cartes invisibles.
+        z: 10 - rang,
+      };
+    });
+  });
   readonly habiliteJoueur = computed(
     () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
   );
@@ -181,18 +213,6 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly pctEnnemi = computed(() => {
     const e = this.ennemiActif();
     return e && e.enduranceMax ? Math.round((e.enduranceActuelle / e.enduranceMax) * 100) : 0;
-  });
-
-  /**
-   * Taille de l'effet de pile de cartes affiché derrière la plaque de vie
-   * ennemie, pour suggérer visuellement un combat à plusieurs adversaires.
-   * Basée sur le nombre total d'ennemis de ce combat (pas le nombre
-   * restant : la pile ne "rétrécit" pas à chaque adversaire vaincu),
-   * plafonnée à 3 cartes au-delà de quoi l'empilement deviendrait illisible.
-   */
-  readonly tailleFilePile = computed(() => {
-    const total = this.combat()?.ennemis.length ?? 1;
-    return Math.min(Math.max(total, 1), 3);
   });
 
   private classeBarre(ratio: number): string {
@@ -252,6 +272,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.joueurVaincu.set(false);
     this.ennemiVaincu.set(false);
     this.ennemiAffocheId.set(null);
+    this.ennemisRestantsAffiches.set(0);
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
@@ -292,6 +313,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.ennemiAffocheId.set(
       c.ennemis.find((e) => e.actif)?.id ?? c.ennemis.find((e) => !e.vaincu)?.id ?? null,
     );
+    this.ennemisRestantsAffiches.set(c.ennemis.filter((e) => !e.vaincu).length);
 
     if (c.statut === 'DEFAITE') {
       // Jamais d'écran FIN à bouton pour une défaite (voir prochain()),
@@ -626,10 +648,15 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.appliquerMiseAJourEnAttente(m.actualiser);
     if (m.ennemiVaincu) {
       this.ennemiVaincu.set(true);
+      // Toutes les cartes disparaissent ensemble à la mort de l'ennemi
+      // actif, plutôt que de se réduire une à une : elles ne réapparaîtront
+      // qu'au complet quand le message "nouvelEnnemi" annoncera le suivant.
+      this.ennemisRestantsAffiches.set(0);
     }
     if (m.nouvelEnnemi) {
       this.ennemiVaincu.set(false);
       if (m.ennemiId) this.ennemiAffocheId.set(m.ennemiId);
+      this.ennemisRestantsAffiches.set(this.combat()?.ennemis.filter((e) => !e.vaincu).length ?? 0);
     }
     if (m.defaite) {
       this.joueurVaincu.set(true);
