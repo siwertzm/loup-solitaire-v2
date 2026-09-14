@@ -22,7 +22,7 @@ import com.loupsolitaire.backend.repository.PersonnageRepository;
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
-// ObjetService). REPAS, HABILETE, ENDURANCE et VOL geres.
+// ObjetService). REPAS, HABILETE, ENDURANCE, VOL et MORT geres.
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -153,6 +153,34 @@ public class EffetChapitreService {
         if (nouvelleEndurance <= 0) {
             personnage.setMort(true);
         }
+        personnageRepository.save(personnage);
+    }
+
+    // Regle MORT : mort narrative (ex. chapitre 53, 108, 127...), distincte
+    // de la mort par perte d'endurance (appliquerEffetEndurance /
+    // appliquerEffetRepas). Meme convention que pour ENDURANCE : la seule
+    // condition rencontree dans ce tome est HASARD (ex. chapitre 2102,
+    // "si vous n'obtenez pas 9") ; toute autre condition (combat non
+    // construit) fait qu'on ignore l'effet. La valeur elle-meme (toujours
+    // 1 dans les donnees) n'est qu'un marqueur, pas une quantite.
+    // On remet aussi l'ENDURANCE a 0 par coherence avec le reste du
+    // systeme (Personnage.mort suppose une endurance nulle), meme si la
+    // mort narrative n'en decoule pas directement dans le recit.
+    @Transactional
+    public void appliquerEffetMort(Personnage personnage, Effet effet) {
+        Optional<Cond> condition = effet.getConditions().stream().findFirst();
+
+        if (condition.isPresent()) {
+            if (condition.get().getType() != TypeCondition.HASARD) {
+                return;
+            }
+            if (!conditionService.estDisponible(condition.get(), personnage)) {
+                return;
+            }
+        }
+
+        personnage.setEnduranceActuelle(0);
+        personnage.setMort(true);
         personnageRepository.save(personnage);
     }
 

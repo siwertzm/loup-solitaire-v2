@@ -512,21 +512,23 @@
     "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux. Utilisez la Table de Hasard pour obtenir un chiffre : Si vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse. Si le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au 189. Si votre cheval s'est enlisé, utilisez à nouveau la Table de Hasard pour tirer un autre chiffre. Si vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase. Si le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au 189. Si vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre à l'aide de la Table de Hasard. Si vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie. Si en revanche vous tirez un 9, rendez-vous au 312.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": [{
+          "type": "hasard",
+          "valeur": "[0, 8]",
+          "targetId": null
+        }]
+      }
+    ],
     "lien": [
       {
         "page": "312",
         "cond": [{
           "type": "hasard",
           "valeur": "[9, 9]",
-          "targetId": null
-        }]
-      },
-      {
-        "page": "352",
-        "cond": [{
-          "type": "hasard",
-          "valeur": "[0, 8]",
           "targetId": null
         }]
       }
@@ -1184,12 +1186,14 @@
     "text": "Une douleur fulgurante vous déchire soudain la jambe droite : vous venez de vous tordre la cheville et vous trébuchez en tombant tête la première. Entraîné par le poids de votre corps, vous roulez alors sur vous-même le long du flanc de la colline avant d'atterrir enfin dans un fossé où vous perdez connaissance. Vous êtes réveillé par une autre douleur : quelque chose s'enfonce dans votre poitrine. C'est le fer de la lance d'un Glok. La créature vous plaque au sol en vous gratifiant d'un sourire diabolique, et, d'un geste instinctif, vous essayez de saisir votre arme, mais elle a disparu. Vous êtes désormais sans défense contre les Gloks cruels et avant que toute lumière s'éteigne, vous apercevez dans une ultime vision l'extrémité de la lance qui s'abat à présent sur votre gorge. Votre mission vient de prendre fin.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
-    "lien": [
+    "effet": [
       {
-        "page": "352",
+        "type": "mort",
+        "valeur": 1,
         "cond": null
-      },
+      }
+    ],
+    "lien": [
       {
         "page": "47",
         "cond": [
@@ -1208,12 +1212,14 @@
     "text": "Il semble que le ciel soit resté sourd à vos prières car un instant plus tard, une lance siffle à vos oreilles et vient se planter dans le cou de votre cheval. Celui-ci pousse un hennissement de douleur puis s'abat en avant. Vous roulez tous deux dans la poussière du chemin et vous vous retrouvez coincé sous le cadavre de votre monture. Avant de fermer les yeux à jamais, vous avez le temps de saisir une dernière vision : les fers de lance que les Gloks vous auront, dans quelques secondes, enfoncés profondément dans la poitrine. Votre mission a échoué.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
-    "lien": [
+    "effet": [
       {
-        "page": "352",
+        "type": "mort",
+        "valeur": 1,
         "cond": null
-      },
+      }
+    ],
+    "lien": [
       {
         "page": "120",
         "cond": [
@@ -1308,12 +1314,14 @@
     "text": "Avant que les ténèbres vous engloutissent, vous apercevez l’éclat d’une longue lame de couteau. Votre nom s’ajoutera à la liste des victimes du Sage et de son fils, le Voleur, celui-là même qui vient de vous trancher la gorge. Votre mission est terminée.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
-    "lien": [
+    "effet": [
       {
-        "page": "352",
+        "type": "mort",
+        "valeur": 1,
         "cond": null
-      },
+      }
+    ],
+    "lien": [
       {
         "page": "152",
         "cond": [
@@ -2088,13 +2096,15 @@
     "text": "Tout semble se dérouler au ralenti tandis que vous décrivez dans les airs un grand arc de cercle. Dans la rue au-dessous, vous distinguez la foule qui grouille sur toute la largeur de la chaussée et vous apercevez, sur votre droite, un nid de moineaux, blotti dans une gouttière. Vous entendez alors leurs pépiements affolés lorsque vous atterrissez avec fracas sur le toit d’en face. C’est malheureusement la dernière chose que vous entendrez, car les tuiles cèdent sous le choc et vous passez à travers les quatre étages de l’Auberge de la Pantoufle Verte. Inutile de préciser que vous vous êtes rompu le cou plusieurs fois et qu’il ne reste de vous qu’un misérable petit tas de chair et d’os brisés. Votre mission s’achève ici, en même temps que votre vie.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "129",
         "cond": [
@@ -2401,13 +2411,15 @@
     "text": "Après avoir marché pendant une heure, les Drakkarims s'arrêtent soudain tandis qu'une énorme créature couverte d'écailles grises s'approche sur le chemin. Lorsque la bête répugnante se trouve tout près de vous, son haleine fétide vous fait grimacer. Le monstre pousse un rugissement et vous saisit la tête entre ses pattes palmées. Vous entendez alors un craquement: votre colonne vertébrale vient de se briser à hauteur de votre cou. C'est d'ailleurs le dernier son qui vous parvient en ce bas monde, car vous mourez à l'instant même. Votre mission s'achève ici.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      { 
-        "page": "352",
-        "cond": null 
-      },
       {
         "page": "106",
         "cond": [
@@ -2841,13 +2853,15 @@
     "text": "Votre blessure vous donne le tournis et vous titubez parmi les arbres comme un aveugle. Soudain, vous tombez en avant comme si le sol s'était dérobé sous vos pieds ; c'est, d'ailleurs, ce qui s'est passé : vous venez d'être précipité tête la première dans un piège à ours. Vous levez alors les yeux et vous distinguez les silhouettes de quatre Drakkarims qui tendent leurs arcs en vous visant de leurs flèches. Ils tirent tous les quatre en même temps et vous entendez des grognements de triomphe s'échapper de leurs lèvres, tordues en un rictus répugnant. Les quatre flèches s'enfoncent profondément dans votre poitrine et toute lumière s'éteint. Votre mission a échoué.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "235",
         "cond": [
@@ -3398,9 +3412,14 @@
     "text": "Vous plissez les yeux et vous scrutez le feuillage des arbres pour voir s'il ne s'y cache pas un archer. Votre attente ne dure guère car, quelques instants plus tard, une douleur fulgurante vous déchire la poitrine et vous êtes projeté en arrière sous le choc de trois flèches qui vous transpercent le corps. Deux de ces flèches se sont enfoncées profondément dans votre thorax et la troisième s'est plantée dans votre cuisse. Avant de sombrer dans les ténèbres, vous contemplez dans une ultime vision le feuillage des arbres qui forme un dôme au-dessus de vous et une libellule qui vient se poser sur la boucle de votre ceinture. Votre mission s'achève ici.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "lien": [
-      { "page": "352", "cond": null },
       {
         "page": "295",
         "cond": [
@@ -3903,7 +3922,6 @@
     "text": "Ce qui reste de vous se trouve encastré dans l'escalier, à une profondeur de deux mètres, sous la masse d'un énorme bloc de granité. Votre mission s'achève ici, en même temps que votre vie.",
     "combat": false,
     "lien": [
-      { "page": "352", "cond": null },
       {
         "page": "104",
         "cond": [
@@ -3917,7 +3935,13 @@
     ],
     "id": 219,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null
   },
   {
@@ -4172,7 +4196,6 @@
     "text": "Vous sautez de la roulotte qui file à bonne allure, mais vous vous recevez mal et vous vous brisez la cheville en tombant. La douleur est insupportable : elle vous fait perdre connaissance. Hélas ! vous ne vous réveillerez jamais. Peut-être, cependant, serez-vous intéressé d'apprendre que votre tête orne désormais la selle d'un Kraan ? Votre mission s'est achevée ici, en même temps que votre vie.",
     "combat": false,
     "lien": [
-      { "page": "352", "cond": null},
       {
         "page": "78",
         "cond": [
@@ -4186,7 +4209,13 @@
     ],
     "id": 234,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null
   },
   {
@@ -4614,13 +4643,15 @@
     "text": "La pièce devient de plus en plus froide. Peu à peu, vous sentez une odeur de soufre puis, bientôt, les échos d'un chant vous parviennent : il y a quelqu'un d'autre dans ces souterrains. Soudain, une brèche s'ouvre dans le mur et l'extrémité d'un bâton noir apparaît. Un éclair bleu jaillit alors de ce bâton et vient vous frapper en pleine poitrine. Vos forces lentement vous quittent tandis que la silhouette d'un vieil homme vêtu d'une ample toge noire se dessine devant vous, dans une sorte de brouillard. L'homme lève un poignard et s'apprête à vous égorger : c'est la dernière vision que vous emporterez de ce monde. Votre mission s'achève ici, en même temps que votre vie.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "211",
         "cond": [
@@ -4854,13 +4885,15 @@
     "text": "Vous vous sentez très faible. Le venin du serpent circule à présent dans votre sang et vos muscles se raidissent, puis se détendent. Vos jambes bientôt se dérobent et vous vous enfoncez alors dans la vase pestilentielle du marécage qui vous engloutit en quelques instants. Votre vie vient de s'achever.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "299",
         "cond": [
@@ -5163,13 +5196,15 @@
     "text": "Ces messagers de la mort que sont les Loups Maudits, trop heureux de vous annoncer la vôtre, vous encerclent et vous attaquent. Vous vous défendez vaillamment, mais c'est inutile car ils sont trop nombreux. Votre corps bientôt se vide de son sang et l'ombre éternelle vous envahit. Avant de fermer les yeux, vous apercevez les tours de Holmgard qui scintillent au soleil : c'est la dernière vision que vous emporterez de ce monde. Votre mission a échoué.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "58",
         "cond": [
@@ -5283,13 +5318,15 @@
     "text": "La dernière sensation que vous emporterez de ce monde n'a rien de réjouissant : vous êtes, en effet, littéralement englouti dans d'épaisses ténèbres où vous mènerez désormais une existence d'esclave dans un univers hors du temps et de l'espace. Votre maître pour l'éternité est une entité maléfique dont l'origine se perd dans la nuit des temps. Votre aventure vient de prendre fin.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "71",
         "cond": [
@@ -5571,13 +5608,15 @@
     "text": "Les échos de la bataille s'évanouissent peu à peu derrière vous. Et soudain, vous vous retrouvez plaqué au sol : trois Drakkarims, cachés dans le feuillage d'un arbre, juste au-dessus de votre tête, vous ont sauté dessus. Il est inutile d'essayer de lutter : ils sont trop nombreux et trop robustes pour espérer pouvoir leur échapper. Vous les entendez alors grogner de plaisir tandis qu'ils lèvent leurs lances pour vous achever : c'est la dernière vision que vous emporterez de ce monde. Votre mission s'achève ici, en même temps que votre vie.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "97",
         "cond": [
@@ -5653,13 +5692,15 @@
     "text": "Vous avez à peine fait dix pas lorsque le corbeau se met à croasser pour avertir l'étranger de votre présence. Le personnage fait alors volte-face et lance un cri perçant qui vous glace le sang et vous noue l'estomac sous l'effet d'une peur panique. Car c'est un Vordak que vous avez devant vous, un des plus cruels lieutenants des Maîtres des Ténèbres. C'est également une créature qui appartient au monde des morts vivants. En quelques secondes, une horde de Gloks apparaissent à ses côtés et vous attaquent. Vous vous défendez vaillamment, mais vous succombez sous le nombre. Et bientôt, les doigts squelettiques du Vordak se referment inexorablement sur votre gorge : c'est la dernière sensation que vous emporterez de ce monde. Votre mission s'achève ici en même temps que votre vie.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "121",
         "cond": [
@@ -5985,13 +6026,15 @@
     "text": "Quelques minutes plus tard, vous voyez les Kraans apparaître au- dessus d'une petite colline située derrière vous. Vous en dénombrez au moins seize qui sont chacun montés par deux Gloks. Ces derniers sont armés de lances et coiffés de casques de bronze. Vous les entendez aussitôt pousser des grognements satisfaits : ils vous ont repéré... Vous bondissez alors en direction de l'entrée du tunnel quelque huit mètres plus bas, mais votre botte se prend dans un buisson et vous tombez de tout votre long. Dans votre chute, vous avez lâché votre Arme et vous êtes désormais à la merci de vos adversaires. Fort heureusement, votre fin est rapide: le premier Glok qui s'approche de vous enfonce sa lance dans votre poitrine et vous transperce le cœur. Vous mourez sur le coup. Votre mission s'achève ici, en même temps que votre vie.",
     "combat": false,
     "objet": [],
-    "effet": null,
+    "effet": [
+      {
+        "type": "mort",
+        "valeur": 1,
+        "cond": null
+      }
+    ],
     "ennemi": null,
     "lien": [
-      {
-        "page": "352",
-        "cond": null
-      },
       {
         "page": "280",
         "cond": [

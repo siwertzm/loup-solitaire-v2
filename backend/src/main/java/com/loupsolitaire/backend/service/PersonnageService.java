@@ -305,6 +305,13 @@ public class PersonnageService {
         nouveauChapitre.getEffets().stream()
                 .filter(effet -> effet.getType() == TypeEffet.VOL)
                 .forEach(effet -> effetChapitreService.appliquerEffetVol(personnage, effet));
+
+        // MORT narrative (ex. chapitre 53) : appliquee en dernier, comme
+        // mot de la fin du chapitre - les autres effets (VOL, ENDURANCE...)
+        // n'ont plus d'importance une fois le personnage mort.
+        nouveauChapitre.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.MORT)
+                .forEach(effet -> effetChapitreService.appliquerEffetMort(personnage, effet));
     }
 
     // MVP1 : apres une DEFAITE en combat, le joueur peut payer 1 coin pour
@@ -345,6 +352,11 @@ public class PersonnageService {
 
         personnage.setChapitreActuel(precedent);
         personnage.setEnduranceActuelle(personnage.getEnduranceMax());
+        // Contrepartie de CombatService.appliquerDegatsAuJoueur (DEFAITE ->
+        // mort=true) : c'est ICI, pas dans ressusciter(), que la mort en
+        // combat se leve, puisque le retour au chapitre precedent fait
+        // partie integrante de la sanction de cette mort-la.
+        personnage.setMort(false);
         // Nouveau tirage FIGE, comme pour tout changement de chapitre.
         personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
         personnageRepository.save(personnage);
@@ -374,6 +386,23 @@ public class PersonnageService {
     public void ressusciter(Personnage personnage) {
         if (!personnage.isMort()) {
             throw new IllegalArgumentException("Ce personnage n'est pas mort");
+        }
+
+        // La mort peut venir d'une DEFAITE en combat (voir
+        // CombatService.appliquerDegatsAuJoueur) : dans ce cas precis,
+        // ressusciter() n'est PAS la bonne issue (elle resterait sur ce
+        // meme chapitre de combat perdu, Combat.statut restant DEFAITE et
+        // bloquant tout nouveau tour) - il faut passer par
+        // revenirApresDefaite(), qui recule au chapitre precedent.
+        Integer chapitreActuelId = personnage.getChapitreActuel().getId();
+        boolean combatPerduEnAttente = combatRepository
+                .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitreActuelId)
+                .filter(combat -> combat.getStatut() == StatutCombat.DEFAITE)
+                .isPresent();
+        if (combatPerduEnAttente) {
+            throw new IllegalArgumentException(
+                    "Cette mort vient d'une defaite en combat : ressuscitez-le via "
+                            + "POST /personnages/{id}/chapitre/revenir-apres-defaite");
         }
 
         boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()

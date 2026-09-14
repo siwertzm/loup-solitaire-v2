@@ -307,6 +307,15 @@ public class CombatService {
 
         if (nouvelleEndurance <= 0) {
             combat.setStatut(StatutCombat.DEFAITE);
+            // Unifie ce cas avec les deux autres causes de mort (chapitre
+            // narratif, perte d'endurance hors combat) derriere le meme
+            // flag Personnage.mort. La sortie de cet etat ne passe PAS par
+            // ressusciter() (qui resterait sur ce meme chapitre de combat)
+            // mais par PersonnageService.revenirApresDefaite(), qui remet
+            // mort=false en meme temps qu'il fait reculer le personnage au
+            // chapitre precedent - seule issue coherente apres une mort en
+            // combat.
+            personnage.setMort(true);
         }
     }
 
