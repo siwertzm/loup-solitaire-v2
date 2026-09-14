@@ -36,7 +36,16 @@ export class NavBarComponent {
   /** Nécessaire pour construire le lien vers le chapitre et ouvrir le bon sac. */
   readonly personnageId = input.required<string>();
 
+  /**
+   * Mort HORS combat (voir Personnage.mort, transmis par la page parente
+   * qui a déjà chargé le personnage — pas d'appel HTTP supplémentaire ici).
+   * Bloque l'ouverture du sac : les actions qu'il permet (consommer,
+   * retirer un objet) seraient de toute façon refusées par le backend.
+   */
+  readonly mort = input(false);
+
   ouvrirSac(): void {
+    if (this.mort()) return;
     this.inventaireSheet.ouvrir(this.personnageId());
   }
 

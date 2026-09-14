@@ -14,7 +14,7 @@
     <span>FICHE</span>
   </button>
 
-  <button type="button" class="nav-item" (click)="ouvrirSac()">
+  <button type="button" class="nav-item" [disabled]="mort()" (click)="ouvrirSac()">
     <img src="assets/icon/sac.png" alt="sac" class="nav-icon" />
     <span>SAC</span>
   </button>

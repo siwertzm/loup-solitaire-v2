@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true" class="equipement">
-  <div class="ecran" [class.grise]="mort()">
-    <div class="entete">
+  <div class="ecran">
+    <div class="entete" [class.grise]="mort()">
       <div class="avatar">{{ initiale() }}</div>
       <div class="identite">
         <h1 class="titre">{{ nom() }}</h1>
@@ -9,18 +9,20 @@
     </div>
 
     <div class="tirages">
-      <div class="bloc stat-card habilete-card">
+      <div class="bloc stat-card habilete-card" [class.grise]="mort()">
         <span class="cle">HABILITE</span>
         <span class="stat-value">{{ habilite() }}</span>
         <span class="stat-detail">{{ habiliteMax() }} Base</span>
       </div>
 
-      <div class="bloc stat-card endurance-card">
+      <div class="bloc stat-card endurance-card" [class.grise]="mort()">
         <span class="cle">ENDURANCE</span>
         <span class="stat-value">{{ endurance() }}</span>
         <span class="stat-detail">{{ enduranceMax() }} Max</span>
       </div>
 
+      <!-- Jamais grisé, même mort : le joueur doit pouvoir voir (et
+           utiliser) ses pièces premium pour se ressusciter. -->
       <div class="bloc stat-card or-card">
         <span class="cle">PIÈCES PREMIUM</span>
         <span class="stat-value">{{ piecesPremium() }}</span>
@@ -28,7 +30,7 @@
       </div>
     </div>
 
-    <div class="feuille">
+    <div class="feuille" [class.grise]="mort()">
       <div class="disciplines">
         <span class="bloc-titre">
           <div>DISCIPLINES KAÏ</div>
@@ -58,7 +60,7 @@
       </div>
     </div>
   </div>
-  <app-nav-bar [personnageId]="personnageId()!" />
+  <app-nav-bar [personnageId]="personnageId()!" [mort]="mort()" />
 
   @if (description(); as discipline) {
     <div class="voile" (click)="fermerDescription()">

@@ -38,12 +38,16 @@ ion-content.equipement {
   gap: 11px;
   padding: 24px 22px 130px;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
+}
 
-  &.grise {
-    filter: grayscale(1);
-    opacity: 0.4;
-    pointer-events: none;
-  }
+// Réutilisable : appliquée individuellement aux blocs à assombrir/désactiver
+// quand le personnage est mort. PAS sur .ecran directement, pour épargner
+// l'encart Pièces Premium (.or-card) — le joueur doit pouvoir le consulter
+// (et, à terme, en acheter) même mort.
+.grise {
+  filter: grayscale(1);
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .entete {
