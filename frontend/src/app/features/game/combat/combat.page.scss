@@ -252,9 +252,66 @@ $beige: #e0d3b4;
 }
 
 .plaque-ennemi {
+  position: relative;
+  top: 0;
+  left: 0;
+  border-radius: 4px 14px 4px 14px;
+}
+
+/****************************
+ *  PILE DE CARTES (combat multi-ennemis)
+ *  Le wrapper reprend le positionnement qu'avait .plaque-ennemi ;
+ *  la plaque active passe en position relative pour se poser dessus.
+ ****************************/
+.pile-plaque-ennemi {
+  position: absolute;
   top: 352px;
   left: 14px;
-  border-radius: 4px 14px 4px 14px;
+  width: 196px;
+  // Nécessaire pour que les cartes en z-index négatif (ci-dessous) restent
+  // "juste derrière" la plaque, dans le contexte d'empilement de ce
+  // wrapper. Sans z-index explicite ici (donc avec z-index: auto), un
+  // enfant en z-index: -1 ne crée pas de contexte local : il retombe au
+  // niveau de l'arène entière et se retrouve sous les fonds du décor,
+  // invisible — sauf brièvement pendant l'animation .vaincu, dont
+  // l'opacity animée crée temporairement (et involontairement) ce même
+  // contexte d'empilement.
+  z-index: 1;
+
+  // Cartes "en attente" derrière la plaque active : de simples fonds
+  // parchemin décalés et pivotés, sans contenu, pour suggérer une pile.
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 4px 14px 4px 14px;
+    background: $parchemin;
+    border: 2px solid $encre;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &.pile-2::before,
+  &.pile-3::before {
+    opacity: 1;
+    transform: translate(9px, 9px) rotate(8deg);
+  }
+
+  &.pile-3::after {
+    opacity: 1;
+    transform: translate(4px, 4px) rotate(4deg);
+  }
+
+  // Disparition/réapparition synchronisées avec l'illustration de l'ennemi
+  // (voir .combattant-ennemi .illustration.vaincu) : même animation, pour
+  // que toute la pile s'efface au même rythme que le portrait quand
+  // l'ennemi s'effondre, et réapparaisse d'un coup avec le suivant.
+  &.vaincu {
+    animation: combat-ennemi-vaincu 0.55s ease forwards;
+  }
 }
 
 .plaque-joueur {
@@ -833,4 +890,3 @@ $beige: #e0d3b4;
 
   &:active { transform: translateY(2px); }
 }
-

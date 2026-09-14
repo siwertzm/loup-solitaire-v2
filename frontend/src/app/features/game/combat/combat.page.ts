@@ -183,6 +183,18 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     return e && e.enduranceMax ? Math.round((e.enduranceActuelle / e.enduranceMax) * 100) : 0;
   });
 
+  /**
+   * Taille de l'effet de pile de cartes affiché derrière la plaque de vie
+   * ennemie, pour suggérer visuellement un combat à plusieurs adversaires.
+   * Basée sur le nombre total d'ennemis de ce combat (pas le nombre
+   * restant : la pile ne "rétrécit" pas à chaque adversaire vaincu),
+   * plafonnée à 3 cartes au-delà de quoi l'empilement deviendrait illisible.
+   */
+  readonly tailleFilePile = computed(() => {
+    const total = this.combat()?.ennemis.length ?? 1;
+    return Math.min(Math.max(total, 1), 3);
+  });
+
   private classeBarre(ratio: number): string {
     if (ratio > 0.5) return 'haut';
     if (ratio > 0.2) return 'moyen';

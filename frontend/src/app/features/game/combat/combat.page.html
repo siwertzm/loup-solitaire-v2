@@ -18,16 +18,24 @@
         </div>
 
         @if (ennemiActif(); as ennemi) {
-          <!-- plaque de vie ennemie -->
-          <div class="plaque plaque-ennemi">
-            <div class="plaque-titre">
-              <span class="nom">{{ ennemi.nom }}</span>
-              <span class="hab">HAB {{ ennemi.habilite }}</span>
-            </div>
-            <div class="plaque-barre">
-              <span class="etiquette">END</span>
-              <div class="jauge">
-                <div class="remplissage" [class]="'remplissage ' + classeBarreEnnemi()" [style.width.%]="pctEnnemi()"></div>
+          <!-- plaque de vie ennemie, avec effet de pile de cartes en combat
+               multi-ennemis : la pile entière s'efface/apparaît en même
+               temps que l'illustration (voir ennemiVaincu()). -->
+          <div
+            class="pile-plaque-ennemi"
+            [class]="'pile-plaque-ennemi pile-' + tailleFilePile()"
+            [class.vaincu]="ennemiVaincu()"
+          >
+            <div class="plaque plaque-ennemi">
+              <div class="plaque-titre">
+                <span class="nom">{{ ennemi.nom }}</span>
+                <span class="hab">HAB {{ ennemi.habilite }}</span>
+              </div>
+              <div class="plaque-barre">
+                <span class="etiquette">END</span>
+                <div class="jauge">
+                  <div class="remplissage" [class]="'remplissage ' + classeBarreEnnemi()" [style.width.%]="pctEnnemi()"></div>
+                </div>
               </div>
             </div>
           </div>
