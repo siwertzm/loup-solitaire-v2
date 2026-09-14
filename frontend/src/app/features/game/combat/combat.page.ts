@@ -17,6 +17,13 @@ interface Message {
   txt: string;
   defaite?: boolean;
   ennemiVaincu?: boolean;
+  /** Un nouvel ennemi vient de prendre le relais (combat multi-ennemis) :
+   * réinitialise le signal ennemiVaincu, sinon l'illustration du nouvel
+   * ennemi hériterait de l'état "vaincu" du précédent. */
+  nouvelEnnemi?: boolean;
+  /** Id de l'ennemi vers lequel avancer ennemiAffocheId quand ce message
+   * est joué (voir nouvelEnnemi ci-dessus). */
+  ennemiId?: string;
   hit?: Cible;
   actualiser?: 'ennemi' | 'joueur';
   de?: {
@@ -91,12 +98,27 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   readonly texte = computed(() => (this.tapeEnCours() ? this.msg().slice(0, this.tape()) : this.msg()));
 
+  /**
+   * Id de l'ennemi actuellement affiché (nom, portrait, barre d'ENDURANCE).
+   * Distinct du flag `.actif` renvoyé par le backend : dès qu'un ennemi
+   * meurt en combat multi-ennemis, le backend bascule immédiatement `.actif`
+   * sur le suivant dans la MÊME réponse — si l'UI suivait ce flag
+   * directement, portrait/nom/barre changeraient AVANT même que la
+   * narration ("X s'effondre, vaincu.") ait fini de s'afficher. On
+   * n'avance donc ennemiAffocheId qu'au moment précis où le message
+   * "nouvelEnnemi" (voir construireMessages) est joué dans la boîte de
+   * dialogue.
+   */
+  private readonly ennemiAffocheId = signal<string | null>(null);
+
   // --- Données dérivées ---------------------------------------------------
   readonly ennemiActif = computed<CombatEnnemiResponse | null>(() => {
     const c = this.combat();
     if (!c) return null;
 
+    const id = this.ennemiAffocheId();
     return (
+      (id ? c.ennemis.find((e) => e.id === id) : undefined) ??
       c.ennemis.find((e) => e.actif) ??
       c.ennemis.find((e) => !e.vaincu) ??
       c.ennemis.find((e) => e.vaincu) ??
@@ -217,6 +239,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.erreur.set(null);
     this.joueurVaincu.set(false);
     this.ennemiVaincu.set(false);
+    this.ennemiAffocheId.set(null);
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
@@ -251,6 +274,12 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   private combatCharge(c: CombatResponse): void {
     this.combat.set(c);
     this.chargement.set(false);
+    // Verrouille l'ennemi affiché sur l'actif du moment (voir le
+    // commentaire sur ennemiAffocheId) : il n'avancera plus qu'au rythme
+    // de la narration, pas à celui des changements bruts de `.actif`.
+    this.ennemiAffocheId.set(
+      c.ennemis.find((e) => e.actif)?.id ?? c.ennemis.find((e) => !e.vaincu)?.id ?? null,
+    );
 
     if (c.statut === 'DEFAITE') {
       // Jamais d'écran FIN à bouton pour une défaite (voir prochain()),
@@ -449,6 +478,22 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     const ennemiVaincu = ennemiAvant && combat.ennemis.find((e) => e.id === ennemiAvant.id)?.vaincu;
     if (action === 'ATTAQUE' && ennemiVaincu) {
       messages.push({ txt: `${nomEnnemi} s'effondre, vaincu.`, ennemiVaincu: true });
+
+      // Combat multi-ennemis (voir CombatService.passerAuProchainEnnemi côté
+      // backend) : un nouvel adversaire prend le relais dans le même
+      // combat. Sans cette introduction, son illustration hériterait
+      // silencieusement de la classe "vaincu" du précédent, et sa barre
+      // d'ENDURANCE apparaîtrait sans transition ni explication.
+      const nouvelEnnemiActif = combat.ennemis.find((e) => e.actif && e.id !== ennemiAvant?.id);
+      if (nouvelEnnemiActif) {
+        messages.push({ txt: `${nouvelEnnemiActif.nom} prend le relais !` });
+        messages.push({
+          txt: `HABILETÉ ${nouvelEnnemiActif.habilite} — ENDURANCE ${nouvelEnnemiActif.enduranceMax}.`,
+          stats: { habilite: nouvelEnnemiActif.habilite, endurance: nouvelEnnemiActif.enduranceMax },
+          nouvelEnnemi: true,
+          ennemiId: nouvelEnnemiActif.id,
+        });
+      }
     }
 
     if (tour.degatsSubis !== null) {
@@ -569,6 +614,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.appliquerMiseAJourEnAttente(m.actualiser);
     if (m.ennemiVaincu) {
       this.ennemiVaincu.set(true);
+    }
+    if (m.nouvelEnnemi) {
+      this.ennemiVaincu.set(false);
+      if (m.ennemiId) this.ennemiAffocheId.set(m.ennemiId);
     }
     if (m.defaite) {
       this.joueurVaincu.set(true);
