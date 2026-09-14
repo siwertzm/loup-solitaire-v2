@@ -53,14 +53,6 @@ const IMAGES: Record<string, string> = {
   lance: 'assets/icon/lance.png',
 };
 
-/** Icônes des objets de la table de départ (clé = objetId du backend). */
-const ICONES: Record<string, string[]> = {
-  hache: ['M6 19l7-7', 'M13.5 4.5h6v5h-6z', 'M13.5 7h-2l-2 2 2.5 2.5 2-2z'],
-  masse: ['M6 20l6-6', 'M16 2v2M16 12v2M10 8h2M20 8h2'],
-  baton: ['M6 20L18 5', 'M16 3.5h3.5V7'],
-  lance: ['M12 21V9', 'M12 3l3 5H9l3-5z', 'M9.5 11.5h5']
-};
-
 const ORDRE_TABLE = [
   'glaive',
   'epee',
@@ -119,13 +111,6 @@ export class InventaireDepartPage {
   readonly imageObjet = computed(() => {
     const id = this.roulantObjet() ? this.faceObjet() : this.objet();
     return id ? (IMAGES[id] ?? null) : null;
-  });
-
-  /** Trait du dé d'objet : icône SVG pendant/après le tirage (fallback si pas d'image). */
-  readonly traitsObjet = computed(() => {
-    const id = this.roulantObjet() ? this.faceObjet() : this.objet();
-    if (!id || IMAGES[id]) return [];
-      return ICONES[id] ?? [];
   });
 
   private objetItem(): InventaireItem | null {
