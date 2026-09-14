@@ -38,6 +38,12 @@ ion-content.equipement {
   gap: 11px;
   padding: 24px 22px 130px;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
+
+  &.grise {
+    filter: grayscale(1);
+    opacity: 0.4;
+    pointer-events: none;
+  }
 }
 
 .entete {
@@ -464,6 +470,7 @@ ion-content.equipement {
   left: 0;
   z-index: 20;
   display: flex;
+  flex-direction: column;
   padding: 12px 22px;
   gap: 10px;
 
@@ -476,6 +483,24 @@ ion-content.equipement {
     font-size: 14px;
     text-align: center;
   }
+}
+
+.pied-ligne {
+  display: flex;
+  gap: 10px;
+}
+
+.ressusciter {
+  width: 100%;
+  border: none;
+  border-radius: 11px;
+  padding: 17px;
+  background: $cuivre;
+  color: $foret;
+  font-size: 13.5px;
+  font-weight: bold;
+  letter-spacing: 0.18em;
+  cursor: pointer;
 }
 
 .valider {

@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
@@ -21,7 +21,7 @@ interface DisciplineAffichee {
 @Component({
   selector: 'app-personnage',
   standalone: true,
-  imports: [IonContent, IonIcon, TranslatePipe, NavBarComponent],
+  imports: [IonContent, IonIcon, TranslatePipe, NavBarComponent, RouterLink],
   templateUrl: './personnage.page.html',
   styleUrl: './personnage.page.scss',
 })
@@ -46,8 +46,18 @@ export class PersonnagePage implements ViewWillEnter {
   readonly endurance = computed(() => this.personnage()?.enduranceActuelle ?? 0);
   readonly enduranceMax = computed(() => this.personnage()?.enduranceMax ?? 0);
   readonly armeMaitrisee = computed(() => this.personnage()?.armeMaitrisee ?? null);
+  // Mort HORS combat (chapitre narratif ou perte d'endurance — voir
+  // Personnage.mort). Grise toute la fiche et ne laisse que Supprimer /
+  // Changer de personnage / Ressusciter (voir template). La résurrection
+  // proprement dite (POST /ressusciter, avec le cas particulier du lien de
+  // retour narratif) reste centralisée dans ChapitrePage : ce bouton se
+  // contente d'y renvoyer plutôt que de dupliquer cette logique ici.
+  readonly mort = computed(() => this.personnage()?.mort ?? false);
   readonly couronnes = computed(
     () => this.personnage()?.inventaire.find((item) => item.categorie === 'BOURSE')?.quantite ?? 0,
+  );
+  readonly piecesPremium = computed(
+    () => this.personnage()?.inventaire.find((item) => item.objetId === 'coin')?.quantite ?? 0,
   );
   readonly disciplines = computed(() => this.personnage()?.disciplines ?? []);
   readonly toutesDisciplines = signal<DisciplineResume[]>([]);

@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true" class="equipement">
-  <div class="ecran">
+  <div class="ecran" [class.grise]="mort()">
     <div class="entete">
       <div class="avatar">{{ initiale() }}</div>
       <div class="identite">
@@ -22,9 +22,9 @@
       </div>
 
       <div class="bloc stat-card or-card">
-        <span class="cle">OR</span>
-        <span class="stat-value">{{ couronnes() }}</span>
-        <span class="stat-detail">50 Max</span>
+        <span class="cle">PIÈCES PREMIUM</span>
+        <span class="stat-value">{{ piecesPremium() }}</span>
+        <span class="stat-detail">Achetez des pièces</span>
       </div>
     </div>
 
@@ -78,12 +78,26 @@
       @if (erreur()) {
         <div class="erreur">{{ erreur() | translate }}</div>
       }
-      <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="ouvrirConfirmationSuppression()">
-        {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
-      </button>
-      <button type="button" class="valider" (click)="menu()">
-        CHANGER DE PERSONNAGE
-      </button>
+      @if (mort()) {
+        <!-- La résurrection elle-même (avec le cas du lien de retour
+             narratif) reste sur ChapitrePage : on y renvoie plutôt que de
+             dupliquer cette logique ici. -->
+        <button
+          type="button"
+          class="ressusciter"
+          [routerLink]="['/personnages', personnageId(), 'chapitre']"
+        >
+          RESSUSCITER x1 PIÈCE PREMIUM
+        </button>
+      }
+      <div class="pied-ligne">
+        <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="ouvrirConfirmationSuppression()">
+          {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
+        </button>
+        <button type="button" class="valider" (click)="menu()">
+          CHANGER DE PERSONNAGE
+        </button>
+      </div>
     </div>
 
   @if (confirmationSuppression()) {
