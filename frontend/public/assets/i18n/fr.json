@@ -7,11 +7,11 @@
   "AUTH": {
     "LOGIN": {
       "TITRE": "Connexion",
-      "INTRODUCTION": "Reprends ton aventure là où tu l'as laissée.",
+      "INTRODUCTION": "Reprenez votre aventure là où vous l'avez laissée.",
       "CHAMP_IDENTIFIANT_LABEL": "Username ou email",
-      "CHAMP_IDENTIFIANT_PLACEHOLDER": "Ton identifiant",
+      "CHAMP_IDENTIFIANT_PLACEHOLDER": "Votre identifiant",
       "CHAMP_MOT_DE_PASSE_LABEL": "Mot de passe",
-      "CHAMP_MOT_DE_PASSE_PLACEHOLDER": "Ton mot de passe",
+      "CHAMP_MOT_DE_PASSE_PLACEHOLDER": "Votre mot de passe",
       "BOUTON_CONNEXION": "Entrer dans l'aventure",
       "BOUTON_CONNEXION_EN_COURS": "Connexion...",
       "SEPARATEUR_OU": "OU",
@@ -20,14 +20,14 @@
     },
     "REGISTER": {
       "TITRE": "Inscription",
-      "INTRODUCTION": "Commence une nouvelle aventure.",
+      "INTRODUCTION": "Commencez une nouvelle aventure.",
       "CHAMP_USERNAME_LABEL": "Nom d'utilisateur",
-      "CHAMP_USERNAME_PLACEHOLDER": "Ton nom d'aventurier",
+      "CHAMP_USERNAME_PLACEHOLDER": "Votre nom d'aventurier",
       "CHAMP_EMAIL_LABEL": "Email",
-      "CHAMP_EMAIL_PLACEHOLDER": "Ton adresse email",
+      "CHAMP_EMAIL_PLACEHOLDER": "Votre adresse email",
       "CHAMP_PASSWORD_LABEL": "Mot de passe",
       "CHAMP_PASSWORD_DETAIL": "8 caractères minimum",
-      "CHAMP_PASSWORD_PLACEHOLDER": "Choisis un mot de passe",
+      "CHAMP_PASSWORD_PLACEHOLDER": "Choisissez un mot de passe",
       "BOUTON_CREER_COMPTE": "Créer mon compte",
       "BOUTON_CREATION_EN_COURS": "Création...",
       "SEPARATEUR_OU": "OU",
@@ -35,7 +35,7 @@
       "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou email déjà utilisé.",
       "SUCCES_SYMBOLE": "✓",
       "SUCCES_TITRE": "Compte créé",
-      "SUCCES_TEXTE": "Un email de vérification a été envoyé. Clique sur le lien qu'il contient avant de te connecter.",
+      "SUCCES_TEXTE": "Un email de vérification a été envoyé. Cliquez sur le lien qu'il contient avant de vous connecter.",
       "BOUTON_ALLER_LOGIN": "Aller à la connexion"
     }
   },
@@ -112,7 +112,7 @@
     "RETOUR": "‹ MENU",
     "TITRE": "Nouveau personnage",
     "CHAMP_NOM": "NOM DU PERSONNAGE",
-    "NOM": "Loup solitaire",
+    "NOM": "Loup Solitaire",
     "LABEL_TIRAGE_EN_ATTENTE": "LANCE LES DÉS",
     "LABEL_TIRAGE_FAIT": "TIRAGE DES CARACTÉRISTIQUES",
     "HABILETE": "HABILETÉ",
@@ -138,7 +138,7 @@
     "RETOUR": "‹ MENU",
     "SUR_TITRE": "Avant de partir",
     "TITRE": "Règles du jeu",
-    "PARAGRAPHE_1": "Au cours de l'initiation qui vous a permis de devenir un Seigneur Kaï, vous avez acquis une force exceptionnelle ; les deux éléments essentiels de cette force sont représentés par votre <b>HABILETÉ</b> AU COMBAT et VOTRE <b>ENDURANCE</b>. Avant d'entreprendre votre mission, il vous faudra mesurer exactement le degré d'efficacité de votre entraînement.",
+    "PARAGRAPHE_1": "Au cours de l'initiation qui vous a permis de devenir un Seigneur Kaï, vous avez acquis une force exceptionnelle ; les deux éléments essentiels de cette force sont représentés par votre <b>HABILETÉ</b> au combat et votre <b>ENDURANCE</b>. Avant d'entreprendre votre mission, il vous faudra mesurer exactement le degré d'efficacité de votre entraînement.",
     "PARAGRAPHE_HABILETE": "En appuyant sur le dé d'HABILETÉ, l'application tire pour vous un chiffre entre 0 et 9. Ce chiffre est automatiquement ajouté à 10, et le total s'inscrit directement dans la case HABILETÉ de votre personnage (si, par exemple, l'application tire le chiffre 4, vos points d'HABILETÉ seront de 14). Lorsque vous aurez à combattre, il faudra mesurer votre HABILETÉ à celle de votre adversaire. Il est donc souhaitable que votre total d'HABILETÉ soit le plus élevé possible.",
     "PARAGRAPHE_ENDURANCE": "En appuyant sur le dé d'ENDURANCE, l'application tire pour vous un second chiffre entre 0 et 9. Ce chiffre est automatiquement ajouté à 20, et le total s'inscrit directement dans la case ENDURANCE de votre personnage (à titre d'exemple, si l'application tire le chiffre 6, le total de vos points d'ENDURANCE sera de 26).",
     "PARAGRAPHE_MORT": "Si vous êtes blessé lors d'un combat, vous perdrez des points d'ENDURANCE et si jamais votre ENDURANCE tombe à zéro, vous saurez alors que vous venez d'être tué et que votre aventure est terminée. Au cours de votre mission, vous aurez la possibilité de récupérer des points d'ENDURANCE mais votre total d'ENDURANCE ne pourra en aucun cas dépasser celui dont vous disposiez au départ de votre mission.",
@@ -230,7 +230,7 @@
     "PARAGRAPHE_OBJETS_SPECIAUX_2": "Chacun de ces objets possède des propriétés bien particulières. Parfois, ces propriétés vous seront décrites au moment même de la découverte de l'objet, d'autres fois, il vous faudra attendre qu'elles se révèlent au cours de votre aventure. Pour vous aider à trouver votre chemin, vous disposez d'une carte que vous avez sauvée des cendres du monastère détruit.",
     "PARAGRAPHE_OR_2": "La monnaie en cours dans le royaume est la Couronne, qui se présente sous la forme d'une petite pièce d'or. Au cours de votre aventure, vous pourrez utiliser ces Couronnes pour vos frais de transport ou de nourriture, mais également, si besoin est, pour corrompre certains personnages peu scrupuleux. Nombre de créatures que vous serez amené à rencontrer possèdent des Couronnes d'or. Chaque fois que vous tuerez l'une de ces créatures, vous aurez le droit de vous emparer de ses pièces d'or et de les conserver dans votre bourse.",
     "PARAGRAPHE_NOURRITURE_2": "Tout au long de votre quête, vous aurez besoin de vous nourrir à intervalles réguliers. S'il ne vous reste plus de vivres lorsque vous serez dans l'obligation de prendre un repas, vous perdrez 3 points d'ENDURANCE. Mais si vous avez choisi, parmi les disciplines Kaï, celle de la chasse, vous n'aurez pas à rayer un repas de votre liste d'équipement chaque fois que vous devrez manger. La potion de guérison vous rend 4 points d'ENDURANCE lorsque vous la buvez après un combat. Mais vous ne disposez que d'une seule dose. Si, au cours de votre aventure, vous venez à découvrir d'autres potions, leurs effets vous seront indiqués en temps utile. Toutes les Potions de Guérison doivent être rangées dans votre sac à dos.",
-    "COMBAT": "REGLES DE COMBAT"
+    "COMBAT": "RÈGLES DE COMBAT"
   },
   "INTRO_COMBAT": {
     "PARAGRAPHE_1": "Vous allez à présent croiser la route d'ennemis résolus à vous barrer le chemin. Le combat qui vous attend ne se joue pas ici avec des jets de dés sur une feuille : c'est l'application qui tire pour vous, chiffre après chiffre, en comparant toujours votre HABILETÉ à celle de votre adversaire. Plus l'écart en votre faveur est grand, plus vos coups portent et plus les siens vous épargnent.",
@@ -445,12 +445,12 @@
     "MSG_ESQUIVE": "Vous esquivez le coup.",
     "MSG_PERD_ENDURANCE_GARDE": "Vous perdez {{degats}} points d'ENDURANCE \n( Garde amortie de {{pourcent}}% ).",
     "MSG_PERD_ENDURANCE": "Vous perdez {{degats}} points d'ENDURANCE.",
-    "MSG_OUVERTURE": "Vous saisissez une ouverture :\n +{{bonus}} HABILITÉ pour votre prochaine attaque.",
+    "MSG_OUVERTURE": "Vous saisissez une ouverture :\n +{{bonus}} HABILETÉ pour votre prochaine attaque.",
     "MSG_INTERROMPU": "Le combat est interrompu ; le récit continue."
   },
   "PERSONNAGE": {
     "SOUS_TITRE": "Novice de l'Ordre Kaï · Chapitre {{chapitre}}",
-    "LABEL_HABILETE": "HABILITE",
+    "LABEL_HABILETE": "HABILETÉ",
     "DETAIL_BASE": "{{valeur}} Base",
     "LABEL_ENDURANCE": "ENDURANCE",
     "DETAIL_MAX": "{{valeur}} Max",
