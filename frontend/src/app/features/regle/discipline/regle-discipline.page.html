@@ -12,9 +12,9 @@
 
       <div class="section"></div>
       @if (chargement()) {
-        <p>Chargement des disciplines...</p>
+        <p>{{ 'INTRO_CREATION.CHARGEMENT_DISCIPLINES' | translate }}</p>
       } @else if (erreur()) {
-        <p>{{ erreur() }}</p>
+        <p>{{ erreur() | translate }}</p>
       } @else {
         <div class="disciplines">
           @for (discipline of disciplines(); track discipline.id) {
