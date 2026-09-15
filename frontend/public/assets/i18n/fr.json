@@ -497,5 +497,15 @@
     "ERREUR_CHARGEMENT_OBJETS": "Erreur lors du chargement des objets :",
     "ERREUR_CONSOMMATION": "Erreur lors de la consommation de l'objet :",
     "ERREUR_RETRAIT": "Erreur lors du retrait de l'objet :"
+  },
+  "NAV_BAR": {
+    "ALT_CHAPITRE": "chapitre",
+    "ALT_FICHE": "fiche",
+    "ALT_SAC": "sac",
+    "ALT_JOURNAL": "journal",
+    "LABEL_CHAPITRE": "CHAPITRE",
+    "LABEL_FICHE": "FICHE",
+    "LABEL_SAC": "SAC",
+    "LABEL_JOURNAL": "JOURNAL"
   }
 }
