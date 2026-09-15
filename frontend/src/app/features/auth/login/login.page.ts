@@ -54,7 +54,7 @@ export class LoginPage {
       },
       error: () => {
         this.enCours.set(false);
-        this.erreur.set('Identifiants invalides, ou compte non vérifié.');
+        this.erreur.set('AUTH.LOGIN.ERREUR_IDENTIFIANTS');
       },
     });
   }

@@ -6,44 +6,44 @@
         <h1 id="login-title">{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
         <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
       </header>
-      <h2>Connexion</h2>
-      <p class="introduction">Reprends ton aventure là où tu l'as laissée.</p>
+      <h2>{{ 'AUTH.LOGIN.TITRE' | translate }}</h2>
+      <p class="introduction">{{ 'AUTH.LOGIN.INTRODUCTION' | translate }}</p>
 
       <form [formGroup]="form" (ngSubmit)="soumettre()">
         <div class="champ">
-          <label for="identifiant">Username ou email</label>
+          <label for="identifiant">{{ 'AUTH.LOGIN.CHAMP_IDENTIFIANT_LABEL' | translate }}</label>
           <ion-input
             id="identifiant"
             formControlName="identifiant"
             type="text"
             autocomplete="username"
-            placeholder="Ton identifiant"
+            [placeholder]="'AUTH.LOGIN.CHAMP_IDENTIFIANT_PLACEHOLDER' | translate"
           ></ion-input>
         </div>
 
         <div class="champ">
-          <label for="password">Mot de passe</label>
+          <label for="password">{{ 'AUTH.LOGIN.CHAMP_MOT_DE_PASSE_LABEL' | translate }}</label>
           <ion-input
             id="password"
             formControlName="password"
             type="password"
             autocomplete="current-password"
-            placeholder="Ton mot de passe"
+            [placeholder]="'AUTH.LOGIN.CHAMP_MOT_DE_PASSE_PLACEHOLDER' | translate"
           ></ion-input>
         </div>
 
         @if (erreur()) {
-          <ion-note class="erreur">{{ erreur() }}</ion-note>
+          <ion-note class="erreur">{{ erreur() | translate }}</ion-note>
         }
 
         <ion-button expand="block" type="submit" class="connexion" [disabled]="form.invalid || enCours()">
-          {{ enCours() ? 'Connexion...' : 'Entrer dans l\'aventure' }}
+          {{ enCours() ? ('AUTH.LOGIN.BOUTON_CONNEXION_EN_COURS' | translate) : ('AUTH.LOGIN.BOUTON_CONNEXION' | translate) }}
         </ion-button>
       </form>
 
-      <div class="separateur"><span>OU</span></div>
+      <div class="separateur"><span>{{ 'AUTH.LOGIN.SEPARATEUR_OU' | translate }}</span></div>
 
-      <a class="inscription" routerLink="/auth/register">Pas encore de compte ? <strong>S'inscrire</strong></a>
+      <a class="inscription" routerLink="/auth/register" [innerHTML]="'AUTH.LOGIN.LIEN_INSCRIPTION' | translate"></a>
     </section>
   </main>
 </ion-content>

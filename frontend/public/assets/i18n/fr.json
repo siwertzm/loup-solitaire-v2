@@ -7,10 +7,15 @@
   "AUTH": {
     "LOGIN": {
       "TITRE": "Connexion",
-      "CHAMP_IDENTIFIANT": "Nom d'utilisateur ou e-mail",
-      "CHAMP_MOT_DE_PASSE": "Mot de passe",
-      "BOUTON_CONNEXION": "Se connecter",
-      "LIEN_INSCRIPTION": "Pas encore de compte ? S'inscrire",
+      "INTRODUCTION": "Reprends ton aventure là où tu l'as laissée.",
+      "CHAMP_IDENTIFIANT_LABEL": "Username ou email",
+      "CHAMP_IDENTIFIANT_PLACEHOLDER": "Ton identifiant",
+      "CHAMP_MOT_DE_PASSE_LABEL": "Mot de passe",
+      "CHAMP_MOT_DE_PASSE_PLACEHOLDER": "Ton mot de passe",
+      "BOUTON_CONNEXION": "Entrer dans l'aventure",
+      "BOUTON_CONNEXION_EN_COURS": "Connexion...",
+      "SEPARATEUR_OU": "OU",
+      "LIEN_INSCRIPTION": "Pas encore de compte ? <strong>S'inscrire</strong>",
       "ERREUR_IDENTIFIANTS": "Identifiants invalides, ou compte non vérifié."
     },
     "REGISTER": {
