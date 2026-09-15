@@ -4,7 +4,7 @@
       <div class="stats-groupe" [class.grise]="mortAffichee()">
         <div class="barre-stat endurance">
           <div class="remplissage" [style.width.%]="endurancePourcentageAffichee()"></div>
-          <span class="texte-stat">ENDURANCE {{ enduranceAffichee() }}/{{ enduranceMax() }}</span>
+          <span class="texte-stat">{{ 'CHAPITRE_PAGE.LABEL_ENDURANCE' | translate: { actuelle: enduranceAffichee(), max: enduranceMax() } }}</span>
         </div>
       </div>
 
@@ -12,7 +12,7 @@
         class="avatar"
         [class.grise]="mortAffichee()"
         [routerLink]="['/personnage', personnageId()]"
-        aria-label="Ouvrir la fiche du personnage"
+        [attr.aria-label]="'CHAPITRE_PAGE.AVATAR_ARIA' | translate"
       >
         {{ initiale() }}
       </a>
@@ -35,7 +35,7 @@
             [class.leve]="ongletLeve() === 'objets'"
             (click)="selectionnerOnglet('objets')"
           >
-            <img src="assets/icon/all_items.png" alt="Objets" />
+            <img src="assets/icon/all_items.png" [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate" />
           </div>
         }
 
@@ -45,7 +45,7 @@
             [class.leve]="ongletLeve() === 'effets'"
             (click)="selectionnerOnglet('effets')"
           >
-            <img src="assets/icon/effets.png" alt="Effets" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_PAGE.ALT_EFFETS' | translate" />
           </div>
         }
       </div>
@@ -76,7 +76,7 @@
       <div class="texte">
         @if (ongletActif() === 'objets') {
           <div class="encart encart-objets">
-            <div class="encart-titre">OBJETS DISPONIBLES ICI</div>
+            <div class="encart-titre">{{ 'CHAPITRE_PAGE.TITRE_OBJETS' | translate }}</div>
 
             <app-chapitre-objets
               [objets]="objets()"
@@ -90,7 +90,7 @@
 
         @if (ongletActif() === 'effets') {
           <div class="encart encart-effets">
-            <div class="encart-titre">EFFETS DU CHAPITRE</div>
+            <div class="encart-titre">{{ 'CHAPITRE_PAGE.TITRE_EFFETS' | translate }}</div>
 
             <app-chapitre-effets
               [effets]="effets()"
@@ -138,7 +138,7 @@
                    échouerait volontairement côté backend. Le remède est
                    revenirApresDefaite(), qui recule au chapitre précédent
                    (rechargé ici même, sans navigation). -->
-              <p class="mort-texte">Vous avez été vaincu au combat.</p>
+              <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_COMBAT_TEXTE' | translate }}</p>
               @if (erreurRessusciter()) {
                 <p class="mort-erreur">{{ erreurRessusciter() }}</p>
               }
@@ -148,17 +148,13 @@
                 [disabled]="ressusciterEnCours()"
                 (click)="revenirApresDefaite()"
               >
-                @if (ressusciterEnCours()) {
-                  RETOUR...
-                } @else {
-                  RESSUSCITER x1 PIÈCE PREMIUM
-                }
+                {{ (ressusciterEnCours() ? 'CHAPITRE_PAGE.BOUTON_RETOUR_EN_COURS' : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER') | translate }}
               </button>
             } @else {
               <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
                    le backend refuse avancer/ramasser/consommer/échanger tant
                    que POST /ressusciter n'a pas été appelé. -->
-              <p class="mort-texte">Vous êtes mort.</p>
+              <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_TEXTE' | translate }}</p>
               @if (erreurRessusciter()) {
                 <p class="mort-erreur">{{ erreurRessusciter() }}</p>
               }
@@ -168,11 +164,7 @@
                 [disabled]="ressusciterEnCours()"
                 (click)="ressusciter()"
               >
-                @if (ressusciterEnCours()) {
-                  RÉSURRECTION...
-                } @else {
-                  RESSUSCITER x1 PIÈCE PREMIUM
-                }
+                {{ (ressusciterEnCours() ? 'CHAPITRE_PAGE.BOUTON_RESURRECTION_EN_COURS' : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER') | translate }}
               </button>
             }
           </div>
@@ -180,7 +172,7 @@
           <!-- Vol en attente de résolution : le backend refuse tout
                avancerVersChapitre tant que POST /vol/{objetId} n'a pas été
                appelé (voir ChapitreEffetsComponent, onglet Effets). -->
-          <button type="button" class="valider" (click)="allerChoisirVol()">CHOISIR</button>
+          <button type="button" class="valider" (click)="allerChoisirVol()">{{ 'CHAPITRE_PAGE.BOUTON_CHOISIR' | translate }}</button>
         } @else {
           @if (combatDisponible()) {
             <button
@@ -188,7 +180,7 @@
               class="valider"
               [routerLink]="['/personnages', personnageId(), 'combat']"
             >
-              COMBAT
+              {{ 'CHAPITRE_PAGE.BOUTON_COMBAT' | translate }}
             </button>
           } @else if (liens().length === 0) {
             <!-- Chapitre 350 (fin du tome 1) : son seul lien (vers la page
@@ -201,7 +193,7 @@
               class="valider"
               [routerLink]="['/personnages', personnageId(), 'victoire']"
             >
-              VICTOIRE
+              {{ 'CHAPITRE_PAGE.BOUTON_VICTOIRE' | translate }}
             </button>
           } @else {
             @for (lien of liens(); track lien.chapitreCibleId) {
@@ -221,7 +213,7 @@
                       } @else if (lien.conditions[0].type === 'OBJET') {
                         {{ nomObjet(lien.conditions[0].targetId) }}
                       } @else if (lien.conditions[0].type === 'BOURSE') {
-                        {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}s
+                        {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
                       } @else {
                         {{ lien.chapitreCibleId }}
                       }
@@ -239,9 +231,9 @@
                       } @else if (lien.conditions[0].type === 'BOURSE') {
                         {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
                       } @else if (lien.conditions[0].type === 'ENDURANCE') {
-                        {{ lien.conditions[0].valeur }} Endurances requises
+                        {{ 'CHAPITRE_PAGE.LIEN_ENDURANCE_REQUISE' | translate: { valeur: lien.conditions[0].valeur } }}
                       } @else {
-                        Condition requise
+                        {{ 'CHAPITRE_PAGE.LIEN_CONDITION_REQUISE' | translate }}
                       }
                     }
                   }

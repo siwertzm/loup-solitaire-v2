@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, OnInit, signal } from '@angular/co
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -34,6 +35,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
     ChapitreObjetsComponent,
     ChapitreEffetsComponent,
     NavBarComponent,
+    TranslatePipe,
   ],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
@@ -47,12 +49,15 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly disciplineService = inject(DisciplineService);
   private readonly objetService = inject(ObjetService);
   private readonly inventaireSheet = inject(InventaireSheetService);
+  private readonly translate = inject(TranslateService);
 
   readonly personnageId = signal<string | null>(null);
 
   // Signal stockant les infos du personnage
   readonly personnage = signal<PersonnageResume | null>(null);
-  readonly initiale = computed(() => this.nomPersonnage().trim().charAt(0).toUpperCase() || 'LS');
+  readonly initiale = computed(
+    () => this.nomPersonnage().trim().charAt(0).toUpperCase() || this.translate.instant('CHAPITRE_PAGE.INITIALE_PAR_DEFAUT'),
+  );
 
   // Signal stockant tous les objets disponibles (catalogue, pour nomObjet()
   // et transmis à <app-chapitre-objets> pour la résolution des icônes)
@@ -169,9 +174,11 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargerToutesLesDonnees();
       },
       error: (err) => {
-        console.error('Erreur lors du retour après défaite :', err);
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_RETOUR_DEFAITE'), err);
         this.ressusciterEnCours.set(false);
-        this.erreurRessusciter.set(err?.error?.message ?? "Impossible de revenir pour l'instant.");
+        this.erreurRessusciter.set(
+          err?.error?.message ?? this.translate.instant('CHAPITRE_PAGE.ERREUR_REVENIR_INSTANT'),
+        );
       },
     });
   }
@@ -205,17 +212,17 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
             this.chargerToutesLesDonnees();
           },
           error: (err) => {
-            console.error("Erreur lors de l'avancement après résurrection :", err);
+            console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCEMENT_RESURRECTION'), err);
             this.ressusciterEnCours.set(false);
-            this.erreurRessusciter.set("Impossible d'avancer après la résurrection.");
+            this.erreurRessusciter.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_RESURRECTION'));
           },
         });
       },
       error: (err) => {
-        console.error('Erreur lors de la résurrection :', err);
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_RESURRECTION'), err);
         this.ressusciterEnCours.set(false);
         this.erreurRessusciter.set(
-          err?.error?.message ?? "Impossible de ressusciter pour l'instant.",
+          err?.error?.message ?? this.translate.instant('CHAPITRE_PAGE.ERREUR_RESSUSCITER_INSTANT'),
         );
       },
     });
@@ -439,7 +446,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     if (id) {
       this.personnageId.set(id);
     } else {
-      this.erreur.set('Identifiant de personnage introuvable.');
+      this.erreur.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_IDENTIFIANT_INTROUVABLE'));
       this.chargement.set(false);
     }
   }
@@ -459,7 +466,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (p) => {
         this.personnage.set(p);
       },
-      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
+      error: (err) => console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_PERSONNAGE'), err),
     });
 
     // 2. Récupération de toutes les disciplines disponibles (GET /disciplines)
@@ -467,7 +474,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (disciplines) => {
         this.toutesDisciplines.set(disciplines);
       },
-      error: (err) => console.error('Erreur lors du chargement des disciplines :', err),
+      error: (err) => console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_DISCIPLINES'), err),
     });
 
     // 3. Récupération de tous les objets disponibles (GET /objets)
@@ -476,7 +483,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.tousObjets.set(objets);
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des objets :', err);
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_OBJETS'), err);
       },
     });
 
@@ -513,8 +520,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargement.set(false);
       },
       error: (err) => {
-        console.error('Erreur lors de la récupération du chapitre :', err);
-        this.erreur.set('Impossible de charger le chapitre en cours.');
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_RECUPERATION_CHAPITRE'), err);
+        this.erreur.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_CHAPITRE'));
         this.chargement.set(false);
       },
     });
@@ -544,7 +551,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   nomDiscipline(id: string | null): string {
     if (!id) {
-      return 'Discipline requise';
+      return this.translate.instant('CHAPITRE_PAGE.DISCIPLINE_REQUISE');
     }
 
     const discipline = this.toutesDisciplines().find(
@@ -601,7 +608,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   nomObjet(id: string | null): string {
     if (!id) {
-      return 'Objet requis';
+      return this.translate.instant('CHAPITRE_PAGE.OBJET_REQUIS');
     }
 
     const objet = this.tousObjets().find((o) => o.id.toLowerCase() === id.toLowerCase());
@@ -623,8 +630,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargerToutesLesDonnees();
       },
       error: (err) => {
-        console.error("Erreur lors de l'avancement vers le chapitre :", err);
-        this.erreur.set("Impossible d'avancer vers ce chapitre.");
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCEMENT'), err);
+        this.erreur.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_CHAPITRE'));
         this.chargement.set(false);
       },
     });
