@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true" class="accueil">
   <div class="ecran">
     <div class="barre-haut">
-      <button type="button" class="rond" aria-label="Mon profil" (click)="profil()">
+      <button type="button" class="rond" [attr.aria-label]="'ACCUEIL.PROFIL_ARIA' | translate" (click)="profil()">
         <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
       </button>
     </div>
@@ -30,7 +30,7 @@
                     <div class="nom">{{ pj.nom }}</div>
                   </div>
                   @if (pj.termine) {
-                    <div class="badge-termine" aria-label="Tome terminé">✓</div>
+                    <div class="badge-termine" [attr.aria-label]="'ACCUEIL.TOME_TERMINE_ARIA' | translate">✓</div>
                   } @else {
                     <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
                   }
@@ -53,7 +53,7 @@
                        de renvoyer plutôt que de dupliquer cette logique ici. -->
                   <div class="actions-mort">
                     <button type="button" class="jouer actif" (click)="ressusciter(pj)">
-                      RESSUSCITER
+                      {{ 'ACCUEIL.RESSUSCITER' | translate }}
                     </button>
                     <button
                       type="button"
@@ -61,7 +61,7 @@
                       [disabled]="suppressionEnCoursId() === pj.id"
                       (click)="ouvrirConfirmationSuppression(pj.id)"
                     >
-                      SUPPRIMER
+                      {{ 'ACCUEIL.SUPPRIMER' | translate }}
                     </button>
                   </div>
                 } @else if (pj.termine) {
@@ -69,8 +69,8 @@
                        désactivé, juste pour annoncer la suite (voir
                        VictoirePage, section "Livre second"). -->
                   <button type="button" class="jouer termine" disabled>
-                    <span class="jouer-tome">TOME 2 :</span>
-                    <span class="jouer-titre">La Traversée Infernale</span>
+                    <span class="jouer-tome">{{ 'ACCUEIL.TOME_2_PREFIXE' | translate }}</span>
+                    <span class="jouer-titre">{{ 'ACCUEIL.TOME_2_TITRE' | translate }}</span>
                   </button>
                 } @else {
                   <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
@@ -90,7 +90,7 @@
                 [disabled]="suppressionEnCoursId() === pj.id"
                 (click)="ouvrirConfirmationSuppression(pj.id, slide)"
               >
-                Supprimer
+                {{ 'ACCUEIL.SUPPRIMER_OPTION' | translate }}
               </ion-item-option>
             </ion-item-options>
           </ion-item-sliding>
@@ -107,15 +107,15 @@
   @if (confirmationSuppressionId()) {
     <div class="voile" (click)="annulerSuppression()">
       <div class="popup popup-suppression" (click)="$event.stopPropagation()">
-        <div class="surtitre">ATTENTION</div>
-        <div class="popup-titre">Supprimer {{ nomEnConfirmation() }} ?</div>
-        <p class="popup-texte">Cette aventure et toute sa progression seront définitivement supprimées.</p>
+        <div class="surtitre">{{ 'ACCUEIL.POPUP_ATTENTION' | translate }}</div>
+        <div class="popup-titre">{{ 'ACCUEIL.POPUP_TITRE_SUPPRESSION' | translate: { nom: nomEnConfirmation() } }}</div>
+        <p class="popup-texte">{{ 'ACCUEIL.POPUP_TEXTE_SUPPRESSION' | translate }}</p>
         @if (erreurSuppression()) {
           <p class="popup-texte popup-erreur">{{ erreurSuppression() | translate }}</p>
         }
         <div class="popup-actions">
-          <button type="button" class="popup-annuler" [disabled]="!!suppressionEnCoursId()" (click)="annulerSuppression()">ANNULER</button>
-          <button type="button" class="popup-confirmer" [disabled]="!!suppressionEnCoursId()" (click)="confirmerSuppression()">SUPPRIMER</button>
+          <button type="button" class="popup-annuler" [disabled]="!!suppressionEnCoursId()" (click)="annulerSuppression()">{{ 'ACCUEIL.POPUP_ANNULER' | translate }}</button>
+          <button type="button" class="popup-confirmer" [disabled]="!!suppressionEnCoursId()" (click)="confirmerSuppression()">{{ 'ACCUEIL.SUPPRIMER' | translate }}</button>
         </div>
       </div>
     </div>

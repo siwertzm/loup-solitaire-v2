@@ -41,7 +41,18 @@
     "NOUVEAU_PERSONNAGE": "NOUVEAU PERSONNAGE",
     "REGLES_DU_JEU": "RÈGLES DU JEU",
     "PIED": "Progression sauvegardée sur l'appareil",
-    "ERREUR_CHARGEMENT": "Impossible de charger vos personnages."
+    "ERREUR_CHARGEMENT": "Impossible de charger vos personnages.",
+    "TOME_TERMINE_ARIA": "Tome terminé",
+    "RESSUSCITER": "RESSUSCITER",
+    "SUPPRIMER": "SUPPRIMER",
+    "SUPPRIMER_OPTION": "Supprimer",
+    "TOME_2_PREFIXE": "TOME 2 :",
+    "TOME_2_TITRE": "La Traversée Infernale",
+    "POPUP_ATTENTION": "ATTENTION",
+    "POPUP_TITRE_SUPPRESSION": "Supprimer {{nom}} ?",
+    "POPUP_TEXTE_SUPPRESSION": "Cette aventure et toute sa progression seront définitivement supprimées.",
+    "POPUP_ANNULER": "ANNULER",
+    "INITIALE_PAR_DEFAUT": "LS"
   },
   "PROFIL": {
     "RETOUR": "‹ ACCUEIL",

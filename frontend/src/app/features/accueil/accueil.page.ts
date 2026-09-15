@@ -11,7 +11,7 @@ import {
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personCircleOutline } from 'ionicons/icons';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
@@ -28,6 +28,7 @@ addIcons({ 'person-circle-outline': personCircleOutline });
 export class AccueilPage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly personnages$ = inject(PersonnageService);
+  private readonly translate = inject(TranslateService);
 
   readonly personnages = signal<PersonnageResume[]>([]);
   readonly chargement = signal(true);
@@ -52,7 +53,7 @@ export class AccueilPage implements ViewWillEnter {
       ...p,
       actif: p.id === this.actifId(),
       habileteTotale: p.habilite + (p.habiliteTemp ?? 0),
-      initiale: p.nom.charAt(0).toUpperCase() || 'LS',
+      initiale: p.nom.charAt(0).toUpperCase() || this.translate.instant('ACCUEIL.INITIALE_PAR_DEFAUT'),
       // Chapitre 350 = fin du tome 1 (voir VictoirePage / GameDataLoader
       // côté backend, PAGES_FIN_DE_JEU). Un personnage arrivé là n'a plus
       // rien à "reprendre" dans ce tome.
