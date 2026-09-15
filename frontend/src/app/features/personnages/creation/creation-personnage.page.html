@@ -22,7 +22,7 @@
                 type="button"
                 class="de habilete"
                 [class.roule]="roulantHab()"
-                aria-label="Lancer le dé d'habileté"
+                aria-label="{{ 'CREATION_PERSONNAGE.ARIA_DE_HABILETE' | translate }}"
                 (click)="lancerDe('hab')"
               >
                 {{ faceHab() }}
@@ -41,7 +41,7 @@
                 type="button"
                 class="de endurance"
                 [class.roule]="roulantEnd()"
-                aria-label="Lancer le dé d'endurance"
+                aria-label="{{ 'CREATION_PERSONNAGE.ARIA_DE_ENDURANCE' | translate }}"
                 (click)="lancerDe('end')"
               >
                 {{ faceEnd() }}
@@ -69,7 +69,7 @@
                 <span class="case"></span>
                 {{ d.nom }}
               </button>
-              <button type="button" class="info" aria-label="Description" (click)="ouvrirDescription(d)">i</button>
+              <button type="button" class="info" aria-label="{{ 'CREATION_PERSONNAGE.INFO_ARIA' | translate }}" (click)="ouvrirDescription(d)">i</button>
             </div>
           }
         }

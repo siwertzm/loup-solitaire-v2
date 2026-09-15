@@ -119,6 +119,8 @@
     "ENDURANCE": "ENDURANCE",
     "DETAIL_HABILETE_DEFAUT": "10 + dé",
     "DETAIL_ENDURANCE_DEFAUT": "20 + dé",
+    "ARIA_DE_HABILETE": "Lancer le dé d'habileté",
+    "ARIA_DE_ENDURANCE": "Lancer le dé d'endurance",
     "DISCIPLINES_TITRE": "DISCIPLINES KAÏ",
     "CHARGEMENT_DISCIPLINES": "Chargement des disciplines…",
     "INFO_ARIA": "Description",
