@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { DisciplineResume, PersonnageResume } from '../../core/models/personnage.model';
 import { DisciplineService } from '../../core/services/discipline.service';
@@ -30,6 +30,7 @@ export class PersonnagePage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly personnageService = inject(PersonnageService);
   private readonly disciplineService = inject(DisciplineService);
+  private readonly translate = inject(TranslateService);
 
   readonly personnageId = signal<string | null>(this.route.snapshot.paramMap.get('id'));
   readonly personnage = signal<PersonnageResume | null>(null);
@@ -39,7 +40,7 @@ export class PersonnagePage implements ViewWillEnter {
   readonly confirmationSuppression = signal(false);
 
   readonly nom = computed(() => this.personnage()?.nom ?? '');
-  readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || 'LS');
+  readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || this.translate.instant('PERSONNAGE.INITIALE_PAR_DEFAUT'));
   readonly chapitre = computed(() => this.personnage()?.chapitreActuelId ?? 1);
   readonly habilite = computed(() => this.personnage()?.habilite ?? 0);
   readonly habiliteMax = computed(() => this.personnage()?.habiliteBase ?? 0);

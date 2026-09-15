@@ -445,5 +445,30 @@
     "MSG_PERD_ENDURANCE": "Vous perdez {{degats}} points d'ENDURANCE.",
     "MSG_OUVERTURE": "Vous saisissez une ouverture :\n +{{bonus}} HABILITÉ pour votre prochaine attaque.",
     "MSG_INTERROMPU": "Le combat est interrompu ; le récit continue."
+  },
+  "PERSONNAGE": {
+    "SOUS_TITRE": "Novice de l'Ordre Kaï · Chapitre {{chapitre}}",
+    "LABEL_HABILETE": "HABILITE",
+    "DETAIL_BASE": "{{valeur}} Base",
+    "LABEL_ENDURANCE": "ENDURANCE",
+    "DETAIL_MAX": "{{valeur}} Max",
+    "LABEL_PIECES_PREMIUM": "PIÈCES PREMIUM",
+    "DETAIL_ACHETER_PIECES": "Achetez des pièces",
+    "TITRE_DISCIPLINES": "DISCIPLINES KAÏ",
+    "ARIA_DETAIL_DISCIPLINE": "Afficher le détail de la discipline",
+    "TITLE_DETAIL_DISCIPLINE": "Afficher le détail",
+    "POPUP_SURTITRE": "DISCIPLINE KAÏ",
+    "POPUP_ARME_MAITRISEE": "Arme maîtrisée : {{arme}}",
+    "FERMER": "FERMER",
+    "RESSUSCITER": "RESSUSCITER",
+    "CHANGER_PERSONNAGE": "CHANGER DE PERSONNAGE",
+    "POPUP_ATTENTION": "ATTENTION",
+    "POPUP_TITRE_SUPPRESSION": "Supprimer {{nom}} ?",
+    "POPUP_TEXTE_SUPPRESSION": "Cette aventure et toute sa progression seront définitivement supprimées.",
+    "POPUP_ANNULER": "ANNULER",
+    "POPUP_CONFIRMER_SUPPRIMER": "SUPPRIMER",
+    "INITIALE_PAR_DEFAUT": "LS",
+    "ERREUR_ID_MANQUANT": "Identifiant de personnage manquant.",
+    "ERREUR_CHARGEMENT": "Impossible de charger la fiche de ce personnage."
   }
 }
