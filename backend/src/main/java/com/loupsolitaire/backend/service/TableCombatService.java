@@ -56,7 +56,7 @@ public class TableCombatService {
     private static final int[] REDUCTION_DEFENSE = { 100, 25, 30, 40, 50, 60, 70, 80, 85, 90 };
     private static final int[] BONUS_HABILITE = { 5, 1, 1, 2, 2, 3, 3, 3, 4, 4 };
 
-    // Traduit un rapport de combat (HABILETE attaquant - HABILETE
+    // Traduit un rapport de combat (HABILITE attaquant - HABILITE
     // defenseur) en index de colonne, clampe sur [-11, 11].
     public int diffVersColonne(int diff) {
         if (diff <= -11) return 0;

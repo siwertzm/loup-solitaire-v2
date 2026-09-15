@@ -81,7 +81,7 @@ export class InventaireDepartPage {
   private readonly personnageId = this.route.snapshot.paramMap.get('id')!;
 
   readonly nom = signal('');
-  readonly habilete = signal(0);
+  readonly habilite = signal(0);
   readonly endurance = signal(0);
   readonly chargement = signal(true);
   readonly erreur = signal<string | null>(null);
@@ -166,7 +166,7 @@ export class InventaireDepartPage {
     this.personnages$.recuperer(this.personnageId).subscribe({
       next: (p) => {
         this.nom.set(p.nom);
-        this.habilete.set(p.habilite);
+        this.habilite.set(p.habilite);
         this.endurance.set(p.enduranceActuelle);
         this.disciplines.set(p.disciplines ?? []);
         this.armeMaitrisee.set(p.armeMaitrisee ?? null);

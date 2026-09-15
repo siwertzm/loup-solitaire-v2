@@ -147,7 +147,7 @@ class ObjetServiceTest {
 
     @Test
     void consommerLEssenceDAletherAugmenteHabiliteTempPasHabilite() {
-        Objet essence = creerObjet("essence_alether", CategorieObjet.OBJET, creerEffet(TypeEffet.HABILETE, 2));
+        Objet essence = creerObjet("essence_alether", CategorieObjet.OBJET, creerEffet(TypeEffet.HABILITE, 2));
 
         objetService.appliquerEffetsConsommation(personnage, essence);
 

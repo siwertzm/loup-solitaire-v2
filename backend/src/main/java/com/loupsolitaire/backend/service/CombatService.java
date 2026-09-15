@@ -234,7 +234,7 @@ public class CombatService {
         int habEnnemi = ennemi.getHabilite();
 
         // Meme mecanique que POST /objets/{objetId}/consommer : applique
-        // l'effet ENDURANCE/HABILETE de l'objet, puis le retire.
+        // l'effet ENDURANCE/HABILITE de l'objet, puis le retire.
         objetService.appliquerEffetsConsommation(personnage, objet);
         inventaireService.retirerObjet(personnage, objet, 1);
 
@@ -319,11 +319,11 @@ public class CombatService {
         }
     }
 
-    // HABILETE effective pour un calcul de combat contre CET ennemi : la
+    // HABILITE effective pour un calcul de combat contre CET ennemi : la
     // valeur de base (Personnage.habilite + habiliteTemp) plus le bonus de
     // la Discipline Kai Puissance Psychique (+2), sauf si l'ennemi y
     // resiste (Ennemi.resistances, ex. serpent_aile, gluatre,
-    // vordak_puissant), plus un eventuel bonus HABILETE conditionne par
+    // vordak_puissant), plus un eventuel bonus HABILITE conditionne par
     // ASSAUT_MAX (voir bonusHabiliteAssautMax). Le tout est recalcule a
     // chaque appel plutot que fixe une fois pour toutes : necessaire pour
     // un combat a plusieurs ennemis (resistance differente par ennemi) et
@@ -337,9 +337,9 @@ public class CombatService {
         return base;
     }
 
-    // Cas particulier des effets HABILETE dont l'UNIQUE condition est
-    // ASSAUT_MAX (ex. chapitre 283 : "+2 HABILETE lors du premier assaut
-    // seulement"). Contrairement aux autres conditions d'un effet HABILETE
+    // Cas particulier des effets HABILITE dont l'UNIQUE condition est
+    // ASSAUT_MAX (ex. chapitre 283 : "+2 HABILITE lors du premier assaut
+    // seulement"). Contrairement aux autres conditions d'un effet HABILITE
     // (DISCIPLINE/OBJET/PERMANENT), gerees une fois pour toutes a l'arrivee
     // sur le chapitre par EffetChapitreService (habiliteTemp fige pour toute
     // la duree du chapitre), ASSAUT_MAX depend du NOMBRE D'ASSAUTS DEJA
@@ -349,7 +349,7 @@ public class CombatService {
     // que assautsLivres < 1.
     private int bonusHabiliteAssautMax(Chapitre chapitre, Combat combat) {
         return chapitre.getEffets().stream()
-                .filter(effet -> effet.getType() == TypeEffet.HABILETE)
+                .filter(effet -> effet.getType() == TypeEffet.HABILITE)
                 .filter(effet -> effet.getConditions().size() == 1
                         && effet.getConditions().get(0).getType() == TypeCondition.ASSAUT_MAX)
                 .filter(effet -> combat.getAssautsLivres() < parseValeur(effet.getConditions().get(0)))

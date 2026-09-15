@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 //   c'est au controleur d'enchainer avec InventaireService.retirerObjet,
 //   pour eviter une dependance circulaire entre les deux services.
 //
-// HABILETE : toujours TEMPORAIRE (habiliteTemp), remis a zero a chaque
+// HABILITE : toujours TEMPORAIRE (habiliteTemp), remis a zero a chaque
 // changement de chapitre (voir PersonnageService.reinitialiserHabiliteTemp).
 @Service
 @RequiredArgsConstructor
@@ -80,7 +80,7 @@ public class ObjetService {
         for (Effet effet : objet.getEffets()) {
             if (effet.getType() == TypeEffet.ENDURANCE) {
                 appliquerEndurance(personnage, objet, signe * effet.getValeur());
-            } else if (effet.getType() == TypeEffet.HABILETE) {
+            } else if (effet.getType() == TypeEffet.HABILITE) {
                 personnage.setHabiliteTemp(personnage.getHabiliteTemp() + signe * effet.getValeur());
             }
         }

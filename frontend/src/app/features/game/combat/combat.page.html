@@ -83,7 +83,7 @@
         <!-- bonus du joueur, au-dessus de la plaque de vie -->
         <div class="bonus-joueur" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_ACTIFS' | translate">
             @if (bonusHabiliteTemp() > 0) {
-              <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILETE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILETE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
+              <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
                 <img src="/assets/icon/potion.png" alt="" />
                 <small>+{{ bonusHabiliteTemp() }}</small>
               </button>
@@ -131,8 +131,8 @@
               <button type="button" class="popup-bonus-fermer" [attr.aria-label]="'COMBAT_PAGE.ARIA_FERMER' | translate" (click)="fermerExplicationBonus()">×</button>
               @switch (bonus) {
                 @case ('habilite') {
-                  <h2>{{ 'COMBAT_PAGE.POPUP_HABILETE_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_HABILETE_TEXTE' | translate: { bonus: bonusHabiliteTemp() }"></p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_HABILITE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_HABILITE_TEXTE' | translate: { bonus: bonusHabiliteTemp() }"></p>
                 }
                 @case ('arme') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_ARME_TITRE' | translate }}</h2>
@@ -178,10 +178,10 @@
                 </div>
 
                 <div class="stats-ennemi-grille">
-                  <div class="stat-ennemi stat-habilete">
-                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_HABILETE_LABEL' | translate }}</span>
+                  <div class="stat-ennemi stat-habilite">
+                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_HABILITE_LABEL' | translate }}</span>
                     <strong>{{ stats.habilite }}</strong>
-                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_HABILETE_SOUS_TITRE' | translate }}</span>
+                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_HABILITE_SOUS_TITRE' | translate }}</span>
                   </div>
                   <div class="stat-ennemi stat-endurance">
                     <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_ENDURANCE_LABEL' | translate }}</span>

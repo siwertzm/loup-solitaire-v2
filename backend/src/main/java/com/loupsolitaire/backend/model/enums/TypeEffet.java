@@ -1,7 +1,7 @@
 package com.loupsolitaire.backend.model.enums;
 
 public enum TypeEffet {
-    ENDURANCE, HABILETE, REPAS, VOL, ECHANGE, MORT;
+    ENDURANCE, HABILITE, REPAS, VOL, ECHANGE, MORT;
 
     public static TypeEffet fromJson(String valeur) {
         if (valeur == null) {
@@ -9,7 +9,7 @@ public enum TypeEffet {
         }
         return switch (valeur.trim().toLowerCase()) {
             case "endurance" -> ENDURANCE;
-            case "habilite" -> HABILETE;
+            case "habilite" -> HABILITE;
             case "repas" -> REPAS;
             case "vol" -> VOL;
             case "echange" -> ECHANGE;

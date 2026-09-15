@@ -95,7 +95,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   });
 
   readonly habilitePourcentage = computed(() => {
-    const max = this.habilite(); // Valeur d'Habileté maximale estimée
+    const max = this.habilite(); // Valeur d'Habilite maximale estimée
     return Math.min(100, Math.max(0, (this.habilite() / max) * 100));
   });
 

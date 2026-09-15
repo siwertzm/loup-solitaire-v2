@@ -56,8 +56,8 @@
         </div>
 
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILETE' && effet.conditions.length === 0) {
-      <!-- Modificateur d'HABILETÉ sans condition : toujours temporaire
+    } @else if (effet.type.toUpperCase() === 'HABILITE' && effet.conditions.length === 0) {
+      <!-- Modificateur d'HABILITE sans condition : toujours temporaire
            (habiliteTemp côté backend), le temps du combat qui suit. -->
       <div class="effet-ligne">
         <div class="effet-nom">
@@ -65,19 +65,19 @@
             <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
-            <span class="effet-description">{{ 'CHAPITRE_EFFETS.HABILETE_PENDANT_COMBAT' | translate }}</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
+            <span class="effet-description">{{ 'CHAPITRE_EFFETS.HABILITE_PENDANT_COMBAT' | translate }}</span>
           </div>
         </div>
 
         <div class="effet-action">
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_BONUS' | translate: { valeur: effet.valeur } }}
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_BONUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else if (effet.valeur !== null && effet.valeur < 0) {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
@@ -86,8 +86,8 @@
           }
         </div>
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILETE' && conditionAssautMax(effet); as condition) {
-      <!-- Bonus/malus HABILETE limité aux N premiers assauts du combat
+    } @else if (effet.type.toUpperCase() === 'HABILITE' && conditionAssautMax(effet); as condition) {
+      <!-- Bonus/malus HABILITE limité aux N premiers assauts du combat
            (ex. chapitre 283) : déjà appliqué en temps réel côté backend
            selon le nombre d'assauts joués, on affiche juste ce que c'est. -->
       <div class="effet-ligne">
@@ -96,7 +96,7 @@
             <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
             <span class="effet-description">{{ libelleAssautMax(condition) }}</span>
           </div>
         </div>
@@ -104,16 +104,16 @@
         <div class="effet-action">
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_BONUS' | translate: { valeur: effet.valeur } }}
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_BONUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           }
         </div>
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILETE' && conditionDisciplineOuObjet(effet); as condition) {
+    } @else if (effet.type.toUpperCase() === 'HABILITE' && conditionDisciplineOuObjet(effet); as condition) {
       <!-- Sémantique inversée : le malus ne s'applique que si le
            personnage NE POSSÈDE PAS la discipline/l'objet ciblé. L'API
            renvoie l'effet dans tous les cas (voir commentaire du composant),
@@ -124,7 +124,7 @@
             <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
             <span class="effet-description">
               @if (condition.type === 'DISCIPLINE' && effetEvite(condition) ) {
                 {{ nomDiscipline(condition.targetId!) }}
@@ -142,7 +142,7 @@
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           }
         </div>

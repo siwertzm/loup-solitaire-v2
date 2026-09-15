@@ -24,7 +24,7 @@ export interface DisciplineResume {
 
 // Aligné sur backend/.../response/ObjetResponse.java (GET /objets).
 export interface EffetObjet {
-  type: 'ENDURANCE' | 'HABILETE';
+  type: 'ENDURANCE' | 'HABILITE';
   valeur: number;
 }
 
@@ -40,7 +40,7 @@ export interface ObjetResume {
 // PLATE (objetId/nom/categorie/quantite), pas d'objet imbriqué.
 export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'BOURSE';
 
-export type CategorieEffet = 'ENDURANCE' | 'HABILETE' | 'ECHANGE' | 'REPAS' | 'VOL';
+export type CategorieEffet = 'ENDURANCE' | 'HABILITE' | 'ECHANGE' | 'REPAS' | 'VOL';
 
 export interface InventaireItem {
   objetId: string;

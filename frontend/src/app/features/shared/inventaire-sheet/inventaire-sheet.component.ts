@@ -100,7 +100,7 @@ export class InventaireSheetComponent {
   );
 
   // "MAÎTRISÉE" : l'arme qui correspond à armeMaitrisee (Discipline Maîtrise
-  // des Armes) donne +2 HABILETÉ tant qu'elle est possédée — aligné sur
+  // des Armes) donne +2 HABILITE tant qu'elle est possédée — aligné sur
   // InventaireService.BONUS_ARME_MAITRISEE (backend). Toutes les autres
   // armes possédées sont simplement "ÉQUIPÉE" (pas de vraie notion
   // d'emplacement équipé/au sac côté backend, juste "possédée").
@@ -113,7 +113,7 @@ export class InventaireSheetComponent {
   });
 
   // Aligné sur InventaireService.MALUS_SANS_ARME (backend) : sans arme du
-  // tout, l'HABILETÉ effective est habiliteBase - 4 ("Main nue").
+  // tout, l'HABILITE effective est habiliteBase - 4 ("Main nue").
   readonly malusSansArme = -4;
   readonly aucuneArme = computed(() => this.armesDetail().length === 0);
 
@@ -132,7 +132,7 @@ export class InventaireSheetComponent {
 
   private libelleEffet(effet: { type: string; valeur: number }): string {
     const libelle = this.translate.instant(
-      effet.type === 'HABILETE' ? 'INVENTAIRE_SHEET.EFFET_HABILETE' : 'INVENTAIRE_SHEET.EFFET_ENDURANCE',
+      effet.type === 'HABILITE' ? 'INVENTAIRE_SHEET.EFFET_HABILITE' : 'INVENTAIRE_SHEET.EFFET_ENDURANCE',
     );
     return this.translate.instant('INVENTAIRE_SHEET.EFFET_LABEL', { valeur: effet.valeur, libelle });
   }
@@ -196,7 +196,7 @@ export class InventaireSheetComponent {
 
   /**
    * Retire 1 exemplaire d'un objet possédé (DELETE /personnages/{id}/objets/{objetId}).
-   * Recalcule l'HABILETÉ côté backend si c'était une arme — la réponse à jour
+   * Recalcule l'HABILITE côté backend si c'était une arme — la réponse à jour
    * remplace directement `personnage`, tous les compteurs se recalculent seuls.
    *
    * `sliding` : référence du ion-item-sliding concerné, pour le refermer

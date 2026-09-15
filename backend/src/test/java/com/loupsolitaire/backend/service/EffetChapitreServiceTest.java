@@ -114,13 +114,13 @@ class EffetChapitreServiceTest {
     }
 
     // =========================================================
-    // HABILETE
+    // HABILITE
     // =========================================================
 
     private com.loupsolitaire.backend.model.Effet creerEffetHabilite(int valeur,
             com.loupsolitaire.backend.model.enums.TypeCondition typeCondition, String targetId) {
         com.loupsolitaire.backend.model.Effet effet = new com.loupsolitaire.backend.model.Effet();
-        effet.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILETE);
+        effet.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILITE);
         effet.setValeur(valeur);
         if (typeCondition != null) {
             com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();

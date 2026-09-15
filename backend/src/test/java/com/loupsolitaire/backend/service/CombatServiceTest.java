@@ -128,7 +128,7 @@ class CombatServiceTest {
         return lien;
     }
 
-    // Effet HABILETE dont l'unique condition est ASSAUT_MAX (ex. chapitre
+    // Effet HABILITE dont l'unique condition est ASSAUT_MAX (ex. chapitre
     // 283 : bonus qui ne s'applique que durant les N premiers assauts).
     private Effet creerEffetHabiliteAssautMax(int valeur, int assautMax) {
         Cond cond = new Cond();
@@ -136,7 +136,7 @@ class CombatServiceTest {
         cond.setValeur(String.valueOf(assautMax));
 
         Effet effet = new Effet();
-        effet.setType(TypeEffet.HABILETE);
+        effet.setType(TypeEffet.HABILITE);
         effet.setValeur(valeur);
         effet.setConditions(List.of(cond));
         return effet;
@@ -377,8 +377,8 @@ class CombatServiceTest {
         assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(5);
     }
 
-    // Chapitre 283 : "+2 HABILETE lors du premier assaut seulement"
-    // (Effet HABILETE, unique condition ASSAUT_MAX=1).
+    // Chapitre 283 : "+2 HABILITE lors du premier assaut seulement"
+    // (Effet HABILITE, unique condition ASSAUT_MAX=1).
     @Test
     void jouerTourAttaqueAppliqueLeBonusAssautMaxLorsDuPremierAssaut() {
         Ennemi ennemi = creerEnnemi("vordak", 5, 10);

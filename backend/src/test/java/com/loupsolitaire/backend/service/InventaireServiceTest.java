@@ -243,7 +243,7 @@ class InventaireServiceTest {
     }
 
     // =========================================================
-    // Recalcul d'HABILETE base sur les armes (etat global, pas un delta)
+    // Recalcul d'HABILITE base sur les armes (etat global, pas un delta)
     // =========================================================
 
     @Test

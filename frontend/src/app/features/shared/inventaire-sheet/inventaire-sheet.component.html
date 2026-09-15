@@ -37,7 +37,7 @@
                   <span class="sac-nom">{{ a.nom }}</span>
                   @if (a.maitrisee) {
                     <span class="sac-tag"
-                      >{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }} <span class="sac-bonus">{{ 'INVENTAIRE_SHEET.BONUS_HABILETE' | translate: { bonus: bonusArmeMaitrisee } }}</span></span
+                      >{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }} <span class="sac-bonus">{{ 'INVENTAIRE_SHEET.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}</span></span
                     >
                   } @else {
                     <span class="sac-tag">{{ 'INVENTAIRE_SHEET.TAG_EQUIPEE' | translate }}</span>
@@ -59,7 +59,7 @@
             <div class="sac-ligne sac-ligne-vide">
               <span class="sac-nom">{{ 'INVENTAIRE_SHEET.VIDE' | translate }}</span>
               <span class="sac-tag"
-                >{{ 'INVENTAIRE_SHEET.MAIN_NUE' | translate }} <span class="sac-bonus sac-malus">{{ 'INVENTAIRE_SHEET.MALUS_HABILETE' | translate: { malus: malusSansArme } }}</span></span
+                >{{ 'INVENTAIRE_SHEET.MAIN_NUE' | translate }} <span class="sac-bonus sac-malus">{{ 'INVENTAIRE_SHEET.MALUS_HABILITE' | translate: { malus: malusSansArme } }}</span></span
               >
             </div>
           }

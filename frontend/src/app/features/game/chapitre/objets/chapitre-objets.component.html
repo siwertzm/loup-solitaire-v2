@@ -99,7 +99,7 @@
         <div class="popup-plein-ligne" [class.maitrisee]="item.maitrisee">
           <span class="popup-plein-nom">{{ item.nom }}</span>
           @if (item.maitrisee) {
-            <span class="popup-plein-tag">{{ 'CHAPITRE_OBJETS.TAG_MAITRISEE' | translate }} <span class="popup-plein-bonus">{{ 'CHAPITRE_OBJETS.BONUS_HABILETE' | translate: { bonus: bonusArmeMaitrisee } }}</span></span>
+            <span class="popup-plein-tag">{{ 'CHAPITRE_OBJETS.TAG_MAITRISEE' | translate }} <span class="popup-plein-bonus">{{ 'CHAPITRE_OBJETS.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}</span></span>
           } @else if (item.quantite > 1) {
             <span class="popup-plein-quantite">×{{ item.quantite }}</span>
           }

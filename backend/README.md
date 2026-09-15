@@ -197,16 +197,16 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/personnages` | 🔒 | Crée un personnage : `nom` + exactement 5 `disciplines` (noms d'enum, ex. `"CAMOUFLAGE"`, `"MAITRISE_ARMES"`). Tire HABILETÉ/ENDURANCE/or/objet de départ, équipe le matériel fixe (Hache, 1 Repas, Carte). |
+| POST | `/personnages` | 🔒 | Crée un personnage : `nom` + exactement 5 `disciplines` (noms d'enum, ex. `"CAMOUFLAGE"`, `"MAITRISE_ARMES"`). Tire HABILITE/ENDURANCE/or/objet de départ, équipe le matériel fixe (Hache, 1 Repas, Carte). |
 | GET | `/personnages` | 🔒 | Liste des personnages de l'utilisateur connecté. |
 | GET | `/personnages/{id}` | 🔒 | Fiche personnage complète (stats, disciplines, inventaire, chapitre courant). |
 | GET | `/personnages/{id}/chapitre` | 🔒 | Chapitre courant : texte, ennemis, effets, liens (avec leurs conditions et leur disponibilité déjà évaluée), objets proposés. Fige un tirage de Table de Hasard (`tirageHasard`) tant que le personnage reste sur ce chapitre. |
-| POST | `/personnages/{id}/chapitre/{chapitreCibleId}` | 🔒 | Avance vers `chapitreCibleId` si un lien valide (conditions remplies) existe depuis le chapitre actuel. Réinitialise l'HABILETÉ temporaire. |
+| POST | `/personnages/{id}/chapitre/{chapitreCibleId}` | 🔒 | Avance vers `chapitreCibleId` si un lien valide (conditions remplies) existe depuis le chapitre actuel. Réinitialise l'HABILITE temporaire. |
 | POST | `/personnages/{id}/chapitre/revenir-apres-defaite` | 🔒 | Après une défaite en combat (`Combat.statut = DEFAITE`) : consomme une Pièce Premium (`coin`) pour revenir au chapitre précédent, ENDURANCE totalement restaurée. |
 | POST | `/personnages/{id}/ressusciter` | 🔒 | Seule action possible pour un personnage mort hors combat (`mort = true`, ENDURANCE tombée à 0 via un effet de chapitre). Consomme une Pièce Premium, restaure l'ENDURANCE au maximum, reste sur le même chapitre. |
 | POST | `/personnages/{id}/objets/{objetId}` | 🔒 | Ramasse un exemplaire d'un objet proposé par le chapitre courant (vérifié côté serveur). |
 | DELETE | `/personnages/{id}/objets/{objetId}?quantite=1` | 🔒 | Retire un objet de l'inventaire (debug/test), sans appliquer d'effet de consommation. |
-| POST | `/personnages/{id}/objets/{objetId}/consommer` | 🔒 | Consomme un objet (potion, Laumspur...) : applique son effet (ENDURANCE/HABILETÉ) puis le retire de l'inventaire. |
+| POST | `/personnages/{id}/objets/{objetId}/consommer` | 🔒 | Consomme un objet (potion, Laumspur...) : applique son effet (ENDURANCE/HABILITE) puis le retire de l'inventaire. |
 | POST | `/personnages/{id}/vol/{objetId}` | 🔒 | Résout un vol en attente (`volEnAttente` non-null sur la fiche personnage) : choisit quel objet/arme perdre parmi ceux autorisés par la portée du vol. |
 | POST | `/personnages/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}` | 🔒 | Échange volontaire d'objet, uniquement si le chapitre courant propose explicitement cet échange (ex. Marteau de Guerre de l'ermite). |
 
@@ -226,20 +226,20 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 ## Modèle de jeu (résumé des règles implémentées)
 
-- **Création de personnage** : HABILETÉ = 10 + tirage(0-9), ENDURANCE = 20 +
+- **Création de personnage** : HABILITE = 10 + tirage(0-9), ENDURANCE = 20 +
   tirage(0-9), exactement 5 disciplines parmi les 10 disciplines Kaï.
 - **Discipline Maîtrise des Armes** : tire une arme au hasard parmi le
-  catalogue ; +2 HABILETÉ tant qu'elle est équipée.
-- **Sans arme équipée** : -4 HABILETÉ.
+  catalogue ; +2 HABILITE tant qu'elle est équipée.
+- **Sans arme équipée** : -4 HABILITE.
 - **Inventaire** : max 2 armes, max 8 (objets + repas confondus), max 50 pièces
   d'or ; objets spéciaux (armure, clés, carte...) illimités.
 - **Repas** : consomme 1 Repas à chaque effet `REPAS` d'un chapitre, sinon
   -3 ENDURANCE ; dispensé si discipline Chasse.
 - **Discipline Guérison** : +1 ENDURANCE à chaque chapitre traversé sans
   combat.
-- **Discipline Puissance Psychique** : +2 HABILETÉ en combat, sauf contre un
+- **Discipline Puissance Psychique** : +2 HABILITE en combat, sauf contre un
   ennemi qui y résiste.
-- **Effets de chapitre** gérés : `ENDURANCE`, `HABILETE` (temporaire, reset à
+- **Effets de chapitre** gérés : `ENDURANCE`, `HABILITE` (temporaire, reset à
   chaque changement de chapitre, sauf condition `PERMANENT` qui modifie la
   valeur de base), `VOL` (plusieurs portées : 1 objet au choix, toutes les
   armes, tout le sac, tout), `REPAS`, `ECHANGE`.

@@ -33,7 +33,7 @@ export class PersonnageService {
   /**
    * DELETE /personnages/{id}/objets/{objetId}?quantite=N
    * Retire N exemplaires (1 par défaut) d'un objet possédé. Recalcule
-   * l'HABILETÉ côté backend si c'était une arme.
+   * l'HABILITE côté backend si c'était une arme.
    */
   retirerObjet(personnageId: string, objetId: string, quantite = 1): Observable<PersonnageResume> {
     return this.http.delete<PersonnageResume>(
@@ -43,7 +43,7 @@ export class PersonnageService {
 
   /**
    * POST /personnages/{id}/objets/{objetId}/consommer
-   * Applique l'effet de l'objet (endurance/habileté, voir ObjetService
+   * Applique l'effet de l'objet (endurance/habilite, voir ObjetService
    * backend) PUIS le retire de l'inventaire — contrairement à retirerObjet,
    * modifie les stats du personnage. Réservé à la catégorie OBJET.
    */
@@ -54,7 +54,7 @@ export class PersonnageService {
     );
   }
 
-  /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habileté/endurance). */
+  /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habilite/endurance). */
   creer(
     nom: string,
     disciplines: string[],

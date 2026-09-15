@@ -13,21 +13,21 @@
         <div class="bloc-titre">{{ tirageLabel() | translate }}</div>
         <div class="tirage">
           <div class="colonne">
-            <span class="cle">{{ 'CREATION_PERSONNAGE.HABILETE' | translate }}</span>
+            <span class="cle">{{ 'CREATION_PERSONNAGE.HABILITE' | translate }}</span>
             @if (habTiree()) {
-              <span class="total habilete">{{ habilete() }}</span>
+              <span class="total habilite">{{ habilite() }}</span>
               <span class="detail">{{ detailHab() }}</span>
             } @else {
               <button
                 type="button"
-                class="de habilete"
+                class="de habilite"
                 [class.roule]="roulantHab()"
-                aria-label="{{ 'CREATION_PERSONNAGE.ARIA_DE_HABILETE' | translate }}"
+                aria-label="{{ 'CREATION_PERSONNAGE.ARIA_DE_HABILITE' | translate }}"
                 (click)="lancerDe('hab')"
               >
                 {{ faceHab() }}
               </button>
-              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_HABILETE_DEFAUT' | translate }}</span>
+              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_HABILITE_DEFAUT' | translate }}</span>
             }
           </div>
 

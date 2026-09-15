@@ -108,7 +108,7 @@ class ChapitreMapperTest {
         Chapitre chapitre = creerChapitre(236, "texte", false);
 
         Effet effet = new Effet();
-        effet.setType(TypeEffet.HABILETE);
+        effet.setType(TypeEffet.HABILITE);
         effet.setValeur(-1);
         Cond permanent = new Cond();
         permanent.setType(TypeCondition.PERMANENT);
@@ -120,7 +120,7 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(236, personnage);
 
         assertThat(reponse.effets()).hasSize(1);
-        assertThat(reponse.effets().get(0).type()).isEqualTo("HABILETE");
+        assertThat(reponse.effets().get(0).type()).isEqualTo("HABILITE");
         assertThat(reponse.effets().get(0).valeur()).isEqualTo(-1);
         assertThat(reponse.effets().get(0).conditions()).hasSize(1);
         assertThat(reponse.effets().get(0).conditions().get(0).type()).isEqualTo("PERMANENT");

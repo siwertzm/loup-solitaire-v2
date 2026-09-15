@@ -80,7 +80,7 @@ public class Combat {
     @Column(nullable = false)
     private boolean endurancePerdue;
 
-    // Bonus d'HABILETE tire lors d'une DEFENSE, qui reste disponible pour
+    // Bonus d'HABILITE tire lors d'une DEFENSE, qui reste disponible pour
     // la PROCHAINE action ATTAQUE (voir ActionCombat). Remis a 0 des qu'il
     // est consomme par une attaque, ou qu'un nouveau DEFENSE l'ecrase.
     @Column(nullable = false)

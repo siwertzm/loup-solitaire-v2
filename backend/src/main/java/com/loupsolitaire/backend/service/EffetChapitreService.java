@@ -22,7 +22,7 @@ import com.loupsolitaire.backend.repository.PersonnageRepository;
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
-// ObjetService). REPAS, HABILETE, ENDURANCE, VOL et MORT geres.
+// ObjetService). REPAS, HABILITE, ENDURANCE, VOL et MORT geres.
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -83,13 +83,13 @@ public class EffetChapitreService {
         }
     }
 
-    // Regle HABILETE, selon la (au plus une) condition de l'effet :
+    // Regle HABILITE, selon la (au plus une) condition de l'effet :
     // - Aucune condition : applique directement a habiliteTemp.
     // - DISCIPLINE / OBJET (semantique INVERSEE, valeur negative dans les
     //   donnees : "si vous NE possedez PAS") : applique a habiliteTemp
     //   uniquement si la discipline/l'objet est absent.
     // - PERMANENT : applique a habiliteBase (definitif), puis recalcule
-    //   l'HABILETE effective (qui depend aussi des armes possedees).
+    //   l'HABILITE effective (qui depend aussi des armes possedees).
     // - Le reste (ASSAUT_MAX, etc.) : combat non construit, ignore.
     @Transactional
     public void appliquerEffetHabilite(Personnage personnage, Effet effet) {
@@ -114,7 +114,7 @@ public class EffetChapitreService {
             }
             default -> {
                 // ASSAUT_ECHEC, ENDURANCE_PERDUE, FUITE, HASARD, ARME, BOURSE,
-                // ENDURANCE : non rencontre sur un effet HABILETE dans ce tome.
+                // ENDURANCE : non rencontre sur un effet HABILITE dans ce tome.
                 // ASSAUT_MAX (chapitre 283) est un cas a part : voir
                 // CombatService.bonusHabiliteAssautMax. Ce n'est PAS un
                 // modificateur fixe pour toute la duree du chapitre (donc
@@ -123,17 +123,17 @@ public class EffetChapitreService {
                 // attaque vous permet d'ajouter 2 points [...] lors du
                 // premier assaut") ; il doit donc etre recalcule a chaque
                 // tour en fonction de Combat.assautsLivres, pas fige a
-                // l'arrivee sur le chapitre comme les autres effets HABILETE.
+                // l'arrivee sur le chapitre comme les autres effets HABILITE.
             }
         }
     }
 
     // Regle ENDURANCE : toujours REEL (jamais temporaire, contrairement a
-    // HABILETE). Dans ce tome, la seule condition rencontree sur un effet
+    // HABILITE). Dans ce tome, la seule condition rencontree sur un effet
     // ENDURANCE est HASARD (jamais discipline/objet) : pas de semantique
     // inversee a gerer ici, on reutilise directement ConditionService.
     // Toute autre condition (combat non construit) fait qu'on ignore
-    // l'effet, comme pour HABILETE.
+    // l'effet, comme pour HABILITE.
     @Transactional
     public void appliquerEffetEndurance(Personnage personnage, Effet effet) {
         Optional<Cond> condition = effet.getConditions().stream().findFirst();

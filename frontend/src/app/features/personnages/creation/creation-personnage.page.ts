@@ -30,7 +30,7 @@ export class CreationPersonnagePage {
   readonly nom = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   /** null tant que le dé correspondant n'a pas été lancé. */
-  readonly habilete = signal<number | null>(null);
+  readonly habilite = signal<number | null>(null);
   readonly endurance = signal<number | null>(null);
   readonly faceHab = signal<number | string>('?');
   readonly faceEnd = signal<number | string>('?');
@@ -47,9 +47,9 @@ export class CreationPersonnagePage {
   readonly catalogue = signal<DisciplineCatalogue[]>([]);
   readonly chargement = signal(true);
 
-  readonly tirageFait = computed(() => this.habilete() !== null && this.endurance() !== null);
+  readonly tirageFait = computed(() => this.habilite() !== null && this.endurance() !== null);
   readonly tirageLabel = computed(() => (this.tirageFait() ? 'CREATION_PERSONNAGE.LABEL_TIRAGE_FAIT' : 'CREATION_PERSONNAGE.LABEL_TIRAGE_EN_ATTENTE'));
-  readonly habTiree = computed(() => this.habilete() !== null && !this.roulantHab());
+  readonly habTiree = computed(() => this.habilite() !== null && !this.roulantHab());
   readonly endTiree = computed(() => this.endurance() !== null && !this.roulantEnd());
   readonly detailHab = computed(() => `10 + ${this.faceHab()}`);
   readonly detailEnd = computed(() => `20 + ${this.faceEnd()}`);
@@ -94,7 +94,7 @@ export class CreationPersonnagePage {
       this.roulantHab.set(true);
       setTimeout(() => {
         this.faceHab.set(de);
-        this.habilete.set(10 + de);
+        this.habilite.set(10 + de);
         this.roulantHab.set(false);
       }, 640);
     } else {
@@ -143,7 +143,7 @@ export class CreationPersonnagePage {
     this.envoi.set(true);
     this.erreur.set(null);
     const nomFinal = this.nom.value.trim() || this.translate.instant('CREATION_PERSONNAGE.NOM');
-    const hasardHabilite = this.habilete()! - 10;
+    const hasardHabilite = this.habilite()! - 10;
     const hasardEndurance = this.endurance()! - 20;
     this.personnages$.creer(nomFinal, this.choisies(), hasardHabilite, hasardEndurance).subscribe({
       next: (p) => {

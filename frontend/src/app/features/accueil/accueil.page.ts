@@ -52,7 +52,7 @@ export class AccueilPage implements ViewWillEnter {
     this.personnages().map((p) => ({
       ...p,
       actif: p.id === this.actifId(),
-      habileteTotale: p.habilite + (p.habiliteTemp ?? 0),
+      habiliteTotale: p.habilite + (p.habiliteTemp ?? 0),
       initiale: p.nom.charAt(0).toUpperCase() || this.translate.instant('ACCUEIL.INITIALE_PAR_DEFAUT'),
       // Chapitre 350 = fin du tome 1 (voir VictoirePage / GameDataLoader
       // côté backend, PAGES_FIN_DE_JEU). Un personnage arrivé là n'a plus

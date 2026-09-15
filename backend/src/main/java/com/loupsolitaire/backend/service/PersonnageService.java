@@ -178,7 +178,7 @@ public class PersonnageService {
         inventaireService.ajouterObjet(personnage, objet, quantite);
     }
 
-    // A appeler a chaque fois que chapitreActuel change : l'HABILETE
+    // A appeler a chaque fois que chapitreActuel change : l'HABILITE
     // temporaire (ex. essence d'Alether) ne vaut que pour le
     // chapitre/combat en cours.
     @Transactional
@@ -296,7 +296,7 @@ public class PersonnageService {
         }
 
         nouveauChapitre.getEffets().stream()
-                .filter(effet -> effet.getType() == TypeEffet.HABILETE)
+                .filter(effet -> effet.getType() == TypeEffet.HABILITE)
                 .forEach(effet -> effetChapitreService.appliquerEffetHabilite(personnage, effet));
 
         nouveauChapitre.getEffets().stream()

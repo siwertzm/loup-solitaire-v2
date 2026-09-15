@@ -578,7 +578,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     // "Vous saisissez une ouverture" n'a de sens que si le combat continue
-    // ensuite : un bonus d'HABILETÉ "pour votre prochaine attaque" alors
+    // ensuite : un bonus d'HABILITE "pour votre prochaine attaque" alors
     // qu'on vient d'être vaincu sur ce même tour n'a aucun sens narratif.
     if (action === 'DEFENSE' && tour.bonusHabiliteObtenu && combat.statut === 'EN_COURS') {
       messages.push({

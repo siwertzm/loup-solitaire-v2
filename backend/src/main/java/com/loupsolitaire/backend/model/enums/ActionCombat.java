@@ -4,7 +4,7 @@ package com.loupsolitaire.backend.model.enums;
 // ATTAQUE  : degats a l'ennemi via TABLE_LS, puis riposte de l'ennemi via TABLE_E.
 // DEFENSE  : aucun degat inflige ; le tirage de reduction/bonus s'applique
 //            immediatement a la riposte encaissee CE tour, et le bonus
-//            d'HABILETE reste disponible pour la PROCHAINE attaque.
+//            d'HABILITE reste disponible pour la PROCHAINE attaque.
 // OBJET    : consomme un objet (categorie OBJET, ex. Potion/Laumspur), meme
 //            mecanique que POST /objets/{objetId}/consommer ; l'ennemi
 //            riposte quand meme, sans attenuation.

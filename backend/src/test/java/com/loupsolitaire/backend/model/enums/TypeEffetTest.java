@@ -10,7 +10,7 @@ class TypeEffetTest {
     @Test
     void convertitChaqueValeurJsonConnue() {
         assertThat(TypeEffet.fromJson("endurance")).isEqualTo(TypeEffet.ENDURANCE);
-        assertThat(TypeEffet.fromJson("habilite")).isEqualTo(TypeEffet.HABILETE);
+        assertThat(TypeEffet.fromJson("habilite")).isEqualTo(TypeEffet.HABILITE);
         assertThat(TypeEffet.fromJson("repas")).isEqualTo(TypeEffet.REPAS);
         assertThat(TypeEffet.fromJson("vol")).isEqualTo(TypeEffet.VOL);
         assertThat(TypeEffet.fromJson("echange")).isEqualTo(TypeEffet.ECHANGE);

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 // l'entite InventaireItem, ni une contrainte SQL ne peuvent verifier ca
 // proprement, d'ou un service dedie.
 //
-// Gere aussi le recalcul de l'HABILETE effective a chaque ajout/retrait
+// Gere aussi le recalcul de l'HABILITE effective a chaque ajout/retrait
 // d'arme : -4 sans arme, +2 avec l'arme maitrisee, +0 sinon. Contrairement
 // au bonus d'armure (delta par objet, gere par ObjetService), cette regle
 // depend de l'etat GLOBAL des armes possedees, d'ou un recalcul complet a
@@ -146,7 +146,7 @@ public class InventaireService {
         recalculerHabiliteSiArme(personnage, objet.getCategorie());
     }
 
-    // Recalcule et persiste l'HABILETE effective apres un changement
+    // Recalcule et persiste l'HABILITE effective apres un changement
     // impliquant une ARME. Ne fait rien pour les autres categories.
     private void recalculerHabiliteSiArme(Personnage personnage, CategorieObjet categorie) {
         if (categorie != CategorieObjet.ARME) {
@@ -155,7 +155,7 @@ public class InventaireService {
         recalculerHabiliteArmes(personnage);
     }
 
-    // Public : recalcule l'HABILETE effective a partir des armes possedees
+    // Public : recalcule l'HABILITE effective a partir des armes possedees
     // et de habiliteBase. A appeler aussi quand habiliteBase change de
     // facon PERMANENTE (voir EffetChapitreService), pas seulement lors
     // d'un ajout/retrait d'arme.

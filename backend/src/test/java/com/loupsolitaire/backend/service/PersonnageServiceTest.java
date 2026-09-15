@@ -368,7 +368,7 @@ class PersonnageServiceTest {
         Chapitre chapitre1 = new Chapitre();
         chapitre1.setId(1);
         com.loupsolitaire.backend.model.Effet effetHabilite = new com.loupsolitaire.backend.model.Effet();
-        effetHabilite.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILETE);
+        effetHabilite.setType(com.loupsolitaire.backend.model.enums.TypeEffet.HABILITE);
         effetHabilite.setValeur(-2);
         effetHabilite.setConditions(List.of());
         chapitre1.setEffets(List.of(effetHabilite));
