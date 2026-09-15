@@ -173,9 +173,12 @@
     "SUR_TITRE": "Avant de commencer",
     "TITRE": "Équipement de départ",
     "PARAGRAPHE_1": "Au départ de votre aventure, vous êtes vêtu d'une tunique et d'une cape de Seigneur Kaï, toutes deux de couleur verte. Le matériel dont vous disposez pour assurer votre survie est par ailleurs réduit au minimum. Vous possédez une hache et un sac à dos qui contient un repas",
+    "ARIA_EQUIPEMENT_DEPART": "Équipement de départ",
     "PARAGRAPHE_2": "Vous disposez également, accrochée à votre ceinture, d'une bourse de cuir qui contient des pièces d'or. En appuyant sur le dé de pièces d'or, l'application tire pour vous un chiffre entre 0 et 9. Le chiffre que vous obtiendrez représentera le nombre de Couronnes (c'est le nom de la monnaie en cours dans ces régions) dont vous disposez au début de votre mission",
+    "ARIA_ELEMENTS_BOURSE": "Bourse et pièces d'or",
     "PARAGRAPHE_3": "Dans les ruines fumantes du monastère détruit, vous avez découvert une carte géographique qui vous permet de vous orienter. Cette carte est soigneusement rangée dans une poche intérieure de votre tunique.",
     "PARAGRAPHE_4": "Vous avez également découvert l'un des objets suivants :",
+    "ARIA_OBJETS_POSSIBLES": "Objets pouvant être découverts",
     "ELEMENTS_BOURSE": {
       "BOURSE": "Bourse en cuir",
       "OR": "Pièces d'or"
