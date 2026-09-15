@@ -237,6 +237,8 @@
     "SECTION_LIVRE_SECOND": "Livre second",
     "TITRE_TOME_2": "La Traversée Infernale",
     "PARAGRAPHE_TOME_2": "Les Maîtres des Ténèbres ont envahi le Royaume du Sommerlund. Holmgard, la capitale, est assiégée par une puissante armée ennemie. Seul le Glaive de Sommer saura libérer la ville. C'est vous, Loup Solitaire, qui devrez aller le chercher au Royaume de Durenor... C'est un long et périlleux voyage qui vous attend sur mer et sur terre.",
-    "RETOUR_MENU": "RETOUR AU MENU"
+    "RETOUR_MENU": "RETOUR AU MENU",
+    "NOM_PAR_DEFAUT": "Loup Solitaire",
+    "ERREUR_CHARGEMENT": "Erreur lors du chargement du personnage :"
   }
 }

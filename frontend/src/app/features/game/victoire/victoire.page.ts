@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -25,10 +25,13 @@ export class VictoirePage implements ViewWillEnter {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly personnageService = inject(PersonnageService);
+  private readonly translate = inject(TranslateService);
 
   readonly personnageId = signal<string | null>(null);
   readonly personnage = signal<PersonnageResume | null>(null);
-  readonly nomJoueur = computed(() => this.personnage()?.nom ?? 'Loup Solitaire');
+  readonly nomJoueur = computed(
+    () => this.personnage()?.nom ?? this.translate.instant('VICTOIRE.NOM_PAR_DEFAUT'),
+  );
 
   ionViewWillEnter(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -37,7 +40,7 @@ export class VictoirePage implements ViewWillEnter {
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
-      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
+      error: (err) => console.error(this.translate.instant('VICTOIRE.ERREUR_CHARGEMENT'), err),
     });
   }
 
