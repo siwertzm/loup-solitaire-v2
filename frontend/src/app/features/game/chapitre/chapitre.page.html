@@ -177,6 +177,19 @@
             >
               COMBAT
             </button>
+          } @else if (liens().length === 0) {
+            <!-- Chapitre 350 (fin du tome 1) : son seul lien (vers la page
+                 "351") est filtré au chargement des données, comme "352"
+                 pour la mort narrative (voir GameDataLoader côté backend,
+                 PAGES_FIN_DE_JEU). Un chapitre sans aucun lien = fin de
+                 l'aventure, pas une impasse. -->
+            <button
+              type="button"
+              class="valider"
+              [routerLink]="['/personnages', personnageId(), 'victoire']"
+            >
+              VICTOIRE
+            </button>
           } @else {
             @for (lien of liens(); track lien.chapitreCibleId) {
               <button

@@ -1,0 +1,23 @@
+<ion-content [fullscreen]="true" class="victoire">
+  <div class="ecran">
+    <header class="couverture">
+      <div class="sur-titre">{{ 'VICTOIRE.SUR_TITRE' | translate }}</div>
+      <h1 class="titre" [innerHTML]="'VICTOIRE.TITRE' | translate"></h1>
+      <div class="sous-titre">{{ 'VICTOIRE.SOUS_TITRE' | translate }}</div>
+      <div class="badge">{{ 'VICTOIRE.BADGE' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <div class="mention-victoire">{{ 'VICTOIRE.MENTION_VICTOIRE' | translate }}</div>
+      <p class="bravo" [innerHTML]="'VICTOIRE.BRAVO' | translate: { nom: nomJoueur() }"></p>
+
+      <div class="section">{{ 'VICTOIRE.SECTION_LIVRE_SECOND' | translate }}</div>
+      <h2 class="titre-tome-2">{{ 'VICTOIRE.TITRE_TOME_2' | translate }}</h2>
+      <p>{{ 'VICTOIRE.PARAGRAPHE_TOME_2' | translate }}</p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="retourAuMenu()">{{ 'VICTOIRE.RETOUR_MENU' | translate }}</button>
+    </div>
+  </div>
+</ion-content>

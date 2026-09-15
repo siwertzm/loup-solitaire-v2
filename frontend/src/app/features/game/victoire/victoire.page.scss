@@ -1,0 +1,156 @@
+// Écran de fin du tome 1 (chapitre 350, plus aucun lien disponible).
+
+$foret: #2c3323;
+$foret-fonce: #232819;
+$parchemin: #ece2c8;
+$encre: #3a3226;
+$cuivre: #c2703a;
+$or: #d9a94a;
+
+ion-content.victoire {
+  --background: #{$foret};
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --ion-text-color: #{$parchemin};
+  color: $parchemin;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  button {
+    font-family: 'Cinzel', 'Times New Roman', serif;
+  }
+}
+
+.ecran {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 22px 22px;
+  background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.12), transparent 60%);
+}
+
+// Carte "couverture de livre", reprise du visuel fourni : sur-titre en
+// petites capitales cuivre, titre en grand, sous-titre en italique, badge
+// circulaire en haut à droite.
+.couverture {
+  position: relative;
+  flex: none;
+  margin: 22px 0 18px;
+  padding: 18px 24px;
+  border-radius: 16px;
+  background: $foret-fonce;
+  border: 1px solid rgba(217, 169, 74, 0.18);
+  text-align: center;
+
+  .sur-titre {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: $cuivre;
+  }
+
+  .titre {
+    margin: 14px 0 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: $parchemin;
+  }
+
+  .sous-titre {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 15px;
+    color: rgba(236, 226, 200, 0.75);
+  }
+
+  .badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(236, 226, 200, 0.08);
+    border: 1px solid rgba(217, 169, 74, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $or;
+    font-size: 14px;
+  }
+}
+
+.texte {
+  flex: 1;
+  padding: 22px;
+  border-radius: 14px;
+  background: $parchemin;
+  color: $encre;
+  font-size: 16.5px;
+  line-height: 1.62;
+  text-wrap: pretty;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  p {
+    margin: 0;
+  }
+
+  .mention-victoire {
+    align-self: center;
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: $cuivre;
+  }
+
+  .bravo {
+    text-align: center;
+  }
+
+  .section {
+    margin-top: 6px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(58, 50, 38, 0.2);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    text-align: center;
+    color: $cuivre;
+  }
+
+  .titre-tome-2 {
+    margin: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 21px;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
+.pied {
+  flex: none;
+  padding: 18px 0 22px;
+}
+
+.valider {
+  width: 100%;
+  border: none;
+  border-radius: 11px;
+  padding: 15px;
+  background: $cuivre;
+  color: $foret;
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

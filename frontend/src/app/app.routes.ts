@@ -83,5 +83,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/game/combat/combat.page').then((m) => m.CombatPage),
   },
+  {
+    path: 'personnages/:id/victoire',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/game/victoire/victoire.page').then((m) => m.VictoirePage),
+  },
   { path: '**', redirectTo: 'accueil' },
 ];
