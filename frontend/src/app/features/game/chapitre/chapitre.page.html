@@ -25,7 +25,7 @@
           [class.leve]="ongletLeve() === 'chapitre'"
           (click)="selectionnerOnglet('chapitre')"
         >
-          <span>{{ chapitre()?.id ?? 1 }}</span>
+          <span>{{ numeroChapitreAffiche() ?? 1 }}</span>
         </div>
 
         @if (objets().length > 0 && !mort()) {

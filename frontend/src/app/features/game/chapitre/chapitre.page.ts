@@ -28,7 +28,13 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
 @Component({
   selector: 'app-chapitre',
   standalone: true,
-  imports: [IonContent, RouterLink, ChapitreObjetsComponent, ChapitreEffetsComponent, NavBarComponent],
+  imports: [
+    IonContent,
+    RouterLink,
+    ChapitreObjetsComponent,
+    ChapitreEffetsComponent,
+    NavBarComponent,
+  ],
   templateUrl: './chapitre.page.html',
   styleUrl: './chapitre.page.scss',
 })
@@ -54,6 +60,15 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   // Signal stockant le chapitre courant
   readonly chapitre = signal<ChapitreResponse | null>(null);
+
+  readonly numeroChapitreAffiche = computed(() => {
+    const id = this.chapitre()?.id;
+    if (id === 2101 || id === 2102) {
+      return 21;
+    }
+    return id;
+  });
+
   readonly chargement = signal<boolean>(true);
   readonly erreur = signal<string | null>(null);
 
@@ -62,7 +77,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   // Computed properties pour accéder facilement aux infos du personnage
   readonly nomPersonnage = computed(() => this.personnage()?.nom ?? '');
-  
+
   readonly habilite = computed(
     () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
   );
@@ -125,10 +140,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
    *
    * Les chapitres où la mort vient d'une perte d'endurance (effet/repas
    * sur un chapitre "normal") n'ont pas ce genre de lien : le fallback
-   * (rester sur le même chapitre) s'applique alors. Certains chapitres de
-   * mort narrative n'ont eux-mêmes pas ce lien (ex. 2102, dernier jet du
-   * marécage sans "seconde chance" prévue par le livre) : le fallback
-   * s'applique aussi dans ce cas, ce qui est le comportement correct.
+   * (rester sur le même chapitre) s'applique alors.
    */
   private trouverLienRetourNarratif(): LienResponse | null {
     return (
@@ -159,9 +171,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       error: (err) => {
         console.error('Erreur lors du retour après défaite :', err);
         this.ressusciterEnCours.set(false);
-        this.erreurRessusciter.set(
-          err?.error?.message ?? "Impossible de revenir pour l'instant.",
-        );
+        this.erreurRessusciter.set(err?.error?.message ?? "Impossible de revenir pour l'instant.");
       },
     });
   }
@@ -234,8 +244,12 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   readonly aConditionHasard = computed(
     () =>
-      this.liens().some((lien) => lien.conditions.some((condition) => condition.type === 'HASARD')) ||
-      this.effets().some((effet) => effet.conditions.some((condition) => condition.type === 'HASARD')),
+      this.liens().some((lien) =>
+        lien.conditions.some((condition) => condition.type === 'HASARD'),
+      ) ||
+      this.effets().some((effet) =>
+        effet.conditions.some((condition) => condition.type === 'HASARD'),
+      ),
   );
 
   revelerHasard(): void {
@@ -263,8 +277,37 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.hasardResultatVisible.set(false);
         this.hasardTermine.set(true);
         this.enregistrerChapitreHasardTermine();
+        if (this.redirigerEchecChapitre21()) {
+          return;
+        }
       }, 2000);
     }, 640);
+  }
+
+  private redirigerEchecChapitre21(): boolean {
+    const chapitreId = this.chapitre()?.id;
+    let chapitreCible: number | null = null;
+    
+    if (chapitreId === 21) {
+      chapitreCible = 2101;
+    } else if (chapitreId === 2101) {
+      chapitreCible = 2102;
+    }
+
+    if (chapitreCible === null) {
+      return false;
+    }
+
+    const lien = this.liens().find(
+      (lien) => lien.chapitreCibleId === chapitreCible && lien.disponible,
+    );
+
+    if (!lien) {
+      return false;
+    }
+
+    this.choisirLien(lien);
+    return true;
   }
 
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
@@ -446,7 +489,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       return;
     }
 
-    localStorage.setItem(this.chapitreHasardTermineKey, this.chapitreHasardTermineValeur(chapitreId));
+    localStorage.setItem(
+      this.chapitreHasardTermineKey,
+      this.chapitreHasardTermineValeur(chapitreId),
+    );
   }
 
   private lireChapitreHasardTermine(): string | null {
