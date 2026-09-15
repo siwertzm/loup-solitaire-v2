@@ -23,7 +23,7 @@ ion-content.victoire {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 22px 22px;
+  padding: env(safe-area-inset-top, 0px) 22px 22px;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.12), transparent 60%);
 }
 

@@ -36,7 +36,7 @@ ion-content.equipement {
   display: flex;
   flex-direction: column;
   gap: 11px;
-  padding: 24px 22px 0;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 22px 0;
   background: radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%);
 }
 

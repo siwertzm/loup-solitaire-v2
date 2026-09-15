@@ -14,16 +14,10 @@
 
 /* Styles globaux de l'app */
 
-/* Aucune page n'utilise <ion-header> (tous les écrans sont des ion-content
- * "fullscreen" avec leur propre habillage type ".ecran"). Ionic ne reserve
- * donc jamais automatiquement la zone de l'encoche / Dynamic Island / barre
- * de statut en haut : sans cette regle, le contenu (boutons, titres) se
- * retrouve sous la status bar et devient inaccessible au clic sur certains
- * iPhone (voir capture d'ecran : barre de statut qui chevauche l'ecran
- * d'accueil). On force donc le padding-top natif d'ion-content a la valeur
- * de la safe-area, ce qui pousse tout le contenu (y compris ".ecran") sous
- * la zone sûre, sur toutes les pages, sans avoir a toucher chaque .scss.
+/* La safe-area du haut (encoche / Dynamic Island / barre de statut) est
+ * geree directement dans le padding-top de chaque ".ecran" (voir les
+ * .scss de page), pas ici : la passer par ion-content casserait la
+ * continuite du fond (degrade radial propre a chaque .ecran) puisque la
+ * zone de padding serait peinte avec le --background plat d'ion-content
+ * a la place. Meme logique deja en place pour le bas sur chapitre.page.scss.
  */
-ion-content {
-  --padding-top: env(safe-area-inset-top, 0px);
-}
