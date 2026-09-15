@@ -29,7 +29,7 @@ export class RegleEquipementPage {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger les disciplines.');
+        this.erreur.set('INTRO_CREATION.ERREUR_CHARGEMENT_DISCIPLINES');
         this.chargement.set(false);
       },
     });
