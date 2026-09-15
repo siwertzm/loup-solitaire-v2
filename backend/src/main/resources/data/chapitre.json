@@ -3707,7 +3707,11 @@
       },
       {
         "page": "344",
-        "cond": null
+        "cond": [{
+          "type": "endurance_inf",
+          "valeur": "10",
+          "targetId": null
+          }]
       }
     ],
     "id": 203,

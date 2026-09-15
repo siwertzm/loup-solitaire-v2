@@ -44,6 +44,7 @@ public class ConditionService {
             case DISCIPLINE -> possedeDiscipline(cond, personnage);
             case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, personnage);
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
+            case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
             case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, personnage);
             case PERMANENT -> true;
@@ -86,6 +87,10 @@ public class ConditionService {
         IdDiscipline recherchee = IdDiscipline.fromJson(cond.getTargetId());
         return personnage.getDisciplines().stream()
                 .anyMatch(d -> d.getId() == recherchee);
+    }
+
+    private boolean enduranceInferieure(Cond cond, Personnage personnage) {
+        return personnage.getEnduranceActuelle() < parseValeur(cond.getValeur());
     }
 
     // Meme logique pour OBJET/ARME/BOURSE : possede-t-on au moins la
