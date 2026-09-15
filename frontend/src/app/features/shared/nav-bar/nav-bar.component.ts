@@ -1,5 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 
@@ -25,7 +26,7 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss',
 })

@@ -4,24 +4,24 @@
     [routerLink]="['/personnages', personnageId(), 'chapitre']"
     routerLinkActive="actif"
   >
-    <img src="assets/icon/parchemin.png" alt="chapitre" class="nav-icon" />
-    <span>CHAPITRE</span>
+    <img src="assets/icon/parchemin.png" [attr.alt]="'NAV_BAR.ALT_CHAPITRE' | translate" class="nav-icon" />
+    <span>{{ 'NAV_BAR.LABEL_CHAPITRE' | translate }}</span>
   </a>
 
   <!-- FICHE : pas encore d'écran dédié -->
   <button type="button" class="nav-item" (click)="personnage()">
-    <img src="assets/icon/profil.png" alt="fiche" class="nav-icon" />
-    <span>FICHE</span>
+    <img src="assets/icon/profil.png" [attr.alt]="'NAV_BAR.ALT_FICHE' | translate" class="nav-icon" />
+    <span>{{ 'NAV_BAR.LABEL_FICHE' | translate }}</span>
   </button>
 
   <button type="button" class="nav-item" [disabled]="mort()" (click)="ouvrirSac()">
-    <img src="assets/icon/sac.png" alt="sac" class="nav-icon" />
-    <span>SAC</span>
+    <img src="assets/icon/sac.png" [attr.alt]="'NAV_BAR.ALT_SAC' | translate" class="nav-icon" />
+    <span>{{ 'NAV_BAR.LABEL_SAC' | translate }}</span>
   </button>
 
   <!-- JOURNAL : pas encore d'écran dédié -->
   <button type="button" class="nav-item" disabled>
-    <img src="assets/icon/chemin.png" alt="journal" class="nav-icon" />
-    <span>JOURNAL</span>
+    <img src="assets/icon/chemin.png" [attr.alt]="'NAV_BAR.ALT_JOURNAL' | translate" class="nav-icon" />
+    <span>{{ 'NAV_BAR.LABEL_JOURNAL' | translate }}</span>
   </button>
 </nav>
