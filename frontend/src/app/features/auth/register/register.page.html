@@ -9,41 +9,41 @@
 
   @if (succes()) {
     <div class="succes" role="status">
-      <div class="succes-symbole" aria-hidden="true">✓</div>
-      <h2>Compte créé</h2>
-      <p>Un email de vérification a été envoyé. Clique sur le lien qu'il contient avant de te connecter.</p>
-      <ion-button expand="block" class="action-principale" (click)="allerVersLogin()">Aller à la connexion</ion-button>
+      <div class="succes-symbole" aria-hidden="true">{{ 'AUTH.REGISTER.SUCCES_SYMBOLE' | translate }}</div>
+      <h2>{{ 'AUTH.REGISTER.SUCCES_TITRE' | translate }}</h2>
+      <p>{{ 'AUTH.REGISTER.SUCCES_TEXTE' | translate }}</p>
+      <ion-button expand="block" class="action-principale" (click)="allerVersLogin()">{{ 'AUTH.REGISTER.BOUTON_ALLER_LOGIN' | translate }}</ion-button>
     </div>
   } @else {
-    <h2>Inscription</h2>
-    <p class="introduction">Commence une nouvelle aventure.</p>
+    <h2>{{ 'AUTH.REGISTER.TITRE' | translate }}</h2>
+    <p class="introduction">{{ 'AUTH.REGISTER.INTRODUCTION' | translate }}</p>
     <form [formGroup]="form" (ngSubmit)="soumettre()">
       <div class="champ">
-        <label for="username">Nom d'utilisateur</label>
-        <ion-input id="username" formControlName="username" type="text" autocomplete="username" placeholder="Ton nom d'aventurier"></ion-input>
+        <label for="username">{{ 'AUTH.REGISTER.CHAMP_USERNAME_LABEL' | translate }}</label>
+        <ion-input id="username" formControlName="username" type="text" autocomplete="username" [placeholder]="'AUTH.REGISTER.CHAMP_USERNAME_PLACEHOLDER' | translate"></ion-input>
       </div>
 
       <div class="champ">
-        <label for="email">Email</label>
-        <ion-input id="email" formControlName="email" type="email" autocomplete="email" placeholder="Ton adresse email"></ion-input>
+        <label for="email">{{ 'AUTH.REGISTER.CHAMP_EMAIL_LABEL' | translate }}</label>
+        <ion-input id="email" formControlName="email" type="email" autocomplete="email" [placeholder]="'AUTH.REGISTER.CHAMP_EMAIL_PLACEHOLDER' | translate"></ion-input>
       </div>
 
       <div class="champ">
-        <label for="register-password">Mot de passe <span>8 caractères minimum</span></label>
-        <ion-input id="register-password" formControlName="password" type="password" autocomplete="new-password" placeholder="Choisis un mot de passe"></ion-input>
+        <label for="register-password">{{ 'AUTH.REGISTER.CHAMP_PASSWORD_LABEL' | translate }} <span>{{ 'AUTH.REGISTER.CHAMP_PASSWORD_DETAIL' | translate }}</span></label>
+        <ion-input id="register-password" formControlName="password" type="password" autocomplete="new-password" [placeholder]="'AUTH.REGISTER.CHAMP_PASSWORD_PLACEHOLDER' | translate"></ion-input>
       </div>
 
       @if (erreur()) {
-        <ion-note class="erreur">{{ erreur() }}</ion-note>
+        <ion-note class="erreur">{{ erreur() | translate }}</ion-note>
       }
 
       <ion-button expand="block" type="submit" class="action-principale" [disabled]="form.invalid || enCours()">
-        {{ enCours() ? 'Création...' : 'Créer mon compte' }}
+        {{ enCours() ? ('AUTH.REGISTER.BOUTON_CREATION_EN_COURS' | translate) : ('AUTH.REGISTER.BOUTON_CREER_COMPTE' | translate) }}
       </ion-button>
     </form>
 
-    <div class="separateur"><span>OU</span></div>
-    <a class="retour-login" routerLink="/auth/login">Déjà un compte ? <strong>Se connecter</strong></a>
+    <div class="separateur"><span>{{ 'AUTH.REGISTER.SEPARATEUR_OU' | translate }}</span></div>
+    <a class="retour-login" routerLink="/auth/login" [innerHTML]="'AUTH.REGISTER.LIEN_CONNEXION' | translate"></a>
   }
     </section>
   </main>

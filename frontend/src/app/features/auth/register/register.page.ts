@@ -56,7 +56,7 @@ export class RegisterPage {
       },
       error: () => {
         this.enCours.set(false);
-        this.erreur.set("Inscription impossible : nom d'utilisateur ou email déjà utilisé.");
+        this.erreur.set('AUTH.REGISTER.ERREUR_INSCRIPTION');
       },
     });
   }

@@ -20,14 +20,23 @@
     },
     "REGISTER": {
       "TITRE": "Inscription",
-      "SUCCES_TEXTE": "Compte créé. Un e-mail de vérification vous a été envoyé : cliquez sur le lien qu'il contient avant de pouvoir vous connecter.",
-      "BOUTON_ALLER_LOGIN": "Aller à la connexion",
-      "CHAMP_USERNAME": "Nom d'utilisateur",
-      "CHAMP_EMAIL": "E-mail",
-      "CHAMP_PASSWORD": "Mot de passe (8 caractères min.)",
+      "INTRODUCTION": "Commence une nouvelle aventure.",
+      "CHAMP_USERNAME_LABEL": "Nom d'utilisateur",
+      "CHAMP_USERNAME_PLACEHOLDER": "Ton nom d'aventurier",
+      "CHAMP_EMAIL_LABEL": "Email",
+      "CHAMP_EMAIL_PLACEHOLDER": "Ton adresse email",
+      "CHAMP_PASSWORD_LABEL": "Mot de passe",
+      "CHAMP_PASSWORD_DETAIL": "8 caractères minimum",
+      "CHAMP_PASSWORD_PLACEHOLDER": "Choisis un mot de passe",
       "BOUTON_CREER_COMPTE": "Créer mon compte",
-      "LIEN_CONNEXION": "Déjà un compte ? Se connecter",
-      "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou e-mail déjà utilisé."
+      "BOUTON_CREATION_EN_COURS": "Création...",
+      "SEPARATEUR_OU": "OU",
+      "LIEN_CONNEXION": "Déjà un compte ? <strong>Se connecter</strong>",
+      "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou email déjà utilisé.",
+      "SUCCES_SYMBOLE": "✓",
+      "SUCCES_TITRE": "Compte créé",
+      "SUCCES_TEXTE": "Un email de vérification a été envoyé. Clique sur le lien qu'il contient avant de te connecter.",
+      "BOUTON_ALLER_LOGIN": "Aller à la connexion"
     }
   },
   "ACCUEIL": {
