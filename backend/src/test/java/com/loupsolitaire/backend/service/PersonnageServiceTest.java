@@ -817,7 +817,10 @@ class PersonnageServiceTest {
         p.setMort(true);
         p.setEnduranceMax(20);
         p.setEnduranceActuelle(0);
+        p.setChapitreActuel(chapitre0);
 
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.empty());
         when(inventaireService.listerInventaire(p)).thenReturn(List.of(creerLigneCoin(999)));
 
         personnageService.ressusciter(p);
@@ -840,12 +843,36 @@ class PersonnageServiceTest {
     void ressusciterEchoueSansPieceCoin() {
         Personnage p = new Personnage();
         p.setMort(true);
+        p.setChapitreActuel(chapitre0);
+
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.empty());
         when(inventaireService.listerInventaire(p)).thenReturn(List.of());
 
         assertThatThrownBy(() -> personnageService.ressusciter(p))
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(p.isMort()).isTrue(); // inchange
+        verify(personnageRepository, never()).save(any());
+    }
+
+    @Test
+    void ressusciterEchoueSiLaMortProvientDUneDefaiteEnCombat() {
+        Personnage p = new Personnage();
+        p.setMort(true);
+        p.setChapitreActuel(chapitre0);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.DEFAITE);
+
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> personnageService.ressusciter(p))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("defaite en combat");
+
+        verify(inventaireService, never()).listerInventaire(any());
         verify(personnageRepository, never()).save(any());
     }
 

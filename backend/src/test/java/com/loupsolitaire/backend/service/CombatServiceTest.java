@@ -390,14 +390,19 @@ class CombatServiceTest {
         combat.setAssautsLivres(0); // premier assaut : le bonus doit s'appliquer
         stuberCombatExistant(personnage, chapitre, combat);
 
-        // rapportAttaque = (10 + 2 bonus assaut_max) - 5 = 7
+        // Le bonus ASSAUT_MAX s'applique a l'attaque du premier assaut.
+        // Une fois l'attaque effectuee, assautsLivres passe a 1 avant la
+        // riposte : le bonus n'est donc plus actif pour le rapport de riposte.
+        // rapportAttaque = (10 + 2) - 5 = 7
+        // rapportRiposte = 10 - 5 = 5
         when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
         when(tableCombatService.degatsInfliges(7, 6)).thenReturn(-1);
-        when(tableCombatService.degatsSubis(7, 4)).thenReturn(-1);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-1);
 
         TourJoue tourJoue = combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
 
         assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(7);
+        assertThat(tourJoue.resultat().rapportRiposte()).isEqualTo(5);
     }
 
     @Test
