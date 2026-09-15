@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.loup-solitaire.example.com',
+  apiUrl: 'https://loup-solitaire-api.onrender.com',
 };
