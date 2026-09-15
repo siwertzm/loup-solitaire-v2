@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true" [scrollY]="false">
   @if (chargement()) {
-    <div class="combat-chargement">Chargement du combat…</div>
+    <div class="combat-chargement">{{ 'COMBAT_PAGE.CHARGEMENT' | translate }}</div>
   } @else if (erreur()) {
     <div class="combat-chargement">{{ erreur() }}</div>
   } @else {
@@ -81,30 +81,30 @@
         </div>
 
         <!-- bonus du joueur, au-dessus de la plaque de vie -->
-        <div class="bonus-joueur" aria-label="Bonus actifs">
+        <div class="bonus-joueur" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_ACTIFS' | translate">
             @if (bonusHabiliteTemp() > 0) {
-              <button type="button" class="bonus-picto bonus-temp" title="Bonus d'habileté temporaire" aria-label="Bonus d'habileté temporaire" (click)="ouvrirExplicationBonus('habilite')">
+              <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILETE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILETE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
                 <img src="/assets/icon/potion.png" alt="" />
                 <small>+{{ bonusHabiliteTemp() }}</small>
               </button>
             }
             @if (bonusArmeMaitrisee(); as arme) {
-              <button type="button" class="bonus-picto bonus-arme" [attr.title]="'Arme maîtrisée : ' + arme" aria-label="Arme maîtrisée" (click)="ouvrirExplicationBonus('arme')">
+              <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
                 <img src="/assets/icon/epee.png" alt="" />
               </button>
             }
             @if (bonusPuissancePsychique()) {
-              <button type="button" class="bonus-picto bonus-psychique" title="Puissance psychique" aria-label="Puissance psychique" (click)="ouvrirExplicationBonus('puissance')">
+              <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('puissance')">
                 <img src="/assets/icon/puissance.png" alt="" />
               </button>
             }
             @if (bonusBouclierPsychique()) {
-              <button type="button" class="bonus-picto bonus-bouclier" title="Bouclier psychique" aria-label="Bouclier psychique" (click)="ouvrirExplicationBonus('bouclier')">
+              <button type="button" class="bonus-picto bonus-bouclier" [attr.title]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('bouclier')">
                 <img src="/assets/icon/bulle.png" alt="" />
               </button>
             }
             @if (bonusGarde()) {
-              <button type="button" class="bonus-picto bonus-garde" [attr.title]="'Garde : réduction de ' + combat()?.dernierTour?.reductionPourcent + '%'" aria-label="Bonus de garde" (click)="ouvrirExplicationBonus('garde')">
+              <button type="button" class="bonus-picto bonus-garde" [attr.title]="'COMBAT_PAGE.TITLE_GARDE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_GARDE' | translate" (click)="ouvrirExplicationBonus('garde')">
                 <img src="/assets/icon/bouclier.png" alt="" />
               </button>
             }
@@ -128,27 +128,27 @@
         @if (bonusSelectionne(); as bonus) {
           <div class="voile-bonus" (click)="fermerExplicationBonus()">
             <section class="popup-bonus" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-              <button type="button" class="popup-bonus-fermer" aria-label="Fermer" (click)="fermerExplicationBonus()">×</button>
+              <button type="button" class="popup-bonus-fermer" [attr.aria-label]="'COMBAT_PAGE.ARIA_FERMER' | translate" (click)="fermerExplicationBonus()">×</button>
               @switch (bonus) {
                 @case ('habilite') {
-                  <h2>Habileté temporaire</h2>
-                  <p>Votre habileté est augmentée de <strong>+{{ bonusHabiliteTemp() }}</strong> pour la durée prévue de cet effet.</p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_HABILETE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_HABILETE_TEXTE' | translate: { bonus: bonusHabiliteTemp() }"></p>
                 }
                 @case ('arme') {
-                  <h2>Arme maîtrisée</h2>
-                  <p>Vous possédez et maîtrisez l'arme <strong>{{ bonusArmeMaitrisee() }}</strong>. Son bonus d'habileté est actif.</p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_ARME_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ARME_TEXTE' | translate: { arme: bonusArmeMaitrisee() }"></p>
                 }
                 @case ('puissance') {
-                  <h2>Puissance psychique</h2>
-                  <p>Cette discipline ajoute <strong>+2 HABILETÉ</strong> à vos attaques contre cet ennemi.</p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_PUISSANCE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_PUISSANCE_TEXTE' | translate"></p>
                 }
                 @case ('bouclier') {
-                  <h2>Bouclier psychique</h2>
-                  <p>Cette discipline vous protège contre les attaques mentales des ennemis.</p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_BOUCLIER_TITRE' | translate }}</h2>
+                  <p>{{ 'COMBAT_PAGE.POPUP_BOUCLIER_TEXTE' | translate }}</p>
                 }
                 @case ('garde') {
-                  <h2>Bonus de garde</h2>
-                  <p>Votre prochaine riposte est réduite de <strong>{{ combat()?.dernierTour?.reductionPourcent }}%</strong>.</p>
+                  <h2>{{ 'COMBAT_PAGE.POPUP_GARDE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_GARDE_TEXTE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }"></p>
                 }
               }
             </section>
@@ -162,7 +162,7 @@
 
           @if (phase() === 'TEXTE') {
             @if (deAttaqueVisible()) {
-              <div class="de-attaque" aria-live="polite" aria-label="Dé d'attaque">
+              <div class="de-attaque" aria-live="polite" [attr.aria-label]="'COMBAT_PAGE.ARIA_DE_ATTAQUE' | translate">
                 <p class="de-attaque-texte">{{ texteDe() }}</p>
                 <span class="de-attaque-label">{{ libelleDe() }}</span>
                 <span class="de-attaque-face" [class.roule]="deAttaqueRoule()">
@@ -170,23 +170,23 @@
                 </span>
               </div>
             } @else if (statsEnnemi(); as stats) {
-              <div class="stats-ennemi" aria-label="Statistiques de l'ennemi">
+              <div class="stats-ennemi" [attr.aria-label]="'COMBAT_PAGE.ARIA_STATS_ENNEMI' | translate">
                 <div class="stats-ennemi-entete">
                   <span class="stats-ennemi-ligne"></span>
-                  <span class="stats-ennemi-titre">CARACTÉRISTIQUES</span>
+                  <span class="stats-ennemi-titre">{{ 'COMBAT_PAGE.STATS_TITRE' | translate }}</span>
                   <span class="stats-ennemi-ligne"></span>
                 </div>
 
                 <div class="stats-ennemi-grille">
                   <div class="stat-ennemi stat-habilete">
-                    <span class="stat-ennemi-label">HABILETÉ</span>
+                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_HABILETE_LABEL' | translate }}</span>
                     <strong>{{ stats.habilite }}</strong>
-                    <span class="stat-ennemi-sous-titre">attaque</span>
+                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_HABILETE_SOUS_TITRE' | translate }}</span>
                   </div>
                   <div class="stat-ennemi stat-endurance">
-                    <span class="stat-ennemi-label">ENDURANCE</span>
+                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_ENDURANCE_LABEL' | translate }}</span>
                     <strong>{{ stats.endurance }}</strong>
-                    <span class="stat-ennemi-sous-titre">résistance</span>
+                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_ENDURANCE_SOUS_TITRE' | translate }}</span>
                   </div>
                 </div>
               </div>
@@ -199,14 +199,14 @@
           @if (phase() === 'MENU' && statut() === 'EN_COURS') {
             <div class="menu">
               <div class="invite">
-                <span class="question">Que fait {{ nomJoueur() }} ?</span>
-                <span class="assaut">ASSAUT {{ round() }}</span>
+                <span class="question">{{ 'COMBAT_PAGE.QUESTION_MENU' | translate: { nom: nomJoueur() } }}</span>
+                <span class="assaut">{{ 'COMBAT_PAGE.ASSAUT_LABEL' | translate: { round: round() } }}</span>
               </div>
               <div class="actions">
-                <button type="button" class="action principale" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">ATTAQUER</button>
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">DÉFENSE</button>
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="ouvrirSac()">SAC</button>
-                <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">FUITE</button>
+                <button type="button" class="action principale" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">{{ 'COMBAT_PAGE.BOUTON_ATTAQUER' | translate }}</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">{{ 'COMBAT_PAGE.BOUTON_DEFENSE' | translate }}</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="ouvrirSac()">{{ 'COMBAT_PAGE.BOUTON_SAC' | translate }}</button>
+                <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">{{ 'COMBAT_PAGE.BOUTON_FUITE' | translate }}</button>
               </div>
             </div>
           }

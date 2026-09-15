@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ActionCombat, CombatEnnemiResponse, CombatResponse, ResultatTourResponse } from '../../../core/models/combat.model';
 import { PersonnageResume } from '../../../core/models/personnage.model';
@@ -47,7 +48,7 @@ interface Message {
 @Component({
   selector: 'app-combat',
   standalone: true,
-  imports: [IonContent],
+  imports: [IonContent, TranslatePipe],
   templateUrl: './combat.page.html',
   styleUrl: './combat.page.scss',
 })
@@ -57,6 +58,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   private readonly combatService = inject(CombatService);
   private readonly personnageService = inject(PersonnageService);
   private readonly inventaireSheet = inject(InventaireSheetService);
+  private readonly translate = inject(TranslateService);
 
   /** Fond d'arène : foret | brume | crepuscule | pierre | gravure. */
   readonly fond = 'foret';
@@ -84,7 +86,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly deAttaqueRoule = signal(false);
   readonly valeurDeAttaque = signal<number | string>('?');
   readonly texteDe = signal('');
-  readonly libelleDe = signal("JET D'ATTAQUE");
+  readonly libelleDe = signal(this.translate.instant('COMBAT_PAGE.JET_ATTAQUE'));
   readonly bonusSelectionne = signal<BonusSelectionne>(null);
 
   private file: Message[] = [];
@@ -126,7 +128,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     );
   });
 
-  readonly nomJoueur = computed(() => this.personnage()?.nom ?? 'Loup Solitaire');
+  readonly nomJoueur = computed(() => this.personnage()?.nom ?? this.translate.instant('COMBAT_PAGE.NOM_JOUEUR_PAR_DEFAUT'));
   /**
    * Ennemis pas encore vaincus (actif inclus), pour l'effet visuel de
    * "pile de cartes" derrière la plaque de vie ennemie. PAS un computed
@@ -233,7 +235,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
    * prochain() / combatCharge()) : ce bouton ne concerne donc plus que
    * VICTOIRE/INTERROMPU, d'où le seul libellé restant.
    */
-  readonly libelleFin = computed(() => 'POURSUIVRE');
+  readonly libelleFin = computed(() => this.translate.instant('COMBAT_PAGE.BOUTON_POURSUIVRE'));
 
   ngOnInit(): void {
     this.initialiserId();
@@ -258,7 +260,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     if (id) {
       this.personnageId.set(id);
     } else {
-      this.erreur.set('Identifiant de personnage introuvable.');
+      this.erreur.set(this.translate.instant('COMBAT_PAGE.ERREUR_IDENTIFIANT_INTROUVABLE'));
       this.chargement.set(false);
     }
   }
@@ -276,7 +278,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
-      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
+      error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_PERSONNAGE'), err),
     });
 
     // Idempotent côté backend : renvoie le combat déjà EN_COURS (ou résolu)
@@ -299,8 +301,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   private echecChargement(err: unknown): void {
-    console.error('Erreur lors du chargement du combat :', err);
-    this.erreur.set('Impossible de charger le combat.');
+    console.error(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_COMBAT'), err);
+    this.erreur.set(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_COMBAT_TEXTE'));
     this.chargement.set(false);
   }
 
@@ -319,7 +321,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // Jamais d'écran FIN à bouton pour une défaite (voir prochain()),
       // même en rouvrant un combat déjà résolu : le tap sur ce message
       // renvoie directement au chapitre, où ChapitrePage affiche REVENIR.
-      this.jouerFile([{ txt: 'Vous avez été vaincu.', defaite: true }]);
+      this.jouerFile([{ txt: this.translate.instant('COMBAT_PAGE.MSG_VAINCU'), defaite: true }]);
       return;
     }
 
@@ -336,9 +338,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       const ennemi = this.ennemiActif();
       if (ennemi) {
         this.jouerFile([
-          { txt: `${ennemi.nom} vous barre la route !` },
+          { txt: this.translate.instant('COMBAT_PAGE.MSG_BARRE_ROUTE', { nom: ennemi.nom }) },
           {
-            txt: `HABILETÉ ${ennemi.habilite} — ENDURANCE ${ennemi.enduranceMax}.`,
+            txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', { habilite: ennemi.habilite, endurance: ennemi.enduranceMax }),
             stats: { habilite: ennemi.habilite, endurance: ennemi.enduranceMax },
           },
         ]);
@@ -355,11 +357,11 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   private messageResolu(statut: string): string {
     switch (statut) {
       case 'VICTOIRE':
-        return 'Vous avez déjà triomphé de cet adversaire.';
+        return this.translate.instant('COMBAT_PAGE.MSG_DEJA_TRIOMPHE');
       case 'FUITE':
-        return 'Vous avez déjà fui ce combat.';
+        return this.translate.instant('COMBAT_PAGE.MSG_DEJA_FUI');
       default:
-        return 'Ce combat est terminé.';
+        return this.translate.instant('COMBAT_PAGE.MSG_COMBAT_TERMINE');
     }
   }
 
@@ -369,7 +371,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     if (this.phase() !== 'MENU' || this.statut() !== 'EN_COURS' || this.actionEnCours()) return;
 
     if (action === 'FUITE' && !this.fuitePossible()) {
-      this.jouerFile([{ txt: 'Impossible de rompre ce combat.' }]);
+      this.jouerFile([{ txt: this.translate.instant('COMBAT_PAGE.MSG_IMPOSSIBLE_FUIR') }]);
       return;
     }
 
@@ -397,9 +399,15 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       this.deAttaqueVisible.set(true);
       this.deAttaqueRoule.set(true);
       this.texteDe.set(
-        action === 'ATTAQUE' ? `${this.nomJoueur()} porte son attaque !` : `${this.nomJoueur()} lève sa garde.`,
+        action === 'ATTAQUE'
+          ? this.translate.instant('COMBAT_PAGE.MSG_PORTE_ATTAQUE', { nom: this.nomJoueur() })
+          : this.translate.instant('COMBAT_PAGE.MSG_LEVE_GARDE', { nom: this.nomJoueur() }),
       );
-      this.libelleDe.set(action === 'ATTAQUE' ? "JET D'ATTAQUE" : 'JET DE DÉFENSE');
+      this.libelleDe.set(
+        action === 'ATTAQUE'
+          ? this.translate.instant('COMBAT_PAGE.JET_ATTAQUE')
+          : this.translate.instant('COMBAT_PAGE.JET_DEFENSE'),
+      );
       this.valeurDeAttaque.set('?');
       this.timerDeFaces = setInterval(() => {
         this.valeurDeAttaque.set(Math.floor(Math.random() * 10));
@@ -421,7 +429,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
                 this.personnage.set(p);
               }
             },
-            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
+            error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_RECHARGEMENT_PERSONNAGE'), err),
           });
           this.deAttaqueVisible.set(false);
           this.jouerFile(action === 'ATTAQUE' ? messages.slice(1) : messages);
@@ -439,7 +447,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
                 this.personnage.set(p);
               }
             },
-            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
+            error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_RECHARGEMENT_PERSONNAGE'), err),
           });
           this.timerDe = setTimeout(() => {
             if (this.timerDeFaces) clearInterval(this.timerDeFaces);
@@ -462,8 +470,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
         if (this.timerDeFaces) clearInterval(this.timerDeFaces);
         this.deAttaqueVisible.set(false);
         this.deAttaqueRoule.set(false);
-        console.error('Erreur lors du tour de combat :', err);
-        this.jouerFile([{ txt: "Une erreur est survenue, réessayez." }]);
+        console.error(this.translate.instant('COMBAT_PAGE.ERREUR_TOUR_COMBAT'), err);
+        this.jouerFile([{ txt: this.translate.instant('COMBAT_PAGE.MSG_ERREUR_REESSAYER') }]);
       },
     });
   }
@@ -484,18 +492,18 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (action === 'FUITE') {
-      messages.push({ txt: 'Vous rompez le combat et disparaissez !!' });
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_FUITE') });
       return messages;
     }
 
     if (action === 'ATTAQUE') {
       messages.push({
-        txt: `${this.nomJoueur()} porte son attaque !`,
+        txt: this.translate.instant('COMBAT_PAGE.MSG_PORTE_ATTAQUE', { nom: this.nomJoueur() }),
         de: { valeur: tour.tirageAttaque ?? 0 },
       });
     } else if (action === 'DEFENSE') {
       messages.push({
-        txt: `${this.nomJoueur()} lève sa garde.`,
+        txt: this.translate.instant('COMBAT_PAGE.MSG_LEVE_GARDE', { nom: this.nomJoueur() }),
         de: { valeur: tour.tirageDefense ?? 0 },
       });
     }
@@ -507,10 +515,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       const coupFatal = tour.degatsInfliges <= -999;
       messages.push({
         txt: coupFatal
-          ? `Coup fatal ! ${nomEnnemi} s'effondre, foudroyé sur le coup.`
+          ? this.translate.instant('COMBAT_PAGE.MSG_COUP_FATAL_ENNEMI', { nom: nomEnnemi })
           : degats > 0
-            ? `${nomEnnemi} perd ${degats} points d'ENDURANCE.`
-            : `${nomEnnemi} pare le coup. Aucun dégât.`,
+            ? this.translate.instant('COMBAT_PAGE.MSG_PERD_ENDURANCE_ENNEMI', { nom: nomEnnemi, degats })
+            : this.translate.instant('COMBAT_PAGE.MSG_PARE_COUP', { nom: nomEnnemi }),
         hit: degats > 0 ? 'ennemi' : null,
         actualiser: 'ennemi',
       });
@@ -518,7 +526,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     const ennemiVaincu = ennemiAvant && combat.ennemis.find((e) => e.id === ennemiAvant.id)?.vaincu;
     if (action === 'ATTAQUE' && ennemiVaincu) {
-      messages.push({ txt: `${nomEnnemi} s'effondre, vaincu.`, ennemiVaincu: true });
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_EFFONDRE_VAINCU', { nom: nomEnnemi }), ennemiVaincu: true });
 
       // Combat multi-ennemis (voir CombatService.passerAuProchainEnnemi côté
       // backend) : un nouvel adversaire prend le relais dans le même
@@ -527,9 +535,12 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // d'ENDURANCE apparaîtrait sans transition ni explication.
       const nouvelEnnemiActif = combat.ennemis.find((e) => e.actif && e.id !== ennemiAvant?.id);
       if (nouvelEnnemiActif) {
-        messages.push({ txt: `${nouvelEnnemiActif.nom} prend le relais !` });
+        messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_PREND_RELAIS', { nom: nouvelEnnemiActif.nom }) });
         messages.push({
-          txt: `HABILETÉ ${nouvelEnnemiActif.habilite} — ENDURANCE ${nouvelEnnemiActif.enduranceMax}.`,
+          txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', {
+            habilite: nouvelEnnemiActif.habilite,
+            endurance: nouvelEnnemiActif.enduranceMax,
+          }),
           stats: { habilite: nouvelEnnemiActif.habilite, endurance: nouvelEnnemiActif.enduranceMax },
           nouvelEnnemi: true,
           ennemiId: nouvelEnnemiActif.id,
@@ -547,18 +558,21 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // message spécial.
       const coupFatal = (tour.degatsSubisBruts ?? tour.degatsSubis) <= -999;
       messages.push({
-        txt: `${nomEnnemi} riposte !`,
+        txt: this.translate.instant('COMBAT_PAGE.MSG_RIPOSTE', { nom: nomEnnemi }),
         de: { valeur: tour.tirageRiposte ?? 0 },
       });
       let txt: string;
       if (coupFatal && degats > 0) {
-        txt = 'Un coup fatal vous foudroie !';
+        txt = this.translate.instant('COMBAT_PAGE.MSG_COUP_FATAL_JOUEUR');
       } else if (degats <= 0) {
-        txt = 'Vous esquivez le coup.';
+        txt = this.translate.instant('COMBAT_PAGE.MSG_ESQUIVE');
       } else if (action === 'DEFENSE' && tour.reductionPourcent) {
-        txt = `Vous perdez ${degats} points d'ENDURANCE \n( Garde amortie de ${tour.reductionPourcent}% ).`;
+        txt = this.translate.instant('COMBAT_PAGE.MSG_PERD_ENDURANCE_GARDE', {
+          degats,
+          pourcent: tour.reductionPourcent,
+        });
       } else {
-        txt = `Vous perdez ${degats} points d'ENDURANCE.`;
+        txt = this.translate.instant('COMBAT_PAGE.MSG_PERD_ENDURANCE', { degats });
       }
       messages.push({ txt, hit: degats > 0 ? 'joueur' : null, actualiser: 'joueur' });
     }
@@ -568,14 +582,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     // qu'on vient d'être vaincu sur ce même tour n'a aucun sens narratif.
     if (action === 'DEFENSE' && tour.bonusHabiliteObtenu && combat.statut === 'EN_COURS') {
       messages.push({
-        txt: `Vous saisissez une ouverture :\n +${tour.bonusHabiliteObtenu} HABILITÉ pour votre prochaine attaque.`,
+        txt: this.translate.instant('COMBAT_PAGE.MSG_OUVERTURE', { bonus: tour.bonusHabiliteObtenu }),
       });
     }
 
     if (combat.statut === 'DEFAITE') {
-      messages.push({ txt: 'Vous avez été vaincu.', defaite: true });
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_VAINCU'), defaite: true });
     } else if (combat.statut === 'INTERROMPU') {
-      messages.push({ txt: 'Le combat est interrompu ; le récit continue.' });
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_INTERROMPU') });
     }
 
     return messages;
@@ -683,7 +697,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       if (this.timerDe) clearTimeout(this.timerDe);
       this.phase.set('TEXTE');
       this.texteDe.set(m.txt);
-      this.libelleDe.set('JET DE RIPOSTE');
+      this.libelleDe.set(this.translate.instant('COMBAT_PAGE.JET_RIPOSTE'));
       this.deAttaqueVisible.set(true);
       this.deAttaqueRoule.set(true);
       this.valeurDeAttaque.set('?');
