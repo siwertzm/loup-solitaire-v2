@@ -53,6 +53,10 @@ export class AccueilPage implements ViewWillEnter {
       actif: p.id === this.actifId(),
       habileteTotale: p.habilite + (p.habiliteTemp ?? 0),
       initiale: p.nom.charAt(0).toUpperCase() || 'LS',
+      // Chapitre 350 = fin du tome 1 (voir VictoirePage / GameDataLoader
+      // côté backend, PAGES_FIN_DE_JEU). Un personnage arrivé là n'a plus
+      // rien à "reprendre" dans ce tome.
+      termine: p.chapitreActuelId === 350,
     })),
   );
 

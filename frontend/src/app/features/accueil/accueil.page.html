@@ -29,7 +29,11 @@
                     <div class="avatar">{{ pj.initiale }}</div>
                     <div class="nom">{{ pj.nom }}</div>
                   </div>
-                  <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
+                  @if (pj.termine) {
+                    <div class="badge-termine" aria-label="Tome terminé">✓</div>
+                  } @else {
+                    <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
+                  }
                 </div>
 
                 <div class="stats" [class.grise]="pj.mort">
@@ -60,6 +64,14 @@
                       SUPPRIMER
                     </button>
                   </div>
+                } @else if (pj.termine) {
+                  <!-- Tome 2 pas encore implémenté : bouton volontairement
+                       désactivé, juste pour annoncer la suite (voir
+                       VictoirePage, section "Livre second"). -->
+                  <button type="button" class="jouer termine" disabled>
+                    <span class="jouer-tome">TOME 2 :</span>
+                    <span class="jouer-titre">La Traversée Infernale</span>
+                  </button>
                 } @else {
                   <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
                     {{ pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate) }}

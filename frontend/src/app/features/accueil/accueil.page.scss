@@ -227,6 +227,24 @@ ion-item-options {
     color: $encre;
   }
 
+  // Remplace .chapitre quand le personnage a atteint le chapitre 350 (fin
+  // du tome 1) : petit badge rond, même esprit visuel que celui de
+  // VictoirePage, plutôt qu'un numéro de chapitre qui n'a plus de sens.
+  .badge-termine {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: $foret-clair;
+    border: 1px solid rgba(217, 169, 74, 0.5);
+    color: $or;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
+  }
+
   .stats {
     display: flex;
     justify-content: space-between;
@@ -277,6 +295,38 @@ ion-item-options {
 
     &:hover {
       opacity: 0.88;
+    }
+
+    &:disabled {
+      opacity: 1;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    // Tome 2 pas encore implémenté (voir @if pj.termine ci-dessus) :
+    // aspect clairement désactivé, deux lignes (nom du tome + titre).
+    &.termine {
+      display: flex;
+      justify-content: center;
+      gap: 2px;
+      background: rgba(58, 50, 38, 0.06);
+      color: rgba(58, 50, 38, 0.45);
+      cursor: default;
+      opacity: 1;
+
+      .jouer-tome {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        margin-top: 1px;
+      }
+
+      .jouer-titre {
+        font-family: 'EB Garamond', Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 12px;
+        letter-spacing: normal;
+      }
     }
   }
 
