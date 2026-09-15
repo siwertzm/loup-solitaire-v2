@@ -472,5 +472,30 @@
     "INITIALE_PAR_DEFAUT": "LS",
     "ERREUR_ID_MANQUANT": "Identifiant de personnage manquant.",
     "ERREUR_CHARGEMENT": "Impossible de charger la fiche de ce personnage."
+  },
+  "INVENTAIRE_SHEET": {
+    "CHARGEMENT": "Chargement…",
+    "TITRE_SAC": "SAC À DOS",
+    "SECTION_ARMES": "ARMES",
+    "TAG_MAITRISEE": "MAÎTRISÉE",
+    "BONUS_HABILETE": "+{{bonus}} HAB",
+    "TAG_EQUIPEE": "ÉQUIPÉE",
+    "BOUTON_RETIRER": "Retirer",
+    "VIDE": "Vide",
+    "MAIN_NUE": "Main nue",
+    "MALUS_HABILETE": "{{malus}} HAB",
+    "SECTION_OBJETS_REPAS": "OBJETS & REPAS",
+    "SECTION_OBJETS_SPECIAUX": "OBJETS SPÉCIAUX (HORS LIMITE)",
+    "BOURSE_CLE": "BOURSE",
+    "BOURSE_VALEUR": "{{valeur}} COURONNES D'OR",
+    "POPUP_ANNULER": "ANNULER",
+    "POPUP_CONSOMMER": "CONSOMMER",
+    "EFFET_HABILETE": "HABILETÉ",
+    "EFFET_ENDURANCE": "ENDURANCE",
+    "EFFET_LABEL": "+{{valeur}} {{libelle}}",
+    "ERREUR_CHARGEMENT_INVENTAIRE": "Erreur lors du chargement de l'inventaire :",
+    "ERREUR_CHARGEMENT_OBJETS": "Erreur lors du chargement des objets :",
+    "ERREUR_CONSOMMATION": "Erreur lors de la consommation de l'objet :",
+    "ERREUR_RETRAIT": "Erreur lors du retrait de l'objet :"
   }
 }

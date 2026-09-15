@@ -1,5 +1,6 @@
 import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume, ObjetResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
@@ -18,7 +19,7 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
 @Component({
   selector: 'app-inventaire-sheet',
   standalone: true,
-  imports: [IonItemSliding, IonItem, IonItemOptions, IonItemOption],
+  imports: [IonItemSliding, IonItem, IonItemOptions, IonItemOption, TranslatePipe],
   templateUrl: './inventaire-sheet.component.html',
   styleUrl: './inventaire-sheet.component.scss',
 })
@@ -26,6 +27,7 @@ export class InventaireSheetComponent {
   private readonly sheet = inject(InventaireSheetService);
   private readonly personnageService = inject(PersonnageService);
   private readonly objetService = inject(ObjetService);
+  private readonly translate = inject(TranslateService);
 
   readonly ouvert = computed(() => this.sheet.personnageId() !== null);
   readonly enFermeture = signal(false);
@@ -53,7 +55,7 @@ export class InventaireSheetComponent {
           this.chargement.set(false);
         },
         error: (err) => {
-          console.error("Erreur lors du chargement de l'inventaire :", err);
+          console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CHARGEMENT_INVENTAIRE'), err);
           this.chargement.set(false);
         },
       });
@@ -62,7 +64,7 @@ export class InventaireSheetComponent {
       // évite toute question de fraîcheur des données entre deux usages.
       this.objetService.lister().subscribe({
         next: (objets) => this.tousObjets.set(objets),
-        error: (err) => console.error('Erreur lors du chargement des objets :', err),
+        error: (err) => console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CHARGEMENT_OBJETS'), err),
       });
     });
   }
@@ -129,8 +131,10 @@ export class InventaireSheetComponent {
   });
 
   private libelleEffet(effet: { type: string; valeur: number }): string {
-    const libelle = effet.type === 'HABILETE' ? 'HABILETÉ' : 'ENDURANCE';
-    return `+${effet.valeur} ${libelle}`;
+    const libelle = this.translate.instant(
+      effet.type === 'HABILETE' ? 'INVENTAIRE_SHEET.EFFET_HABILETE' : 'INVENTAIRE_SHEET.EFFET_ENDURANCE',
+    );
+    return this.translate.instant('INVENTAIRE_SHEET.EFFET_LABEL', { valeur: effet.valeur, libelle });
   }
 
   readonly objetsSpeciauxDetail = computed(() =>
@@ -184,7 +188,7 @@ export class InventaireSheetComponent {
         this.objetAConfirmer.set(null);
       },
       error: (err) => {
-        console.error("Erreur lors de la consommation de l'objet :", err);
+        console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CONSOMMATION'), err);
         this.consommationEnCours.set(null);
       },
     });
@@ -213,7 +217,7 @@ export class InventaireSheetComponent {
         this.feuilleSac()?.nativeElement.scrollTo({ top: 0 });
       },
       error: (err) => {
-        console.error("Erreur lors du retrait de l'objet :", err);
+        console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_RETRAIT'), err);
         this.retraitEnCours.set(null);
       },
     });
