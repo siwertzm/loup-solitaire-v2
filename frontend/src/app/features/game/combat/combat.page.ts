@@ -109,7 +109,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
    * "nouvelEnnemi" (voir construireMessages) est joué dans la boîte de
    * dialogue.
    */
-  private readonly ennemiAffocheId = signal<string | null>(null);
+  readonly ennemiAffocheId = signal<string | null>(null);
 
   // --- Données dérivées ---------------------------------------------------
   readonly ennemiActif = computed<CombatEnnemiResponse | null>(() => {

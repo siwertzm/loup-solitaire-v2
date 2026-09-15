@@ -53,12 +53,23 @@
           }
 
           <!-- ennemi -->
-          <div class="socle socle-ennemi"></div>
-          <div class="combattant combattant-ennemi" [class.touche]="hit() === 'ennemi'">
-            <div class="entree-ennemi">
-              <img class="illustration" [class.vaincu]="ennemiVaincu()" src="/assets/illustrations/ennemi.png" alt="" />
+          <!-- @for avec track sur ennemiAffocheId() (pas un simple @if) :
+               force Angular à DÉTRUIRE puis RECRÉER ce sous-arbre à chaque
+               changement d'ennemi affiché, ce qui relance l'animation CSS
+               "combat-entree-ennemi" (voir .entree-ennemi dans le scss) —
+               sinon elle ne jouait qu'une fois, au tout premier ennemi du
+               combat, jamais pour les suivants. ennemiAffocheId n'avance
+               qu'au message "nouvelEnnemi" (pas à la mort de l'ennemi
+               précédent), donc l'animation de mort (.vaincu) a bien le
+               temps de jouer avant que ce sous-arbre ne soit remplacé. -->
+          @for (id of [ennemiAffocheId()]; track id) {
+            <div class="socle socle-ennemi"></div>
+            <div class="combattant combattant-ennemi" [class.touche]="hit() === 'ennemi'">
+              <div class="entree-ennemi">
+                <img class="illustration" [class.vaincu]="ennemiVaincu()" src="/assets/illustrations/ennemi.png" alt="" />
+              </div>
             </div>
-          </div>
+          }
         }
 
         <!-- héros -->
