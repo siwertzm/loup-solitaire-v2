@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.model;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -50,4 +51,12 @@ public class Utilisateur {
     // Le login est bloque tant que ce flag est false (voir AuthController.login).
     @Column(nullable = false)
     private boolean emailVerifie = false;
+
+    // "Membre depuis" cote profil frontend. Fixee a la creation (voir
+    // AuthController.register), jamais modifiee ensuite. Volontairement
+    // PAS nullable=false : les comptes crees avant l'ajout de ce champ
+    // (ddl-auto=update ne backfill rien) auraient sinon une entite en
+    // violation du schema des leur premier chargement. Le frontend traite
+    // une valeur null comme "date inconnue" plutot que de planter.
+    private Instant dateCreation;
 }

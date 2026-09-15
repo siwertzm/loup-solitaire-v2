@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.response;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,10 @@ public record UtilisateurResponse(
         String email,
         LocalDate dateNaissance,
         boolean emailVerifie,
+        // "Membre depuis" cote profil. Null pour les comptes crees avant
+        // l'ajout de ce champ (voir Utilisateur.dateCreation) : le
+        // frontend affiche alors une valeur de repli plutot que de planter.
+        Instant dateCreation,
         List<PersonnageResponse> personnages) {
 
     // Pour les endpoints qui n'ont pas besoin de la liste des personnages
@@ -31,6 +36,7 @@ public record UtilisateurResponse(
                 utilisateur.getEmail(),
                 utilisateur.getDateNaissance(),
                 utilisateur.isEmailVerifie(),
+                utilisateur.getDateCreation(),
                 personnages
         );
     }

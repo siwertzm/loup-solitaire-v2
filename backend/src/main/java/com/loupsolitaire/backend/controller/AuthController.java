@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.controller;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,7 @@ public class AuthController {
         utilisateur.setEmail(request.getEmail());
         utilisateur.setPassword(passwordEncoder.encode(request.getPassword()));
         utilisateur.setDateNaissance(request.getDateNaissance());
+        utilisateur.setDateCreation(Instant.now());
         utilisateurRepository.save(utilisateur);
 
         emailVerificationService.envoyerLienDeVerification(utilisateur);

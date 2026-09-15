@@ -50,10 +50,10 @@
     "LIGNE_EMAIL_VERIFIE": "E-MAIL VÉRIFIÉ",
     "LIGNE_PIECES_PREMIUM": "PIÈCES PREMIUM",
     "LIGNE_MEMBRE_DEPUIS": "MEMBRE DEPUIS",
-    "MEMBRE_DEPUIS_VALEUR": "mars 2026",
     "MODIFIER": "MODIFIER MON PROFIL",
     "DECONNEXION": "SE DÉCONNECTER",
-    "ERREUR_CHARGEMENT": "Impossible de charger votre profil."
+    "ERREUR_CHARGEMENT": "Impossible de charger votre profil.",
+    "MEMBRE_DEPUIS_INCONNU": "date inconnue"
   },
   "PROFIL_EDITION": {
     "RETOUR": "‹ PROFIL",

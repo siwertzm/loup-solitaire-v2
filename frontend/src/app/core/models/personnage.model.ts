@@ -69,5 +69,8 @@ export interface MoiResponse {
   username: string;
   email: string;
   emailVerifie: boolean;
+  /** ISO 8601 (Instant backend). Null pour les comptes créés avant
+   * l'ajout de ce champ (voir Utilisateur.dateCreation côté backend). */
+  dateCreation: string | null;
   personnages: PersonnageResume[];
 }

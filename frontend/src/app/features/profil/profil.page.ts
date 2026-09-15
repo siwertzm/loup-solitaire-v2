@@ -25,6 +25,17 @@ export class ProfilPage implements ViewWillEnter {
 
   readonly initiale = computed(() => (this.compte()?.username ?? '?').charAt(0).toUpperCase());
 
+  /**
+   * "Membre depuis" formaté en français ("mars 2026"), à partir de
+   * Utilisateur.dateCreation (backend). Repli pour les comptes créés
+   * avant l'ajout de ce champ (dateCreation alors null côté backend).
+   */
+  readonly membreDepuis = computed(() => {
+    const iso = this.compte()?.dateCreation;
+    if (!iso) return 'PROFIL.MEMBRE_DEPUIS_INCONNU';
+    return new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date(iso));
+  });
+
   readonly lignes = computed(() => {
     const c = this.compte();
     if (!c) return [];
@@ -32,7 +43,7 @@ export class ProfilPage implements ViewWillEnter {
       { cle: 'PROFIL.LIGNE_PERSONNAGES', valeur: String(c.personnages?.length ?? 0), ton: 'clair' },
       { cle: 'PROFIL.LIGNE_EMAIL_VERIFIE', valeur: c.emailVerifie ? 'COMMUN.OUI' : 'COMMUN.NON', ton: c.emailVerifie ? 'vert' : 'rouge' },
       { cle: 'PROFIL.LIGNE_PIECES_PREMIUM', valeur: "999", ton: 'gold' },
-      { cle: 'PROFIL.LIGNE_MEMBRE_DEPUIS', valeur: "mars 2026", ton: 'clair' }
+      { cle: 'PROFIL.LIGNE_MEMBRE_DEPUIS', valeur: this.membreDepuis(), ton: 'clair' }
     ];
   });
 
