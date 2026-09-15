@@ -502,8 +502,15 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     if (tour.degatsInfliges !== null) {
       const degats = -tour.degatsInfliges;
+      // -999 = coup fatal net dans TABLE_DEGATS_INFLIGES côté backend (voir
+      // TableCombatService), pas un vrai total de 999 points d'ENDURANCE.
+      const coupFatal = tour.degatsInfliges <= -999;
       messages.push({
-        txt: degats > 0 ? `${nomEnnemi} perd ${degats} points d'ENDURANCE.` : `${nomEnnemi} pare le coup. Aucun dégât.`,
+        txt: coupFatal
+          ? `Coup fatal ! ${nomEnnemi} s'effondre, foudroyé sur le coup.`
+          : degats > 0
+            ? `${nomEnnemi} perd ${degats} points d'ENDURANCE.`
+            : `${nomEnnemi} pare le coup. Aucun dégât.`,
         hit: degats > 0 ? 'ennemi' : null,
         actualiser: 'ennemi',
       });
@@ -532,12 +539,21 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     if (tour.degatsSubis !== null) {
       const degats = -tour.degatsSubis;
+      // -999 = coup fatal net dans TABLE_DEGATS_SUBIS côté backend. On se
+      // base sur degatsSubisBruts (avant réduction de garde), pas sur
+      // degatsSubis : une DEFENSE peut réduire -999 à un nombre "normal"
+      // (ex. -749 à 75% de dégâts bruts) qui, sans ça, afficherait
+      // simplement "Vous perdez 749 points d'ENDURANCE." au lieu du
+      // message spécial.
+      const coupFatal = (tour.degatsSubisBruts ?? tour.degatsSubis) <= -999;
       messages.push({
         txt: `${nomEnnemi} riposte !`,
         de: { valeur: tour.tirageRiposte ?? 0 },
       });
       let txt: string;
-      if (degats <= 0) {
+      if (coupFatal && degats > 0) {
+        txt = 'Un coup fatal vous foudroie !';
+      } else if (degats <= 0) {
         txt = 'Vous esquivez le coup.';
       } else if (action === 'DEFENSE' && tour.reductionPourcent) {
         txt = `Vous perdez ${degats} points d'ENDURANCE \n( Garde amortie de ${tour.reductionPourcent}% ).`;

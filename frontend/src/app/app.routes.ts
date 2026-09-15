@@ -33,6 +33,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/regle/equipement/regle-equipement.page').then((m) => m.RegleEquipementPage),
   },
   {
+    path: 'regle/combat',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/regle/combat/regle-combat.page').then((m) => m.RegleCombatPage),
+  },
+  {
     path: 'profil',
     canActivate: [authGuard],
     loadComponent: () => import('./features/profil/profil.page').then((m) => m.ProfilPage),

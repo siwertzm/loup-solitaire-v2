@@ -120,7 +120,8 @@
     "PARAGRAPHE_DISCIPLINES_2": "Si vous remplissez avec succès la mission qui vous est assignée dans ce premier livre de la série du Loup Solitaire, vous aurez le droit d'ajouter une Discipline Kaï supplémentaire à celles que vous possédez déjà. Lorsque vous vous lancerez dans la nouvelle aventure que vous propose le prochain volume de la série (intitulé La Traversée Infernale), vous pourrez ainsi faire usage de six disciplines Kaï (les cinq premières étant acquises une bonne fois pour toutes), de même que des Objets Spéciaux que vous aurez décidé de conserver au cours de votre première mission. Sachez en effet que, de livre en livre, votre expérience grandira chaque fois que vous aurez accompli une mission : vous pourrez, de cette façon, espérer atteindre un jour la complète maîtrise de l'art et de la science des Moines Kaï.",
     "VALIDER": "CRÉER MON PERSONNAGE",
     "DISCIPLINES": "DISCIPLINES",
-    "EQUIPEMENT": "ÉQUIPEMENT"
+    "EQUIPEMENT": "ÉQUIPEMENT",
+    "COMBAT": "Combat"
   },
   "EQUIPEMENT": {
     "SURTITRE": "Équipement de départ",
@@ -195,5 +196,35 @@
     "PARAGRAPHE_OR_2": "La monnaie en cours dans le royaume est la Couronne, qui se présente sous la forme d'une petite pièce d'or. Au cours de votre aventure, vous pourrez utiliser ces Couronnes pour vos frais de transport ou de nourriture, mais également, si besoin est, pour corrompre certains personnages peu scrupuleux. Nombre de créatures que vous serez amené à rencontrer possèdent des Couronnes d'or. Chaque fois que vous tuerez l'une de ces créatures, vous aurez le droit de vous emparer de ses pièces d'or et de les conserver dans votre bourse.",
     "PARAGRAPHE_NOURRITURE_2": "Tout au long de votre quête, vous aurez besoin de vous nourrir à intervalles réguliers. S'il ne vous reste plus de vivres lorsque vous serez dans l'obligation de prendre un repas, vous perdrez 3 points d'ENDURANCE. Mais si vous avez choisi, parmi les disciplines Kaï, celle de la chasse, vous n'aurez pas à rayer un repas de votre liste d'équipement chaque fois que vous devrez manger. La potion de guérison vous rend 4 points d'ENDURANCE lorsque vous la buvez après un combat. Mais vous ne disposez que d'une seule dose. Si, au cours de votre aventure, vous venez à découvrir d'autres potions, leurs effets vous seront indiqués en temps utile. Toutes les Potions de Guérison doivent être rangées dans votre sac à dos.",
     "COMBAT": "REGLES DE COMBAT"
+  },
+  "INTRO_COMBAT": {
+    "PARAGRAPHE_1": "Vous allez à présent croiser la route d'ennemis résolus à vous barrer le chemin. Le combat qui vous attend ne se joue pas ici avec des jets de dés sur une feuille : c'est l'application qui tire pour vous, chiffre après chiffre, en comparant toujours votre HABILETÉ à celle de votre adversaire. Plus l'écart en votre faveur est grand, plus vos coups portent et plus les siens vous épargnent.",
+    "SECTION_ACTIONS": "Les quatre actions possibles",
+    "ATTAQUER": "Attaquer",
+    "PARAGRAPHE_ATTAQUER": "Vous portez un coup direct. Si l'ennemi survit, il riposte aussitôt dans le même assaut : vous encaissez donc, vous aussi, le contrecoup de votre propre offensive. C'est l'action la plus simple, mais aussi la plus risquée.",
+    "DEFENDRE": "Défendre",
+    "PARAGRAPHE_DEFENDRE": "Vous levez votre garde au lieu de frapper. Une partie des dégâts de la riposte ennemie est absorbée (de 25 % à un blocage total, selon votre chance ce tour-ci), et vous saisissez parfois une ouverture qui viendra augmenter votre HABILETÉ pour votre prochaine ATTAQUE. Défendre ne fait jamais de mal à l'ennemi : c'est un tour pour souffler, pas pour l'achever.",
+    "OBJET": "Utiliser un objet",
+    "PARAGRAPHE_OBJET": "Vous consommez un objet de votre sac (une Potion, par exemple) en plein combat. Attention : cela ne vous met pas à l'abri pour autant, l'ennemi profite lui aussi de ce tour pour vous porter son propre coup.",
+    "FUITE": "Fuir",
+    "PARAGRAPHE_FUITE": "Vous rompez le combat et disparaissez sans demander votre reste. Ce choix n'est pas toujours proposé : certains adversaires ou certaines circonstances vous obligent à livrer un nombre minimum d'assauts avant de pouvoir tenter votre chance.",
+    "SECTION_RESOLUTION": "Comment se résout un assaut",
+    "PARAGRAPHE_RESOLUTION_1": "À chaque assaut, l'application calcule l'écart entre votre HABILETÉ (celle de base, augmentée le cas échéant par vos Disciplines Kaï et votre équipement) et celle de votre adversaire. Cet écart détermine dans quelle mesure la chance vous sourit : plus il est grand en votre faveur, plus les chiffres tirés au sort vous seront favorables.",
+    "PARAGRAPHE_RESOLUTION_2": "Si votre ATTAQUE achève l'ennemi, celui-ci s'effondre avant d'avoir pu riposter : vous ne subissez aucun dégât ce tour-là. Dans tous les autres cas, HABILETÉ et ENDURANCE s'affrontent des deux côtés à la fois, à chaque assaut.",
+    "PARAGRAPHE_COUP_FATAL": "De façon rare, un coup peut se révéler <b>fatal</b> d'un seul coup, quel que soit le total d'ENDURANCE restant de la victime. Ce dénouement brutal touche aussi bien vos ennemis que vous-même : gardez-le à l'esprit avant de vous précipiter tête baissée dans un affrontement.",
+    "SECTION_DISCIPLINES": "Les Disciplines Kaï en combat",
+    "PARAGRAPHE_DISCIPLINES": "Trois des cinq Disciplines Kaï que vous avez choisies à la création de votre personnage peuvent directement influer sur l'issue d'un combat.",
+    "MAITRISE_ARMES": "Maîtrise des Armes",
+    "PARAGRAPHE_MAITRISE_ARMES": "Si vous maîtrisez cette discipline et que vous portez l'arme qui vous a été attribuée, vous ajoutez 2 points à votre HABILETÉ pour toute la durée du combat. À l'inverse, combattre à mains nues, sans aucune arme, vous en coûte 4.",
+    "PUISSANCE_PSYCHIQUE": "Puissance Psychique",
+    "PARAGRAPHE_PUISSANCE_PSYCHIQUE": "Cette discipline ajoute 2 points à votre HABILETÉ contre la plupart des créatures. Certains ennemis, plus coriaces, y sont toutefois insensibles : dans ce cas, le bonus ne s'applique pas.",
+    "BOUCLIER_PSYCHIQUE": "Bouclier Psychique",
+    "PARAGRAPHE_BOUCLIER_PSYCHIQUE": "Certains ennemis usent eux-mêmes de pouvoirs psychiques pour affaiblir votre HABILETÉ pendant le combat. Cette discipline vous en protège entièrement.",
+    "SECTION_PLUSIEURS_ENNEMIS": "Affronter plusieurs ennemis",
+    "PARAGRAPHE_PLUSIEURS_ENNEMIS": "Certains affrontements vous opposent à plusieurs adversaires à la fois. Vous les combattez alors l'un après l'autre : dès que le premier s'effondre, le suivant prend immédiatement sa place, sans repos entre deux, jusqu'à ce qu'il n'en reste plus aucun debout.",
+    "SECTION_MORT": "La mort au combat",
+    "PARAGRAPHE_MORT_1": "Si votre ENDURANCE tombe à zéro pendant un combat, vous êtes vaincu. C'est un dénouement distinct d'une mort survenue au fil d'un chapitre : ici, contre <b>1 Pièce Premium</b>, vous ne ressuscitez pas sur place, vous revenez au chapitre précédent, comme si vous aviez rebroussé chemin juste avant l'affrontement fatal.",
+    "PARAGRAPHE_MORT_2": "Sans Pièce Premium, votre aventure s'achève ici. Combattez donc avec discernement : mieux vaut parfois défendre ou fuir que de vous jeter tête la première dans un duel perdu d'avance.",
+    "TERMINER": "RETOUR AU MENU"
   }
 }

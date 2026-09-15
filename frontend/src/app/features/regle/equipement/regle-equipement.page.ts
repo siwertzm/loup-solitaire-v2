@@ -40,6 +40,6 @@ export class RegleEquipementPage {
   }
 
   continuer(): void {
-    this.router.navigate(['/regle/equipement']);
+    this.router.navigate(['/regle/combat']);
   }
 }

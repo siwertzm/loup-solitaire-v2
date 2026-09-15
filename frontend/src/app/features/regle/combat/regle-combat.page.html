@@ -1,0 +1,53 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'INTRO_CREATION.COMBAT' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_1' | translate"></p>
+
+      <div class="section">{{ 'INTRO_COMBAT.SECTION_ACTIONS' | translate }}</div>
+
+      <h3>{{ 'INTRO_COMBAT.ATTAQUER' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_ATTAQUER' | translate }}</p>
+
+      <h3>{{ 'INTRO_COMBAT.DEFENDRE' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_DEFENDRE' | translate }}</p>
+
+      <h3>{{ 'INTRO_COMBAT.OBJET' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_OBJET' | translate }}</p>
+
+      <h3>{{ 'INTRO_COMBAT.FUITE' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_FUITE' | translate }}</p>
+
+      <div class="section">{{ 'INTRO_COMBAT.SECTION_RESOLUTION' | translate }}</div>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_RESOLUTION_1' | translate }}</p>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_RESOLUTION_2' | translate }}</p>
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_COUP_FATAL' | translate"></p>
+
+      <div class="section">{{ 'INTRO_COMBAT.SECTION_DISCIPLINES' | translate }}</div>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_DISCIPLINES' | translate }}</p>
+      <h3>{{ 'INTRO_COMBAT.MAITRISE_ARMES' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_MAITRISE_ARMES' | translate }}</p>
+      <h3>{{ 'INTRO_COMBAT.PUISSANCE_PSYCHIQUE' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_PUISSANCE_PSYCHIQUE' | translate }}</p>
+      <h3>{{ 'INTRO_COMBAT.BOUCLIER_PSYCHIQUE' | translate }}</h3>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_BOUCLIER_PSYCHIQUE' | translate }}</p>
+
+      <div class="section">{{ 'INTRO_COMBAT.SECTION_PLUSIEURS_ENNEMIS' | translate }}</div>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_PLUSIEURS_ENNEMIS' | translate }}</p>
+
+      <div class="section">{{ 'INTRO_COMBAT.SECTION_MORT' | translate }}</div>
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_MORT_1' | translate"></p>
+      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_MORT_2' | translate }}</p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+    </div>
+  </div>
+</ion-content>
