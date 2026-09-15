@@ -15,7 +15,7 @@
 
       @if (afficheArmeMaitrisee()) {
         <div class="bloc arme-maitrisee-bloc">
-          <span class="bloc-titre">ARME MAÎTRISÉE</span>
+          <span class="bloc-titre">{{ 'EQUIPEMENT.ARME_MAITRISEE' | translate }}</span>
           <div class="ligne arme-maitrisee">
             <span class="ligne-nom">{{ armeMaitrisee() }}</span>
           </div>
@@ -39,7 +39,7 @@
             class="de objet"
             [class.roule]="roulantObjet()"
             [disabled]="chargement()"
-            aria-label="Révéler l'objet trouvé"
+            aria-label="{{ 'EQUIPEMENT.ARIA_REVELER_OBJET' | translate }}"
             (click)="revelerObjet()"
           >
             @if (imageObjet(); as img) {
@@ -62,7 +62,7 @@
             class="de or"
             [class.roule]="roulantOr()"
             [disabled]="chargement()"
-            aria-label="Révéler les Pièces d'Or"
+            aria-label="{{ 'EQUIPEMENT.ARIA_REVELER_OR' | translate }}"
             (click)="revelerOr()"
           >
             {{ faceOr() }}
