@@ -308,5 +308,28 @@
     "BOUTON_ECHANGER": "Échanger",
     "ERREUR_VOL": "Erreur lors de la résolution du vol :",
     "ERREUR_ECHANGE": "Erreur lors de l'échange d'objet :"
+  },
+  "CHAPITRE_OBJETS": {
+    "ALT_ARMES": "Armes",
+    "ALT_OBJETS": "Objets",
+    "ALT_REPAS": "Repas",
+    "ALT_BOURSE": "Bourse",
+    "ALT_SAC": "Sac",
+    "BADGE_VIDE": "VIDE",
+    "BADGE_AUTOMATIQUE": "AUTOMATIQUE",
+    "BADGE_PLEIN": "PLEIN",
+    "BADGE_PRENDRE": "PRENDRE",
+    "TITRE_INVENTAIRE": "INVENTAIRE",
+    "LIBELLE_ARMES": "ARMES",
+    "LIBELLE_OBJETS_REPAS": "OBJETS & REPAS",
+    "LIBELLE_BOURSE": "BOURSE",
+    "POPUP_TITRE": "{{categorie}} COMPLET",
+    "POPUP_TEXTE": "Retire un objet pour faire de la place.",
+    "TAG_MAITRISEE": "MAÎTRISÉE",
+    "BONUS_HABILETE": "+{{bonus}} HAB",
+    "BOUTON_RETIRER": "Retirer",
+    "POPUP_ANNULER": "ANNULER",
+    "ERREUR_RAMASSAGE": "Erreur lors du ramassage de l'objet :",
+    "ERREUR_RETRAIT": "Erreur lors du retrait de l'objet :"
   }
 }

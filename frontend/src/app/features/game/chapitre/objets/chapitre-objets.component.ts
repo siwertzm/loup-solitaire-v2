@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ObjetChapResponse } from '../../../../core/models/chapitre.model';
 import { InventaireItem, ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
@@ -35,7 +36,7 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
 @Component({
   selector: 'app-chapitre-objets',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './chapitre-objets.component.html',
   styleUrl: './chapitre-objets.component.scss',
 })
@@ -43,6 +44,7 @@ export class ChapitreObjetsComponent {
   private readonly chapitreService = inject(ChapitreService);
   private readonly personnageService = inject(PersonnageService);
   private readonly inventaireSheet = inject(InventaireSheetService);
+  private readonly translate = inject(TranslateService);
 
   readonly objets = input.required<ObjetChapResponse[]>();
   readonly tousObjets = input.required<ObjetResume[]>();
@@ -160,12 +162,12 @@ export class ChapitreObjetsComponent {
   libelleCategorie(categorie: string | null): string {
     switch (categorie) {
       case 'ARME':
-        return 'ARMES';
+        return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_ARMES');
       case 'OBJET':
       case 'REPAS':
-        return 'OBJETS & REPAS';
+        return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_OBJETS_REPAS');
       case 'BOURSE':
-        return 'BOURSE';
+        return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_BOURSE');
       default:
         return '';
     }
@@ -215,7 +217,7 @@ export class ChapitreObjetsComponent {
         this.ramassageEnCours.set(null);
       },
       error: (err) => {
-        console.error("Erreur lors du ramassage de l'objet :", err);
+        console.error(this.translate.instant('CHAPITRE_OBJETS.ERREUR_RAMASSAGE'), err);
         this.ramassageEnCours.set(null);
       },
     });
@@ -240,7 +242,7 @@ export class ChapitreObjetsComponent {
         }
       },
       error: (err) => {
-        console.error("Erreur lors du retrait de l'objet :", err);
+        console.error(this.translate.instant('CHAPITRE_OBJETS.ERREUR_RETRAIT'), err);
         this.retraitPopupEnCours.set(null);
       },
     });
