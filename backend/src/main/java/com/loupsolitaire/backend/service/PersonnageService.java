@@ -101,6 +101,7 @@ public class PersonnageService {
 
         personnage.setDisciplines(disciplines);
         personnage.setDateCreation(Instant.now());
+        personnage.setDerniereActivite(personnage.getDateCreation());
         personnage.setChapitreActuel(recupererChapitreDepart());
         // Tirage fige des l'arrivee sur le chapitre de depart (voir
         // avancerVersChapitre pour la meme logique aux chapitres suivants).

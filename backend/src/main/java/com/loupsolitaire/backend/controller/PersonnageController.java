@@ -1,5 +1,7 @@
 package com.loupsolitaire.backend.controller;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,12 +73,18 @@ public class PersonnageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personnageMapper.versReponse(personnage));
     }
 
-    // Ecran profil : la liste des personnages de l'utilisateur connecte.
+    // Ecran profil/accueil : la liste des personnages de l'utilisateur
+    // connecte. Triee par derniereActivite decroissante : AccueilPage
+    // affiche toujours le premier element comme "a reprendre", donc le
+    // personnage le plus recemment joue doit arriver en tete.
     @GetMapping
     public List<PersonnageResponse> lister(@AuthenticationPrincipal UserDetails userDetails) {
         Utilisateur utilisateur = recupererUtilisateur(userDetails);
 
         return personnageRepository.findByUtilisateur(utilisateur).stream()
+                .sorted(Comparator.<Personnage, Instant>comparing(
+                        p -> p.getDerniereActivite() != null ? p.getDerniereActivite() : Instant.MIN)
+                        .reversed())
                 .map(personnageMapper::versReponse)
                 .toList();
     }
