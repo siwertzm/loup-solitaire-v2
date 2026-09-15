@@ -175,11 +175,35 @@
     "resistance": []
   },
   {
-    "id": "loup_maudit",
+    "id": "loup_maudit_1",
+    "nom": "Loup Maudit",
+    "description": "Un loup maudit.",
+    "habilite": 13,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_2",
     "nom": "Loup Maudit",
     "description": "Un loup maudit.",
     "habilite": 14,
     "endurance": 23,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_3",
+    "nom": "Loup Maudit",
+    "description": "Un loup maudit.",
+    "habilite": 14,
+    "endurance": 22,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_4",
+    "nom": "Loup Maudit",
+    "description": "Un loup maudit.",
+    "habilite": 15,
+    "endurance": 21,
     "resistance": []
   },
   {
@@ -211,10 +235,18 @@
     "resistance": []
   },
   {
-    "id": "glok_336",
+    "id": "glok_premier_336",
     "nom": "Glok",
     "description": "Un guerrier gobelin.",
     "habilite": 14,
+    "endurance": 11,
+    "resistance": []
+  },
+  {
+    "id": "glok_deuxieme_336",
+    "nom": "Glok",
+    "description": "Un guerrier gobelin.",
+    "habilite": 13,
     "endurance": 11,
     "resistance": []
   }
