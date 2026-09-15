@@ -1,16 +1,16 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
     <header class="titre">
-      <div class="stats-groupe" [class.grise]="mort()">
+      <div class="stats-groupe" [class.grise]="mortAffichee()">
         <div class="barre-stat endurance">
-          <div class="remplissage" [style.width.%]="endurancePourcentage()"></div>
-          <span class="texte-stat">ENDURANCE {{ enduranceActuelle() }}/{{ enduranceMax() }}</span>
+          <div class="remplissage" [style.width.%]="endurancePourcentageAffichee()"></div>
+          <span class="texte-stat">ENDURANCE {{ enduranceAffichee() }}/{{ enduranceMax() }}</span>
         </div>
       </div>
  
       <a
         class="avatar"
-        [class.grise]="mort()"
+        [class.grise]="mortAffichee()"
         [routerLink]="['/personnage', personnageId()]"
         aria-label="Ouvrir la fiche du personnage"
       >
@@ -49,6 +49,21 @@
           </div>
         }
       </div>
+
+       <!-- Ancien tirage conservé lors du passage 21 -> 2101 -> 2102 -->
+      @if (
+        (chapitre()?.id === 2101 || chapitre()?.id === 2102) &&
+        !hasardTermine() &&
+        ancienTirageHasard() !== null
+      ) {
+        <div class="marque-pages marque-pages-droite">
+          <div class="marque-page marque-page-hasard">
+            <span class="de hasard fige">
+              {{ ancienTirageHasard() }}
+            </span>
+          </div>
+        </div>
+      }
 
       @if (aConditionHasard() && hasardTermine()) {
         <div class="marque-pages marque-pages-droite">

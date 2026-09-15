@@ -242,6 +242,69 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly hasardTermine = signal(false);
   readonly faceHasard = signal<number | string>('?');
 
+  readonly ancienTirageHasard = signal<number | null>(null);
+  private readonly ancienTirageHasardKey = 'loup-solitaire:ancien-tirage-chapitre-21';
+
+  // Endurance que le joueur avait avant d'arriver au 2102.
+  readonly enduranceAvant2102 = signal<number | null>(null);
+
+  private readonly enduranceAvant2102Key = 'loup-solitaire:endurance-avant-2102';
+
+  readonly mortAffichee = computed(() => {
+    // Au 2102, tant que le dernier dé n'a pas été révélé,
+    // on ne montre pas encore visuellement la mort.
+    if (this.chapitre()?.id === 2102 && !this.hasardTermine()) {
+      return false;
+    }
+
+    return this.mort();
+  });
+
+  readonly enduranceAffichee = computed(() => {
+    // Même principe pour la jauge : on garde l'endurance
+    // que le joueur avait avant son dernier tirage.
+    if (this.chapitre()?.id === 2102 && !this.hasardTermine()) {
+      return this.enduranceAvant2102() ?? this.enduranceActuelle();
+    }
+
+    return this.enduranceActuelle();
+  });
+
+  readonly endurancePourcentageAffichee = computed(() => {
+    const max = this.enduranceMax();
+
+    if (max <= 0) {
+      return 0;
+    }
+
+    return Math.min(100, Math.max(0, (this.enduranceAffichee() / max) * 100));
+  });
+
+  private enregistrerEnduranceAvant2102(): void {
+    const personnageId = this.personnageId();
+    const endurance = this.personnage()?.enduranceActuelle;
+
+    if (!personnageId || endurance === null || endurance === undefined) {
+      return;
+    }
+
+    this.enduranceAvant2102.set(endurance);
+
+    localStorage.setItem(`${this.enduranceAvant2102Key}:${personnageId}`, String(endurance));
+  }
+
+  private chargerEnduranceAvant2102(): void {
+    const personnageId = this.personnageId();
+
+    if (!personnageId) {
+      return;
+    }
+
+    const valeur = localStorage.getItem(`${this.enduranceAvant2102Key}:${personnageId}`);
+
+    this.enduranceAvant2102.set(valeur !== null ? Number(valeur) : null);
+  }
+
   readonly aConditionHasard = computed(
     () =>
       this.liens().some((lien) =>
@@ -287,7 +350,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private redirigerEchecChapitre21(): boolean {
     const chapitreId = this.chapitre()?.id;
     let chapitreCible: number | null = null;
-    
+
     if (chapitreId === 21) {
       chapitreCible = 2101;
     } else if (chapitreId === 2101) {
@@ -305,9 +368,26 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     if (!lien) {
       return false;
     }
+    this.enregistrerAncienTirageHasard();
+
+    if (chapitreId === 2101 && chapitreCible === 2102) {
+      this.enregistrerEnduranceAvant2102();
+    }
 
     this.choisirLien(lien);
     return true;
+  }
+
+  private enregistrerAncienTirageHasard(): void {
+    const valeur = this.chapitre()?.tirageHasard;
+
+    if (valeur === null || valeur === undefined) {
+      return;
+    }
+
+    this.ancienTirageHasard.set(valeur);
+
+    localStorage.setItem(this.ancienTirageHasardKey, String(valeur));
   }
 
   selectionnerOnglet(onglet: 'chapitre' | 'combat' | 'objets' | 'effets'): void {
@@ -404,6 +484,20 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     this.chapitreService.getChapitreCourant(id).subscribe({
       next: (data) => {
         this.chapitre.set(data);
+
+        if (data.id === 2101 || data.id === 2102) {
+          const ancien = localStorage.getItem(this.ancienTirageHasardKey);
+
+          this.ancienTirageHasard.set(ancien !== null ? Number(ancien) : null);
+        } else {
+          this.ancienTirageHasard.set(null);
+        }
+
+        if (data.id === 2102) {
+          this.chargerEnduranceAvant2102();
+        } else {
+          this.enduranceAvant2102.set(null);
+        }
         this.actualiserCombatDisponible(data.combat, id);
 
         this.ongletActif.set('chapitre');
