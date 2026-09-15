@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CondResponse, EffetResponse } from '../../../../core/models/chapitre.model';
 import {
@@ -22,13 +23,14 @@ import { PersonnageService } from '../../../../core/services/personnage.service'
 @Component({
   selector: 'app-chapitre-effets',
   standalone: true,
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './chapitre-effets.component.html',
   styleUrl: './chapitre-effets.component.scss',
 })
 export class ChapitreEffetsComponent {
   private readonly inventaireSheet = inject(InventaireSheetService);
   private readonly personnageService = inject(PersonnageService);
+  private readonly translate = inject(TranslateService);
 
   readonly effets = input.required<EffetResponse[]>();
   readonly personnage = input<PersonnageResume | null>(null);
@@ -136,9 +138,11 @@ export class ChapitreEffetsComponent {
   libelleAssautMax(condition: CondResponse): string {
     const n = Number(condition.valeur);
     if (n === 1) {
-      return 'Premier assaut';
+      return this.translate.instant('CHAPITRE_EFFETS.ASSAUT_PREMIER');
     }
-    return Number.isFinite(n) ? `${n} premiers assauts` : 'Assaut limité';
+    return Number.isFinite(n)
+      ? this.translate.instant('CHAPITRE_EFFETS.ASSAUT_N_PREMIERS', { n })
+      : this.translate.instant('CHAPITRE_EFFETS.ASSAUT_LIMITE');
   }
 
   /** true si le malus a été évité (discipline/objet requis bien possédé). */
@@ -208,19 +212,19 @@ export class ChapitreEffetsComponent {
   libelleVol(effet: EffetResponse): string {
     if (this.volInteractif(effet)) {
       return this.volPorteeArme(effet)
-        ? 'Choisissez l\u2019arme que vous perdez'
-        : 'Choisissez l\u2019objet que vous perdez';
+        ? this.translate.instant('CHAPITRE_EFFETS.VOL_CHOIX_ARME')
+        : this.translate.instant('CHAPITRE_EFFETS.VOL_CHOIX_OBJET');
     }
     if (effet.valeur === 10) {
-      return 'Sac et armes';
+      return this.translate.instant('CHAPITRE_EFFETS.VOL_SAC_ET_ARMES');
     }
     if (effet.valeur === 8) {
-      return 'Sac à dos';
+      return this.translate.instant('CHAPITRE_EFFETS.VOL_SAC_A_DOS');
     }
     if (this.volPorteeArme(effet)) {
-      return 'Vous perdez toutes vos armes';
+      return this.translate.instant('CHAPITRE_EFFETS.VOL_TOUTES_ARMES');
     }
-    return 'Vol';
+    return this.translate.instant('CHAPITRE_EFFETS.VOL_GENERIQUE');
   }
 
   /** Objets/armes éligibles à la perte pour CE vol (portée ARME ou TOUT). */
@@ -257,7 +261,7 @@ export class ChapitreEffetsComponent {
         this.fermerChoixVol();
       },
       error: (err) => {
-        console.error('Erreur lors de la résolution du vol :', err);
+        console.error(this.translate.instant('CHAPITRE_EFFETS.ERREUR_VOL'), err);
         this.volEnCours.set(null);
       },
     });
@@ -329,7 +333,7 @@ export class ChapitreEffetsComponent {
         this.fermerEchange();
       },
       error: (err) => {
-        console.error("Erreur lors de l'échange d'objet :", err);
+        console.error(this.translate.instant('CHAPITRE_EFFETS.ERREUR_ECHANGE'), err);
         this.echangeEnCours.set(null);
       },
     });

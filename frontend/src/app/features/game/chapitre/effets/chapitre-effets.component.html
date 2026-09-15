@@ -4,25 +4,25 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/repas.png" alt="Repas" />
+            <img src="assets/icon/repas.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_REPAS' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">Prendre un Repas</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.REPAS_TITRE' | translate }}</span>
           </div>
         </div>
 
         <div class="effet-action">
           @if (statutRepas(effet) === 'CHASSE') {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              CHASSE
+              {{ 'CHAPITRE_EFFETS.BADGE_CHASSE' | translate }}
             </button>
           } @else if (statutRepas(effet) === 'REPAS_CONSOMME') {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
-              -1 REPAS
+              {{ 'CHAPITRE_EFFETS.BADGE_REPAS_CONSOMME' | translate }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
-              -3 END
+              {{ 'CHAPITRE_EFFETS.BADGE_MALUS_ENDURANCE' | translate }}
             </button>
           }
         </div>
@@ -31,7 +31,7 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ effet.type }}</span>
@@ -42,15 +42,15 @@
         <div class="effet-action">
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              FULL END
+              {{ 'CHAPITRE_EFFETS.BADGE_FULL_ENDURANCE' | translate }}
             </button>
           } @else if (effet.valeur !== null && effet.valeur < 0) {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ effet.valeur }} END
+              {{ 'CHAPITRE_EFFETS.BADGE_ENDURANCE_VALEUR' | translate: { valeur: effet.valeur } }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
-              AUTOMATIQUE
+              {{ 'CHAPITRE_EFFETS.BADGE_AUTOMATIQUE' | translate }}
             </button>
           }
         </div>
@@ -62,26 +62,26 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">HABILETÉ</span>
-            <span class="effet-description">Pendant ce combat</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
+            <span class="effet-description">{{ 'CHAPITRE_EFFETS.HABILETE_PENDANT_COMBAT' | translate }}</span>
           </div>
         </div>
 
         <div class="effet-action">
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              +{{ effet.valeur }} HAB
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_BONUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else if (effet.valeur !== null && effet.valeur < 0) {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ effet.valeur }} HAB
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
-              AUTOMATIQUE
+              {{ 'CHAPITRE_EFFETS.BADGE_AUTOMATIQUE' | translate }}
             </button>
           }
         </div>
@@ -93,10 +93,10 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">HABILETÉ</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
             <span class="effet-description">{{ libelleAssautMax(condition) }}</span>
           </div>
         </div>
@@ -104,11 +104,11 @@
         <div class="effet-action">
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              +{{ effet.valeur }} HAB
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_BONUS' | translate: { valeur: effet.valeur } }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ effet.valeur }} HAB
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           }
         </div>
@@ -121,10 +121,10 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">HABILETÉ</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILETE_TITRE' | translate }}</span>
             <span class="effet-description">
               @if (condition.type === 'DISCIPLINE' && effetEvite(condition) ) {
                 {{ nomDiscipline(condition.targetId!) }}
@@ -138,11 +138,11 @@
         <div class="effet-action">
           @if (effetEvite(condition)) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              ÉVITÉ
+              {{ 'CHAPITRE_EFFETS.BADGE_EVITE' | translate }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              {{ effet.valeur }} HAB
+              {{ 'CHAPITRE_EFFETS.BADGE_HABILETE_MALUS' | translate: { valeur: effet.valeur } }}
             </button>
           }
         </div>
@@ -151,10 +151,10 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">VOL</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.VOL_TITRE' | translate }}</span>
             <span class="effet-description">{{ libelleVol(effet) }}</span>
           </div>
         </div>
@@ -162,15 +162,15 @@
         <div class="effet-action">
           @if (volEnAttentePourEffet(effet)) {
             <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirChoixVol(effet)">
-              CHOISIR
+              {{ 'CHAPITRE_EFFETS.BADGE_CHOISIR' | translate }}
             </button>
           } @else if (volInteractif(effet)) {
             <button type="button" class="effet-badge effet-badge-auto" disabled>
-              RÉSOLU
+              {{ 'CHAPITRE_EFFETS.BADGE_RESOLU' | translate }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
-              PERDU
+              {{ 'CHAPITRE_EFFETS.BADGE_PERDU' | translate }}
             </button>
           }
         </div>
@@ -179,21 +179,21 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
-            <span class="effet-titre">ÉCHANGE</span>
+            <span class="effet-titre">{{ 'CHAPITRE_EFFETS.ECHANGE_TITRE' | translate }}</span>
           </div>
         </div>
 
         <div class="effet-action">
           @if (echangeDejaFait(condition)) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
-              ÉCHANGÉ
+              {{ 'CHAPITRE_EFFETS.BADGE_ECHANGE_FAIT' | translate }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirEchange(effet)">
-              ÉCHANGER
+              {{ 'CHAPITRE_EFFETS.BADGE_ECHANGER' | translate }}
             </button>
           }
         </div>
@@ -203,19 +203,19 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" alt="Effet" />
+            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ effet.type }}</span>
             @if (effet.valeur !== null) {
-              <span class="effet-description">Valeur : {{ effet.valeur }}</span>
+              <span class="effet-description">{{ 'CHAPITRE_EFFETS.DEFAUT_VALEUR' | translate: { valeur: effet.valeur } }}</span>
             }
           </div>
         </div>
 
         <div class="effet-action">
           <button type="button" class="effet-badge effet-badge-auto" disabled>
-            AUTOMATIQUE
+            {{ 'CHAPITRE_EFFETS.BADGE_AUTOMATIQUE' | translate }}
           </button>
         </div>
       </div>
@@ -227,7 +227,7 @@
   <div class="voile-plein" (click)="fermerChoixVol()">
     <div class="popup-plein" (click)="$event.stopPropagation()">
       <div class="popup-plein-titre">{{ libelleVol(effet) }}</div>
-      <p class="popup-plein-texte">Choisissez ce que vous perdez.</p>
+      <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_VOL_TEXTE' | translate }}</p>
 
       @for (item of itemsEligiblesVol(effet); track item.objetId) {
         <div class="popup-plein-ligne">
@@ -241,14 +241,14 @@
             [disabled]="volEnCours() === item.objetId"
             (click)="choisirObjetVole(item.objetId)"
           >
-            Perdre
+            {{ 'CHAPITRE_EFFETS.BOUTON_PERDRE' | translate }}
           </button>
         </div>
       } @empty {
-        <p class="popup-plein-texte">Vous n'avez rien à perdre ici.</p>
+        <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_VOL_VIDE' | translate }}</p>
       }
 
-      <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">ANNULER</button>
+      <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">{{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}</button>
     </div>
   </div>
 }
@@ -257,8 +257,8 @@
   @if (conditionEchange(effet); as condition) {
     <div class="voile-plein" (click)="fermerEchange()">
       <div class="popup-plein" (click)="$event.stopPropagation()">
-        <div class="popup-plein-titre">ÉCHANGER CONTRE {{ nomObjet(condition.targetId!) }}</div>
-        <p class="popup-plein-texte">Choisissez ce que vous cédez en échange.</p>
+        <div class="popup-plein-titre">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TITRE' | translate: { nom: nomObjet(condition.targetId!) } }}</div>
+        <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TEXTE' | translate }}</p>
 
         @for (item of itemsEligiblesEchange(condition); track item.objetId) {
           <div class="popup-plein-ligne">
@@ -272,14 +272,14 @@
               [disabled]="echangeEnCours() === item.objetId"
               (click)="confirmerEchange(condition.targetId!, item.objetId)"
             >
-              Échanger
+              {{ 'CHAPITRE_EFFETS.BOUTON_ECHANGER' | translate }}
             </button>
           </div>
         } @empty {
-          <p class="popup-plein-texte">Vous n'avez rien à échanger ici.</p>
+          <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_VIDE' | translate }}</p>
         }
 
-        <button type="button" class="popup-plein-annuler" (click)="fermerEchange()">ANNULER</button>
+        <button type="button" class="popup-plein-annuler" (click)="fermerEchange()">{{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}</button>
       </div>
     </div>
   }
