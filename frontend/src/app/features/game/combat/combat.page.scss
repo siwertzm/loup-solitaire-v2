@@ -13,6 +13,7 @@ $beige: #e0d3b4;
 .combat {
   position: relative;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   font-family: 'EB Garamond', Georgia, serif;
@@ -66,8 +67,8 @@ $beige: #e0d3b4;
   .crete-1 {
     left: -2%;
     right: -2%;
-    top: 74px;
-    height: 132px;
+    top: clamp(50px, 8.7vh, 74px);
+    height: clamp(96px, 15.5vh, 132px);
     background: #27331f;
     opacity: 0.9;
     clip-path: polygon(0% 100%, 0% 52%, 4% 26%, 8% 50%, 13% 18%, 18% 46%, 23% 22%, 28% 48%, 33% 14%, 38% 44%, 43% 24%, 48% 50%, 53% 16%, 58% 42%, 63% 22%, 68% 48%, 73% 18%, 78% 44%, 83% 26%, 88% 50%, 93% 20%, 97% 46%, 100% 28%, 100% 100%);
@@ -75,16 +76,16 @@ $beige: #e0d3b4;
   .crete-2 {
     left: -4%;
     right: -4%;
-    top: 146px;
-    height: 150px;
+    top: clamp(92px, 17.1vh, 146px);
+    height: clamp(108px, 17.6vh, 150px);
     background: #1a2315;
     clip-path: polygon(0% 100%, 0% 48%, 6% 18%, 12% 44%, 19% 12%, 26% 42%, 33% 16%, 40% 46%, 47% 10%, 54% 40%, 61% 18%, 68% 46%, 75% 14%, 82% 42%, 89% 20%, 95% 46%, 100% 22%, 100% 100%);
   }
   .brume {
     left: 0;
     right: 0;
-    top: 236px;
-    height: 120px;
+    top: clamp(150px, 27.7vh, 236px);
+    height: clamp(86px, 14.1vh, 120px);
     background: linear-gradient(180deg, rgba(200, 214, 186, 0), rgba(200, 214, 186, 0.08) 45%, rgba(200, 214, 186, 0));
   }
   .vignette { display: none; }
@@ -98,8 +99,8 @@ $beige: #e0d3b4;
   .halo {
     left: -12%;
     right: -12%;
-    top: 150px;
-    height: 210px;
+    top: clamp(98px, 17.6vh, 150px);
+    height: clamp(150px, 24.6vh, 210px);
     inset: auto;
     border-radius: 50% 50% 0 0;
     background: #3c4742;
@@ -108,8 +109,8 @@ $beige: #e0d3b4;
   .crete-1 {
     left: -26%;
     right: 22%;
-    top: 196px;
-    height: 230px;
+    top: clamp(128px, 23vh, 196px);
+    height: clamp(166px, 27vh, 230px);
     border-radius: 50% 50% 0 0;
     background: #2f3936;
     opacity: 0.7;
@@ -117,8 +118,8 @@ $beige: #e0d3b4;
   .crete-2 {
     left: 34%;
     right: -26%;
-    top: 214px;
-    height: 230px;
+    top: clamp(140px, 25.1vh, 214px);
+    height: clamp(166px, 27vh, 230px);
     border-radius: 50% 50% 0 0;
     background: #283130;
     opacity: 0.7;
@@ -126,8 +127,8 @@ $beige: #e0d3b4;
   .brume {
     left: 0;
     right: 0;
-    top: 270px;
-    height: 150px;
+    top: clamp(176px, 31.7vh, 270px);
+    height: clamp(110px, 17.6vh, 150px);
     background: linear-gradient(180deg, rgba(236, 226, 200, 0), rgba(236, 226, 200, 0.22) 50%, rgba(236, 226, 200, 0));
   }
   .vignette {
@@ -143,18 +144,18 @@ $beige: #e0d3b4;
   .halo {
     inset: auto;
     left: 50%;
-    top: 300px;
-    width: 190px;
-    height: 190px;
-    margin-left: -95px;
+    top: clamp(198px, 35.2vh, 300px);
+    width: clamp(140px, 44.2vw, 190px);
+    height: clamp(140px, 44.2vw, 190px);
+    transform: translateX(-50%);
     border-radius: 50%;
     background: radial-gradient(circle, rgba(247, 205, 130, 0.95) 0%, rgba(232, 158, 74, 0.55) 46%, transparent 70%);
   }
   .crete-1 {
     left: -4%;
     right: -4%;
-    top: 352px;
-    height: 170px;
+    top: clamp(230px, 41.3vh, 352px);
+    height: clamp(124px, 20vh, 170px);
     background: #241d2c;
     clip-path: polygon(0% 100%, 0% 56%, 9% 34%, 18% 58%, 27% 28%, 37% 54%, 46% 24%, 56% 52%, 65% 30%, 74% 56%, 84% 32%, 92% 58%, 100% 36%, 100% 100%);
   }
@@ -173,7 +174,7 @@ $beige: #e0d3b4;
     left: 0;
     right: 0;
     top: 0;
-    height: 330px;
+    height: clamp(220px, 38.7vh, 330px);
     opacity: 0.75;
     background:
       repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.32) 0 2px, transparent 2px 66px),
@@ -182,7 +183,7 @@ $beige: #e0d3b4;
   .crete-2 {
     left: 0;
     right: 0;
-    top: 330px;
+    top: clamp(220px, 38.7vh, 330px);
     bottom: 0;
     background:
       repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0 2px, transparent 2px 88px),
@@ -191,16 +192,16 @@ $beige: #e0d3b4;
   .halo {
     inset: auto;
     left: -10%;
-    top: 120px;
-    width: 220px;
-    height: 260px;
+    top: clamp(80px, 14.1vh, 120px);
+    width: clamp(170px, 51.2vw, 220px);
+    height: clamp(190px, 30.5vh, 260px);
     background: radial-gradient(ellipse at 30% 40%, rgba(232, 158, 74, 0.35), transparent 68%);
   }
   .brume {
     right: -10%;
-    top: 150px;
-    width: 220px;
-    height: 260px;
+    top: clamp(98px, 17.6vh, 150px);
+    width: clamp(170px, 51.2vw, 220px);
+    height: clamp(190px, 30.5vh, 260px);
     background: radial-gradient(ellipse at 70% 40%, rgba(232, 158, 74, 0.28), transparent 68%);
   }
   .vignette {
@@ -217,8 +218,8 @@ $beige: #e0d3b4;
     inset: auto;
     left: 0;
     right: 0;
-    top: 210px;
-    height: 140px;
+    top: clamp(138px, 24.6vh, 210px);
+    height: clamp(100px, 16.4vh, 140px);
     background: repeating-linear-gradient(180deg, rgba(58, 50, 38, 0.4) 0 1px, transparent 1px 7px);
     mask-image: linear-gradient(180deg, transparent, #000 60%, transparent);
     -webkit-mask-image: linear-gradient(180deg, transparent, #000 60%, transparent);
@@ -226,8 +227,8 @@ $beige: #e0d3b4;
   .crete-1 {
     left: -4%;
     right: -4%;
-    top: 250px;
-    height: 160px;
+    top: clamp(164px, 29.3vh, 250px);
+    height: clamp(116px, 18.8vh, 160px);
     background: $encre;
     opacity: 0.22;
     clip-path: polygon(0% 100%, 0% 62%, 10% 40%, 20% 64%, 30% 34%, 41% 60%, 52% 30%, 63% 58%, 73% 36%, 84% 62%, 93% 38%, 100% 60%, 100% 100%);
@@ -244,20 +245,17 @@ $beige: #e0d3b4;
 .plaque {
   position: absolute;
   box-sizing: border-box;
-  width: 196px;
-  padding: 9px 12px 10px;
+  width: clamp(160px, 45.6vw, 196px);
+  padding: clamp(7px, 2.1vw, 9px) clamp(9px, 2.8vw, 12px) clamp(8px, 2.3vw, 10px);
   background: $parchemin;
   border: 2px solid $encre;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
 }
 
 .plaque-ennemi {
-  top: 352px;
-  left: 14px;
+  left: clamp(8px, 3.25vw, 14px);
+  bottom: clamp(182px, 31.5vh, 268px);
   border-radius: 4px 14px 4px 14px;
-  // 10 plutôt que 1 : laisse la place à des cartes fantômes en z-index
-  // positif (10 - rang) juste en dessous, sans jamais retomber à 0 ou en
-  // négatif (voir cartesOmbreEnnemis côté TS et le commentaire plus bas).
   z-index: 10;
 }
 
@@ -268,10 +266,10 @@ $beige: #e0d3b4;
 // cartesOmbreEnnemis côté TS), la pile n'étant pas plafonnée en nombre.
 .plaque-ennemi-ombre {
   position: absolute;
-  top: 352px;
-  left: 14px;
-  width: 196px;
-  height: 60px;
+  left: clamp(8px, 3.25vw, 14px);
+  bottom: clamp(182px, 31.5vh, 268px);
+  width: clamp(160px, 45.6vw, 196px);
+  height: clamp(50px, 7vh, 60px);
   box-sizing: border-box;
   background: $parchemin;
   border: 2px solid $encre;
@@ -281,30 +279,30 @@ $beige: #e0d3b4;
 }
 
 .plaque-joueur {
-  right: 14px;
-  bottom: 18px;
-  width: 200px;
+  right: clamp(8px, 3.25vw, 14px);
+  bottom: clamp(10px, 2.1vh, 18px);
+  width: clamp(164px, 46.5vw, 200px);
   border-radius: 14px 4px 14px 4px;
 }
 
 .bonus-joueur {
   position: absolute;
-  right: 25px;
-  bottom: 99px;
+  right: clamp(14px, 5.8vw, 25px);
+  bottom: clamp(64px, 11.6vh, 99px);
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 5px;
-  min-height: 22px;
+  gap: clamp(3px, 1.2vw, 5px);
+  min-height: clamp(19px, 5.1vw, 22px);
 }
 
 .bonus-picto {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 24px;
-  height: 22px;
+  width: clamp(20px, 5.6vw, 24px);
+  height: clamp(19px, 5.1vw, 22px);
   border: 1px solid rgba(58, 50, 38, 0.38);
   border-radius: 5px;
   background: rgba(255, 249, 226, 0.72);
@@ -314,8 +312,8 @@ $beige: #e0d3b4;
   appearance: none;
 
   img {
-    width: 17px;
-    height: 17px;
+    width: clamp(14px, 4vw, 17px);
+    height: clamp(14px, 4vw, 17px);
     object-fit: contain;
   }
 
@@ -329,7 +327,7 @@ $beige: #e0d3b4;
     background: #4d6330;
     color: #f4ecd8;
     font-family: 'Cinzel', serif;
-    font-size: 7px;
+    font-size: clamp(6px, 1.65vw, 7px);
     line-height: 1;
     text-align: center;
   }
@@ -353,8 +351,9 @@ $beige: #e0d3b4;
 
 .popup-bonus {
   position: relative;
-  width: min(300px, 100%);
-  padding: 22px 22px 18px;
+  box-sizing: border-box;
+  width: min(300px, calc(100vw - 44px));
+  padding: clamp(16px, 5.1vw, 22px) clamp(16px, 5.1vw, 22px) clamp(14px, 4.2vw, 18px);
   border: 2px solid $encre;
   border-radius: 12px 4px 12px 4px;
   background: $parchemin;
@@ -373,7 +372,7 @@ $beige: #e0d3b4;
 
   p {
     margin: 0;
-    font-size: 16px;
+    font-size: clamp(13px, 3.7vw, 16px);
     line-height: 1.35;
   }
 
@@ -401,8 +400,10 @@ $beige: #e0d3b4;
   gap: 8px;
 
   .nom {
+    min-width: 0;
+    overflow-wrap: anywhere;
     font-family: 'Cinzel', serif;
-    font-size: 12.5px;
+    font-size: clamp(10.5px, 2.9vw, 12.5px);
     font-weight: 700;
     line-height: 1.15;
     color: $encre;
@@ -410,21 +411,21 @@ $beige: #e0d3b4;
   .hab {
     flex: none;
     font-family: 'Cinzel', serif;
-    font-size: 9px;
+    font-size: clamp(7.5px, 2.1vw, 9px);
     letter-spacing: 0.1em;
     color: #8a7a5e;
   }
 }
 
 .plaque-barre {
-  margin-top: 8px;
+  margin-top: clamp(6px, 1.9vw, 8px);
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: clamp(5px, 1.6vw, 7px);
 
   .etiquette {
     font-family: 'Cinzel', serif;
-    font-size: 8.5px;
+    font-size: clamp(7px, 2vw, 8.5px);
     letter-spacing: 0.14em;
     color: #8a7a5e;
   }
@@ -432,7 +433,7 @@ $beige: #e0d3b4;
 
 .jauge {
   flex: 1;
-  height: 10px;
+  height: clamp(8px, 2.3vw, 10px);
   border: 1.5px solid $encre;
   border-radius: 6px;
   background: $encre;
@@ -450,10 +451,10 @@ $beige: #e0d3b4;
 }
 
 .chiffres {
-  margin-top: 5px;
+  margin-top: clamp(3px, 1.2vw, 5px);
   text-align: right;
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: clamp(10px, 2.8vw, 12px);
   font-weight: 700;
   color: $encre;
 }
@@ -467,19 +468,24 @@ $beige: #e0d3b4;
 }
 
 .socle-ennemi {
-  right: 8px;
-  top: 494px;
-  width: 184px;
-  height: 46px;
-  background: radial-gradient(ellipse at 50% 42%, #54673f 0%, #3a4a2e 58%, rgba(26, 35, 21, 0) 72%);
+  right: clamp(0px, 1.9vw, 8px);
+  bottom: clamp(96px, 16.5vh, 140px);
+  width: clamp(150px, 42.8vw, 184px);
+  height: clamp(36px, 10.7vw, 46px);
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    #54673f 0%,
+    #3a4a2e 58%,
+    rgba(26, 35, 21, 0) 72%
+  );
   box-shadow: inset 0 3px 0 rgba(217, 169, 74, 0.12);
 }
 
 .socle-heros {
-  left: -8px;
-  bottom: 68px;
-  width: 214px;
-  height: 52px;
+  left: clamp(-8px, -1.9vw, -5px);
+  bottom: clamp(44px, 8vh, 68px);
+  width: clamp(170px, 49.8vw, 214px);
+  height: clamp(40px, 12.1vw, 52px);
   background: radial-gradient(ellipse at 50% 42%, #5c7045 0%, #3d4d30 58%, rgba(26, 35, 21, 0) 72%);
   box-shadow: inset 0 3px 0 rgba(217, 169, 74, 0.14);
 }
@@ -500,10 +506,11 @@ $beige: #e0d3b4;
 }
 
 .combattant-ennemi {
-  right: 50px;
-  top: 410px;
-  width: 110px;
-  height: 110px;
+  right: clamp(24px, 11.6vw, 50px);
+  bottom: clamp(108px, 18.9vh, 160px);
+  width: clamp(88px, 25.6vw, 110px);
+  aspect-ratio: 1;
+  height: auto;
 }
 
 .combattant-ennemi .illustration.vaincu {
@@ -511,10 +518,11 @@ $beige: #e0d3b4;
 }
 
 .combattant-heros {
-  left: 0px;
-  bottom: 70px;
-  width: 200px;
-  height: 200px;
+  left: 0;
+  bottom: clamp(46px, 8.2vh, 70px);
+  width: clamp(160px, 46.5vw, 200px);
+  aspect-ratio: 1;
+  height: auto;
 
   &.vaincu {
     animation: combat-heros-vaincu 0.7s cubic-bezier(0.55, 0, 0.9, 0.35) forwards;
@@ -565,15 +573,16 @@ $beige: #e0d3b4;
  ****************************/
 .dialogue {
   flex: none;
-  height: 160px;
-  padding: 10px 10px 14px;
+  box-sizing: border-box;
+  height: clamp(110px, 21.6vh, 160px);
+  padding: clamp(7px, 1.2vh, 10px) 10px clamp(10px, 1.65vh, 14px);
   background: #1b2417;
 }
 
 .cadre {
   box-sizing: border-box;
   height: 100%;
-  padding: 8px 14px 7px;
+  padding: clamp(5px, 0.95vh, 8px) clamp(9px, 3.25vw, 14px) clamp(5px, 0.82vh, 7px);
   display: flex;
   flex-direction: column;
   background: $parchemin;
@@ -587,7 +596,7 @@ $beige: #e0d3b4;
   flex: 1;
   min-height: 0;
   margin: 0;
-  font-size: 18.5px;
+  font-size: clamp(15px, 4.3vw, 18.5px);
   line-height: 1.5;
   color: $encre;
   white-space: pre-line;
@@ -597,25 +606,32 @@ $beige: #e0d3b4;
 .de-attaque {
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: clamp(4px, 1.6vw, 7px);
   color: $encre;
 }
 
 .de-attaque-texte {
   flex: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 0 0 2px;
-  font-size: 18.5px;
+  padding: 0 4px;
+  font-size: clamp(15px, 4.3vw, 18.5px);
   line-height: 1.3;
   text-align: center;
+  overflow-wrap: break-word;
 }
 
 .de-attaque-label {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: clamp(8px, 2.3vw, 10px);
   font-weight: 700;
   letter-spacing: 0.2em;
   color: #8a4c2d;
@@ -624,14 +640,14 @@ $beige: #e0d3b4;
 .de-attaque-face {
   display: grid;
   place-items: center;
-  width: 68px;
-  height: 68px;
+  width: clamp(56px, 15.8vw, 68px);
+  height: clamp(56px, 15.8vw, 68px);
   border: 2px solid #a2542a;
   border-radius: 13px;
   background: linear-gradient(145deg, #fff5d9, #d8c99f);
   box-shadow: 4px 5px 0 rgba(58, 50, 38, 0.2), inset 0 0 0 3px rgba(217, 169, 74, 0.45);
   font-family: 'Cinzel', serif;
-  font-size: 30px;
+  font-size: clamp(25px, 7vw, 30px);
   font-weight: 700;
   color: #8a4c2d;
   transform: rotate(0deg);
@@ -643,7 +659,7 @@ $beige: #e0d3b4;
 
 .de-attaque-indication {
   font-family: 'EB Garamond', Georgia, serif;
-  font-size: 13px;
+  font-size: clamp(11px, 3vw, 13px);
   font-style: italic;
   color: #8a7a5e;
 }
@@ -657,6 +673,7 @@ $beige: #e0d3b4;
 .stats-ennemi {
   flex: 1;
   min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -667,7 +684,7 @@ $beige: #e0d3b4;
 .stats-ennemi-entete {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: clamp(5px, 1.6vw, 7px);
 }
 
 .stats-ennemi-ligne {
@@ -683,7 +700,7 @@ $beige: #e0d3b4;
 .stats-ennemi-titre {
   flex: none;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: clamp(8px, 2.3vw, 10px);
   font-weight: 700;
   letter-spacing: 0.16em;
   color: #8a4c2d;
@@ -692,7 +709,7 @@ $beige: #e0d3b4;
 .stats-ennemi-grille {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: clamp(6px, 1.9vw, 8px);
 }
 
 .stat-ennemi {
@@ -701,8 +718,8 @@ $beige: #e0d3b4;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 63px;
-  padding: 5px 6px;
+  min-height: clamp(52px, 14.7vw, 63px);
+  padding: clamp(4px, 1.15vw, 5px) clamp(5px, 1.4vw, 6px);
   border: 1px solid rgba(58, 50, 38, 0.35);
   border-radius: 10px;
   background: rgba(255, 249, 226, 0.42);
@@ -721,7 +738,7 @@ $beige: #e0d3b4;
     position: relative;
     margin-top: 1px;
     font-family: 'Cinzel', serif;
-    font-size: 24px;
+    font-size: clamp(20px, 5.6vw, 24px);
     line-height: 1;
     font-weight: 700;
   }
@@ -742,7 +759,7 @@ $beige: #e0d3b4;
 
 .stat-ennemi-sous-titre {
   margin-top: 2px;
-  font-size: 6px;
+  font-size: clamp(5px, 1.4vw, 6px);
   letter-spacing: 0.1em;
   color: #8a7a5e;
 }
@@ -775,8 +792,9 @@ $beige: #e0d3b4;
 
 .menu {
   display: flex;
-  gap: 14px;
+  gap: clamp(7px, 3.25vw, 14px);
   height: 100%;
+  min-width: 0;
 }
 
 .invite {
@@ -785,16 +803,16 @@ $beige: #e0d3b4;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 7px;
+  gap: clamp(4px, 1.6vw, 7px);
 
   .question {
-    font-size: 18px;
+    font-size: clamp(14px, 4.2vw, 18px);
     line-height: 1.4;
     color: $encre;
   }
   .assaut {
     font-family: 'Cinzel', serif;
-    font-size: 9.5px;
+    font-size: clamp(8px, 2.2vw, 9.5px);
     letter-spacing: 0.18em;
     color: #8a7a5e;
   }
@@ -802,11 +820,11 @@ $beige: #e0d3b4;
 
 .actions {
   flex: none;
-  width: 186px;
+  width: clamp(138px, 43.2vw, 186px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 9px;
+  gap: clamp(6px, 2.1vw, 9px);
 }
 
 .action {
@@ -815,7 +833,7 @@ $beige: #e0d3b4;
   background: $beige;
   color: $encre;
   font-family: 'Cinzel', serif;
-  font-size: 11.5px;
+  font-size: clamp(9px, 2.67vw, 11.5px);
   letter-spacing: 0.1em;
   cursor: pointer;
 
@@ -839,13 +857,13 @@ $beige: #e0d3b4;
 .fin {
   flex: none;
   margin-top: 10px;
-  padding: 14px;
+  padding: clamp(10px, 3.25vw, 14px);
   border: 2px solid $encre;
   border-radius: 11px;
   background: #6d8c3a;
   color: #f4ecd8;
   font-family: 'Cinzel', serif;
-  font-size: 12.5px;
+  font-size: clamp(10px, 2.9vw, 12.5px);
   letter-spacing: 0.16em;
   cursor: pointer;
 
