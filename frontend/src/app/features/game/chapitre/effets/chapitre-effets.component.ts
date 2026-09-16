@@ -58,6 +58,22 @@ export class ChapitreEffetsComponent {
     this.disciplines().some((d) => d.toUpperCase() === 'CHASSE'),
   );
 
+  readonly bonusArmeMaitrisee = 2;
+
+  /**
+   * TRUE si l'item est l'arme maîtrisée du personnage.
+   * Même logique que dans InventaireSheetComponent.
+   */
+  armeMaitrisee(item: InventaireItem): boolean {
+    if (item.categorie !== 'ARME') {
+      return false;
+    }
+
+    const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+
+    return maitriseeNom !== null && item.nom === maitriseeNom;
+  }
+
   /**
    * Statut du résultat de l'effet repas :
    * - CHASSE

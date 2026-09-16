@@ -31,11 +31,13 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ effet.type }}</span>
-            
           </div>
         </div>
 
@@ -54,7 +56,6 @@
             </button>
           }
         </div>
-
       </div>
     } @else if (effet.type.toUpperCase() === 'HABILITE' && effet.conditions.length === 0) {
       <!-- Modificateur d'HABILITE sans condition : toujours temporaire
@@ -62,11 +63,16 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
-            <span class="effet-description">{{ 'CHAPITRE_EFFETS.HABILITE_PENDANT_COMBAT' | translate }}</span>
+            <span class="effet-description">{{
+              'CHAPITRE_EFFETS.HABILITE_PENDANT_COMBAT' | translate
+            }}</span>
           </div>
         </div>
 
@@ -86,14 +92,20 @@
           }
         </div>
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILITE' && conditionAssautMax(effet); as condition) {
+    } @else if (
+      effet.type.toUpperCase() === 'HABILITE' && conditionAssautMax(effet);
+      as condition
+    ) {
       <!-- Bonus/malus HABILITE limité aux N premiers assauts du combat
            (ex. chapitre 283) : déjà appliqué en temps réel côté backend
            selon le nombre d'assauts joués, on affiche juste ce que c'est. -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
@@ -113,7 +125,10 @@
           }
         </div>
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILITE' && conditionDisciplineOuObjet(effet); as condition) {
+    } @else if (
+      effet.type.toUpperCase() === 'HABILITE' && conditionDisciplineOuObjet(effet);
+      as condition
+    ) {
       <!-- Sémantique inversée : le malus ne s'applique que si le
            personnage NE POSSÈDE PAS la discipline/l'objet ciblé. L'API
            renvoie l'effet dans tous les cas (voir commentaire du composant),
@@ -121,12 +136,15 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
             <span class="effet-description">
-              @if (condition.type === 'DISCIPLINE' && effetEvite(condition) ) {
+              @if (condition.type === 'DISCIPLINE' && effetEvite(condition)) {
                 {{ nomDiscipline(condition.targetId!) }}
               } @else if (condition.type === 'OBJET' && effetEvite(condition)) {
                 {{ nomObjet(condition.targetId!) }}
@@ -151,7 +169,10 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.VOL_TITRE' | translate }}</span>
@@ -161,7 +182,11 @@
 
         <div class="effet-action">
           @if (volEnAttentePourEffet(effet)) {
-            <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirChoixVol(effet)">
+            <button
+              type="button"
+              class="effet-badge effet-badge-endurance"
+              (click)="ouvrirChoixVol(effet)"
+            >
               {{ 'CHAPITRE_EFFETS.BADGE_CHOISIR' | translate }}
             </button>
           } @else if (volInteractif(effet)) {
@@ -179,7 +204,10 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.ECHANGE_TITRE' | translate }}</span>
@@ -192,7 +220,11 @@
               {{ 'CHAPITRE_EFFETS.BADGE_ECHANGE_FAIT' | translate }}
             </button>
           } @else {
-            <button type="button" class="effet-badge effet-badge-endurance" (click)="ouvrirEchange(effet)">
+            <button
+              type="button"
+              class="effet-badge effet-badge-endurance"
+              (click)="ouvrirEchange(effet)"
+            >
               {{ 'CHAPITRE_EFFETS.BADGE_ECHANGER' | translate }}
             </button>
           }
@@ -203,12 +235,17 @@
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
-            <img src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate" />
+            <img
+              src="assets/icon/effets.png"
+              [attr.alt]="'CHAPITRE_EFFETS.ALT_EFFET' | translate"
+            />
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ effet.type }}</span>
             @if (effet.valeur !== null) {
-              <span class="effet-description">{{ 'CHAPITRE_EFFETS.DEFAUT_VALEUR' | translate: { valeur: effet.valeur } }}</span>
+              <span class="effet-description">{{
+                'CHAPITRE_EFFETS.DEFAUT_VALEUR' | translate: { valeur: effet.valeur }
+              }}</span>
             }
           </div>
         </div>
@@ -230,8 +267,16 @@
       <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_VOL_TEXTE' | translate }}</p>
 
       @for (item of itemsEligiblesVol(effet); track item.objetId) {
-        <div class="popup-plein-ligne">
+        <div class="popup-plein-ligne" [class.maitrisee]="armeMaitrisee(item)">
           <span class="popup-plein-nom">{{ item.nom }}</span>
+          @if (armeMaitrisee(item)) {
+            <span class="popup-plein-maitrisee">
+              {{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}
+              <span class="popup-plein-bonus">
+                {{ 'INVENTAIRE_SHEET.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}
+              </span>
+            </span>
+          }
           @if (item.quantite > 1) {
             <span class="popup-plein-quantite">×{{ item.quantite }}</span>
           }
@@ -248,7 +293,9 @@
         <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_VOL_VIDE' | translate }}</p>
       }
 
-      <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">{{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}</button>
+      <button type="button" class="popup-plein-annuler" (click)="fermerChoixVol()">
+        {{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}
+      </button>
     </div>
   </div>
 }
@@ -257,12 +304,25 @@
   @if (conditionEchange(effet); as condition) {
     <div class="voile-plein" (click)="fermerEchange()">
       <div class="popup-plein" (click)="$event.stopPropagation()">
-        <div class="popup-plein-titre">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TITRE' | translate: { nom: nomObjet(condition.targetId!) } }}</div>
+        <div class="popup-plein-titre">
+          {{
+            'CHAPITRE_EFFETS.POPUP_ECHANGE_TITRE'
+              | translate: { nom: nomObjet(condition.targetId!) }
+          }}
+        </div>
         <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TEXTE' | translate }}</p>
 
         @for (item of itemsEligiblesEchange(condition); track item.objetId) {
-          <div class="popup-plein-ligne">
+          <div class="popup-plein-ligne" [class.maitrisee]="armeMaitrisee(item)">
             <span class="popup-plein-nom">{{ item.nom }}</span>
+            @if (armeMaitrisee(item)) {
+              <span class="popup-plein-maitrisee">
+                {{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}
+                <span class="popup-plein-bonus">
+                  {{ 'INVENTAIRE_SHEET.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}
+                </span>
+              </span>
+            }
             @if (item.quantite > 1) {
               <span class="popup-plein-quantite">×{{ item.quantite }}</span>
             }
@@ -279,7 +339,9 @@
           <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_VIDE' | translate }}</p>
         }
 
-        <button type="button" class="popup-plein-annuler" (click)="fermerEchange()">{{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}</button>
+        <button type="button" class="popup-plein-annuler" (click)="fermerEchange()">
+          {{ 'CHAPITRE_EFFETS.POPUP_ANNULER' | translate }}
+        </button>
       </div>
     </div>
   }

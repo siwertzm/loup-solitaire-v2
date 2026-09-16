@@ -152,6 +152,25 @@ $parchemin: #ece2c8;
   background: rgba(58, 50, 38, 0.06);
   border-radius: 10px;
   margin-bottom: 8px;
+
+  &.maitrisee {
+    background: #dddbb5;
+  }
+}
+
+.popup-plein-maitrisee {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: $sepia;
+}
+
+.popup-plein-bonus {
+  color: $vert;
+  font-weight: 700;
 }
 
 .popup-plein-nom {
