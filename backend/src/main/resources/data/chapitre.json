@@ -3518,7 +3518,7 @@
     "ennemi": null
   },
   {
-    "text": "Vous vous hâtez de fuir le vieux fou et vous disparaissez dans une ruelle obscure, bordée de petites maisons serrées les unes contre les autres. Au bout de la ruelle, une enseigne accrochée au-dessus d'une porte verte indique : KOLANIS — Herboriste et Sage.\n\nSi vous voulez pousser cette porte et entrer dans la boutique du Sage, rendez-vous au <strong>91</strong>.\nSi vous préférez attendre là quelques minutes pour être sûr que le vieux fou s'en est allé, puis revenir ensuite dans la grand-rue, rendez-vous au <strong>7</strong>.",
+    "text": "Vous vous hâtez de fuir le vieux fou et vous disparaissez dans une ruelle obscure, bordée de petites maisons serrées les unes contre les autres. Au bout de la ruelle, une enseigne accrochée au-dessus d'une porte verte indique :\n\nKOLANIS — Herboriste et Sage\n\nSi vous voulez pousser cette porte et entrer dans la boutique du Sage, rendez-vous au <strong>91</strong>.\nSi vous préférez attendre là quelques minutes pour être sûr que le vieux fou s'en est allé, puis revenir ensuite dans la grand-rue, rendez-vous au <strong>7</strong>.",
     "combat": false,
     "lien": [
       { "page": "91", "cond": null },
@@ -4011,7 +4011,7 @@
   {
     "text": "La créature qui vous fait face à présent est un <strong>Gourgaz</strong>, un de ces reptiles monstrueux qui infestent les profondeurs des marais de Maakenmire. Leur nourriture préférée est la chair humaine...\n\nL'épée du Prince repose à vos pieds. Vous pouvez la ramasser et vous en servir pour combattre si vous le désirez.\n\nLe Gourgaz s'apprête à vous frapper. Il vous faut l'affronter jusqu'à la mort de l'un d'entre vous.\n\n[[ENNEMI]]\n\nCe monstre est insensible à la Discipline Kaï de la <strong>Puissance Psychique</strong>.\n\nSi vous êtes vainqueur, rendez-vous au <strong>82</strong>.",
     "combat": true,
-    "objet": [],
+    "objet": [{ "id": "epee", "valeur": 1, "optionnel": true }],
     "effet": null,
     "ennemi": [
       { "id": "gourgaz" }

@@ -93,39 +93,92 @@ public class EffetChapitreService {
     // - Le reste (ASSAUT_MAX, etc.) : combat non construit, ignore.
     @Transactional
     public void appliquerEffetHabilite(Personnage personnage, Effet effet) {
-        Optional<Cond> condition = effet.getConditions().stream().findFirst();
+        List<Cond> conditions = effet.getConditions();
 
-        if (condition.isEmpty()) {
+        if (conditions == null || conditions.isEmpty()) {
             appliquerHabiliteTemp(personnage, effet.getValeur());
             return;
         }
 
-        switch (condition.get().getType()) {
-            case PERMANENT -> appliquerHabilitePermanent(personnage, effet.getValeur());
-            case DISCIPLINE -> {
-                if (!possedeDiscipline(personnage, condition.get().getTargetId())) {
-                    appliquerHabiliteTemp(personnage, effet.getValeur());
-                }
-            }
-            case OBJET -> {
-                if (!possedeObjet(personnage, condition.get().getTargetId())) {
-                    appliquerHabiliteTemp(personnage, effet.getValeur());
-                }
-            }
-            default -> {
-                // ASSAUT_ECHEC, ENDURANCE_PERDUE, FUITE, HASARD, ARME, BOURSE,
-                // ENDURANCE : non rencontre sur un effet HABILITE dans ce tome.
-                // ASSAUT_MAX (chapitre 283) est un cas a part : voir
-                // CombatService.bonusHabiliteAssautMax. Ce n'est PAS un
-                // modificateur fixe pour toute la duree du chapitre (donc
-                // PAS habiliteTemp ici), mais un bonus qui ne s'applique QUE
-                // lors du premier assaut du combat ("La surprise de votre
-                // attaque vous permet d'ajouter 2 points [...] lors du
-                // premier assaut") ; il doit donc etre recalcule a chaque
-                // tour en fonction de Combat.assautsLivres, pas fige a
-                // l'arrivee sur le chapitre comme les autres effets HABILITE.
-            }
+        /*
+         * Cas PERMANENT.
+         *
+         * Dans les donnees actuelles, PERMANENT est utilise seul.
+         * On le traite avant les protections OBJET/DISCIPLINE.
+         */
+        if (conditions.size() == 1
+                && conditions.get(0).getType() == TypeCondition.PERMANENT) {
+
+            appliquerHabilitePermanent(
+                    personnage,
+                    effet.getValeur()
+            );
+
+            return;
         }
+
+        /*
+         * Conditions de protection.
+         *
+         * Toutes les conditions doivent etre de type OBJET ou DISCIPLINE.
+         * Si c'est le cas, le joueur doit posseder TOUTES les protections
+         * pour eviter le malus.
+         */
+        boolean uniquementConditionsProtection =
+                conditions.stream()
+                        .allMatch(condition ->
+                                condition.getType() == TypeCondition.OBJET
+                                        || condition.getType()
+                                                == TypeCondition.DISCIPLINE
+                        );
+
+        if (uniquementConditionsProtection) {
+
+            boolean toutesProtectionsPossedees =
+                    conditions.stream()
+                            .allMatch(condition -> {
+
+                                if (condition.getType()
+                                        == TypeCondition.OBJET) {
+
+                                    return possedeObjet(
+                                            personnage,
+                                            condition.getTargetId()
+                                    );
+                                }
+
+                                if (condition.getType()
+                                        == TypeCondition.DISCIPLINE) {
+
+                                    return possedeDiscipline(
+                                            personnage,
+                                            condition.getTargetId()
+                                    );
+                                }
+
+                                return false;
+                            });
+
+            /*
+             * Au moins une protection manque :
+             * on applique le malus UNE seule fois.
+             */
+            if (!toutesProtectionsPossedees) {
+
+                appliquerHabiliteTemp(
+                        personnage,
+                        effet.getValeur()
+                );
+            }
+
+            return;
+        }
+        /*
+         * Les autres conditions ne sont pas appliquees ici.
+         *
+         * ASSAUT_MAX, par exemple, est gere dynamiquement dans
+         * CombatService en fonction du nombre d'assauts deja livres.
+         */
     }
 
     // Regle ENDURANCE : toujours REEL (jamais temporaire, contrairement a

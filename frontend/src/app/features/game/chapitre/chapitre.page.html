@@ -4,7 +4,10 @@
       <div class="stats-groupe" [class.grise]="mortAffichee()">
         <div class="barre-stat endurance">
           <div class="remplissage" [style.width.%]="endurancePourcentageAffichee()"></div>
-          <span class="texte-stat">{{ 'CHAPITRE_PAGE.LABEL_ENDURANCE' | translate: { actuelle: enduranceAffichee(), max: enduranceMax() } }}</span>
+          <span class="texte-stat">{{
+            'CHAPITRE_PAGE.LABEL_ENDURANCE'
+              | translate: { actuelle: enduranceAffichee(), max: enduranceMax() }
+          }}</span>
         </div>
       </div>
 
@@ -35,7 +38,10 @@
             [class.leve]="ongletLeve() === 'objets'"
             (click)="selectionnerOnglet('objets')"
           >
-            <img src="assets/icon/all_items.png" [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate" />
+            <img
+              src="assets/icon/all_items.png"
+              [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate"
+            />
           </div>
         }
 
@@ -111,11 +117,15 @@
               <div class="carte-ennemi-nom">{{ segment.ennemi.nom }}</div>
               <div class="carte-ennemi-stats">
                 <div class="carte-ennemi-stat">
-                  <span class="carte-ennemi-label">{{ 'CHAPITRE_PAGE.ENNEMI_HABILITE' | translate }}</span>
+                  <span class="carte-ennemi-label">{{
+                    'CHAPITRE_PAGE.ENNEMI_HABILITE' | translate
+                  }}</span>
                   <span class="carte-ennemi-valeur">{{ segment.ennemi.habilite }}</span>
                 </div>
                 <div class="carte-ennemi-stat">
-                  <span class="carte-ennemi-label">{{ 'CHAPITRE_PAGE.ENNEMI_ENDURANCE' | translate }}</span>
+                  <span class="carte-ennemi-label">{{
+                    'CHAPITRE_PAGE.ENNEMI_ENDURANCE' | translate
+                  }}</span>
                   <span class="carte-ennemi-valeur">{{ segment.ennemi.endurance }}</span>
                 </div>
               </div>
@@ -126,7 +136,62 @@
     </div>
 
     <div class="pied">
-      @if (aConditionHasard() && !hasardTermine()) {
+      @if (mort()) {
+        <div class="mort">
+          @if (combatEnDefaite()) {
+            <!-- Mort EN combat (Combat.statut = DEFAITE) : ressusciter()
+                   échouerait volontairement côté backend. Le remède est
+                   revenirApresDefaite(), qui recule au chapitre précédent
+                   (rechargé ici même, sans navigation). -->
+            <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_COMBAT_TEXTE' | translate }}</p>
+            @if (erreurRessusciter()) {
+              <p class="mort-erreur">{{ erreurRessusciter() }}</p>
+            }
+            <button
+              type="button"
+              class="valider"
+              [disabled]="ressusciterEnCours()"
+              (click)="revenirApresDefaite()"
+            >
+              {{
+                (ressusciterEnCours()
+                  ? 'CHAPITRE_PAGE.BOUTON_RETOUR_EN_COURS'
+                  : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER'
+                ) | translate
+              }}
+            </button>
+          } @else {
+            <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
+                   le backend refuse avancer/ramasser/consommer/échanger tant
+                   que POST /ressusciter n'a pas été appelé. -->
+            <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_TEXTE' | translate }}</p>
+            @if (erreurRessusciter()) {
+              <p class="mort-erreur">{{ erreurRessusciter() }}</p>
+            }
+            <button
+              type="button"
+              class="valider"
+              [disabled]="ressusciterEnCours()"
+              (click)="ressusciter()"
+            >
+              {{
+                (ressusciterEnCours()
+                  ? 'CHAPITRE_PAGE.BOUTON_RESURRECTION_EN_COURS'
+                  : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER'
+                ) | translate
+              }}
+            </button>
+          }
+        </div>
+      } @else if (combatDisponible()) {
+        <button
+          type="button"
+          class="valider"
+          [routerLink]="['/personnages', personnageId(), 'combat']"
+        >
+          {{ 'CHAPITRE_PAGE.BOUTON_COMBAT' | translate }}
+        </button>
+      } @else if (aConditionHasard() && !hasardTermine()) {
         <div class="tirage-hasard">
           @if (hasardResultatVisible()) {
             <span class="de hasard fige">
@@ -144,117 +209,104 @@
             </button>
           }
         </div>
-      }
-
-      @if (!aConditionHasard() || hasardTermine()) {
-        @if (mort()) {
-          <div class="mort">
-            @if (combatEnDefaite()) {
-              <!-- Mort EN combat (Combat.statut = DEFAITE) : ressusciter()
-                   échouerait volontairement côté backend. Le remède est
-                   revenirApresDefaite(), qui recule au chapitre précédent
-                   (rechargé ici même, sans navigation). -->
-              <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_COMBAT_TEXTE' | translate }}</p>
-              @if (erreurRessusciter()) {
-                <p class="mort-erreur">{{ erreurRessusciter() }}</p>
-              }
-              <button
-                type="button"
-                class="valider"
-                [disabled]="ressusciterEnCours()"
-                (click)="revenirApresDefaite()"
-              >
-                {{ (ressusciterEnCours() ? 'CHAPITRE_PAGE.BOUTON_RETOUR_EN_COURS' : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER') | translate }}
-              </button>
-            } @else {
-              <!-- Mort hors combat (chapitre narratif ou perte d'endurance) :
-                   le backend refuse avancer/ramasser/consommer/échanger tant
-                   que POST /ressusciter n'a pas été appelé. -->
-              <p class="mort-texte">{{ 'CHAPITRE_PAGE.MORT_TEXTE' | translate }}</p>
-              @if (erreurRessusciter()) {
-                <p class="mort-erreur">{{ erreurRessusciter() }}</p>
-              }
-              <button
-                type="button"
-                class="valider"
-                [disabled]="ressusciterEnCours()"
-                (click)="ressusciter()"
-              >
-                {{ (ressusciterEnCours() ? 'CHAPITRE_PAGE.BOUTON_RESURRECTION_EN_COURS' : 'CHAPITRE_PAGE.BOUTON_RESSUSCITER') | translate }}
-              </button>
-            }
-          </div>
-        } @else if (volEnAttente()) {
-          <!-- Vol en attente de résolution : le backend refuse tout
+      } @else if (volEnAttente()) {
+        <!-- Vol en attente de résolution : le backend refuse tout
                avancerVersChapitre tant que POST /vol/{objetId} n'a pas été
                appelé (voir ChapitreEffetsComponent, onglet Effets). -->
-          <button type="button" class="valider" (click)="allerChoisirVol()">{{ 'CHAPITRE_PAGE.BOUTON_CHOISIR' | translate }}</button>
-        } @else {
-          @if (combatDisponible()) {
-            <button
-              type="button"
-              class="valider"
-              [routerLink]="['/personnages', personnageId(), 'combat']"
-            >
-              {{ 'CHAPITRE_PAGE.BOUTON_COMBAT' | translate }}
-            </button>
-          } @else if (liens().length === 0) {
-            <!-- Chapitre 350 (fin du tome 1) : son seul lien (vers la page
+        <button type="button" class="valider" (click)="allerChoisirVol()">
+          {{ 'CHAPITRE_PAGE.BOUTON_CHOISIR' | translate }}
+        </button>
+      } @else {
+        @if (liens().length === 0) {
+          <!-- Chapitre 350 (fin du tome 1) : son seul lien (vers la page
                  "351") est filtré au chargement des données, comme "352"
                  pour la mort narrative (voir GameDataLoader côté backend,
                  PAGES_FIN_DE_JEU). Un chapitre sans aucun lien = fin de
                  l'aventure, pas une impasse. -->
-            <button
-              type="button"
-              class="valider"
-              [routerLink]="['/personnages', personnageId(), 'victoire']"
-            >
-              {{ 'CHAPITRE_PAGE.BOUTON_VICTOIRE' | translate }}
-            </button>
-          } @else {
-            @for (lien of liens(); track lien.chapitreCibleId) {
-              @if (
-                !(lien.conditions[0]?.type === 'OBJET' && lien.conditions[0]?.targetId === 'coin')
-              ) {
-                <button
-                  type="button"
-                  class="valider"
-                  [disabled]="!lien.disponible"
-                  (click)="choisirLien(lien)"
-                >
-                  @if (lien.disponible) {
-                    @if (lien.conditions.length > 0) {
-                      @if (lien.conditions[0].type === 'DISCIPLINE') {
-                        {{ nomDiscipline(lien.conditions[0].targetId) }}
-                      } @else if (lien.conditions[0].type === 'OBJET') {
-                        {{ nomObjet(lien.conditions[0].targetId) }}
-                      } @else if (lien.conditions[0].type === 'BOURSE') {
-                        {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
+          <button
+            type="button"
+            class="valider"
+            [routerLink]="['/personnages', personnageId(), 'victoire']"
+          >
+            {{ 'CHAPITRE_PAGE.BOUTON_VICTOIRE' | translate }}
+          </button>
+        } @else {
+          @for (lien of liens(); track lien.chapitreCibleId) {
+            @if (
+              !(lien.conditions[0]?.type === 'OBJET' && lien.conditions[0]?.targetId === 'coin')
+            ) {
+              <button
+                type="button"
+                class="valider"
+                [disabled]="!lien.disponible"
+                (click)="choisirLien(lien)"
+              >
+                @if (lien.disponible) {
+                  @if (lien.conditions.length === 0) {
+                    {{ lien.chapitreCibleId }}
+                  } @else if (lien.conditions[0].type === 'DISCIPLINE') {
+                    {{ nomDiscipline(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'OBJET') {
+                    {{ nomObjet(lien.conditions[0].targetId) }}
+                  } @else if (lien.conditions[0].type === 'BOURSE') {
+                    {{
+                      'CHAPITRE_PAGE.LIEN_COURONNES'
+                        | translate: { valeur: lien.conditions[0].valeur }
+                    }}
+                  } @else if (lien.conditions[0].type === 'FUITE') {
+                    {{ 'CHAPITRE_PAGE.LIEN_FUITE' | translate }}
+                  } @else {
+                    {{ lien.chapitreCibleId }}
+                  }
+                } @else {
+                  @if (lien.conditions.length > 0) {
+                    @if (lien.conditions[0].type === 'DISCIPLINE') {
+                      {{ nomDiscipline(lien.conditions[0].targetId) }}
+                    } @else if (lien.conditions[0].type === 'OBJET') {
+                      {{ nomObjet(lien.conditions[0].targetId) }}
+                    } @else if (lien.conditions[0].type === 'BOURSE') {
+                      {{
+                        'CHAPITRE_PAGE.LIEN_COURONNES'
+                          | translate: { valeur: lien.conditions[0].valeur }
+                      }}
+                    } @else if (lien.conditions[0].type === 'ENDURANCE') {
+                      {{
+                        'CHAPITRE_PAGE.LIEN_ENDURANCE_MIN'
+                          | translate: { valeur: lien.conditions[0].valeur }
+                      }}
+                    } @else if (lien.conditions[0].type === 'ENDURANCE_INF') {
+                      {{
+                        'CHAPITRE_PAGE.LIEN_ENDURANCE_INF'
+                          | translate: { valeur: lien.conditions[0].valeur }
+                      }}
+                    } @else if (lien.conditions[0].type === 'ENDURANCE_PERDUE') {
+                      @if (lien.conditions[0].valeur === '1') {
+                        {{ 'CHAPITRE_PAGE.LIEN_ENDURANCE_PERDUE' | translate }}
                       } @else {
-                        {{ lien.chapitreCibleId }}
+                        {{ 'CHAPITRE_PAGE.LIEN_AUCUNE_ENDURANCE_PERDUE' | translate }}
                       }
+                    } @else if (lien.conditions[0].type === 'ASSAUT_MAX') {
+                      {{
+                        'CHAPITRE_PAGE.LIEN_ASSAUT_MAX'
+                          | translate: { valeur: lien.conditions[0].valeur }
+                      }}
+                    } @else if (lien.conditions[0].type === 'ASSAUT_ECHEC') {
+                      {{
+                        'CHAPITRE_PAGE.LIEN_ASSAUT_ECHEC'
+                          | translate: { valeur: lien.conditions[0].valeur }
+                      }}
+                    } @else if (lien.conditions[0].type === 'FUITE') {
+                      {{ 'CHAPITRE_PAGE.LIEN_FUITE' | translate }}
+                    } @else if (lien.conditions[0].type === 'HASARD') {
+                      {{ 'CHAPITRE_PAGE.LIEN_HASARD' | translate }}
+                    } @else if (lien.conditions[0].type === 'VICTOIRE') {
+                      {{ 'CHAPITRE_PAGE.LIEN_VICTOIRE' | translate }}
                     } @else {
                       {{ lien.chapitreCibleId }}
                     }
-                  } @else {
-                    @if (lien.conditions.length > 0) {
-                      @if (lien.conditions[0].type === 'DISCIPLINE') {
-                        {{ nomDiscipline(lien.conditions[0].targetId) }}
-                      } @else if (lien.conditions[0].type === 'HASARD') {
-                        {{ lien.conditions[0].type }}
-                      } @else if (lien.conditions[0].type === 'OBJET') {
-                        {{ nomObjet(lien.conditions[0].targetId) }}
-                      } @else if (lien.conditions[0].type === 'BOURSE') {
-                        {{ lien.conditions[0].valeur }} {{ nomObjet(lien.conditions[0].targetId) }}
-                      } @else if (lien.conditions[0].type === 'ENDURANCE') {
-                        {{ 'CHAPITRE_PAGE.LIEN_ENDURANCE_REQUISE' | translate: { valeur: lien.conditions[0].valeur } }}
-                      } @else {
-                        {{ 'CHAPITRE_PAGE.LIEN_CONDITION_REQUISE' | translate }}
-                      }
-                    }
                   }
-                </button>
-              }
+                }
+              </button>
             }
           }
         }
