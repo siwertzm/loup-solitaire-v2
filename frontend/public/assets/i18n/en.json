@@ -346,6 +346,8 @@
     "AVATAR_ARIA": "Open the character sheet",
     "ALT_OBJETS": "Items",
     "ALT_EFFETS": "Effects",
+    "ENNEMI_HABILITE": "Skill",
+    "ENNEMI_ENDURANCE": "Endurance",
     "LABEL_ENDURANCE": "ENDURANCE {{actuelle}}/{{max}}",
     "TITRE_OBJETS": "ITEMS AVAILABLE HERE",
     "TITRE_EFFETS": "CHAPTER EFFECTS",

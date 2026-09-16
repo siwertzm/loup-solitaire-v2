@@ -257,7 +257,7 @@ ion-content.intro {
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  font-size: 16.5px;
+  font-size: 18px;
   line-height: 1.62;
   z-index: 1;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
@@ -269,6 +269,56 @@ ion-content.intro {
 
 .texte-contenu {
   padding: 18px 22px 22px;
+  // Le champ "text" du JSON contiendra des \n\n entre paragraphes une fois
+  // mis en forme (voir chapitre.json) : pre-line les transforme en vrais
+  // sauts de ligne a l'affichage, tout en continuant a fusionner les
+  // espaces/retours a la ligne superflus comme du texte normal.
+  white-space: pre-line;
+}
+
+.carte-ennemi {
+  margin: 4px 22px 18px;
+  padding: 12px 16px;
+  background: #e0c2a0;
+  border: 2px solid $encre;
+  border-radius: 4px 14px 4px 14px;
+  box-shadow: 0 4px 10px rgba(58, 50, 38, 0.18);
+}
+
+.carte-ennemi-nom {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: $encre;
+  text-transform: uppercase;
+}
+
+.carte-ennemi-stats {
+  margin-top: 8px;
+  display: flex;
+  gap: 18px;
+}
+
+.carte-ennemi-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.carte-ennemi-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: $sepia;
+}
+
+.carte-ennemi-valeur {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: $encre;
 }
 
 .encart {

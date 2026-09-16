@@ -346,6 +346,8 @@
     "AVATAR_ARIA": "Ouvrir la fiche du personnage",
     "ALT_OBJETS": "Objets",
     "ALT_EFFETS": "Effets",
+    "ENNEMI_HABILITE": "Habileté",
+    "ENNEMI_ENDURANCE": "Endurance",
     "LABEL_ENDURANCE": "ENDURANCE {{actuelle}}/{{max}}",
     "TITRE_OBJETS": "OBJETS DISPONIBLES ICI",
     "TITRE_EFFETS": "EFFETS DU CHAPITRE",

@@ -103,9 +103,25 @@
           </div>
         }
 
-        <div class="texte-contenu">
-          {{ chapitre()?.text }}
-        </div>
+        @for (segment of segmentsTexte(); track $index) {
+          @if (segment.type === 'texte') {
+            <div class="texte-contenu" [innerHTML]="segment.html"></div>
+          } @else {
+            <div class="carte-ennemi">
+              <div class="carte-ennemi-nom">{{ segment.ennemi.nom }}</div>
+              <div class="carte-ennemi-stats">
+                <div class="carte-ennemi-stat">
+                  <span class="carte-ennemi-label">{{ 'CHAPITRE_PAGE.ENNEMI_HABILITE' | translate }}</span>
+                  <span class="carte-ennemi-valeur">{{ segment.ennemi.habilite }}</span>
+                </div>
+                <div class="carte-ennemi-stat">
+                  <span class="carte-ennemi-label">{{ 'CHAPITRE_PAGE.ENNEMI_ENDURANCE' | translate }}</span>
+                  <span class="carte-ennemi-valeur">{{ segment.ennemi.endurance }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        }
       </div>
     </div>
 

@@ -6,7 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
-import { ChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
+import { ChapitreResponse, EnnemiChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
 import { ChapitreService } from '../../../core/services/chapitre.service';
 import { CombatService } from '../../../core/services/combat.service';
 import { DisciplineResume } from '../../../core/models/personnage.model';
@@ -108,6 +108,39 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly ennemis = computed(() => this.chapitre()?.ennemis ?? []);
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
+
+  // Jeton repere dans le champ "text" (voir chapitre.json) : indique
+  // l'endroit ou inserer une carte ennemi (visuelle, pas juste textuelle)
+  // au milieu du recit. Un vrai composant/element structure ne peut pas
+  // etre injecte via [innerHTML] (le html reste alors de la donnee, pas du
+  // Angular compile) : on decoupe donc le texte en segments autour de ce
+  // jeton, et on alterne blocs de texte / carte ennemi au rendu (voir
+  // .texte-contenu et .carte-ennemi dans le html + scss). Les occurrences
+  // du jeton sont associees aux ennemis du chapitre dans l'ordre
+  // d'apparition (1er jeton -> chapitre().ennemis[0], etc.).
+  private readonly jetonCarteEnnemi = '[[ENNEMI]]';
+
+  readonly segmentsTexte = computed<
+    Array<{ type: 'texte'; html: string } | { type: 'ennemi'; ennemi: EnnemiChapitreResponse }>
+  >(() => {
+    const texte = this.chapitre()?.text ?? '';
+    const ennemis = this.ennemis();
+    const morceaux = texte.split(this.jetonCarteEnnemi);
+
+    const segments: Array<{ type: 'texte'; html: string } | { type: 'ennemi'; ennemi: EnnemiChapitreResponse }> = [];
+    morceaux.forEach((morceau, index) => {
+      const trimme = morceau.trim();
+      if (trimme.length > 0) {
+        segments.push({ type: 'texte', html: trimme });
+      }
+      // Un jeton se trouve juste apres ce morceau, sauf pour le dernier.
+      if (index < morceaux.length - 1 && ennemis[index]) {
+        segments.push({ type: 'ennemi', ennemi: ennemis[index] });
+      }
+    });
+    return segments;
+  });
+
   readonly combatDisponible = signal(false);
   // Mort HORS combat (voir plus bas) et mort EN combat (Combat.statut =
   // DEFAITE, voir CombatService.appliquerDegatsAuJoueur côté backend) sont
