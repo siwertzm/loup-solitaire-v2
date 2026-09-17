@@ -2,7 +2,9 @@ package com.loupsolitaire.backend.controller;
 
 import java.time.Instant;
 import java.util.List;
+import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +66,9 @@ public class AuthController {
     private final EmailVerificationService emailVerificationService;
     private final PasswordResetService passwordResetService;
 
+    @Value("${app.mobile-login-url}")
+    private String mobileLoginUrl;
+
     @PostMapping("/register")
     public ResponseEntity<UtilisateurResponse> register(@Valid @RequestBody RegisterRequest request) {
         if (utilisateurRepository.existsByUsername(request.getUsername())) {
@@ -107,15 +112,17 @@ public class AuthController {
         return new AuthResponse(accessToken, refreshToken);
     }
 
-    // Ouvert depuis un email (clic sur le lien) : reponse HTML simple, pas de JSON.
-    @GetMapping(value = "/verify-email", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+    @GetMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(
+            @RequestParam String token) {
+
         emailVerificationService.verifier(token);
-        return ResponseEntity.ok(
-                "<html><body style=\"font-family:sans-serif;text-align:center;padding:40px\">" +
-                        "<h2>Email confirme !</h2>" +
-                        "<p>Ton compte est active, tu peux retourner sur l'application et te connecter.</p>" +
-                        "</body></html>");
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(
+                        URI.create(mobileLoginUrl))
+                .build();
     }
 
     @PostMapping("/resend-verification")
