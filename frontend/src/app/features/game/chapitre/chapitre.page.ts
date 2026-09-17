@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
@@ -6,7 +15,11 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
-import { ChapitreResponse, EnnemiChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
+import {
+  ChapitreResponse,
+  EnnemiChapitreResponse,
+  LienResponse,
+} from '../../../core/models/chapitre.model';
 import { ChapitreService } from '../../../core/services/chapitre.service';
 import { CombatService } from '../../../core/services/combat.service';
 import { DisciplineResume } from '../../../core/models/personnage.model';
@@ -50,13 +63,18 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   private readonly objetService = inject(ObjetService);
   private readonly inventaireSheet = inject(InventaireSheetService);
   private readonly translate = inject(TranslateService);
+  private readonly zoneTexte = viewChild<ElementRef<HTMLElement>>('zoneTexte');
+
+  private dernierChapitreScrollId: number | null = null;
 
   readonly personnageId = signal<string | null>(null);
 
   // Signal stockant les infos du personnage
   readonly personnage = signal<PersonnageResume | null>(null);
   readonly initiale = computed(
-    () => this.nomPersonnage().trim().charAt(0).toUpperCase() || this.translate.instant('CHAPITRE_PAGE.INITIALE_PAR_DEFAUT'),
+    () =>
+      this.nomPersonnage().trim().charAt(0).toUpperCase() ||
+      this.translate.instant('CHAPITRE_PAGE.INITIALE_PAR_DEFAUT'),
   );
 
   // Signal stockant tous les objets disponibles (catalogue, pour nomObjet()
@@ -127,7 +145,9 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     const ennemis = this.ennemis();
     const morceaux = texte.split(this.jetonCarteEnnemi);
 
-    const segments: Array<{ type: 'texte'; html: string } | { type: 'ennemi'; ennemi: EnnemiChapitreResponse }> = [];
+    const segments: Array<
+      { type: 'texte'; html: string } | { type: 'ennemi'; ennemi: EnnemiChapitreResponse }
+    > = [];
     morceaux.forEach((morceau, index) => {
       const trimme = morceau.trim();
       if (trimme.length > 0) {
@@ -245,9 +265,14 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
             this.chargerToutesLesDonnees();
           },
           error: (err) => {
-            console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCEMENT_RESURRECTION'), err);
+            console.error(
+              this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCEMENT_RESURRECTION'),
+              err,
+            );
             this.ressusciterEnCours.set(false);
-            this.erreurRessusciter.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_RESURRECTION'));
+            this.erreurRessusciter.set(
+              this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_RESURRECTION'),
+            );
           },
         });
       },
@@ -461,6 +486,28 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.personnage.set(nouveau);
       }
     });
+
+    effect(() => {
+      const chapitreId = this.chapitre()?.id ?? null;
+      const zone = this.zoneTexte();
+
+      if (!zone || chapitreId === null) {
+        return;
+      }
+
+      if (this.dernierChapitreScrollId === chapitreId) {
+        return;
+      }
+
+      this.dernierChapitreScrollId = chapitreId;
+
+      requestAnimationFrame(() => {
+        zone.nativeElement.scrollTo({
+          top: 0,
+          behavior: 'auto',
+        });
+      });
+    });
   }
 
   ngOnInit(): void {
@@ -499,7 +546,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (p) => {
         this.personnage.set(p);
       },
-      error: (err) => console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_PERSONNAGE'), err),
+      error: (err) =>
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_PERSONNAGE'), err),
     });
 
     // 2. Récupération de toutes les disciplines disponibles (GET /disciplines)
@@ -507,7 +555,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (disciplines) => {
         this.toutesDisciplines.set(disciplines);
       },
-      error: (err) => console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_DISCIPLINES'), err),
+      error: (err) =>
+        console.error(this.translate.instant('CHAPITRE_PAGE.ERREUR_CHARGEMENT_DISCIPLINES'), err),
     });
 
     // 3. Récupération de tous les objets disponibles (GET /objets)
