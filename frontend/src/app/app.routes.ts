@@ -10,7 +10,20 @@ export const routes: Routes = [
   },
   {
     path: 'auth/register',
-    loadComponent: () => import('./features/auth/register/register.page').then((m) => m.RegisterPage),
+    loadComponent: () =>
+      import('./features/auth/register/register.page').then((m) => m.RegisterPage),
+  },
+  {
+    path: 'auth/forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.page').then(
+        (m) => m.ForgotPasswordPage,
+      ),
+  },
+  {
+    path: 'auth/reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
   },
   {
     path: 'accueil',
@@ -20,22 +33,30 @@ export const routes: Routes = [
   {
     path: 'regle/intro',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/regle/intro/regle-intro.page').then((m) => m.RegleIntroPage),
+    loadComponent: () =>
+      import('./features/regle/intro/regle-intro.page').then((m) => m.RegleIntroPage),
   },
   {
     path: 'regle/disciplines',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/regle/discipline/regle-discipline.page').then((m) => m.RegleDisciplinePage),
+    loadComponent: () =>
+      import('./features/regle/discipline/regle-discipline.page').then(
+        (m) => m.RegleDisciplinePage,
+      ),
   },
   {
     path: 'regle/equipement',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/regle/equipement/regle-equipement.page').then((m) => m.RegleEquipementPage),
+    loadComponent: () =>
+      import('./features/regle/equipement/regle-equipement.page').then(
+        (m) => m.RegleEquipementPage,
+      ),
   },
   {
     path: 'regle/combat',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/regle/combat/regle-combat.page').then((m) => m.RegleCombatPage),
+    loadComponent: () =>
+      import('./features/regle/combat/regle-combat.page').then((m) => m.RegleCombatPage),
   },
   {
     path: 'profil',
@@ -45,38 +66,52 @@ export const routes: Routes = [
   {
     path: 'profil/edition',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/profil/edition/profil-edition.page').then((m) => m.ProfilEditionPage),
+    loadComponent: () =>
+      import('./features/profil/edition/profil-edition.page').then((m) => m.ProfilEditionPage),
   },
   {
     path: 'personnage/:id',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/personnages/personnage.page').then((m) => m.PersonnagePage),
+    loadComponent: () =>
+      import('./features/personnages/personnage.page').then((m) => m.PersonnagePage),
   },
   {
     path: 'personnages/creation',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/personnages/creation/creation-personnage.page').then((m) => m.CreationPersonnagePage),
+      import('./features/personnages/creation/creation-personnage.page').then(
+        (m) => m.CreationPersonnagePage,
+      ),
   },
   {
     path: 'personnages/intro',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/personnages/creation/intro/intro-creation.page').then((m) => m.IntroCreationPage),
+    loadComponent: () =>
+      import('./features/personnages/creation/intro/intro-creation.page').then(
+        (m) => m.IntroCreationPage,
+      ),
   },
   {
     path: 'personnages/:id/inventaire/intro',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/personnages/inventaire/intro/intro-inventaire.page').then((m) => m.IntroInventairePage),
+    loadComponent: () =>
+      import('./features/personnages/inventaire/intro/intro-inventaire.page').then(
+        (m) => m.IntroInventairePage,
+      ),
   },
   {
     path: 'personnages/:id/inventaire/depart',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/personnages/inventaire/inventaire-depart.page').then((m) => m.InventaireDepartPage),
+    loadComponent: () =>
+      import('./features/personnages/inventaire/inventaire-depart.page').then(
+        (m) => m.InventaireDepartPage,
+      ),
   },
   {
     path: 'personnages/:id/chapitre',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/game/chapitre/chapitre.page').then((m) => m.ChapitrePage),
+    loadComponent: () =>
+      import('./features/game/chapitre/chapitre.page').then((m) => m.ChapitrePage),
   },
   {
     path: 'personnages/:id/combat',
@@ -86,7 +121,8 @@ export const routes: Routes = [
   {
     path: 'personnages/:id/victoire',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/game/victoire/victoire.page').then((m) => m.VictoirePage),
+    loadComponent: () =>
+      import('./features/game/victoire/victoire.page').then((m) => m.VictoirePage),
   },
   { path: '**', redirectTo: 'accueil' },
 ];

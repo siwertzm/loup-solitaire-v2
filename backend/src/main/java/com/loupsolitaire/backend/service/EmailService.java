@@ -18,24 +18,85 @@ public class EmailService {
     @Value("${app.mail.from}")
     private String from;
 
-    // N'echoue jamais bruyamment : un souci SMTP ne doit pas empecher
-    // l'inscription elle-meme. On journalise et on laisse l'appelant proposer
-    // un renvoi via /auth/resend-verification si besoin.
-    public void envoyerEmailVerification(String destinataire, String lienConfirmation) {
+    public void envoyerEmailVerification(
+            String destinataire,
+            String lienConfirmation
+    ) {
+
         try {
+
             SimpleMailMessage message = new SimpleMailMessage();
+
             message.setFrom(from);
             message.setTo(destinataire);
-            message.setSubject("Confirme ton compte Loup Solitaire");
-            message.setText(
-                "Bienvenue dans l'aventure !\n\n" +
-                "Confirme ton adresse email en cliquant sur ce lien (valable 24h) :\n" +
-                lienConfirmation + "\n\n" +
-                "Si tu n'es pas a l'origine de cette inscription, ignore cet email."
+
+            message.setSubject(
+                    "Confirme ton compte Loup Solitaire"
             );
+
+            message.setText(
+                    "Bienvenue dans l'aventure !\n\n" +
+                    "Confirme ton adresse email en cliquant sur ce lien " +
+                    "(valable 24h) :\n" +
+                    lienConfirmation + "\n\n" +
+                    "Si tu n'es pas a l'origine de cette inscription, " +
+                    "ignore cet email."
+            );
+
             mailSender.send(message);
+
         } catch (Exception e) {
-            log.error("Echec de l'envoi de l'email de verification a {} : {}", destinataire, e.getMessage());
+
+            log.error(
+                    "Echec de l'envoi de l'email de verification a {} : {}",
+                    destinataire,
+                    e.getMessage()
+            );
+        }
+    }
+
+    public void envoyerCodeReinitialisationMotDePasse(
+            String destinataire,
+            String code,
+            long expirationMinutes
+    ) {
+
+        try {
+
+            SimpleMailMessage message = new SimpleMailMessage();
+
+            message.setFrom(from);
+            message.setTo(destinataire);
+
+            message.setSubject(
+                    "Reinitialisation de ton mot de passe Loup Solitaire"
+            );
+
+            message.setText(
+                    "Une demande de reinitialisation de ton mot de passe " +
+                    "a ete effectuee.\n\n" +
+
+                    "Voici ton code :\n\n" +
+
+                    code + "\n\n" +
+
+                    "Ce code est valable pendant " +
+                    expirationMinutes +
+                    " minutes.\n\n" +
+
+                    "Si tu n'es pas a l'origine de cette demande, " +
+                    "tu peux ignorer cet email."
+            );
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+
+            log.error(
+                    "Echec de l'envoi de l'email de reinitialisation a {} : {}",
+                    destinataire,
+                    e.getMessage()
+            );
         }
     }
 }

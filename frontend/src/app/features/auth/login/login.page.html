@@ -38,6 +38,9 @@
               class="password-toggle"
             ></ion-input-password-toggle>
           </ion-input>
+          <a class="mot-de-passe-oublie" routerLink="/auth/forgot-password">
+            {{ 'AUTH.LOGIN.MOT_DE_PASSE_OUBLIE' | translate }}
+          </a>
         </div>
 
         @if (erreur()) {

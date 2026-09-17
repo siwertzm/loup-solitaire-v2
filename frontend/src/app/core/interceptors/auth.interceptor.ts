@@ -9,7 +9,7 @@ import { TokenStorageService } from '../services/token-storage.service';
 
 // Routes publiques côté backend : /auth/** (sauf /auth/me) et /actuator/health.
 // Voir backend/README.md > Authentification.
-const ROUTES_PUBLIQUES = ['/auth/register', '/auth/login', '/auth/refresh', '/auth/verify-email'];
+const ROUTES_PUBLIQUES = ['/auth/register', '/auth/login', '/auth/refresh', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'];
 
 function estRoutePublique(url: string): boolean {
   return ROUTES_PUBLIQUES.some((route) => url.includes(route));

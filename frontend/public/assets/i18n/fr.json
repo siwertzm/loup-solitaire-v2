@@ -16,7 +16,8 @@
       "BOUTON_CONNEXION_EN_COURS": "Connexion...",
       "SEPARATEUR_OU": "OU",
       "LIEN_INSCRIPTION": "Pas encore de compte ? <strong>S'inscrire</strong>",
-      "ERREUR_IDENTIFIANTS": "Identifiants invalides, ou compte non vérifié."
+      "ERREUR_IDENTIFIANTS": "Identifiants invalides, ou compte non vérifié.",
+      "MOT_DE_PASSE_OUBLIE": "Mot de passe oublié ?"
     },
     "REGISTER": {
       "TITRE": "Inscription",
@@ -40,6 +41,37 @@
       "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirmer le mot de passe",
       "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Retapez votre mot de passe",
       "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas."
+    },
+    "FORGOT_PASSWORD": {
+      "TITRE": "Mot de passe oublié",
+      "INTRODUCTION": "Indiquez l'adresse email associée à votre compte. Si elle existe, un code de vérification vous sera envoyé.",
+      "EMAIL_LABEL": "Adresse email",
+      "EMAIL_PLACEHOLDER": "votre@email.fr",
+      "BOUTON": "Envoyer le code",
+      "BOUTON_EN_COURS": "Envoi...",
+      "ERREUR": "Impossible d'envoyer le code pour le moment.",
+      "RETOUR_LOGIN": "Retour à la connexion"
+    },
+    "RESET_PASSWORD": {
+      "TITRE": "Nouveau mot de passe",
+      "INTRODUCTION": "Saisissez le code à 6 chiffres reçu par email puis choisissez votre nouveau mot de passe.",
+      "EMAIL_LABEL": "Adresse email",
+      "EMAIL_PLACEHOLDER": "votre@email.fr",
+      "CODE_LABEL": "Code de vérification",
+      "CODE_PLACEHOLDER": "000000",
+      "PASSWORD_LABEL": "Nouveau mot de passe",
+      "PASSWORD_DETAIL": "8 caractères minimum",
+      "PASSWORD_PLACEHOLDER": "Votre nouveau mot de passe",
+      "CONFIRMATION_LABEL": "Confirmer le mot de passe",
+      "CONFIRMATION_PLACEHOLDER": "Retapez votre mot de passe",
+      "BOUTON": "Modifier le mot de passe",
+      "BOUTON_EN_COURS": "Modification...",
+      "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas.",
+      "ERREUR_CODE": "Le code est invalide ou a expiré.",
+      "SUCCES_TITRE": "Mot de passe modifié",
+      "SUCCES_TEXTE": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
+      "BOUTON_LOGIN": "Se connecter",
+      "RETOUR_LOGIN": "Retour à la connexion"
     }
   },
   "ACCUEIL": {
@@ -47,7 +79,7 @@
     "SUR_TITRE": "Livre premier",
     "TITRE_LIGNE1": "Les Maîtres",
     "TITRE_LIGNE2": "des Ténèbres",
-    "SOUS_TITRE": "Loup Solitaire",
+    "SOUS_TITRE": "Loup Solitaire par Joe DEVER",
     "CHARGEMENT": "Chargement…",
     "AUCUNE_AVENTURE": "<strong>Les Maîtres des Ténèbres ont attaqué</strong><br>le monastère Kaï dans lequel de jeunes prodiges<br>tels que vous sont initiés à l'art de la guerre.<br>Vous êtes le seul survivant de la bataille,<br>et une mission vitale vous incombe désormais :<br>avertir le roi de Sommerlund<br>que les Maîtres des Ténèbres<br>ont décimé l'élite guerrière du pays.<br>Les ennemis qui ont juré votre perte<br>feront tout pour vous en empêcher.",
     "CHAPITRE_PREFIXE": "CHAP.",

@@ -16,7 +16,8 @@
       "BOUTON_CONNEXION_EN_COURS": "Logging in...",
       "SEPARATEUR_OU": "OR",
       "LIEN_INSCRIPTION": "No account yet? <strong>Sign up</strong>",
-      "ERREUR_IDENTIFIANTS": "Invalid credentials, or account not verified."
+      "ERREUR_IDENTIFIANTS": "Invalid credentials, or account not verified.",
+      "MOT_DE_PASSE_OUBLIE": "Forgot password?"
     },
     "REGISTER": {
       "TITRE": "Sign up",
@@ -40,6 +41,37 @@
       "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirm password",
       "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Enter your password again",
       "ERREUR_PASSWORDS_DIFFERENTS": "Passwords do not match."
+    },
+    "FORGOT_PASSWORD": {
+      "TITRE": "Forgot password",
+      "INTRODUCTION": "Enter the email address associated with your account. If it exists, a verification code will be sent.",
+      "EMAIL_LABEL": "Email address",
+      "EMAIL_PLACEHOLDER": "your@email.com",
+      "BOUTON": "Send code",
+      "BOUTON_EN_COURS": "Sending...",
+      "ERREUR": "Unable to send the code right now.",
+      "RETOUR_LOGIN": "Back to login"
+    },
+    "RESET_PASSWORD": {
+      "TITRE": "New password",
+      "INTRODUCTION": "Enter the 6-digit code received by email and choose your new password.",
+      "EMAIL_LABEL": "Email address",
+      "EMAIL_PLACEHOLDER": "your@email.com",
+      "CODE_LABEL": "Verification code",
+      "CODE_PLACEHOLDER": "000000",
+      "PASSWORD_LABEL": "New password",
+      "PASSWORD_DETAIL": "8 characters minimum",
+      "PASSWORD_PLACEHOLDER": "Your new password",
+      "CONFIRMATION_LABEL": "Confirm password",
+      "CONFIRMATION_PLACEHOLDER": "Enter your password again",
+      "BOUTON": "Change password",
+      "BOUTON_EN_COURS": "Changing...",
+      "ERREUR_PASSWORDS_DIFFERENTS": "Passwords do not match.",
+      "ERREUR_CODE": "The code is invalid or has expired.",
+      "SUCCES_TITRE": "Password changed",
+      "SUCCES_TEXTE": "Your password has been changed. You can now log in.",
+      "BOUTON_LOGIN": "Log in",
+      "RETOUR_LOGIN": "Back to login"
     }
   },
   "ACCUEIL": {

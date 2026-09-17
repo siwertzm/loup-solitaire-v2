@@ -40,6 +40,9 @@ import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.EmailVerificationService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.RefreshTokenService;
+import com.loupsolitaire.backend.request.ForgotPasswordRequest;
+import com.loupsolitaire.backend.request.ResetPasswordRequest;
+import com.loupsolitaire.backend.service.PasswordResetService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +60,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final EmailVerificationService emailVerificationService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
     public ResponseEntity<UtilisateurResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -84,8 +88,7 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody AuthRequest request) {
         // identifiant accepte username OU email : voir CustomUserDetailsService.
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getIdentifiant(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getIdentifiant(), request.getPassword()));
 
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
         Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
@@ -93,8 +96,7 @@ public class AuthController {
 
         if (!utilisateur.isEmailVerifie()) {
             throw new CompteNonVerifieException(
-                    "Merci de confirmer ton adresse email avant de te connecter (verifie ta boite mail)"
-            );
+                    "Merci de confirmer ton adresse email avant de te connecter (verifie ta boite mail)");
         }
 
         String accessToken = jwtUtil.generateToken(userDetails);
@@ -109,10 +111,9 @@ public class AuthController {
         emailVerificationService.verifier(token);
         return ResponseEntity.ok(
                 "<html><body style=\"font-family:sans-serif;text-align:center;padding:40px\">" +
-                "<h2>Email confirme !</h2>" +
-                "<p>Ton compte est active, tu peux retourner sur l'application et te connecter.</p>" +
-                "</body></html>"
-        );
+                        "<h2>Email confirme !</h2>" +
+                        "<p>Ton compte est active, tu peux retourner sur l'application et te connecter.</p>" +
+                        "</body></html>");
     }
 
     @PostMapping("/resend-verification")
@@ -143,6 +144,28 @@ public class AuthController {
         String nouvelAccessToken = jwtUtil.generateToken(userDetails);
 
         return new AuthResponse(nouvelAccessToken, resultat.nouveauRefreshToken());
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.demanderReinitialisation(
+                request.getEmail());
+        /*
+         * Toujours la même réponse, même si l'adresse
+         * n'existe pas.
+         */
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.reinitialiser(
+                request.getEmail(),
+                request.getCode(),
+                request.getNewPassword());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/logout")
@@ -185,7 +208,8 @@ public class AuthController {
                 throw new ConflitException("Cet email est deja utilise");
             }
             utilisateur.setEmail(request.getEmail());
-            // Changer d'email revoque la verification : il faut reconfirmer la nouvelle adresse.
+            // Changer d'email revoque la verification : il faut reconfirmer la nouvelle
+            // adresse.
             utilisateur.setEmailVerifie(false);
             emailVerificationService.envoyerLienDeVerification(utilisateur);
         }
