@@ -203,6 +203,15 @@ public class AuthController {
         return UtilisateurResponse.fromEntity(utilisateur, personnages);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody RefreshRequest request) {
+        refreshTokenService.revoquer(
+                request.getRefreshToken());
+
+        return ResponseEntity.noContent().build();
+    }
+
     // Complete/modifie le profil (email, date de naissance) apres inscription.
     // Champs optionnels : seuls ceux fournis (non null) sont mis a jour.
     @PutMapping("/me")
