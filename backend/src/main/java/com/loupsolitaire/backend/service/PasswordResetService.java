@@ -1,8 +1,13 @@
 package com.loupsolitaire.backend.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
+import java.util.HexFormat;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,24 +39,22 @@ public class PasswordResetService {
     @Value("${app.password-reset.max-attempts:5}")
     private int maxAttempts;
 
+    /*
+     * ETAPE 1
+     *
+     * L'utilisateur saisit son email.
+     * On génère et envoie un code à 6 chiffres.
+     */
     @Transactional
     public void demanderReinitialisation(String email) {
 
         /*
-         * IMPORTANT :
-         * Si l'adresse n'existe pas, on ne lève aucune erreur.
-         *
-         * Le contrôleur renverra donc exactement la même réponse,
-         * que le compte existe ou non.
-         *
-         * Cela évite de permettre à quelqu'un de tester quels emails
-         * sont inscrits dans l'application.
+         * Ne jamais révéler si l'adresse existe ou non.
          */
         utilisateurRepository.findByEmail(email).ifPresent(utilisateur -> {
 
             /*
-             * Les anciens codes encore valides deviennent inutilisables
-             * dès qu'un nouveau code est demandé.
+             * Un nouveau code invalide tous les précédents.
              */
             tokenRepository.findByUtilisateurAndUtiliseFalse(utilisateur)
                     .forEach(token -> token.setUtilise(true));
@@ -59,13 +62,8 @@ public class PasswordResetService {
             String code = genererCode();
 
             PasswordResetToken token = new PasswordResetToken();
-            token.setUtilisateur(utilisateur);
 
-            /*
-             * BCrypt plutôt que SHA-256 :
-             * un code à 6 chiffres possède très peu de combinaisons,
-             * donc il ne faut pas stocker un simple hash rapide.
-             */
+            token.setUtilisateur(utilisateur);
             token.setCodeHash(passwordEncoder.encode(code));
 
             token.setExpiresAt(
@@ -85,32 +83,52 @@ public class PasswordResetService {
         });
     }
 
-    @Transactional
-    public void reinitialiser(
+    /*
+     * ETAPE 2
+     *
+     * L'utilisateur saisit le code reçu par email.
+     *
+     * Si le code est bon, on génère un nouveau token aléatoire,
+     * utilisable uniquement pour l'étape "nouveau mot de passe".
+     */
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
+    public String verifierCode(
             String email,
-            String code,
-            String nouveauMotDePasse
+            String code
     ) {
 
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+        Utilisateur utilisateur = utilisateurRepository
+                .findByEmail(email)
                 .orElseThrow(
                         () -> new IllegalArgumentException(
                                 "Code invalide ou expire"
                         )
                 );
 
-        PasswordResetToken token =
-                tokenRepository
-                        .findTopByUtilisateurAndUtiliseFalseOrderByCreatedAtDesc(
-                                utilisateur
+        PasswordResetToken token = tokenRepository
+                .findTopByUtilisateurAndUtiliseFalseOrderByCreatedAtDesc(
+                        utilisateur
+                )
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Code invalide ou expire"
                         )
-                        .orElseThrow(
-                                () -> new IllegalArgumentException(
-                                        "Code invalide ou expire"
-                                )
-                        );
+                );
+
+        /*
+         * Le code a déjà été validé.
+         *
+         * resetTokenHash != null signifie que l'étape 2
+         * a déjà été franchie.
+         */
+        if (token.getResetTokenHash() != null) {
+            throw new IllegalArgumentException(
+                    "Code invalide ou expire"
+            );
+        }
 
         if (token.isExpired()) {
+
             token.setUtilise(true);
             tokenRepository.save(token);
 
@@ -120,6 +138,7 @@ public class PasswordResetService {
         }
 
         if (token.getTentatives() >= maxAttempts) {
+
             token.setUtilise(true);
             tokenRepository.save(token);
 
@@ -128,9 +147,16 @@ public class PasswordResetService {
             );
         }
 
-        if (!passwordEncoder.matches(code, token.getCodeHash())) {
+        /*
+         * Mauvais code.
+         */
+        if (!passwordEncoder.matches(
+                code,
+                token.getCodeHash()
+        )) {
 
-            int nouvellesTentatives = token.getTentatives() + 1;
+            int nouvellesTentatives =
+                    token.getTentatives() + 1;
 
             token.setTentatives(nouvellesTentatives);
 
@@ -146,31 +172,151 @@ public class PasswordResetService {
         }
 
         /*
-         * Le code est correct.
+         * Le code est valide.
+         *
+         * Création d'un token de réinitialisation
+         * aléatoire et non prédictible.
+         */
+        String resetToken = genererResetToken();
+
+        token.setResetTokenHash(
+                hacher(resetToken)
+        );
+
+        /*
+         * On utilise ici la même durée que celle du code.
+         *
+         * Avec ta configuration actuelle :
+         * 15 minutes.
+         */
+        token.setResetTokenExpiresAt(
+                Instant.now().plus(
+                        expirationMinutes,
+                        ChronoUnit.MINUTES
+                )
+        );
+
+        tokenRepository.save(token);
+
+        /*
+         * Seule la valeur brute est retournée au frontend.
+         * La base ne possède que son SHA-256.
+         */
+        return resetToken;
+    }
+
+    /*
+     * ETAPE 3
+     *
+     * L'utilisateur choisit ses nouveaux mots de passe.
+     *
+     * Le frontend envoie uniquement :
+     *
+     * - resetToken
+     * - newPassword
+     */
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
+    public void reinitialiser(
+            String resetToken,
+            String nouveauMotDePasse
+    ) {
+
+        PasswordResetToken token = tokenRepository
+                .findByResetTokenHashAndUtiliseFalse(
+                        hacher(resetToken)
+                )
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Reinitialisation invalide ou expiree"
+                        )
+                );
+
+        if (token.getResetTokenHash() == null
+                || token.isResetTokenExpired()) {
+
+            token.setUtilise(true);
+            tokenRepository.save(token);
+
+            throw new IllegalArgumentException(
+                    "Reinitialisation invalide ou expiree"
+            );
+        }
+
+        Utilisateur utilisateur =
+                token.getUtilisateur();
+
+        /*
+         * Modification du mot de passe.
          */
         utilisateur.setPassword(
-                passwordEncoder.encode(nouveauMotDePasse)
+                passwordEncoder.encode(
+                        nouveauMotDePasse
+                )
         );
 
         utilisateurRepository.save(utilisateur);
 
         /*
-         * Le code ne peut plus être réutilisé.
+         * Invalidation de tous les codes / tokens de
+         * réinitialisation encore ouverts.
          */
-        token.setUtilise(true);
-        tokenRepository.save(token);
+        tokenRepository
+                .findByUtilisateurAndUtiliseFalse(utilisateur)
+                .forEach(t -> t.setUtilise(true));
 
         /*
-         * Déconnexion de tous les appareils après changement
-         * du mot de passe.
+         * Toutes les anciennes sessions sont déconnectées.
          */
-        refreshTokenService.revoquerToutesLesSessions(utilisateur);
+        refreshTokenService
+                .revoquerToutesLesSessions(utilisateur);
     }
 
     private String genererCode() {
 
-        int valeur = SECURE_RANDOM.nextInt(1_000_000);
+        int valeur =
+                SECURE_RANDOM.nextInt(1_000_000);
 
-        return String.format("%06d", valeur);
+        return String.format(
+                "%06d",
+                valeur
+        );
+    }
+
+    private String genererResetToken() {
+
+        byte[] bytes = new byte[32];
+
+        SECURE_RANDOM.nextBytes(bytes);
+
+        return Base64
+                .getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(bytes);
+    }
+
+    private String hacher(String valeur) {
+
+        try {
+
+            MessageDigest digest =
+                    MessageDigest.getInstance("SHA-256");
+
+            byte[] hash = digest.digest(
+                    valeur.getBytes(
+                            StandardCharsets.UTF_8
+                    )
+            );
+
+            return HexFormat
+                    .of()
+                    .formatHex(hash);
+
+        } catch (NoSuchAlgorithmException e) {
+
+            throw new IllegalStateException(
+                    "SHA-256 indisponible",
+                    e
+            );
+        }
     }
 }

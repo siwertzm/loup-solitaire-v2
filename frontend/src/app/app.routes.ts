@@ -21,6 +21,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'auth/verify-reset-code',
+    loadComponent: () =>
+      import('./features/auth/verify-reset-code/verify-reset-code.page').then(
+        (m) => m.VerifyResetCodePage,
+      ),
+  },
+  {
     path: 'auth/reset-password',
     loadComponent: () =>
       import('./features/auth/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),

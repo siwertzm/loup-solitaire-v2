@@ -43,6 +43,8 @@ import com.loupsolitaire.backend.service.RefreshTokenService;
 import com.loupsolitaire.backend.request.ForgotPasswordRequest;
 import com.loupsolitaire.backend.request.ResetPasswordRequest;
 import com.loupsolitaire.backend.service.PasswordResetService;
+import com.loupsolitaire.backend.request.VerifyResetCodeRequest;
+import com.loupsolitaire.backend.response.ResetCodeResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -149,28 +151,36 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {
+
         passwordResetService.demanderReinitialisation(
                 request.getEmail());
+
         /*
-         * Toujours la même réponse, même si l'adresse
-         * n'existe pas.
+         * Toujours la même réponse que l'adresse existe ou non.
          */
         return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/verify-reset-code")
+    public ResetCodeResponse verifyResetCode(
+            @Valid @RequestBody VerifyResetCodeRequest request) {
+
+        String resetToken = passwordResetService.verifierCode(
+                request.getEmail(),
+                request.getCode());
+
+        return new ResetCodeResponse(
+                resetToken);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
-        passwordResetService.reinitialiser(
-                request.getEmail(),
-                request.getCode(),
-                request.getNewPassword());
-        return ResponseEntity.noContent().build();
-    }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest request) {
-        refreshTokenService.revoquer(request.getRefreshToken());
+        passwordResetService.reinitialiser(
+                request.getResetToken(),
+                request.getNewPassword());
+
         return ResponseEntity.noContent().build();
     }
 

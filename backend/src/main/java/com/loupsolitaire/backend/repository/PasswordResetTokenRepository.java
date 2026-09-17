@@ -20,4 +20,8 @@ public interface PasswordResetTokenRepository
     List<PasswordResetToken> findByUtilisateurAndUtiliseFalse(
             Utilisateur utilisateur
     );
+
+    Optional<PasswordResetToken> findByResetTokenHashAndUtiliseFalse(
+            String resetTokenHash
+    );
 }

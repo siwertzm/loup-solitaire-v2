@@ -52,13 +52,23 @@
       "ERREUR": "Impossible d'envoyer le code pour le moment.",
       "RETOUR_LOGIN": "Retour à la connexion"
     },
-    "RESET_PASSWORD": {
-      "TITRE": "Nouveau mot de passe",
-      "INTRODUCTION": "Saisissez le code à 6 chiffres reçu par email puis choisissez votre nouveau mot de passe.",
-      "EMAIL_LABEL": "Adresse email",
-      "EMAIL_PLACEHOLDER": "votre@email.fr",
+    "VERIFY_RESET_CODE": {
+      "TITRE": "Code de vérification",
+      "INTRODUCTION": "Si un compte correspond à {{email}}, un code à 6 chiffres a été envoyé à cette adresse.",
       "CODE_LABEL": "Code de vérification",
       "CODE_PLACEHOLDER": "000000",
+      "BOUTON": "Vérifier le code",
+      "BOUTON_EN_COURS": "Vérification...",
+      "ERREUR_CODE": "Le code est invalide ou a expiré.",
+      "RENVOYER": "Renvoyer le code",
+      "RENVOI_EN_COURS": "Envoi...",
+      "CODE_RENVOYE": "Un nouveau code a été envoyé.",
+      "ERREUR_RENVOI": "Impossible de renvoyer le code pour le moment.",
+      "MODIFIER_EMAIL": "Modifier l'adresse email"
+    },
+    "RESET_PASSWORD": {
+      "TITRE": "Nouveau mot de passe",
+      "INTRODUCTION": "Choisissez votre nouveau mot de passe.",
       "PASSWORD_LABEL": "Nouveau mot de passe",
       "PASSWORD_DETAIL": "8 caractères minimum",
       "PASSWORD_PLACEHOLDER": "Votre nouveau mot de passe",
@@ -67,11 +77,11 @@
       "BOUTON": "Modifier le mot de passe",
       "BOUTON_EN_COURS": "Modification...",
       "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas.",
-      "ERREUR_CODE": "Le code est invalide ou a expiré.",
+      "ERREUR_TOKEN": "La validation a expiré. Recommencez la procédure.",
       "SUCCES_TITRE": "Mot de passe modifié",
       "SUCCES_TEXTE": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
       "BOUTON_LOGIN": "Se connecter",
-      "RETOUR_LOGIN": "Retour à la connexion"
+      "RECOMMENCER": "Recommencer"
     }
   },
   "ACCUEIL": {

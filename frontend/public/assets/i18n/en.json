@@ -52,13 +52,23 @@
       "ERREUR": "Unable to send the code right now.",
       "RETOUR_LOGIN": "Back to login"
     },
-    "RESET_PASSWORD": {
-      "TITRE": "New password",
-      "INTRODUCTION": "Enter the 6-digit code received by email and choose your new password.",
-      "EMAIL_LABEL": "Email address",
-      "EMAIL_PLACEHOLDER": "your@email.com",
+    "VERIFY_RESET_CODE": {
+      "TITRE": "Verification code",
+      "INTRODUCTION": "If an account matches {{email}}, a 6-digit code has been sent to this address.",
       "CODE_LABEL": "Verification code",
       "CODE_PLACEHOLDER": "000000",
+      "BOUTON": "Verify code",
+      "BOUTON_EN_COURS": "Verifying...",
+      "ERREUR_CODE": "The code is invalid or has expired.",
+      "RENVOYER": "Resend code",
+      "RENVOI_EN_COURS": "Sending...",
+      "CODE_RENVOYE": "A new code has been sent.",
+      "ERREUR_RENVOI": "Unable to resend the code right now.",
+      "MODIFIER_EMAIL": "Change email address"
+    },
+    "RESET_PASSWORD": {
+      "TITRE": "New password",
+      "INTRODUCTION": "Choose your new password.",
       "PASSWORD_LABEL": "New password",
       "PASSWORD_DETAIL": "8 characters minimum",
       "PASSWORD_PLACEHOLDER": "Your new password",
@@ -67,11 +77,11 @@
       "BOUTON": "Change password",
       "BOUTON_EN_COURS": "Changing...",
       "ERREUR_PASSWORDS_DIFFERENTS": "Passwords do not match.",
-      "ERREUR_CODE": "The code is invalid or has expired.",
+      "ERREUR_TOKEN": "The verification has expired. Please start again.",
       "SUCCES_TITRE": "Password changed",
       "SUCCES_TEXTE": "Your password has been changed. You can now log in.",
       "BOUTON_LOGIN": "Log in",
-      "RETOUR_LOGIN": "Back to login"
+      "RECOMMENCER": "Start again"
     }
   },
   "ACCUEIL": {

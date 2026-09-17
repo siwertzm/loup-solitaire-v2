@@ -38,13 +38,30 @@ public class PasswordResetToken {
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
-    // Hash BCrypt du code à 6 chiffres.
-    // Le code brut n'est jamais enregistré en base.
+    /*
+     * Hash BCrypt du code à 6 chiffres.
+     * Le code brut n'est jamais enregistré.
+     */
     @Column(nullable = false)
     private String codeHash;
 
+    /*
+     * Expiration du code reçu par email.
+     */
     @Column(nullable = false)
     private Instant expiresAt;
+
+    /*
+     * Après validation du code, on génère un token aléatoire beaucoup
+     * plus long. Seul son SHA-256 est conservé en base.
+     */
+    @Column(unique = true, length = 64)
+    private String resetTokenHash;
+
+    /*
+     * Expiration du token permettant de choisir le nouveau mot de passe.
+     */
+    private Instant resetTokenExpiresAt;
 
     @Column(nullable = false)
     private boolean utilise = false;
@@ -57,5 +74,10 @@ public class PasswordResetToken {
 
     public boolean isExpired() {
         return expiresAt.isBefore(Instant.now());
+    }
+
+    public boolean isResetTokenExpired() {
+        return resetTokenExpiresAt == null
+                || resetTokenExpiresAt.isBefore(Instant.now());
     }
 }

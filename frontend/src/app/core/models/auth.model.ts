@@ -22,6 +22,10 @@ export interface AuthResponse {
   tokenType: string; // "Bearer"
 }
 
+export interface ResetCodeResponse {
+  resetToken: string;
+}
+
 export interface UtilisateurResponse {
   id: string;
   username: string;
