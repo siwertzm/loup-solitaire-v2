@@ -36,7 +36,10 @@
       "SUCCES_SYMBOLE": "✓",
       "SUCCES_TITRE": "Account created",
       "SUCCES_TEXTE": "A verification email has been sent. Click the link it contains before logging in.",
-      "BOUTON_ALLER_LOGIN": "Go to log in"
+      "BOUTON_ALLER_LOGIN": "Go to log in",
+      "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirm password",
+      "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Enter your password again",
+      "ERREUR_PASSWORDS_DIFFERENTS": "Passwords do not match."
     }
   },
   "ACCUEIL": {

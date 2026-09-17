@@ -36,7 +36,10 @@
       "SUCCES_SYMBOLE": "✓",
       "SUCCES_TITRE": "Compte créé",
       "SUCCES_TEXTE": "Un email de vérification a été envoyé. Cliquez sur le lien qu'il contient avant de vous connecter.",
-      "BOUTON_ALLER_LOGIN": "Aller à la connexion"
+      "BOUTON_ALLER_LOGIN": "Aller à la connexion",
+      "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirmer le mot de passe",
+      "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Retapez votre mot de passe",
+      "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas."
     }
   },
   "ACCUEIL": {
