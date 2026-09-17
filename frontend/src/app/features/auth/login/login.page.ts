@@ -7,6 +7,7 @@ import {
   IonInput,
   IonButton,
   IonNote,
+  IonInputPasswordToggle,
 } from '@ionic/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
@@ -21,6 +22,7 @@ import { AuthService } from '../../../core/services/auth.service';
     IonInput,
     IonButton,
     IonNote,
+    IonInputPasswordToggle,
     TranslatePipe,
   ],
   templateUrl: './login.page.html',

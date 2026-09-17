@@ -3,7 +3,9 @@
     <section class="login-card" aria-labelledby="login-title">
       <header class="titre-jeu">
         <div class="sur-titre">{{ 'ACCUEIL.SUR_TITRE' | translate }}</div>
-        <h1 id="login-title">{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
+        <h1 id="login-title">
+          {{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}
+        </h1>
         <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
       </header>
       <h2>{{ 'AUTH.LOGIN.TITRE' | translate }}</h2>
@@ -29,21 +31,42 @@
             type="password"
             autocomplete="current-password"
             [placeholder]="'AUTH.LOGIN.CHAMP_MOT_DE_PASSE_PLACEHOLDER' | translate"
-          ></ion-input>
+          >
+            <ion-input-password-toggle
+              slot="end"
+              color="oeil"
+              class="password-toggle"
+            ></ion-input-password-toggle>
+          </ion-input>
         </div>
 
         @if (erreur()) {
           <ion-note class="erreur">{{ erreur() | translate }}</ion-note>
         }
 
-        <ion-button expand="block" type="submit" class="connexion" [disabled]="form.invalid || enCours()">
-          {{ enCours() ? ('AUTH.LOGIN.BOUTON_CONNEXION_EN_COURS' | translate) : ('AUTH.LOGIN.BOUTON_CONNEXION' | translate) }}
+        <ion-button
+          expand="block"
+          type="submit"
+          class="connexion"
+          [disabled]="form.invalid || enCours()"
+        >
+          {{
+            enCours()
+              ? ('AUTH.LOGIN.BOUTON_CONNEXION_EN_COURS' | translate)
+              : ('AUTH.LOGIN.BOUTON_CONNEXION' | translate)
+          }}
         </ion-button>
       </form>
 
-      <div class="separateur"><span>{{ 'AUTH.LOGIN.SEPARATEUR_OU' | translate }}</span></div>
+      <div class="separateur">
+        <span>{{ 'AUTH.LOGIN.SEPARATEUR_OU' | translate }}</span>
+      </div>
 
-      <a class="inscription" routerLink="/auth/register" [innerHTML]="'AUTH.LOGIN.LIEN_INSCRIPTION' | translate"></a>
+      <a
+        class="inscription"
+        routerLink="/auth/register"
+        [innerHTML]="'AUTH.LOGIN.LIEN_INSCRIPTION' | translate"
+      ></a>
     </section>
   </main>
 </ion-content>

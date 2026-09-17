@@ -21,3 +21,25 @@
  * zone de padding serait peinte avec le --background plat d'ion-content
  * a la place. Meme logique deja en place pour le bas sur chapitre.page.scss.
  */
+
+ :root {
+  --ion-color-oeil: #8a826d;
+  --ion-color-oeil-rgb: 138, 130, 109;
+
+  --ion-color-oeil-contrast: #171c13;
+  --ion-color-oeil-contrast-rgb: 23, 28, 19;
+
+  --ion-color-oeil-shade: #797260;
+  --ion-color-oeil-tint: #968f7c;
+}
+
+.ion-color-oeil {
+  --ion-color-base: var(--ion-color-oeil);
+  --ion-color-base-rgb: var(--ion-color-oeil-rgb);
+
+  --ion-color-contrast: var(--ion-color-oeil-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-oeil-contrast-rgb);
+
+  --ion-color-shade: var(--ion-color-oeil-shade);
+  --ion-color-tint: var(--ion-color-oeil-tint);
+}
