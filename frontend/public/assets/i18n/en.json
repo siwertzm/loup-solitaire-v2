@@ -362,7 +362,9 @@
     "POPUP_ECHANGE_VIDE": "You have nothing to trade here.",
     "BOUTON_ECHANGER": "Trade",
     "ERREUR_VOL": "Error while resolving the theft:",
-    "ERREUR_ECHANGE": "Error while trading the item:"
+    "ERREUR_ECHANGE": "Error while trading the item:",
+    "PERTE_TITRE": "LOSS",
+    "CASSE_TITRE": "BREAKAGE"
   },
   "CHAPITRE_OBJETS": {
     "ALT_ARMES": "Weapons",

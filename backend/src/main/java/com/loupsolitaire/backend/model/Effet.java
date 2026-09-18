@@ -41,6 +41,8 @@ public class Effet {
 
     private Integer valeur;
 
+    private String nom;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "objet_id")
     private Objet objet;

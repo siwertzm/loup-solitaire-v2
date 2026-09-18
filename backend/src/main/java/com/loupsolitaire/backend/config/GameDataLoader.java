@@ -178,6 +178,7 @@ public class GameDataLoader implements ApplicationRunner {
         Effet effet = new Effet();
         effet.setType(TypeEffet.fromJson(json.getType()));
         effet.setValeur(json.getValeur());
+        effet.setNom(json.getNom());
         effet.setObjet(objetParent);
 
         if (json.getCond() != null) {
@@ -276,6 +277,7 @@ public class GameDataLoader implements ApplicationRunner {
         Effet effet = new Effet();
         effet.setType(TypeEffet.fromJson(json.getType()));
         effet.setValeur(json.getValeur());
+        effet.setNom(json.getNom());
         effet.setChapitre(chapitreParent);
 
         if (json.getCond() != null) {

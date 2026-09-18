@@ -112,7 +112,7 @@ public class ChapitreMapper {
                 && personnage.getDernierStatutRepas() != null) {
             resultat = personnage.getDernierStatutRepas().name();
         }
-        return new EffetResponse(effet.getType().name(), effet.getValeur(), conditions, resultat);
+        return new EffetResponse(effet.getType().name(), effet.getValeur(), effet.getNom(), conditions, resultat);
     }
 
     private LienResponse versReponseLien(Lien lien, Personnage personnage) {

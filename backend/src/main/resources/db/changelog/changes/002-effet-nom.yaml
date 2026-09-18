@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 002-effet-nom
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 002-effet-nom.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

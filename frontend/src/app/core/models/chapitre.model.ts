@@ -14,6 +14,7 @@ export interface EnnemiChapitreResponse {
 export interface EffetResponse {
   type: string;
   valeur: number | null;
+  nom: string | null;
   conditions: CondResponse[];
   resultat?: string | null;
 }
