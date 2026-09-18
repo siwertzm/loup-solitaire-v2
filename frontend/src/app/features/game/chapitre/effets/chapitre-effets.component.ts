@@ -572,4 +572,18 @@ export class ChapitreEffetsComponent {
       },
     });
   }
+
+  titreVol(effet: EffetResponse): string {
+    switch (effet.nom?.toUpperCase()) {
+      case 'CASSE':
+        return this.translate.instant('CHAPITRE_EFFETS.CASSE_TITRE');
+
+      case 'PERTE':
+        return this.translate.instant('CHAPITRE_EFFETS.PERTE_TITRE');
+
+      case 'VOL':
+      default:
+        return this.translate.instant('CHAPITRE_EFFETS.VOL_TITRE');
+    }
+  }
 }

@@ -362,7 +362,9 @@
     "POPUP_ECHANGE_VIDE": "Vous n'avez rien à échanger ici.",
     "BOUTON_ECHANGER": "Échanger",
     "ERREUR_VOL": "Erreur lors de la résolution du vol :",
-    "ERREUR_ECHANGE": "Erreur lors de l'échange d'objet :"
+    "ERREUR_ECHANGE": "Erreur lors de l'échange d'objet :",
+    "PERTE_TITRE": "PERTE",
+    "CASSE_TITRE": "CASSE"
   },
   "CHAPITRE_OBJETS": {
     "ALT_ARMES": "Armes",

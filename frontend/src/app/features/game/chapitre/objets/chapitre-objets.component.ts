@@ -1,8 +1,22 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  HostListener,
+  inject,
+  input,
+  OnDestroy,
+  output,
+  signal,
+} from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { ObjetChapResponse } from '../../../../core/models/chapitre.model';
-import { InventaireItem, ObjetResume, PersonnageResume } from '../../../../core/models/personnage.model';
+import {
+  InventaireItem,
+  ObjetResume,
+  PersonnageResume,
+} from '../../../../core/models/personnage.model';
 import { ChapitreService } from '../../../../core/services/chapitre.service';
 import { PersonnageService } from '../../../../core/services/personnage.service';
 import { InventaireSheetService } from '../../../../core/services/inventaire-sheet.service';
@@ -24,7 +38,9 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
  * dans l'appli — ce composant se contente de déclencher son ouverture.
  *
  * Objets à valeur positive proposés par un chapitre, OPTIONNELS ou non :
- * - OPTIONNEL (bouton PRENDRE) : le joueur choisit, 1 exemplaire par clic.
+ * - OPTIONNEL (bouton PRENDRE) : le joueur choisit.
+ *   Un appui court prend 1 exemplaire.
+ *   Un appui prolongé permet d'en prendre plusieurs automatiquement.
  * - OBLIGATOIRE (bouton AUTOMATIQUE) : appliqué tout seul à l'arrivée sur le
  *   chapitre (voir PersonnageService.avancerVersChapitre). Si la catégorie
  *   était déjà pleine à ce moment-là, une partie peut ne pas avoir pu être
@@ -40,7 +56,7 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
   templateUrl: './chapitre-objets.component.html',
   styleUrl: './chapitre-objets.component.scss',
 })
-export class ChapitreObjetsComponent {
+export class ChapitreObjetsComponent implements OnDestroy {
   private readonly chapitreService = inject(ChapitreService);
   private readonly personnageService = inject(PersonnageService);
   private readonly inventaireSheet = inject(InventaireSheetService);
@@ -80,7 +96,9 @@ export class ChapitreObjetsComponent {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
-  readonly objetsEtRepasCount = computed(() => this.objetsCount() + this.repasCount());
+  readonly objetsEtRepasCount = computed(
+    () => this.objetsCount() + this.repasCount(),
+  );
 
   readonly bourseCount = computed(() =>
     this.inventaire()
@@ -99,6 +117,40 @@ export class ChapitreObjetsComponent {
   readonly restants = signal<Record<string, number>>({});
   readonly ramassageEnCours = signal<string | null>(null);
 
+  /*
+   * Gestion de l'appui prolongé sur PRENDRE.
+   *
+   * - Appui court : 1 objet.
+   * - Après 400 ms : passage en appui long.
+   * - Tant que le bouton reste maintenu, on tente un nouveau ramassage
+   *   régulièrement.
+   *
+   * prendreObjet() protège déjà contre plusieurs requêtes simultanées grâce
+   * à ramassageEnCours(), donc l'intervalle ne peut pas lancer plusieurs
+   * appels API en parallèle.
+   */
+  private appuiTimeout: ReturnType<typeof setTimeout> | null = null;
+  private appuiInterval: ReturnType<typeof setInterval> | null = null;
+
+  private objetMaintenu:
+    | {
+        objetId: string;
+        optionnel: boolean;
+      }
+    | null = null;
+
+  private appuiLongEnCours = false;
+
+  /*
+   * Un pointerdown de souris/doigt est normalement suivi d'un événement
+   * click au relâchement. Comme le clic court est déjà traité dans
+   * arreterAppui(), ce drapeau permet d'ignorer ce click automatique.
+   *
+   * Un click provenant du clavier n'a pas de pointerdown : il continue donc
+   * de fonctionner normalement pour l'accessibilité.
+   */
+  private ignorerProchainClic = false;
+
   constructor() {
     // Réinitialise les quantités restantes à chaque nouveau chapitre (l'input
     // `objets` change), remplaçant le reset manuel que faisait auparavant le
@@ -107,6 +159,9 @@ export class ChapitreObjetsComponent {
       const init: Record<string, number> = {};
       this.objets().forEach((o) => (init[o.objetId] = o.valeur));
       this.restants.set(init);
+
+      // Sécurité : si le chapitre change pendant un maintien.
+      this.annulerAppui();
     });
   }
 
@@ -116,7 +171,11 @@ export class ChapitreObjetsComponent {
    * chapitre) ne porte pas la catégorie, seulement objetId/nom/valeur/optionnel.
    */
   categorieObjet(objetId: string): string | null {
-    return this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.categorie ?? null;
+    return (
+      this.tousObjets().find(
+        (o) => o.id.toLowerCase() === objetId.toLowerCase(),
+      )?.categorie ?? null
+    );
   }
 
   /** Quantité restante à ramasser/compléter pour un objet du chapitre. */
@@ -135,27 +194,40 @@ export class ChapitreObjetsComponent {
     switch (categorie) {
       case 'ARME':
         return this.armesCount() >= this.maxArmes;
+
       case 'OBJET':
       case 'REPAS':
         return this.objetsEtRepasCount() >= this.maxObjetsEtRepas;
+
       case 'BOURSE':
         return this.bourseCount() >= this.maxBourse;
+
       default:
         return false;
     }
   }
 
   /** Objets actuellement possédés dans une catégorie (pour le popup "libérer de la place"). */
-  itemsDeCategorie(categorie: string | null): (InventaireItem & { maitrisee?: boolean })[] {
+  itemsDeCategorie(
+    categorie: string | null,
+  ): (InventaireItem & { maitrisee?: boolean })[] {
     if (categorie === 'ARME') {
       const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+
       return this.inventaire()
         .filter((i) => i.categorie === 'ARME')
-        .map((i) => ({ ...i, maitrisee: maitriseeNom !== null && i.nom === maitriseeNom }));
+        .map((i) => ({
+          ...i,
+          maitrisee: maitriseeNom !== null && i.nom === maitriseeNom,
+        }));
     }
+
     if (categorie === 'OBJET' || categorie === 'REPAS') {
-      return this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
+      return this.inventaire().filter(
+        (i) => i.categorie === 'OBJET' || i.categorie === 'REPAS',
+      );
     }
+
     return this.inventaire().filter((i) => i.categorie === categorie);
   }
 
@@ -163,11 +235,16 @@ export class ChapitreObjetsComponent {
     switch (categorie) {
       case 'ARME':
         return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_ARMES');
+
       case 'OBJET':
       case 'REPAS':
-        return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_OBJETS_REPAS');
+        return this.translate.instant(
+          'CHAPITRE_OBJETS.LIBELLE_OBJETS_REPAS',
+        );
+
       case 'BOURSE':
         return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_BOURSE');
+
       default:
         return '';
     }
@@ -175,9 +252,169 @@ export class ChapitreObjetsComponent {
 
   /** Catégorie affichée dans le popup de libération de place ; null = fermé. */
   readonly popupCategorie = signal<string | null>(null);
+
   /** Objet du chapitre qu'on essayait de ramasser/compléter quand le popup s'est ouvert. */
-  private readonly objetEnAttente = signal<{ objetId: string; optionnel: boolean } | null>(null);
+  private readonly objetEnAttente = signal<{
+    objetId: string;
+    optionnel: boolean;
+  } | null>(null);
+
   readonly retraitPopupEnCours = signal<string | null>(null);
+
+  /**
+   * Début d'un appui souris/tactile sur le bouton PRENDRE.
+   *
+   * On attend 400 ms avant de considérer qu'il s'agit d'un appui long.
+   * Avant ce délai, le relâchement sera traité comme un clic classique.
+   */
+  demarrerAppui(
+    objet: { objetId: string; optionnel: boolean },
+    event: PointerEvent,
+  ): void {
+    if (this.restant(objet.objetId) <= 0) {
+      return;
+    }
+
+    if (this.estPlein(this.categorieObjet(objet.objetId))) {
+      return;
+    }
+
+    this.annulerAppui();
+
+    this.objetMaintenu = objet;
+    this.appuiLongEnCours = false;
+    this.ignorerProchainClic = true;
+
+    // Empêche certains comportements natifs parasites lors du maintien.
+    event.preventDefault();
+
+    this.appuiTimeout = setTimeout(() => {
+      if (
+        !this.objetMaintenu ||
+        this.objetMaintenu.objetId !== objet.objetId
+      ) {
+        return;
+      }
+
+      this.appuiLongEnCours = true;
+
+      // Premier objet de l'appui prolongé.
+      this.prendrePendantAppui(objet);
+
+      // Puis répétition tant que le doigt / clic reste maintenu.
+      this.appuiInterval = setInterval(() => {
+        this.prendrePendantAppui(objet);
+      }, 150);
+    }, 400);
+  }
+
+  /**
+   * Le navigateur génère également un click après pointerup.
+   * Pour souris/tactile on l'ignore car le comportement est déjà géré par
+   * pointerdown/pointerup.
+   *
+   * Pour une activation clavier, aucun pointerdown n'a eu lieu :
+   * on conserve donc le comportement normal +1.
+   */
+  gererClicObjet(objet: {
+    objetId: string;
+    optionnel: boolean;
+  }): void {
+    if (this.ignorerProchainClic) {
+      this.ignorerProchainClic = false;
+      return;
+    }
+
+    this.prendreObjet(objet);
+  }
+
+  /**
+   * Pendant un maintien on ne ramasse que si :
+   * - il reste encore quelque chose ;
+   * - l'inventaire n'est pas plein ;
+   * - aucune requête précédente n'est encore en cours.
+   */
+  private prendrePendantAppui(objet: {
+    objetId: string;
+    optionnel: boolean;
+  }): void {
+    if (
+      !this.objetMaintenu ||
+      this.objetMaintenu.objetId !== objet.objetId
+    ) {
+      return;
+    }
+
+    if (this.restant(objet.objetId) <= 0) {
+      this.annulerAppui();
+      return;
+    }
+
+    const categorie = this.categorieObjet(objet.objetId);
+
+    if (this.estPlein(categorie)) {
+      this.annulerAppui();
+      return;
+    }
+
+    this.prendreObjet(objet);
+  }
+
+  /**
+   * Pointerup peut arriver en dehors du bouton si l'utilisateur déplace
+   * légèrement son doigt. L'écoute globale garantit donc toujours l'arrêt.
+   */
+  @HostListener('window:pointerup')
+  arreterAppui(): void {
+    if (!this.objetMaintenu) {
+      return;
+    }
+
+    const objet = this.objetMaintenu;
+    const etaitUnAppuiLong = this.appuiLongEnCours;
+
+    this.nettoyerTimersAppui();
+
+    this.objetMaintenu = null;
+    this.appuiLongEnCours = false;
+
+    // Si le maintien n'a pas atteint 400 ms, c'est un clic normal : +1.
+    if (!etaitUnAppuiLong) {
+      this.prendreObjet(objet);
+    }
+
+    /*
+     * Normalement un click arrive juste après pointerup et consomme
+     * ignorerProchainClic. Ce timeout sert de sécurité si le navigateur ne
+     * génère finalement aucun click.
+     */
+    setTimeout(() => {
+      this.ignorerProchainClic = false;
+    }, 0);
+  }
+
+  @HostListener('window:pointercancel')
+  annulerAppui(): void {
+    this.nettoyerTimersAppui();
+    this.objetMaintenu = null;
+    this.appuiLongEnCours = false;
+
+    setTimeout(() => {
+      this.ignorerProchainClic = false;
+    }, 0);
+  }
+
+  private nettoyerTimersAppui(): void {
+    if (this.appuiTimeout !== null) {
+      clearTimeout(this.appuiTimeout);
+      this.appuiTimeout = null;
+    }
+
+    if (this.appuiInterval !== null) {
+      clearInterval(this.appuiInterval);
+      this.appuiInterval = null;
+    }
+  }
 
   /**
    * Ramasse (optionnel) ou complète (obligatoire) un objet du chapitre —
@@ -185,12 +422,22 @@ export class ChapitreObjetsComponent {
    * libération de place au lieu d'appeler l'API (qui refuserait de toute
    * façon, InventaireService plafonne aussi côté serveur).
    */
-  prendreObjet(objet: { objetId: string; optionnel: boolean }): void {
-    if (this.restant(objet.objetId) <= 0) return;
-    if (this.ramassageEnCours()) return;
+  prendreObjet(objet: {
+    objetId: string;
+    optionnel: boolean;
+  }): void {
+    if (this.restant(objet.objetId) <= 0) {
+      return;
+    }
+
+    if (this.ramassageEnCours()) {
+      return;
+    }
 
     const categorie = this.categorieObjet(objet.objetId);
+
     if (this.estPlein(categorie)) {
+      this.annulerAppui();
       this.objetEnAttente.set(objet);
       this.popupCategorie.set(categorie);
       return;
@@ -199,26 +446,48 @@ export class ChapitreObjetsComponent {
     this.executerRamassage(objet);
   }
 
-  private executerRamassage(objet: { objetId: string; optionnel: boolean }): void {
+  private executerRamassage(objet: {
+    objetId: string;
+    optionnel: boolean;
+  }): void {
     const id = this.personnageId();
-    if (!id) return;
+
+    if (!id) {
+      return;
+    }
 
     this.ramassageEnCours.set(objet.objetId);
+
     this.chapitreService.ramasserObjet(id, objet.objetId).subscribe({
       next: (p) => {
         this.ramasse.emit(p);
+
         // Optionnel : le backend n'ajoute jamais qu'1 exemplaire par appel.
         // Obligatoire : le backend complète tout le manque en un appel, on
         // repasse donc directement à 0 plutôt que de décrémenter de 1.
         this.restants.update((r) => ({
           ...r,
-          [objet.objetId]: objet.optionnel ? Math.max(0, this.restant(objet.objetId) - 1) : 0,
+          [objet.objetId]: objet.optionnel
+            ? Math.max(0, this.restant(objet.objetId) - 1)
+            : 0,
         }));
+
         this.ramassageEnCours.set(null);
+
+        // Fin automatique du maintien quand il ne reste plus rien.
+        if (this.restant(objet.objetId) <= 0) {
+          this.annulerAppui();
+        }
       },
+
       error: (err) => {
-        console.error(this.translate.instant('CHAPITRE_OBJETS.ERREUR_RAMASSAGE'), err);
+        console.error(
+          this.translate.instant('CHAPITRE_OBJETS.ERREUR_RAMASSAGE'),
+          err,
+        );
+
         this.ramassageEnCours.set(null);
+        this.annulerAppui();
       },
     });
   }
@@ -226,9 +495,13 @@ export class ChapitreObjetsComponent {
   /** Retire 1 exemplaire depuis le popup, puis termine le ramassage initial une fois la place libérée. */
   retirerPourLiberer(objetId: string): void {
     const id = this.personnageId();
-    if (!id || this.retraitPopupEnCours()) return;
+
+    if (!id || this.retraitPopupEnCours()) {
+      return;
+    }
 
     this.retraitPopupEnCours.set(objetId);
+
     this.personnageService.retirerObjet(id, objetId, 1).subscribe({
       next: (p) => {
         this.ramasse.emit(p);
@@ -236,13 +509,20 @@ export class ChapitreObjetsComponent {
         this.retraitPopupEnCours.set(null);
 
         const enAttente = this.objetEnAttente();
+
         this.fermerPopup();
+
         if (enAttente) {
           this.executerRamassage(enAttente);
         }
       },
+
       error: (err) => {
-        console.error(this.translate.instant('CHAPITRE_OBJETS.ERREUR_RETRAIT'), err);
+        console.error(
+          this.translate.instant('CHAPITRE_OBJETS.ERREUR_RETRAIT'),
+          err,
+        );
+
         this.retraitPopupEnCours.set(null);
       },
     });
@@ -256,8 +536,13 @@ export class ChapitreObjetsComponent {
   /** Ouvre la feuille "SAC À DOS" globale (voir shared/inventaire-sheet/). */
   ouvrirSac(): void {
     const id = this.personnageId();
+
     if (id) {
       this.inventaireSheet.ouvrir(id);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.nettoyerTimersAppui();
   }
 }

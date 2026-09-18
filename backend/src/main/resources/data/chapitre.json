@@ -2540,7 +2540,7 @@
     "objet": [],
     "effet": [
       { "type": "endurance", "valeur": -2, "cond": null },
-      { "type": "vol", "valeur": 1, "cond": null }
+      { "type": "vol", "nom": "vol", "valeur": 1, "cond": null }
     ],
     "ennemi": null,
     "lien": [
@@ -2957,7 +2957,7 @@
     "combat": false,
     "ennemi": null,
     "effet": [
-      { "type": "vol", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
     ],
     "lien": [
       { "page": "190", "cond": null }
@@ -3055,7 +3055,7 @@
     "combat": false,
     "ennemi": null,
     "effet": [
-      { "type": "vol", "valeur": 8, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 8, "cond": null }
     ],
     "lien": [
       { "page": "288", "cond": null }
@@ -3150,6 +3150,7 @@
       {
         "type": "vol",
         "valeur": 8,
+        "nom": "perte",
         "cond": [{ "type": "hasard", "valeur": "[0, 6]", "targetId": null }]
       },
       {
@@ -4049,7 +4050,7 @@
     "combat": false,
     "objet": [],
     "effet": [
-      { "type": "vol", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
     ],
     "ennemi": null,
     "lien": [
@@ -4263,6 +4264,7 @@
     "effet": [
       {
         "type": "vol",
+        "nom": "perte",
         "valeur": 2,
         "cond": [{ "type": "arme", "valeur": "1", "targetId": null }]
       }
@@ -4305,6 +4307,7 @@
     "effet": [
       {
         "type": "vol",
+        "nom": "casse",
         "valeur": 1,
         "cond": [{ "type": "arme", "valeur": "1", "targetId": null }]
       }
@@ -4529,7 +4532,7 @@
     "combat": false,
     "objet": [],
     "effet": [
-      { "type": "vol", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
     ],
     "ennemi": null,
     "lien": [

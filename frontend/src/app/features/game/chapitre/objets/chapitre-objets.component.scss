@@ -14,6 +14,7 @@ $parchemin: #ece2c8;
   flex-direction: column;
   gap: 6px;
 }
+
 .sac-titre {
   font-family: 'Cinzel', serif;
   font-size: 10px;
@@ -69,6 +70,16 @@ $parchemin: #ece2c8;
   font-size: 9px;
   letter-spacing: 0.16em;
 
+  /*
+   * Important pour l'appui prolongé sur téléphone :
+   * évite la sélection de texte, le menu contextuel iOS
+   * et certains gestes natifs du navigateur.
+   */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+
   &:disabled {
     border-color: rgba(58, 50, 38, 0.25);
     color: rgba(58, 50, 38, 0.4);
@@ -79,6 +90,17 @@ $parchemin: #ece2c8;
     border-color: $or;
     color: $or;
     background: rgba(194, 144, 58, 0.1);
+  }
+
+  /*
+   * Le bouton PRENDRE n'est volontairement pas désactivé pendant
+   * ramassageEnCours : cela permet de conserver correctement les événements
+   * pointer pendant un appui prolongé.
+   *
+   * La protection contre les appels simultanés reste assurée dans le TS.
+   */
+  &.objet-prendre-en-cours {
+    opacity: 0.65;
   }
 }
 

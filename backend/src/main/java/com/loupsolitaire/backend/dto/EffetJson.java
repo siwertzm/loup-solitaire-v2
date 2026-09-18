@@ -10,5 +10,6 @@ import lombok.Setter;
 public class EffetJson {
     private String type;
     private Integer valeur;
+    private String nom;
     private List<CondJson> cond;
 }
