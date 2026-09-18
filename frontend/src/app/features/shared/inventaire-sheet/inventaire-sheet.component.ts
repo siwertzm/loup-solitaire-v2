@@ -141,6 +141,21 @@ export class InventaireSheetComponent {
     this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX'),
   );
 
+  // Carte géographique (objetId "carte") : simple visionneuse plein écran,
+  // purement décorative — pas de position "vous êtes ici", juste
+  // l'illustration en grand format (voir CarteVisionneuseComponent-like
+  // overlay ci-dessous, gardé local à ce composant car c'est le seul
+  // point d'entrée pour l'instant).
+  readonly carteOuverte = signal(false);
+
+  ouvrirCarte(): void {
+    this.carteOuverte.set(true);
+  }
+
+  fermerCarte(): void {
+    this.carteOuverte.set(false);
+  }
+
   readonly retraitEnCours = signal<string | null>(null);
   readonly consommationEnCours = signal<string | null>(null);
   private readonly feuilleSac = viewChild<ElementRef<HTMLElement>>('feuilleSac');
