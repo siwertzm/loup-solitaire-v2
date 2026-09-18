@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 003-discipline-description
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 003-discipline-description.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

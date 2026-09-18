@@ -534,7 +534,7 @@
   },
   "INVENTAIRE_SHEET": {
     "CHARGEMENT": "Chargement…",
-    "TITRE_SAC": "SAC À DOS",
+    "TITRE_SAC": "INVENTAIRE",
     "SECTION_ARMES": "ARMES",
     "TAG_MAITRISEE": "MAÎTRISÉE",
     "BONUS_HABILITE": "+{{bonus}} HAB",
@@ -543,7 +543,7 @@
     "VIDE": "Vide",
     "MAIN_NUE": "Main nue",
     "MALUS_HABILITE": "{{malus}} HAB",
-    "SECTION_OBJETS_REPAS": "OBJETS & REPAS",
+    "SECTION_OBJETS_REPAS": "SAC À DOS",
     "SECTION_OBJETS_SPECIAUX": "OBJETS SPÉCIAUX (HORS LIMITE)",
     "BOURSE_CLE": "BOURSE",
     "BOURSE_VALEUR": "{{valeur}} COURONNES D'OR",
@@ -564,7 +564,7 @@
     "ALT_JOURNAL": "journal",
     "LABEL_CHAPITRE": "CHAPITRE",
     "LABEL_FICHE": "FICHE",
-    "LABEL_SAC": "SAC",
+    "LABEL_SAC": "INVENTAIRE",
     "LABEL_JOURNAL": "JOURNAL"
   }
 }
