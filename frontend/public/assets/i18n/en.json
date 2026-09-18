@@ -123,7 +123,14 @@
     "MODIFIER": "EDIT MY PROFILE",
     "DECONNEXION": "LOG OUT",
     "ERREUR_CHARGEMENT": "Unable to load your profile.",
-    "MEMBRE_DEPUIS_INCONNU": "unknown date"
+    "MEMBRE_DEPUIS_INCONNU": "unknown date",
+    "SUPPRIMER_COMPTE": "Delete my account",
+    "SUPPRESSION_AVERTISSEMENT": "This action is permanent: your account and all your characters will be deleted with no way back. Enter your password to confirm.",
+    "SUPPRESSION_PLACEHOLDER_MDP": "Password",
+    "SUPPRESSION_ANNULER": "Cancel",
+    "SUPPRESSION_CONFIRMER": "Delete permanently",
+    "ERREUR_SUPPRESSION_MDP": "Incorrect password",
+    "ERREUR_SUPPRESSION": "Account deletion failed, please try again later"
   },
   "PROFIL_EDITION": {
     "RETOUR": "‹ PROFILE",

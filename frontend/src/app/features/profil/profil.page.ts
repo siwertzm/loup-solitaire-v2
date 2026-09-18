@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MoiResponse } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
 import { AuthService } from '../../core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-profil',
@@ -22,6 +23,14 @@ export class ProfilPage implements ViewWillEnter {
   readonly compte = signal<MoiResponse | null>(null);
   readonly chargement = signal(true);
   readonly erreur = signal<string | null>(null);
+
+  // Confirmation de suppression de compte : masquee par defaut, ouverte au
+  // clic sur "Supprimer mon compte" (voir template). On ne monte pas de
+  // ReactiveFormsModule pour un seul champ : on lit sa valeur via une
+  // reference de template (#mdpSuppression) au moment de la confirmation.
+  readonly suppressionOuverte = signal(false);
+  readonly suppressionEnvoi = signal(false);
+  readonly erreurSuppression = signal<string | null>(null);
 
   readonly initiale = computed(() => (this.compte()?.username ?? '?').charAt(0).toUpperCase());
 
@@ -82,6 +91,31 @@ export class ProfilPage implements ViewWillEnter {
       error: () => {
         this.auth.clearSessionLocale();
         this.router.navigate(['/auth/login'], { replaceUrl: true });
+      },
+    });
+  }
+
+  ouvrirSuppression(): void {
+    this.suppressionOuverte.set(true);
+    this.erreurSuppression.set(null);
+  }
+ 
+  annulerSuppression(): void {
+    this.suppressionOuverte.set(false);
+    this.erreurSuppression.set(null);
+  }
+ 
+  confirmerSuppression(motDePasse: string): void {
+    if (!motDePasse || this.suppressionEnvoi()) return;
+    this.suppressionEnvoi.set(true);
+    this.erreurSuppression.set(null);
+    this.auth.supprimerCompte(motDePasse).subscribe({
+      next: () => this.router.navigate(['/auth/login'], { replaceUrl: true }),
+      error: (err: HttpErrorResponse) => {
+        this.suppressionEnvoi.set(false);
+        this.erreurSuppression.set(
+          err.status === 401 ? 'PROFIL.ERREUR_SUPPRESSION_MDP' : 'PROFIL.ERREUR_SUPPRESSION',
+        );
       },
     });
   }

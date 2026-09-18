@@ -14,4 +14,9 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID
     Optional<RefreshToken> findByTokenHash(String tokenHash);
 
     List<RefreshToken> findAllByUtilisateurAndRevokedFalse(Utilisateur utilisateur);
+
+    // Necessaire avant UtilisateurRepository.delete(utilisateur) : sans ca, la
+    // contrainte de cle etrangere utilisateur_id bloque la suppression du
+    // compte (voir AuthController.deleteAccount).
+    void deleteByUtilisateur(Utilisateur utilisateur);
 }

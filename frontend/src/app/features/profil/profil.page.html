@@ -26,7 +26,42 @@
 
       <div class="actions">
         <button type="button" class="secondaire" (click)="modifierEmail()">{{ 'PROFIL.MODIFIER' | translate }}</button>
-        <button type="button" class="danger" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
+        <button type="button" class="danger-contour" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
+
+        @if (!suppressionOuverte()) {
+          <button type="button" class="danger" (click)="ouvrirSuppression()">
+            {{ 'PROFIL.SUPPRIMER_COMPTE' | translate }}
+          </button>
+        } @else {
+          <div class="suppression">
+            <p class="suppression-avertissement">{{ 'PROFIL.SUPPRESSION_AVERTISSEMENT' | translate }}</p>
+
+            @if (erreurSuppression()) {
+              <div class="bandeau erreur">{{ erreurSuppression() | translate }}</div>
+            }
+
+            <input
+              #mdpSuppression
+              type="password"
+              autocomplete="current-password"
+              placeholder="{{ 'PROFIL.SUPPRESSION_PLACEHOLDER_MDP' | translate }}"
+            />
+
+            <div class="suppression-actions">
+              <button type="button" class="secondaire" (click)="annulerSuppression()">
+                {{ 'PROFIL.SUPPRESSION_ANNULER' | translate }}
+              </button>
+              <button
+                type="button"
+                class="danger"
+                [disabled]="suppressionEnvoi()"
+                (click)="confirmerSuppression(mdpSuppression.value)"
+              >
+                {{ 'PROFIL.SUPPRESSION_CONFIRMER' | translate }}
+              </button>
+            </div>
+          </div>
+        }
       </div>
     }
   </div>
