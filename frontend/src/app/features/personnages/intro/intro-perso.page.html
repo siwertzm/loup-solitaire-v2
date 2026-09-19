@@ -1,0 +1,30 @@
+<ion-content [fullscreen]="true" class="intro">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">
+      {{ 'PRESENTATION_LIVRE.RETOUR' | translate }}
+    </button>
+
+    <header class="titre">
+      <div class="sur-titre">{{ 'PRESENTATION_LIVRE.SUR_TITRE' | translate }}</div>
+      <div class="principal">{{ 'PRESENTATION_LIVRE.TITRE' | translate }}</div>
+    </header>
+
+    <div class="texte">
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_ORIGINE' | translate }}</p>
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_PRINCIPE' | translate }}</p>
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_PRECISION' | translate }}</p>
+
+      <div class="section">{{ 'PRESENTATION_LIVRE.SECTION_PERSONNEL' | translate }}</div>
+
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_PERSONNEL_1' | translate }}</p>
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_PERSONNEL_2' | translate }}</p>
+      <p>{{ 'PRESENTATION_LIVRE.PARAGRAPHE_PERSONNEL_3' | translate }}</p>
+    </div>
+
+    <div class="pied">
+      <button type="button" class="valider" (click)="continuer()">
+        {{ 'PRESENTATION_LIVRE.VALIDER' | translate }}
+      </button>
+    </div>
+  </div>
+</ion-content>

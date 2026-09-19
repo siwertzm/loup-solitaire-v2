@@ -99,6 +99,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'personnages/intro/perso',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/personnages/intro/intro-perso.page').then(
+        (m) => m.IntroPersoPage,
+      ),
+  },
+  {
     path: 'personnages/:id/inventaire/intro',
     canActivate: [authGuard],
     loadComponent: () =>

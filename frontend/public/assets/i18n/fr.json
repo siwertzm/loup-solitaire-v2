@@ -160,6 +160,19 @@
     "ERREUR_MDP_ACTUEL": "Mot de passe actuel incorrect.",
     "ERREUR_MDP_MODIFICATION": "La modification a échoué."
   },
+  "PRESENTATION_LIVRE": {
+    "RETOUR": "‹ MENU",
+    "SUR_TITRE": "Bienvenue, Seigneur Kaï",
+    "TITRE": "Un livre, une aventure",
+    "PARAGRAPHE_ORIGINE": "Cette application est une adaptation numérique de Loup Solitaire (Lone Wolf), une série de livres-jeux créée par l'auteur britannique Joe Dever et publiée pour la première fois en juillet 1984 chez Beaver Books. En France, elle paraît chez Gallimard Jeunesse, dans la collection « Un livre dont vous êtes le héros ». Traduite en plus de 18 langues, la série s'est vendue à plus de 12 millions d'exemplaires à travers le monde.",
+    "PARAGRAPHE_PRINCIPE": "Chaque tome raconte une aventure complète où vous incarnez le Seigneur Kaï Loup Solitaire. Pas de lecture linéaire ici : à la fin de chaque paragraphe, c'est à vous de décider où aller, quel risque prendre, quelle Discipline invoquer pour survivre. Fait amusant : Joe Dever avait remporté le championnat américain de Donjons et Dragons en 1982, et c'est en cherchant un cadre pour ses propres parties de jeu de rôle qu'il a inventé l'univers de Magnamund. Vous ne lisez pas une histoire : vous la vivez.",
+    "PARAGRAPHE_PRECISION": "Une chose à bien comprendre avant de vous lancer : cette application n'est pas un jeu vidéo, c'est un livre. La grande majorité de ce que vous allez rencontrer est du texte à lire — les combats, les choix et les quelques animations ne sont là que pour accompagner la lecture, pas pour la remplacer.",
+    "SECTION_PERSONNEL": "Pourquoi cette application existe",
+    "PARAGRAPHE_PERSONNEL_1": "J'avais 12 ou 13 ans, et la lecture n'était vraiment pas mon fort — le français, ce n'était pas mon truc. Mais ce livre-là était différent : c'était une vraie aventure, pas juste des mots à aligner. Grâce à lui, je me suis rapproché de la lecture, et j'ai pu vivre quelque chose qui ressemblait à une partie de Donjons et Dragons en solo.",
+    "PARAGRAPHE_PERSONNEL_2": "J'ai continué à lire ces livres très longtemps. Puis, en grandissant, j'ai commencé à les lire directement sur mon téléphone — et je me suis retrouvé à tenir des fichiers Excel pour suivre l'ENDURANCE, l'inventaire et les choix de mon personnage.",
+    "PARAGRAPHE_PERSONNEL_3": "Aujourd'hui, je suis développeur. Je me suis dit que c'était le moment d'en faire un vrai projet : pour retrouver cette aventure telle qu'elle m'a marqué, et pour la faire découvrir à d'autres.",
+    "VALIDER": "CONTINUER"
+  },
   "CREATION_PERSONNAGE": {
     "RETOUR": "‹ MENU",
     "TITRE": "Nouveau personnage",

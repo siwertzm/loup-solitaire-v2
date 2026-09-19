@@ -160,6 +160,19 @@
     "ERREUR_MDP_ACTUEL": "Current password incorrect.",
     "ERREUR_MDP_MODIFICATION": "The change failed."
   },
+  "PRESENTATION_LIVRE": {
+    "RETOUR": "‹ MENU",
+    "SUR_TITRE": "Welcome, Kai Lord",
+    "TITRE": "A book, an adventure",
+    "PARAGRAPHE_ORIGINE": "This app is a digital adaptation of Lone Wolf, a gamebook series created by British author Joe Dever and first published in July 1984 by Beaver Books. Translated into more than 18 languages, the series has sold over 12 million copies worldwide.",
+    "PARAGRAPHE_PRINCIPE": "Each volume tells a complete adventure in which you play the Kai Lord Lone Wolf. There's no linear reading here: at the end of every paragraph, you decide where to go, what risk to take, which Discipline to call on to survive. Fun fact: Joe Dever won the American Dungeons & Dragons championship in 1982, and it was while building a setting for his own tabletop campaigns that he created the world of Magnamund. You don't just read this story — you live it.",
+    "PARAGRAPHE_PRECISION": "One thing to understand before you begin: this app isn't a video game, it's a book. The vast majority of what you'll encounter is text to read — the combats, choices and few animations are there to accompany the reading, not to replace it.",
+    "SECTION_PERSONNEL": "Why this app exists",
+    "PARAGRAPHE_PERSONNEL_1": "I was 12 or 13, and reading really wasn't my thing. But this book was different: it was a real adventure, not just words to get through. It brought me closer to reading, and let me live something close to a solo tabletop RPG session.",
+    "PARAGRAPHE_PERSONNEL_2": "I kept reading these books for a long time. As I grew up, I started reading them on my phone instead — and ended up keeping spreadsheets just to track my character's ENDURANCE, inventory, and choices.",
+    "PARAGRAPHE_PERSONNEL_3": "Today, I'm a developer. I figured it was time to turn this into a real project — to relive the adventure that shaped me, and share it with others.",
+    "VALIDER": "CONTINUE"
+  },
   "CREATION_PERSONNAGE": {
     "RETOUR": "‹ MENU",
     "TITRE": "New character",

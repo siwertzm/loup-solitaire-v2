@@ -157,7 +157,7 @@ export class AccueilPage implements ViewWillEnter {
   }
 
   nouveauPersonnage(): void {
-    this.router.navigate(['/personnages/intro']);
+    this.router.navigate(['/personnages/intro/perso']);
   }
 
   regles(): void {
