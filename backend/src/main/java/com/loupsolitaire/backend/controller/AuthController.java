@@ -6,7 +6,6 @@ import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,12 +14,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.loupsolitaire.backend.config.JwtUtil;
@@ -28,10 +30,14 @@ import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.repository.EmailVerificationTokenRepository;
+import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
+import com.loupsolitaire.backend.repository.RefreshTokenRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.AuthRequest;
 import com.loupsolitaire.backend.request.ChangePasswordRequest;
+import com.loupsolitaire.backend.request.DeleteAccountRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
 import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
@@ -41,6 +47,7 @@ import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.EmailVerificationService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
+import com.loupsolitaire.backend.service.PersonnageService;
 import com.loupsolitaire.backend.service.RefreshTokenService;
 import com.loupsolitaire.backend.request.ForgotPasswordRequest;
 import com.loupsolitaire.backend.request.ResetPasswordRequest;
@@ -59,12 +66,16 @@ public class AuthController {
     private final UtilisateurRepository utilisateurRepository;
     private final PersonnageRepository personnageRepository;
     private final PersonnageMapper personnageMapper;
+    private final PersonnageService personnageService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final EmailVerificationService emailVerificationService;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordResetService passwordResetService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Value("${app.mobile-login-url}")
     private String mobileLoginUrl;
@@ -271,5 +282,36 @@ public class AuthController {
         String accessToken = jwtUtil.generateToken(userDetails);
         String refreshToken = refreshTokenService.creerToken(utilisateur);
         return new AuthResponse(accessToken, refreshToken);
+    }
+
+    // Suppression definitive et irreversible du compte, apres verification du
+    // mot de passe (meme principe que changePassword ci-dessus). Supprime en
+    // cascade tout ce qui depend de l'utilisateur : personnages (et leurs
+    // propres dependances, voir PersonnageService.supprimerPersonnage), puis
+    // les tokens de session/verification/reinitialisation, avant l'entite
+    // Utilisateur elle-meme (sinon les contraintes de cle etrangere
+    // bloqueraient la suppression).
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public void deleteAccount(
+            @Valid @RequestBody DeleteAccountRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
+
+        if (!passwordEncoder.matches(request.getPassword(), utilisateur.getPassword())) {
+            throw new BadCredentialsException("Mot de passe incorrect");
+        }
+
+        personnageRepository.findByUtilisateur(utilisateur)
+                .forEach(personnageService::supprimerPersonnage);
+
+        refreshTokenRepository.deleteByUtilisateur(utilisateur);
+        passwordResetTokenRepository.deleteByUtilisateur(utilisateur);
+        emailVerificationTokenRepository.deleteByUtilisateur(utilisateur);
+
+        utilisateurRepository.delete(utilisateur);
     }
 }

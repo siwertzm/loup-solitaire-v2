@@ -103,7 +103,12 @@
           <div class="sac-section-titre">{{ 'INVENTAIRE_SHEET.SECTION_OBJETS_SPECIAUX' | translate }}</div>
           @for (s of objetsSpeciauxDetail(); track s.objetId) {
             <ion-item-sliding #slideS>
-              <ion-item lines="none" class="sac-item-hote">
+              <ion-item
+                lines="none"
+                class="sac-item-hote"
+                [button]="s.objetId === 'carte'"
+                (click)="s.objetId === 'carte' && ouvrirCarte()"
+              >
                 <div class="sac-ligne">
                   <span class="sac-nom">{{ s.nom }}</span>
                   <span class="sac-tag">×{{ s.quantite }}</span>
@@ -159,5 +164,24 @@
         </button>
       </div>
     </div>
+  </div>
+}
+
+@if (carteOuverte()) {
+  <div class="voile-carte" (click)="fermerCarte()">
+    <button
+      type="button"
+      class="carte-fermer"
+      (click)="fermerCarte()"
+      [attr.aria-label]="'INVENTAIRE_SHEET.CARTE_FERMER' | translate"
+    >
+      ✕
+    </button>
+    <img
+      class="carte-image"
+      src="assets/illustrations/carte-monde.png"
+      [alt]="'INVENTAIRE_SHEET.CARTE_ALT' | translate"
+      (click)="$event.stopPropagation()"
+    />
   </div>
 }

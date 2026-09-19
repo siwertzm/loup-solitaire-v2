@@ -703,7 +703,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
    */
   choisirLien(lien: LienResponse): void {
     const id = this.personnageId();
-    if (!id || !lien.disponible || this.mort()) return;
+    if (!id || !lien.disponible || this.mort() || this.chargement()) return;
 
     this.chargement.set(true);
     this.chapitreService.avancerVersChapitre(id, lien.chapitreCibleId).subscribe({

@@ -238,7 +238,7 @@
               <button
                 type="button"
                 class="valider"
-                [disabled]="!lien.disponible"
+                [disabled]="!lien.disponible || chargement()"
                 (click)="choisirLien(lien)"
               >
                 @if (lien.disponible) {

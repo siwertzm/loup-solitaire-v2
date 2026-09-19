@@ -70,6 +70,7 @@ ion-content.intro {
   overflow-y: auto;
   scrollbar-width: none;
   background: $parchemin;
+  white-space: pre-line;
   color: $encre;
   border-radius: 14px;
   padding: 22px;

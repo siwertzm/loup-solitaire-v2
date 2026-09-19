@@ -24,4 +24,9 @@ public interface PasswordResetTokenRepository
     Optional<PasswordResetToken> findByResetTokenHashAndUtiliseFalse(
             String resetTokenHash
     );
+
+    // Necessaire avant UtilisateurRepository.delete(utilisateur) : sans ca, la
+    // contrainte de cle etrangere utilisateur_id bloque la suppression du
+    // compte (voir AuthController.deleteAccount).
+    void deleteByUtilisateur(Utilisateur utilisateur);
 }

@@ -151,6 +151,26 @@ export class AuthService {
       );
   }
 
+  supprimerCompte(
+    password: string,
+  ): Observable<void> {
+ 
+    return this.http
+      .delete<void>(
+        `${this.baseUrl}/me`,
+        {
+          body: {
+            password,
+          },
+        },
+      )
+      .pipe(
+        tap(() =>
+          this.clearSessionLocale(),
+        ),
+      );
+  }
+
   logout(): Observable<void> {
 
     const refreshToken =

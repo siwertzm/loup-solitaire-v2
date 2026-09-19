@@ -123,7 +123,14 @@
     "MODIFIER": "MODIFIER MON PROFIL",
     "DECONNEXION": "SE DÉCONNECTER",
     "ERREUR_CHARGEMENT": "Impossible de charger votre profil.",
-    "MEMBRE_DEPUIS_INCONNU": "date inconnue"
+    "MEMBRE_DEPUIS_INCONNU": "date inconnue",
+    "SUPPRIMER_COMPTE": "Supprimer mon compte",
+    "SUPPRESSION_AVERTISSEMENT": "Cette action est définitive : votre compte et tous vos personnages seront supprimés sans possibilité de retour. Saisissez votre mot de passe pour confirmer.",
+    "SUPPRESSION_PLACEHOLDER_MDP": "Mot de passe",
+    "SUPPRESSION_ANNULER": "Annuler",
+    "SUPPRESSION_CONFIRMER": "Supprimer définitivement",
+    "ERREUR_SUPPRESSION_MDP": "Mot de passe incorrect",
+    "ERREUR_SUPPRESSION": "La suppression du compte a échoué, réessayez plus tard"
   },
   "PROFIL_EDITION": {
     "RETOUR": "‹ PROFIL",
@@ -534,7 +541,7 @@
   },
   "INVENTAIRE_SHEET": {
     "CHARGEMENT": "Chargement…",
-    "TITRE_SAC": "SAC À DOS",
+    "TITRE_SAC": "INVENTAIRE",
     "SECTION_ARMES": "ARMES",
     "TAG_MAITRISEE": "MAÎTRISÉE",
     "BONUS_HABILITE": "+{{bonus}} HAB",
@@ -543,7 +550,7 @@
     "VIDE": "Vide",
     "MAIN_NUE": "Main nue",
     "MALUS_HABILITE": "{{malus}} HAB",
-    "SECTION_OBJETS_REPAS": "OBJETS & REPAS",
+    "SECTION_OBJETS_REPAS": "SAC À DOS",
     "SECTION_OBJETS_SPECIAUX": "OBJETS SPÉCIAUX (HORS LIMITE)",
     "BOURSE_CLE": "BOURSE",
     "BOURSE_VALEUR": "{{valeur}} COURONNES D'OR",
@@ -564,7 +571,7 @@
     "ALT_JOURNAL": "journal",
     "LABEL_CHAPITRE": "CHAPITRE",
     "LABEL_FICHE": "FICHE",
-    "LABEL_SAC": "SAC",
+    "LABEL_SAC": "INVENTAIRE",
     "LABEL_JOURNAL": "JOURNAL"
   }
 }
