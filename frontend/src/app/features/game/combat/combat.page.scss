@@ -288,7 +288,7 @@ $beige: #e0d3b4;
 .bonus-joueur {
   position: absolute;
   right: clamp(14px, 5.8vw, 25px);
-  bottom: clamp(64px, 11.6vh, 99px);
+  bottom: clamp(70px, 12.9vh, 120px);
   z-index: 5;
   display: flex;
   align-items: center;
@@ -395,7 +395,7 @@ $beige: #e0d3b4;
 
 .plaque-titre {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
 
@@ -411,9 +411,15 @@ $beige: #e0d3b4;
   .hab {
     flex: none;
     font-family: 'Cinzel', serif;
-    font-size: clamp(7.5px, 2.1vw, 9px);
+    font-size: clamp(8px, 2.9vw, 10.5px);
     letter-spacing: 0.1em;
     color: #8a7a5e;
+
+    .hab-detail {
+      margin-left: 3px;
+      font-size: 0.9em;
+      letter-spacing: 0.04em;
+    }
   }
 }
 

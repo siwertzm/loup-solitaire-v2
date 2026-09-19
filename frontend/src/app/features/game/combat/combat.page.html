@@ -114,7 +114,11 @@
         <div class="plaque plaque-joueur">
           <div class="plaque-titre">
             <span class="nom">{{ nomJoueur() }}</span>
-            <span class="hab">HAB {{ habiliteJoueur() }}</span>
+            <span class="hab">
+              HAB {{ habiliteJoueur() }}@if (detailHabiliteAffiche(); as detail) {
+                <span class="hab-detail">({{ detail }})</span>
+              }
+            </span>
           </div>
           <div class="plaque-barre">
             <span class="etiquette">END</span>

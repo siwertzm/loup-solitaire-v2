@@ -161,9 +161,62 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       };
     });
   });
+  /** HAB effective affichée = somme de tous les termes ci-dessous (base +
+   * chaque bonus/malus individuel), voir detailHabiliteAffiche() pour le
+   * détail terme par terme "13+2+2+2+3" demandé sur la plaque joueur. */
   readonly habiliteJoueur = computed(
-    () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
+    () =>
+      this.baseHabiliteJoueur() +
+      this.bonusArmeAffiche() +
+      this.bonusPsychiqueAffiche() +
+      this.bonusTempAffiche() +
+      this.bonusGardeAffiche(),
   );
+
+  /**
+   * Base "brute" affichée : habiliteBase, PAS habilite (qui inclut déjà
+   * l'ajustement d'arme côté backend, voir InventaireService.
+   * recalculerHabiliteArmes) — sinon le terme "arme" ci-dessous ferait
+   * double emploi avec la base.
+   */
+  readonly baseHabiliteJoueur = computed(() => this.personnage()?.habiliteBase ?? 0);
+
+  /**
+   * Ajustement d'arme isolé : habilite - habiliteBase reproduit exactement
+   * la règle backend (malus si aucune arme, +BONUS_ARME_MAITRISEE si arme
+   * maîtrisée possédée, 0 sinon) sans avoir à la dupliquer côté front.
+   */
+  readonly bonusArmeAffiche = computed(() => {
+    const p = this.personnage();
+    if (!p) return 0;
+    return p.habilite - p.habiliteBase;
+  });
+
+  readonly bonusPsychiqueAffiche = computed(() => (this.bonusPuissancePsychique() ? 2 : 0));
+
+  readonly bonusTempAffiche = computed(() => this.personnage()?.habiliteTemp ?? 0);
+
+  readonly bonusGardeAffiche = computed(() => this.combat()?.bonusHabiliteEnAttente ?? 0);
+
+  /**
+   * Chaîne "13+2+2+2+3" (base suivie de chaque terme non nul, signe
+   * inclus) affichée entre parenthèses à côté du total sur la plaque
+   * joueur. Null si aucun bonus/malus actif : on affiche alors juste
+   * "HAB 13" sans parenthèses inutiles (voir template).
+   */
+  readonly detailHabiliteAffiche = computed(() => {
+    const termes = [
+      this.bonusArmeAffiche(),
+      this.bonusPsychiqueAffiche(),
+      this.bonusTempAffiche(),
+      this.bonusGardeAffiche(),
+    ].filter((v) => v !== 0);
+
+    if (termes.length === 0) return null;
+
+    const suffixe = termes.map((v) => (v >= 0 ? '+' + v : String(v))).join('');
+    return this.baseHabiliteJoueur() + suffixe;
+  });
   readonly enduranceJoueur = computed(() => this.personnage()?.enduranceActuelle ?? 0);
   readonly enduranceMaxJoueur = computed(() => this.personnage()?.enduranceMax ?? 1);
   readonly bonusHabiliteTemp = computed(() => this.personnage()?.habiliteTemp ?? 0);
