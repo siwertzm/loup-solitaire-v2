@@ -532,7 +532,7 @@
           "targetId": null
         }]
       },{
-        "page": "172",
+        "page": "46",
         "cond": [{
           "type": "objet",
           "valeur": "1",
@@ -2072,7 +2072,7 @@
     "ennemi": null,
     "lien": [
       {
-        "page": "129",
+        "page": "144",
         "cond": [{ "type": "objet", "valeur": "1", "targetId": "coin" }]
       }
     ],
