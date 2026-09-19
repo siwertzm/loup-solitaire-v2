@@ -134,6 +134,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/game/combat/combat.page').then((m) => m.CombatPage),
   },
   {
+    path: 'personnages/:id/journal',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/game/journal/journal.page').then((m) => m.JournalPage),
+  },
+  {
     path: 'personnages/:id/victoire',
     canActivate: [authGuard],
     loadComponent: () =>

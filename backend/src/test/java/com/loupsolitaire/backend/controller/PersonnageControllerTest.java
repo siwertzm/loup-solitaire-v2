@@ -495,4 +495,59 @@ class PersonnageControllerTest {
 
         verify(personnageService, never()).ressusciter(any());
     }
+
+        // =========================================================
+    // GET /personnages/{id}/historique
+    // =========================================================
+
+    @Test
+    void historiqueRenvoieLesChapitresDuPlusRecentAuPlusAncien() throws Exception {
+        Personnage personnage = creerPersonnage("marius");
+        // Stocke dans l'ordre chronologique : 0 -> 1 -> 85 -> 85 (retour paye).
+        personnage.setChapitresParcourus(List.of(0, 1, 85, 85));
+        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+
+        authentifierComme("marius");
+
+        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(4))
+                .andExpect(jsonPath("$[0]").value(85))
+                .andExpect(jsonPath("$[1]").value(85))
+                .andExpect(jsonPath("$[2]").value(1))
+                .andExpect(jsonPath("$[3]").value(0));
+    }
+
+    @Test
+    void historiqueRenvoieUneListeVideSiAucunChapitreTraverse() throws Exception {
+        Personnage personnage = creerPersonnage("marius");
+        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+
+        authentifierComme("marius");
+
+        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void historiqueRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
+        Personnage personnage = creerPersonnage("quelqu-un-d-autre");
+        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+
+        authentifierComme("marius");
+
+        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void historiqueRenvoie404SiLePersonnageEstInconnu() throws Exception {
+        when(personnageRepository.findById(personnageId)).thenReturn(Optional.empty());
+
+        authentifierComme("marius");
+
+        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
+                .andExpect(status().isNotFound());
+    }
 }

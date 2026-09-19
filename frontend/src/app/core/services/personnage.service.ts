@@ -139,4 +139,14 @@ export class PersonnageService {
   renvoyerVerification(email: string): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/resend-verification`, { email });
   }
+
+  /**
+   * GET /personnages/{id}/historique — numéros des chapitres traversés (chapitre
+   * de départ et revisites compris), du plus récent au plus ancien. Le premier
+   * est donc le chapitre courant. Un même numéro peut apparaître plusieurs fois
+   * (retour payant après une mort narrative, retour après une défaite).
+   */
+  historique(id: string): Observable<number[]> {
+    return this.http.get<number[]>(`${this.base}/personnages/${id}/historique`);
+  }
 }

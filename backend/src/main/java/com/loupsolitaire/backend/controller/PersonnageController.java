@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.controller;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -280,6 +282,18 @@ public class PersonnageController {
         }
 
         return personnage;
+    }
+
+    // Journal du parcours : numeros des chapitres traverses (chapitre de
+    // depart et revisites compris), du plus recent au plus ancien. Le
+    // premier est donc le chapitre courant.
+    @GetMapping("/{id}/historique")
+    @Transactional
+    public List<Integer> historique(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        List<Integer> chapitres = new ArrayList<>(personnage.getChapitresParcourus());
+        Collections.reverse(chapitres);
+        return chapitres;
     }
 
     private Objet recupererObjet(String objetId) {

@@ -8,7 +8,7 @@
     <span>{{ 'NAV_BAR.LABEL_CHAPITRE' | translate }}</span>
   </a>
 
-  <!-- FICHE : pas encore d'écran dédié -->
+  <!-- FICHE  -->
   <button type="button" class="nav-item" (click)="personnage()">
     <img src="assets/icon/profil.png" [attr.alt]="'NAV_BAR.ALT_FICHE' | translate" class="nav-icon" />
     <span>{{ 'NAV_BAR.LABEL_FICHE' | translate }}</span>
@@ -19,8 +19,8 @@
     <span>{{ 'NAV_BAR.LABEL_SAC' | translate }}</span>
   </button>
 
-  <!-- JOURNAL : pas encore d'écran dédié -->
-  <button type="button" class="nav-item" disabled>
+  <!-- JOURNAL  -->
+  <button type="button" class="nav-item" journal.page.scss (click)="journal()">
     <img src="assets/icon/chemin.png" [attr.alt]="'NAV_BAR.ALT_JOURNAL' | translate" class="nav-icon" />
     <span>{{ 'NAV_BAR.LABEL_JOURNAL' | translate }}</span>
   </button>

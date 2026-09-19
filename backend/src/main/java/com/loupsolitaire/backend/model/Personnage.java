@@ -19,6 +19,9 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.CollectionTable;   // juste avant Column
+import jakarta.persistence.ElementCollection; // juste après Column
+import jakarta.persistence.OrderColumn;       // juste après ManyToOne
 
 import com.loupsolitaire.backend.model.enums.PorteeVol;
 
@@ -149,4 +152,15 @@ public class Personnage {
     // a ce cas-la.
     @Column(nullable = false)
     private boolean mort;
+
+    // Journal du parcours : numeros des chapitres traverses, dans l'ordre
+    // chronologique. Une valeur par ARRIVEE (chapitre de depart et revisites
+    // compris : un retour apres une mort narrative ajoute le chapitre de
+    // retour une 2e fois). @OrderColumn conserve l'ordre. Chargee a la
+    // demande : a lire dans une transaction (open-in-view=false).
+    @ElementCollection
+    @CollectionTable(name = "personnage_chapitre_parcouru", joinColumns = @JoinColumn(name = "personnage_id"))
+    @OrderColumn(name = "ordre")
+    @Column(name = "chapitre_id", nullable = false)
+    private List<Integer> chapitresParcourus = new ArrayList<>();
 }

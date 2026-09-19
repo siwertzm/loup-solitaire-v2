@@ -1184,4 +1184,111 @@ class PersonnageServiceTest {
         verify(inventaireItemRepository).deleteByPersonnageId(p.getId());
         verify(personnageRepository).delete(p);
     }
+
+        // =========================================================
+    // Journal du parcours (Personnage.chapitresParcourus)
+    // =========================================================
+
+    @Test
+    void creerPersonnageAmorceLeJournalAvecLeChapitreDeDepart() {
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
+
+        Personnage personnage = personnageService.creerPersonnage(
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
+
+        // Le chapitre 0 (introduction) fait partie du journal.
+        assertThat(personnage.getChapitresParcourus()).containsExactly(0);
+    }
+
+    @Test
+    void avancerVersChapitreAjouteLArriveeAuJournal() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(9);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getChapitresParcourus()).containsExactly(1);
+    }
+
+    @Test
+    void avancerVersChapitreAjouteChaqueArriveeMemeSurUnChapitreDejaVisite() {
+        // Retour payant apres une mort narrative : le joueur repasse par un
+        // chapitre deja traverse, qui doit apparaitre a nouveau (85, 85).
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Chapitre chapitre85 = new Chapitre();
+        chapitre85.setId(85);
+        chapitre0.setLiens(List.of(creerLien(chapitre85)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(9);
+
+        personnageService.avancerVersChapitre(p, 85);
+        p.setChapitreActuel(chapitre0);
+        personnageService.avancerVersChapitre(p, 85);
+
+        assertThat(p.getChapitresParcourus()).containsExactly(85, 85);
+    }
+
+    @Test
+    void avancerVersChapitreNAjouteRienAuJournalSiAucunLienNExisteVersLaCible() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setLiens(List.of());
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(p.getChapitresParcourus()).isEmpty();
+    }
+
+    @Test
+    void revenirApresDefaiteAjouteLeChapitrePrecedentAuJournal() {
+        Personnage p = new Personnage();
+        Chapitre chapitreCombat = new Chapitre();
+        chapitreCombat.setId(5);
+        Chapitre chapitrePrecedent = new Chapitre();
+        chapitrePrecedent.setId(4);
+        p.setChapitreActuel(chapitreCombat);
+        p.setChapitrePrecedent(chapitrePrecedent);
+        p.setEnduranceMax(20);
+
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.DEFAITE);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 5))
+                .thenReturn(Optional.of(combat));
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(creerLigneCoin(999)));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(4);
+
+        personnageService.revenirApresDefaite(p);
+
+        assertThat(p.getChapitresParcourus()).containsExactly(4);
+    }
+
+    @Test
+    void ressusciterNAjouteRienAuJournal() {
+        // ressusciter() reste sur place : aucune nouvelle arrivee.
+        Personnage p = new Personnage();
+        p.setMort(true);
+        p.setEnduranceMax(20);
+        p.setChapitreActuel(chapitre0);
+
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.empty());
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(creerLigneCoin(999)));
+
+        personnageService.ressusciter(p);
+
+        assertThat(p.getChapitresParcourus()).isEmpty();
+    }
 }
