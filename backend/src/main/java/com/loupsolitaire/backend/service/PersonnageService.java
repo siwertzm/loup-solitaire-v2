@@ -103,6 +103,7 @@ public class PersonnageService {
         personnage.setDateCreation(Instant.now());
         personnage.setDerniereActivite(personnage.getDateCreation());
         personnage.setChapitreActuel(recupererChapitreDepart());
+        personnage.getChapitresParcourus().add(personnage.getChapitreActuel().getId());
         // Tirage fige des l'arrivee sur le chapitre de depart (voir
         // avancerVersChapitre pour la meme logique aux chapitres suivants).
         personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
@@ -242,6 +243,8 @@ public class PersonnageService {
         personnage.setChapitrePrecedent(chapitreActuel);
         Chapitre nouveauChapitre = lienChoisi.getChapitreCible();
         personnage.setChapitreActuel(nouveauChapitre);
+        // Journal : une entree par arrivee, revisites comprises.
+        personnage.getChapitresParcourus().add(nouveauChapitre.getId());
 
         // Si ce chapitre est un combat DEJA resolu (VICTOIRE/DEFAITE/FUITE/
         // INTERROMPU) pour ce personnage, on le supprime pour permettre un
@@ -352,6 +355,9 @@ public class PersonnageService {
         // ressource limitee/achetee.
 
         personnage.setChapitreActuel(precedent);
+        // Le retour en arriere est une nouvelle arrivee : il apparait a
+        // nouveau dans le journal (ressusciter() reste sur place : rien).
+        personnage.getChapitresParcourus().add(precedent.getId());
         personnage.setEnduranceActuelle(personnage.getEnduranceMax());
         // Contrepartie de CombatService.appliquerDegatsAuJoueur (DEFAITE ->
         // mort=true) : c'est ICI, pas dans ressusciter(), que la mort en

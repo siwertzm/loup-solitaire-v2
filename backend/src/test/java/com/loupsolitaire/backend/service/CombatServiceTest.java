@@ -662,4 +662,25 @@ class CombatServiceTest {
 
         assertThat(combatService.peutFuir(chapitre, combat)).isFalse();
     }
+
+    @Test
+    void laDefaiteEnCombatMarqueLArriveeCouranteDuJournal() {
+        Ennemi ennemi = creerEnnemi("kraan", 5, 10);
+        Chapitre chapitre = creerChapitreCombat(17, List.of(ennemi), null);
+        Personnage personnage = creerPersonnage(10, 3, chapitre);
+        personnage.getChapitresParcourus().addAll(List.of(0, 17));
+        CombatEnnemi ce = creerCombatEnnemi(ennemi, 0, 10);
+        Combat combat = creerCombatEnCours(chapitre, List.of(ce));
+        stuberCombatExistant(personnage, chapitre, combat);
+
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.degatsInfliges(5, 6)).thenReturn(-1);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-5);
+
+        combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
+
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.DEFAITE);
+        assertThat(personnage.isMort()).isTrue();
+        assertThat(personnage.getEtapesMortelles()).containsExactly(1);
+    }
 }

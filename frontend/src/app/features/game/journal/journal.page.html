@@ -1,0 +1,76 @@
+<ion-content [fullscreen]="true" class="journal">
+  <div class="ecran">
+    <header class="entete">
+      <h1 class="titre">{{ 'JOURNAL.TITRE' | translate }}</h1>
+      @if (!chargement() && !erreur()) {
+        <div class="sous-titre">
+          {{ (nombre() === 1 ? 'JOURNAL.SOUS_TITRE_UN' : 'JOURNAL.SOUS_TITRE_PLUSIEURS') | translate: { nombre: nombre() } }}
+        </div>
+      }
+    </header>
+
+    @if (erreur(); as cle) {
+      <p class="message erreur">{{ cle | translate }}</p>
+    } @else if (chargement()) {
+      <p class="message">{{ 'COMMUN.CHARGEMENT' | translate }}</p>
+    } @else if (nombre() === 0) {
+      <p class="message">{{ 'JOURNAL.VIDE' | translate }}</p>
+    } @else {
+      <ol class="chemin">
+        <!-- Un même chapitre peut apparaître plusieurs fois (revisites) :
+             les numéros ne sont pas uniques, on suit la position.
+             Le chemin serpente dans la marge de gauche : les nœuds
+             alternent gauche / droite (classe "droite" sur les rangs
+             impairs), et le texte est collé à son nœud, à sa droite.
+             Le trait commence au premier nœud et s'arrête au dernier. -->
+        @for (etape of chapitres(); track $index) {
+          <li class="etape" [class.droite]="$odd" [class.mort]="etape.mort">
+            @if (!$first) {
+              <!-- Demi-virage d'arrivée (depuis l'étape précédente). Les
+                   coordonnées du tracé (18, 29, 40 : en px, dans une boîte
+                   de 80px de large) sont liées à $x-gauche / $largeur-vague
+                   du SCSS. -->
+              <svg class="virage virage-haut" viewBox="0 0 80 100" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 40 0 C 29 25, 18 50, 18 100" vector-effect="non-scaling-stroke" />
+              </svg>
+            }
+            <span class="noeud"></span>
+            <span class="texte">
+              <!-- Libellé + pictogrammes (à droite du numéro), dans cet ordre :
+                   combat, effets, objets. -->
+              <span class="titre-etape">
+                <span class="libelle">{{
+                  (etape.chapitreId === 0 ? 'JOURNAL.INTRODUCTION' : 'JOURNAL.CHAPITRE')
+                    | translate: { numero: etape.chapitreId }
+                }}</span>
+                @if (etape.avecCombat) {
+                  <img class="icone" src="assets/icon/combat.png" [attr.alt]="'JOURNAL.ALT_COMBAT' | translate" />
+                }
+                @if (etape.avecEffets) {
+                  <img class="icone" src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_PAGE.ALT_EFFETS' | translate" />
+                }
+                @if (etape.avecObjets) {
+                  <img class="icone" src="assets/icon/all_items.png" [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate" />
+                }
+              </span>
+              <!-- Début du texte du chapitre, sur UNE ligne : la coupe avec
+                   "…" est faite en CSS (.extrait), à la largeur disponible. -->
+              @if (etape.extrait) {
+                <span class="extrait">{{ etape.extrait }}</span>
+              }
+            </span>
+            @if (!$last) {
+              <!-- Demi-virage de départ (vers l'étape suivante). -->
+              <svg class="virage virage-bas" viewBox="0 0 80 100" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 18 0 C 18 50, 29 75, 40 100" vector-effect="non-scaling-stroke" />
+              </svg>
+            }
+          </li>
+        }
+      </ol>
+    }
+  </div>
+
+  <!-- En dehors de .ecran : la barre ne doit pas hériter de son padding. -->
+  <app-nav-bar [personnageId]="personnageId()!" [mort]="mort()" />
+</ion-content>

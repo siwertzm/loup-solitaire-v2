@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 005-chapitres-parcourus
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 005-chapitres-parcourus.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

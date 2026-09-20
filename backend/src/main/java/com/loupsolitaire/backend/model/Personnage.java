@@ -2,7 +2,9 @@ package com.loupsolitaire.backend.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -19,6 +21,9 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.CollectionTable;   
+import jakarta.persistence.ElementCollection; 
+import jakarta.persistence.OrderColumn;       
 
 import com.loupsolitaire.backend.model.enums.PorteeVol;
 
@@ -149,4 +154,41 @@ public class Personnage {
     // a ce cas-la.
     @Column(nullable = false)
     private boolean mort;
+
+    // Journal du parcours : numeros des chapitres traverses, dans l'ordre
+    // chronologique. Une valeur par ARRIVEE (chapitre de depart et revisites
+    // compris : un retour apres une mort narrative ajoute le chapitre de
+    // retour une 2e fois). @OrderColumn conserve l'ordre. Chargee a la
+    // demande : a lire dans une transaction (open-in-view=false).
+    @ElementCollection
+    @CollectionTable(name = "personnage_chapitre_parcouru", joinColumns = @JoinColumn(name = "personnage_id"))
+    @OrderColumn(name = "ordre")
+    @Column(name = "chapitre_id", nullable = false)
+    private List<Integer> chapitresParcourus = new ArrayList<>();
+
+    // Journal : POSITIONS (dans chapitresParcourus) des arrivees ou le
+    // personnage est mort. Sert a griser ces etapes dans le journal. La liste
+    // des chapitres etant en ajout seul (jamais de suppression ni de
+    // reordonnancement), une position identifie sans ambiguite UNE arrivee,
+    // meme sur un chapitre traverse plusieurs fois.
+    @ElementCollection
+    @CollectionTable(name = "personnage_etape_mortelle", joinColumns = @JoinColumn(name = "personnage_id"))
+    @Column(name = "ordre", nullable = false)
+    private Set<Integer> etapesMortelles = new HashSet<>();
+
+    // Point d'entree UNIQUE pour faire mourir le personnage, quelle que soit la
+    // cause (chapitre de mort narrative, perte d'endurance, defaite en combat) :
+    // positionne mort ET note dans le journal que la derniere arrivee est
+    // celle ou il est mort. La mort survient toujours sur le chapitre courant,
+    // c'est-a-dire la derniere arrivee du journal (les effets d'un chapitre sont
+    // appliques juste apres son ajout au journal, voir
+    // PersonnageService.avancerVersChapitre). Sans journal (personnage ancien),
+    // seul mort est positionne.
+    public void marquerMort() {
+        this.mort = true;
+        int derniereArrivee = chapitresParcourus.size() - 1;
+        if (derniereArrivee >= 0) {
+            etapesMortelles.add(derniereArrivee);
+        }
+    }
 }

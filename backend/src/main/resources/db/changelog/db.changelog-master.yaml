@@ -12,3 +12,9 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/004-lien-mort.yaml
 
+  - include:
+      file: db/changelog/changes/005-chapitres-parcourus.yaml
+
+  - include:
+      file: db/changelog/changes/006-etape-mortelle.yaml
+

@@ -76,7 +76,7 @@ public class EffetChapitreService {
             int nouvelleEndurance = Math.max(0, personnage.getEnduranceActuelle() + MALUS_SANS_REPAS);
             personnage.setEnduranceActuelle(nouvelleEndurance);
             if (nouvelleEndurance <= 0) {
-                personnage.setMort(true);
+                personnage.marquerMort();
             }
             personnage.setDernierStatutRepas(StatutRepas.MALUS_ENDURANCE);
             personnageRepository.save(personnage);
@@ -204,7 +204,7 @@ public class EffetChapitreService {
         nouvelleEndurance = Math.max(0, Math.min(nouvelleEndurance, personnage.getEnduranceMax()));
         personnage.setEnduranceActuelle(nouvelleEndurance);
         if (nouvelleEndurance <= 0) {
-            personnage.setMort(true);
+            personnage.marquerMort();
         }
         personnageRepository.save(personnage);
     }
@@ -233,7 +233,7 @@ public class EffetChapitreService {
         }
 
         personnage.setEnduranceActuelle(0);
-        personnage.setMort(true);
+        personnage.marquerMort();
         personnageRepository.save(personnage);
     }
 

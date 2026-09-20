@@ -586,5 +586,15 @@
     "LABEL_FICHE": "SHEET",
     "LABEL_SAC": "BACKPACK",
     "LABEL_JOURNAL": "JOURNAL"
+  },
+  "JOURNAL": {
+    "TITRE": "Journal",
+    "SOUS_TITRE_UN": "{{nombre}} chapter visited",
+    "SOUS_TITRE_PLUSIEURS": "{{nombre}} chapters visited",
+    "CHAPITRE": "Chapter {{numero}}",
+    "INTRODUCTION": "Introduction",
+    "VIDE": "No chapters visited yet.",
+    "ERREUR_ID_MANQUANT": "Character ID missing.",
+    "ERREUR_CHARGEMENT": "Unable to load the journal."
   }
 }

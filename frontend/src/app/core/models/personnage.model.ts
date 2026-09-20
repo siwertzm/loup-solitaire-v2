@@ -74,3 +74,17 @@ export interface MoiResponse {
   dateCreation: string | null;
   personnages: PersonnageResume[];
 }
+
+/**
+ * Une arrivée du journal (GET /personnages/{id}/historique) : le chapitre et le
+ * début de son texte. `extrait` est déjà du texte brut (sans balisage), prévu
+ * pour tenir sur une ligne ; vide si le texte du chapitre est introuvable.
+ */
+export interface ChapitreParcouru {
+  chapitreId: number;
+  extrait: string;
+  avecCombat: boolean;
+  avecEffets: boolean;
+  avecObjets: boolean;
+  mort: boolean;
+}

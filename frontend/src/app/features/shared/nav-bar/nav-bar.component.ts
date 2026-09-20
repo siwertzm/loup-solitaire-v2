@@ -54,4 +54,9 @@ export class NavBarComponent {
     // Navigation vers la page du personnage
    this.router.navigate(['/personnage', this.personnageId()], { replaceUrl: true });
   }
+
+  journal(): void {
+    // Navigation vers la page du journal
+    this.router.navigate(['/personnages', this.personnageId(), 'journal'], { replaceUrl: true });
+  }
 }

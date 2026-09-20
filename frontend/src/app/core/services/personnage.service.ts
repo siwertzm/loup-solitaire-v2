@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { MoiResponse, PersonnageResume } from '../models/personnage.model';
+import { ChapitreParcouru, MoiResponse, PersonnageResume } from '../models/personnage.model';
 
 @Injectable({ providedIn: 'root' })
 export class PersonnageService {
@@ -138,5 +138,16 @@ export class PersonnageService {
   /** POST /auth/resend-verification — renvoie le lien de vérification à l'email donné. */
   renvoyerVerification(email: string): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/resend-verification`, { email });
+  }
+
+    /**
+   * GET /personnages/{id}/historique — chapitres traversés (chapitre de départ et
+   * revisites compris) avec le début de leur texte, du plus récent au plus ancien.
+   * Le premier est donc le chapitre courant. Un même chapitre peut apparaître
+   * plusieurs fois (retour payant après une mort narrative, retour après une
+   * défaite).
+   */
+  historique(id: string): Observable<ChapitreParcouru[]> {
+    return this.http.get<ChapitreParcouru[]>(`${this.base}/personnages/${id}/historique`);
   }
 }

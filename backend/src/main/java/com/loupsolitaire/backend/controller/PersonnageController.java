@@ -30,11 +30,13 @@ import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
+import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
 import com.loupsolitaire.backend.service.EffetChapitreService;
 import com.loupsolitaire.backend.service.InventaireService;
+import com.loupsolitaire.backend.service.JournalService;
 import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.PersonnageService;
@@ -56,6 +58,7 @@ public class PersonnageController {
     private final EffetChapitreService effetChapitreService;
     private final PersonnageMapper personnageMapper;
     private final ChapitreMapper chapitreMapper;
+    private final JournalService journalService;
 
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
@@ -280,6 +283,19 @@ public class PersonnageController {
         }
 
         return personnage;
+    }
+
+        // Journal du parcours : chapitres traverses (chapitre de depart et
+    // revisites compris) avec le debut de leur texte, du plus recent au plus
+    // ancien. Le premier est donc le chapitre courant.
+    @GetMapping("/{id}/historique")
+    @Transactional
+    public List<ChapitreParcouruResponse> historique(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        return journalService.lister(personnage);
     }
 
     private Objet recupererObjet(String objetId) {
