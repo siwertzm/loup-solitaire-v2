@@ -1,0 +1,101 @@
+name: Android Internal Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_to_play:
+        description: "Envoyer le build sur Google Play (Internal testing). A laisser decoche tant que le compte de service n'est pas configure."
+        type: boolean
+        default: false
+      status:
+        description: "Statut de la release Play (mettre 'draft' si Google refuse 'completed' sur une app encore en brouillon)"
+        type: choice
+        default: completed
+        options:
+          - completed
+          - draft
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-upload:
+    name: Build Android et upload vers Google Play (Internal testing)
+    runs-on: ubuntu-latest
+
+    env:
+      PACKAGE_NAME: com.loupsolitaire.app
+      KEYSTORE_PATH: ${{ github.workspace }}/upload.jks
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # Capacitor 8 demande Java 21
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build Angular production
+        working-directory: frontend
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        working-directory: frontend
+        run: npx cap sync android
+
+      - name: Decode upload keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+
+      - name: Build signed AAB
+        working-directory: frontend/android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # versionCode doit augmenter a chaque envoi vers Google Play.
+          # +100 pour rester au-dessus du premier .aab envoye a la main (versionCode 1).
+          export VERSION_CODE=$((GITHUB_RUN_NUMBER + 100))
+          chmod +x ./gradlew
+          ./gradlew bundleRelease --no-daemon
+
+      - name: Save AAB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: loup-solitaire-aab
+          path: frontend/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 7
+
+      - name: Upload to Google Play (Internal testing)
+        if: ${{ inputs.upload_to_play }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: frontend/android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: ${{ inputs.status }}
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$KEYSTORE_PATH"
