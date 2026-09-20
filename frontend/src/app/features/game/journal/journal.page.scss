@@ -12,8 +12,8 @@ $rouge: #e0705a;
 // modifier ensemble. $x-gauche + $x-droite = $largeur-vague (la moitié droite
 // est le miroir de la gauche).
 $largeur-vague: 150px;
-$x-gauche: 35px;
-$x-droite: 115px;
+$x-gauche: 15px;
+$x-droite: 95px;
 $virage: 100px; // hauteur d'un virage complet entre deux nœuds (= hauteur mini d'une étape)
 $diametre-noeud: 24px;
 $trait: rgba($or, 0.5);
@@ -21,6 +21,7 @@ $epaisseur: 2px;
 $fond-noeud: #1f2618;
 $ecart-texte: 14px; // espace entre le bord du rond et son texte
 $depassement: 35px; // bout de trait au-dessus du premier rond (mesuré depuis son centre)
+$taille-icone: 22px; // pictogrammes (combat, effets, objets) à droite du numéro
 
 ion-content.journal {
   --background: #{$foret};
@@ -69,7 +70,7 @@ ion-content.journal {
 
 .chemin {
   max-width: 460px; // sur grand écran, le chemin ne s'étire pas indéfiniment
-  margin: 30px 0 0;
+  margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -157,8 +158,11 @@ ion-content.journal {
 
 // Le texte est collé à son nœud, toujours à sa droite : il suit donc le
 // zigzag du chemin (plus près du bord sur les nœuds de gauche, plus à droite
-// sur ceux de droite).
+// sur ceux de droite). Deux lignes : le libellé, puis le début du texte.
 .texte {
+  // min-width: 0 : indispensable pour que ce bloc puisse RÉTRÉCIR sous la
+  // largeur de son contenu (sinon l'extrait, sur une seule ligne, le ferait
+  // déborder de l'écran au lieu d'être coupé par le "…").
   min-width: 0;
   margin-left: $x-gauche + $diametre-noeud * 0.5 + $ecart-texte;
   padding: 12px 0;
@@ -168,12 +172,45 @@ ion-content.journal {
   }
 }
 
+// Ligne du titre : le libellé, puis les pictogrammes du chapitre. flex-wrap : si
+// la place manque (petit écran, rond de droite, numéro à 3 chiffres), les
+// pictogrammes passent sous le libellé au lieu de sortir de l'écran.
+.titre-etape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+}
+
+.icone {
+  flex: none;
+  width: $taille-icone;
+  height: $taille-icone;
+  object-fit: contain;
+}
+
 .libelle {
+  display: block;
   color: $or;
   font-size: 19px;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   line-height: 1.35;
+  // Toujours court ("Chapitre 322") : jamais de retour à la ligne.
+  white-space: nowrap;
+}
+
+// Début du texte du chapitre : UNE seule ligne, coupée par "…" à la largeur
+// disponible (white-space + overflow + text-overflow, tous les trois requis).
+.extrait {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: rgba($parchemin, 0.8);
+  font-size: 16px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // Demi-virages (SVG de taille fixe, jamais étirés en largeur : 1 unité = 1px).
@@ -182,7 +219,7 @@ ion-content.journal {
 // étapes voisines se rejoignent exactement (même point, même pente).
 .virage {
   position: absolute;
-  left: 0;
+  left: -20px;
   width: $largeur-vague;
   height: $virage * 0.5;
   overflow: visible;

@@ -44,10 +44,12 @@ import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
+import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.EffetChapitreService;
 import com.loupsolitaire.backend.service.InventaireService;
+import com.loupsolitaire.backend.service.JournalService;
 import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.PersonnageService;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
@@ -74,6 +76,8 @@ class PersonnageControllerTest {
     private PersonnageMapper personnageMapper;
     @Mock
     private ChapitreMapper chapitreMapper;
+    @Mock
+    private JournalService journalService;
 
     @InjectMocks
     private PersonnageController controller;
@@ -496,32 +500,48 @@ class PersonnageControllerTest {
         verify(personnageService, never()).ressusciter(any());
     }
 
-        // =========================================================
+    // =========================================================
     // GET /personnages/{id}/historique
     // =========================================================
 
     @Test
-    void historiqueRenvoieLesChapitresDuPlusRecentAuPlusAncien() throws Exception {
+    void historiqueRenvoieLesChapitresAvecLeurExtraitDansLOrdreDuService() throws Exception {
         Personnage personnage = creerPersonnage("marius");
-        // Stocke dans l'ordre chronologique : 0 -> 1 -> 85 -> 85 (retour paye).
-        personnage.setChapitresParcourus(List.of(0, 1, 85, 85));
         when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        // Le tri (plus recent en premier) est fait par JournalService : le
+        // controleur restitue simplement l'ordre recu.
+        when(journalService.lister(personnage)).thenReturn(List.of(
+                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true),
+                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true),
+                new ChapitreParcouruResponse(1, "Il faut vous hater", false, true, false),
+                new ChapitreParcouruResponse(0, "", false, false, false)));
 
         authentifierComme("marius");
 
         mockMvc.perform(get("/personnages/{id}/historique", personnageId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0]").value(85))
-                .andExpect(jsonPath("$[1]").value(85))
-                .andExpect(jsonPath("$[2]").value(1))
-                .andExpect(jsonPath("$[3]").value(0));
+                .andExpect(jsonPath("$[0].chapitreId").value(85))
+                .andExpect(jsonPath("$[0].extrait").value("Le chemin est large et mene droit..."))
+                .andExpect(jsonPath("$[0].avecCombat").value(true))
+                .andExpect(jsonPath("$[0].avecEffets").value(false))
+                .andExpect(jsonPath("$[0].avecObjets").value(true))
+                .andExpect(jsonPath("$[1].chapitreId").value(85))
+                .andExpect(jsonPath("$[2].chapitreId").value(1))
+                .andExpect(jsonPath("$[2].extrait").value("Il faut vous hater"))
+                .andExpect(jsonPath("$[2].avecCombat").value(false))
+                .andExpect(jsonPath("$[2].avecEffets").value(true))
+                .andExpect(jsonPath("$[2].avecObjets").value(false))
+                .andExpect(jsonPath("$[3].chapitreId").value(0))
+                .andExpect(jsonPath("$[3].extrait").value(""))
+                .andExpect(jsonPath("$[3].avecCombat").value(false));
     }
 
     @Test
     void historiqueRenvoieUneListeVideSiAucunChapitreTraverse() throws Exception {
         Personnage personnage = creerPersonnage("marius");
         when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(journalService.lister(personnage)).thenReturn(List.of());
 
         authentifierComme("marius");
 
@@ -539,6 +559,8 @@ class PersonnageControllerTest {
 
         mockMvc.perform(get("/personnages/{id}/historique", personnageId))
                 .andExpect(status().isForbidden());
+
+        verify(journalService, never()).lister(any());
     }
 
     @Test

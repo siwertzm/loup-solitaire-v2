@@ -19,9 +19,9 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.CollectionTable;   // juste avant Column
-import jakarta.persistence.ElementCollection; // juste après Column
-import jakarta.persistence.OrderColumn;       // juste après ManyToOne
+import jakarta.persistence.CollectionTable;   
+import jakarta.persistence.ElementCollection; 
+import jakarta.persistence.OrderColumn;       
 
 import com.loupsolitaire.backend.model.enums.PorteeVol;
 

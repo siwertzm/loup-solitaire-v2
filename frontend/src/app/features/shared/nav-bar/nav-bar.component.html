@@ -20,7 +20,7 @@
   </button>
 
   <!-- JOURNAL  -->
-  <button type="button" class="nav-item" journal.page.scss (click)="journal()">
+  <button type="button" class="nav-item" [disabled]="mort()" (click)="journal()">
     <img src="assets/icon/chemin.png" [attr.alt]="'NAV_BAR.ALT_JOURNAL' | translate" class="nav-icon" />
     <span>{{ 'NAV_BAR.LABEL_JOURNAL' | translate }}</span>
   </button>

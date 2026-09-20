@@ -595,6 +595,7 @@
     "INTRODUCTION": "Introduction",
     "VIDE": "Aucun chapitre traversé pour l'instant.",
     "ERREUR_ID_MANQUANT": "Identifiant de personnage manquant.",
-    "ERREUR_CHARGEMENT": "Impossible de charger le journal."
+    "ERREUR_CHARGEMENT": "Impossible de charger le journal.",
+    "ALT_COMBAT": "Combat"
   }
 }

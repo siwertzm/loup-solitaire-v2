@@ -1,8 +1,6 @@
 package com.loupsolitaire.backend.controller;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -32,11 +30,13 @@ import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
+import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
 import com.loupsolitaire.backend.service.EffetChapitreService;
 import com.loupsolitaire.backend.service.InventaireService;
+import com.loupsolitaire.backend.service.JournalService;
 import com.loupsolitaire.backend.service.ObjetService;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.service.PersonnageService;
@@ -58,6 +58,7 @@ public class PersonnageController {
     private final EffetChapitreService effetChapitreService;
     private final PersonnageMapper personnageMapper;
     private final ChapitreMapper chapitreMapper;
+    private final JournalService journalService;
 
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
@@ -284,16 +285,17 @@ public class PersonnageController {
         return personnage;
     }
 
-    // Journal du parcours : numeros des chapitres traverses (chapitre de
-    // depart et revisites compris), du plus recent au plus ancien. Le
-    // premier est donc le chapitre courant.
+        // Journal du parcours : chapitres traverses (chapitre de depart et
+    // revisites compris) avec le debut de leur texte, du plus recent au plus
+    // ancien. Le premier est donc le chapitre courant.
     @GetMapping("/{id}/historique")
     @Transactional
-    public List<Integer> historique(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
+    public List<ChapitreParcouruResponse> historique(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
-        List<Integer> chapitres = new ArrayList<>(personnage.getChapitresParcourus());
-        Collections.reverse(chapitres);
-        return chapitres;
+        return journalService.lister(personnage);
     }
 
     private Objet recupererObjet(String objetId) {

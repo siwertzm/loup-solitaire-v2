@@ -23,7 +23,7 @@
              alternent gauche / droite (classe "droite" sur les rangs
              impairs), et le texte est collé à son nœud, à sa droite.
              Le trait commence au premier nœud et s'arrête au dernier. -->
-        @for (numero of chapitres(); track $index) {
+        @for (etape of chapitres(); track $index) {
           <li class="etape" [class.droite]="$odd">
             @if (!$first) {
               <!-- Demi-virage d'arrivée (depuis l'étape précédente). Les
@@ -36,9 +36,28 @@
             }
             <span class="noeud"></span>
             <span class="texte">
-              <span class="libelle">{{
-                (numero === 0 ? 'JOURNAL.INTRODUCTION' : 'JOURNAL.CHAPITRE') | translate: { numero: numero }
-              }}</span>
+              <!-- Libellé + pictogrammes (à droite du numéro), dans cet ordre :
+                   combat, effets, objets. -->
+              <span class="titre-etape">
+                <span class="libelle">{{
+                  (etape.chapitreId === 0 ? 'JOURNAL.INTRODUCTION' : 'JOURNAL.CHAPITRE')
+                    | translate: { numero: etape.chapitreId }
+                }}</span>
+                @if (etape.avecCombat) {
+                  <img class="icone" src="assets/icon/combat.png" [attr.alt]="'JOURNAL.ALT_COMBAT' | translate" />
+                }
+                @if (etape.avecEffets) {
+                  <img class="icone" src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_PAGE.ALT_EFFETS' | translate" />
+                }
+                @if (etape.avecObjets) {
+                  <img class="icone" src="assets/icon/all_items.png" [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate" />
+                }
+              </span>
+              <!-- Début du texte du chapitre, sur UNE ligne : la coupe avec
+                   "…" est faite en CSS (.extrait), à la largeur disponible. -->
+              @if (etape.extrait) {
+                <span class="extrait">{{ etape.extrait }}</span>
+              }
             </span>
             @if (!$last) {
               <!-- Demi-virage de départ (vers l'étape suivante). -->

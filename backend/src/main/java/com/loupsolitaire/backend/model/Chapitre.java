@@ -3,6 +3,8 @@ package com.loupsolitaire.backend.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,11 +51,13 @@ public class Chapitre {
     // Effets, liens et objets ramassables : toujours propres a UN SEUL
     // chapitre (jamais partages) -> possession complete (cascade + orphelins).
     @OneToMany(mappedBy = "chapitre", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private List<Effet> effets = new ArrayList<>();
 
     @OneToMany(mappedBy = "chapitre", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lien> liens = new ArrayList<>();
 
     @OneToMany(mappedBy = "chapitre", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private List<ObjetChap> objets = new ArrayList<>();
 }
