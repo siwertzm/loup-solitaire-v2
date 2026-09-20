@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -50,21 +51,26 @@ public class JournalService {
 
     // Du plus recent au plus ancien : le premier est le chapitre courant. Un
     // chapitre revisite apparait autant de fois qu'il a ete traverse, mais son
-    // texte n'est charge qu'une fois.
+    // texte n'est charge qu'une fois. Le fait d'etre mort est propre a chaque
+    // ARRIVEE (identifiee par sa position dans le parcours), pas au chapitre.
     @Transactional(readOnly = true)
     public List<ChapitreParcouruResponse> lister(Personnage personnage) {
-        List<Integer> ids = new ArrayList<>(personnage.getChapitresParcourus());
-        if (ids.isEmpty()) {
+        List<Integer> parcours = personnage.getChapitresParcourus();
+        if (parcours.isEmpty()) {
             return List.of();
         }
+        Set<Integer> etapesMortelles = personnage.getEtapesMortelles();
 
-        Map<Integer, Apercu> apercus = chapitreRepository.findAllById(new HashSet<>(ids)).stream()
+        Map<Integer, Apercu> apercus = chapitreRepository.findAllById(new HashSet<>(parcours)).stream()
                 .collect(Collectors.toMap(Chapitre::getId, JournalService::apercu));
 
-        Collections.reverse(ids);
-        return ids.stream()
-                .map(id -> reponse(id, apercus.getOrDefault(id, APERCU_VIDE)))
-                .toList();
+        // Le parcours est chronologique : on le lit a l'envers.
+        List<ChapitreParcouruResponse> journal = new ArrayList<>(parcours.size());
+        for (int position = parcours.size() - 1; position >= 0; position--) {
+            Integer id = parcours.get(position);
+            journal.add(reponse(id, apercus.getOrDefault(id, APERCU_VIDE), etapesMortelles.contains(position)));
+        }
+        return journal;
     }
 
     // Les effets et objets sont charges par paquets (voir @BatchSize sur
@@ -77,9 +83,9 @@ public class JournalService {
                 !chapitre.getObjets().isEmpty());
     }
 
-    private static ChapitreParcouruResponse reponse(Integer id, Apercu apercu) {
+    private static ChapitreParcouruResponse reponse(Integer id, Apercu apercu, boolean mort) {
         return new ChapitreParcouruResponse(
-                id, apercu.extrait(), apercu.combat(), apercu.effets(), apercu.objets());
+                id, apercu.extrait(), apercu.combat(), apercu.effets(), apercu.objets(), mort);
     }
 
     // Debut du texte, sur une ligne : sans jetons ni balises, retours a la

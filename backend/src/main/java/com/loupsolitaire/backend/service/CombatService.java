@@ -315,7 +315,7 @@ public class CombatService {
             // mort=false en meme temps qu'il fait reculer le personnage au
             // chapitre precedent - seule issue coherente apres une mort en
             // combat.
-            personnage.setMort(true);
+            personnage.marquerMort();
         }
     }
 

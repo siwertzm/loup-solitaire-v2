@@ -156,6 +156,22 @@ ion-content.journal {
   }
 }
 
+// Étape où le personnage est mort : grisée (rond, libellé, pictogrammes et
+// extrait). Même recette que .grise sur la fiche personnage (grayscale +
+// opacité). Pas d'opacité sur le rond : il est opaque pour masquer le trait
+// qui passe derrière lui. Le trait, lui, reste inchangé : l'histoire continue
+// après la mort (retour payant, résurrection).
+.etape.mort {
+  .texte {
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+
+  .noeud {
+    filter: grayscale(1);
+  }
+}
+
 // Le texte est collé à son nœud, toujours à sa droite : il suit donc le
 // zigzag du chemin (plus près du bord sur les nœuds de gauche, plus à droite
 // sur ceux de droite). Deux lignes : le libellé, puis le début du texte.

@@ -727,4 +727,74 @@ class EffetChapitreServiceTest {
 
         verify(personnageRepository, never()).save(any());
     }
+
+    // =========================================================
+    // Mort : l'arrivee ou le personnage meurt est notee dans le journal
+    // =========================================================
+
+    private Effet creerEffetMort(TypeCondition typeCondition, String valeurCondition) {
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.MORT);
+        effet.setValeur(1);
+
+        if (typeCondition != null) {
+            com.loupsolitaire.backend.model.Cond cond =
+                    new com.loupsolitaire.backend.model.Cond();
+            cond.setType(typeCondition);
+            cond.setValeur(valeurCondition);
+            effet.setConditions(List.of(cond));
+        } else {
+            effet.setConditions(List.of());
+        }
+
+        return effet;
+    }
+
+    @Test
+    void laMortNarrativeMarqueLArriveeCouranteDuJournal() {
+        // Chapitre 53 : arrivee en 3e position du parcours.
+        personnage.getChapitresParcourus().addAll(List.of(0, 47, 53));
+
+        effetChapitreService.appliquerEffetMort(personnage, creerEffetMort(null, null));
+
+        assertThat(personnage.isMort()).isTrue();
+        assertThat(personnage.getEtapesMortelles()).containsExactly(2);
+    }
+
+    @Test
+    void laMortParEnduranceMarqueLArriveeCouranteDuJournal() {
+        personnage.getChapitresParcourus().addAll(List.of(0, 12));
+        personnage.setEnduranceActuelle(1);
+
+        effetChapitreService.appliquerEffetEndurance(personnage, creerEffetEndurance(-10, null, null));
+
+        assertThat(personnage.isMort()).isTrue();
+        assertThat(personnage.getEtapesMortelles()).containsExactly(1);
+    }
+
+    @Test
+    void laMortParManqueDeRepasMarqueLArriveeCouranteDuJournal() {
+        personnage.getChapitresParcourus().addAll(List.of(0, 37));
+        personnage.setEnduranceActuelle(1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of());
+
+        effetChapitreService.appliquerEffetRepas(personnage);
+
+        assertThat(personnage.isMort()).isTrue();
+        assertThat(personnage.getEtapesMortelles()).containsExactly(1);
+    }
+
+    @Test
+    void unEffetMortConditionnelNonDeclencheNeMarqueAucuneEtape() {
+        // Chapitre 2102 : "si vous n'obtenez pas 9" - condition non remplie, le
+        // personnage survit : aucune etape ne doit etre grisee.
+        personnage.getChapitresParcourus().addAll(List.of(0, 2102));
+        when(conditionService.estDisponible(any(), eq(personnage))).thenReturn(false);
+
+        effetChapitreService.appliquerEffetMort(
+                personnage, creerEffetMort(TypeCondition.HASARD, "0-8"));
+
+        assertThat(personnage.isMort()).isFalse();
+        assertThat(personnage.getEtapesMortelles()).isEmpty();
+    }
 }

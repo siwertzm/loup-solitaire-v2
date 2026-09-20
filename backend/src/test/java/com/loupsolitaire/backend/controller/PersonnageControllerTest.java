@@ -511,10 +511,10 @@ class PersonnageControllerTest {
         // Le tri (plus recent en premier) est fait par JournalService : le
         // controleur restitue simplement l'ordre recu.
         when(journalService.lister(personnage)).thenReturn(List.of(
-                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true),
-                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true),
-                new ChapitreParcouruResponse(1, "Il faut vous hater", false, true, false),
-                new ChapitreParcouruResponse(0, "", false, false, false)));
+                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true, false),
+                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true, false),
+                new ChapitreParcouruResponse(1, "Il faut vous hater", false, true, false, true),
+                new ChapitreParcouruResponse(0, "", false, false, false, false)));
 
         authentifierComme("marius");
 
@@ -534,7 +534,9 @@ class PersonnageControllerTest {
                 .andExpect(jsonPath("$[2].avecObjets").value(false))
                 .andExpect(jsonPath("$[3].chapitreId").value(0))
                 .andExpect(jsonPath("$[3].extrait").value(""))
-                .andExpect(jsonPath("$[3].avecCombat").value(false));
+                .andExpect(jsonPath("$[3].avecCombat").value(false))
+                .andExpect(jsonPath("$[0].mort").value(false))
+                .andExpect(jsonPath("$[2].mort").value(true));
     }
 
     @Test

@@ -86,4 +86,5 @@ export interface ChapitreParcouru {
   avecCombat: boolean;
   avecEffets: boolean;
   avecObjets: boolean;
+  mort: boolean;
 }

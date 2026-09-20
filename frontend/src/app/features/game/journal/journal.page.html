@@ -24,7 +24,7 @@
              impairs), et le texte est collé à son nœud, à sa droite.
              Le trait commence au premier nœud et s'arrête au dernier. -->
         @for (etape of chapitres(); track $index) {
-          <li class="etape" [class.droite]="$odd">
+          <li class="etape" [class.droite]="$odd" [class.mort]="etape.mort">
             @if (!$first) {
               <!-- Demi-virage d'arrivée (depuis l'étape précédente). Les
                    coordonnées du tracé (18, 29, 40 : en px, dans une boîte

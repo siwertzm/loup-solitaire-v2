@@ -44,7 +44,7 @@ class JournalServiceTest {
 
     // Reponse attendue pour un chapitre sans combat, sans effet, sans objet.
     private ChapitreParcouruResponse simple(int id, String extrait) {
-        return new ChapitreParcouruResponse(id, extrait, false, false, false);
+        return new ChapitreParcouruResponse(id, extrait, false, false, false, false);
     }
 
     // Parcours dans l'ordre chronologique, comme stocke dans Personnage.
@@ -138,11 +138,11 @@ class JournalServiceTest {
 
         // Du plus recent au plus ancien : 5, 4, 3, 2, 1.
         assertThat(service.lister(personnage)).containsExactly(
-                new ChapitreParcouruResponse(5, "r", false, false, false),
-                new ChapitreParcouruResponse(4, "t", true, true, true),
-                new ChapitreParcouruResponse(3, "o", false, false, true),
-                new ChapitreParcouruResponse(2, "e", false, true, false),
-                new ChapitreParcouruResponse(1, "c", true, false, false));
+                new ChapitreParcouruResponse(5, "r", false, false, false, false),
+                new ChapitreParcouruResponse(4, "t", true, true, true, false),
+                new ChapitreParcouruResponse(3, "o", false, false, true, false),
+                new ChapitreParcouruResponse(2, "e", false, true, false, false),
+                new ChapitreParcouruResponse(1, "c", true, false, false, false));
     }
 
     @Test
@@ -154,9 +154,41 @@ class JournalServiceTest {
                 .thenReturn(List.of(combat, chapitre(1, "Debut")));
 
         assertThat(service.lister(personnage)).containsExactly(
-                new ChapitreParcouruResponse(85, "Le chemin", true, false, false),
+                new ChapitreParcouruResponse(85, "Le chemin", true, false, false, false),
                 simple(1, "Debut"),
-                new ChapitreParcouruResponse(85, "Le chemin", true, false, false));
+                new ChapitreParcouruResponse(85, "Le chemin", true, false, false, false));
+    }
+
+        @Test
+    void listerIndiqueLesEtapesOuLePersonnageEstMort() {
+        // Parcours : 0, 47, 53 (mort), 47 (retour paye), 322.
+        Personnage personnage = personnageAvecParcours(0, 47, 53, 47, 322);
+        personnage.getEtapesMortelles().add(2);
+        when(chapitreRepository.findAllById(Set.of(0, 47, 53, 322))).thenReturn(List.of(
+                chapitre(0, "a"), chapitre(47, "b"), chapitre(53, "c"), chapitre(322, "d")));
+
+        List<ChapitreParcouruResponse> journal = service.lister(personnage);
+
+        // Du plus recent au plus ancien : 322, 47, 53, 47, 0.
+        assertThat(journal).extracting(ChapitreParcouruResponse::chapitreId)
+                .containsExactly(322, 47, 53, 47, 0);
+        assertThat(journal).extracting(ChapitreParcouruResponse::mort)
+                .containsExactly(false, false, true, false, false);
+    }
+
+    @Test
+    void listerNeMarqueMortQueLArriveeOuLePersonnageEstMortSurUnChapitreRevisite() {
+        // 85 est traverse deux fois ; on ne meurt que la seconde (position 3).
+        Personnage personnage = personnageAvecParcours(0, 85, 322, 85);
+        personnage.getEtapesMortelles().add(3);
+        when(chapitreRepository.findAllById(Set.of(0, 85, 322))).thenReturn(List.of(
+                chapitre(0, "a"), chapitre(85, "b"), chapitre(322, "c")));
+
+        List<ChapitreParcouruResponse> journal = service.lister(personnage);
+
+        // Du plus recent au plus ancien : 85 (mort), 322, 85 (indemne), 0.
+        assertThat(journal).extracting(ChapitreParcouruResponse::mort)
+                .containsExactly(true, false, false, false);
     }
 
     // =========================================================

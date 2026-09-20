@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 006-etape-mortelle
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 006-etape-mortelle.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
