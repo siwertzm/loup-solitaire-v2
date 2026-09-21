@@ -119,4 +119,10 @@ export class ProfilPage implements ViewWillEnter {
       },
     });
   }
+
+  private static readonly URL_FEEDBACK = 'https://forms.gle/vgSVnrKR1t8aiucr9';
+
+  ouvrirFormulaireAvis(): void {
+    window.open(ProfilPage.URL_FEEDBACK, '_blank', 'noopener,noreferrer');
+  }
 }

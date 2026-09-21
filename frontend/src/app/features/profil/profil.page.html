@@ -26,6 +26,7 @@
 
       <div class="actions">
         <button type="button" class="secondaire" (click)="modifierEmail()">{{ 'PROFIL.MODIFIER' | translate }}</button>
+        <button type="button" class="secondaire" (click)="ouvrirFormulaireAvis()">{{ 'PROFIL.FEEDBACK' | translate }}</button>
         <button type="button" class="danger-contour" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
 
         @if (!suppressionOuverte()) {
