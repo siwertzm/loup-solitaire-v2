@@ -59,20 +59,20 @@
       } @else if (objet.optionnel && estPlein(categorieObjet(objet.objetId))) {
         <button
           type="button"
-          class="objet-prendre objet-prendre-plein"
+          class="objet-prendre"
           (click)="prendreObjet(objet)"
         >
-          {{ 'CHAPITRE_OBJETS.BADGE_PLEIN' | translate }}
+          {{ 'CHAPITRE_OBJETS.BADGE_PRENDRE' | translate }}
         </button>
       } @else if (!objet.optionnel) {
         <!-- Obligatoire avec un manque (categorie pleine a l'arrivee) : meme
              bouton PLEIN que pour un optionnel plein, cliquable pour completer. -->
         <button
           type="button"
-          class="objet-prendre objet-prendre-plein"
+          class="objet-prendre"
           (click)="prendreObjet(objet)"
         >
-          {{ 'CHAPITRE_OBJETS.BADGE_PLEIN' | translate }}
+          {{ 'CHAPITRE_OBJETS.BADGE_PRENDRE' | translate }}
         </button>
       } @else {
         <button
