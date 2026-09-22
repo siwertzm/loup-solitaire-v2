@@ -42,4 +42,8 @@ export class RegleEquipementPage {
   continuer(): void {
     this.router.navigate(['/regle/combat']);
   }
+
+  back(): void {
+    this.router.navigate(['/regle/disciplines']);
+  }
 }

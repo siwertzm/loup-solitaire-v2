@@ -215,8 +215,9 @@
     "PARAGRAPHE_DISCIPLINES_2": "Si vous remplissez avec succès la mission qui vous est assignée dans ce premier livre de la série du Loup Solitaire, vous aurez le droit d'ajouter une Discipline Kaï supplémentaire à celles que vous possédez déjà. Lorsque vous vous lancerez dans la nouvelle aventure que vous propose le prochain volume de la série (intitulé La Traversée Infernale), vous pourrez ainsi faire usage de six disciplines Kaï (les cinq premières étant acquises une bonne fois pour toutes), de même que des Objets Spéciaux que vous aurez décidé de conserver au cours de votre première mission. Sachez en effet que, de livre en livre, votre expérience grandira chaque fois que vous aurez accompli une mission : vous pourrez, de cette façon, espérer atteindre un jour la complète maîtrise de l'art et de la science des Moines Kaï.",
     "VALIDER": "CRÉER MON PERSONNAGE",
     "DISCIPLINES": "DISCIPLINES",
-    "EQUIPEMENT": "ÉQUIPEMENT",
-    "COMBAT": "Combat"
+    "EQUIPEMENT": "ÉQUIPEMENT >",
+    "COMBAT": "Combat",
+    "BACK": "< INTRO"
   },
   "EQUIPEMENT": {
     "SURTITRE": "Équipement de départ",
@@ -296,7 +297,8 @@
     "PARAGRAPHE_OBJETS_SPECIAUX_2": "Chacun de ces objets possède des propriétés bien particulières. Parfois, ces propriétés vous seront décrites au moment même de la découverte de l'objet, d'autres fois, il vous faudra attendre qu'elles se révèlent au cours de votre aventure. Pour vous aider à trouver votre chemin, vous disposez d'une carte que vous avez sauvée des cendres du monastère détruit.",
     "PARAGRAPHE_OR_2": "La monnaie en cours dans le royaume est la Couronne, qui se présente sous la forme d'une petite pièce d'or. Au cours de votre aventure, vous pourrez utiliser ces Couronnes pour vos frais de transport ou de nourriture, mais également, si besoin est, pour corrompre certains personnages peu scrupuleux. Nombre de créatures que vous serez amené à rencontrer possèdent des Couronnes d'or. Chaque fois que vous tuerez l'une de ces créatures, vous aurez le droit de vous emparer de ses pièces d'or et de les conserver dans votre bourse.",
     "PARAGRAPHE_NOURRITURE_2": "Tout au long de votre quête, vous aurez besoin de vous nourrir à intervalles réguliers. S'il ne vous reste plus de vivres lorsque vous serez dans l'obligation de prendre un repas, vous perdrez 3 points d'ENDURANCE. Mais si vous avez choisi, parmi les disciplines Kaï, celle de la chasse, vous n'aurez pas à rayer un repas de votre liste d'équipement chaque fois que vous devrez manger. La potion de guérison vous rend 4 points d'ENDURANCE lorsque vous la buvez après un combat. Mais vous ne disposez que d'une seule dose. Si, au cours de votre aventure, vous venez à découvrir d'autres potions, leurs effets vous seront indiqués en temps utile. Toutes les Potions de Guérison doivent être rangées dans votre sac à dos.",
-    "COMBAT": "RÈGLES DE COMBAT"
+    "COMBAT": "COMBAT >",
+    "BACK": "< DISCIPLINES"
   },
   "INTRO_COMBAT": {
     "PARAGRAPHE_1": "Vous allez à présent croiser la route d'ennemis résolus à vous barrer le chemin. Le combat qui vous attend ne se joue pas ici avec des jets de dés sur une feuille : c'est l'application qui tire pour vous, chiffre après chiffre, en comparant toujours votre HABILITE à celle de votre adversaire. Plus l'écart en votre faveur est grand, plus vos coups portent et plus les siens vous épargnent.",
@@ -326,7 +328,8 @@
     "SECTION_MORT": "La mort au combat",
     "PARAGRAPHE_MORT_1": "Si votre ENDURANCE tombe à zéro pendant un combat, vous êtes vaincu. C'est un dénouement distinct d'une mort survenue au fil d'un chapitre : ici, contre <b>1 Pièce Premium</b>, vous ne ressuscitez pas sur place, vous revenez au chapitre précédent, comme si vous aviez rebroussé chemin juste avant l'affrontement fatal.",
     "PARAGRAPHE_MORT_2": "Sans Pièce Premium, votre aventure s'achève ici. Combattez donc avec discernement : mieux vaut parfois défendre ou fuir que de vous jeter tête la première dans un duel perdu d'avance.",
-    "TERMINER": "RETOUR AU MENU"
+    "TERMINER": "MENU >",
+    "BACK": "< ÉQUIPEMENT"
   },
   "VICTOIRE": {
     "SUR_TITRE": "LIVRE PREMIER",

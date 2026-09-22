@@ -215,8 +215,9 @@
     "PARAGRAPHE_DISCIPLINES_2": "If you successfully complete the mission assigned to you in this first book of the Lone Wolf series, you will be entitled to add one further Kai Discipline to those you already possess. When you set out on the new adventure offered by the next volume in the series (entitled Fire on the Water), you will then be able to draw on six Kai Disciplines (the first five being yours for good), as well as any Special Items you decide to keep from your first mission. Know that, from book to book, your experience will grow every time you complete a mission: in this way, you may one day hope to achieve complete mastery of the art and science of the Kai Monks.",
     "VALIDER": "CREATE MY CHARACTER",
     "DISCIPLINES": "DISCIPLINES",
-    "EQUIPEMENT": "EQUIPMENT",
-    "COMBAT": "Combat"
+    "EQUIPEMENT": "EQUIPMENT >",
+    "COMBAT": "Combat",
+    "BACK": "< INTRO"
   },
   "EQUIPEMENT": {
     "SURTITRE": "Starting equipment",
@@ -296,7 +297,8 @@
     "PARAGRAPHE_OBJETS_SPECIAUX_2": "Each of these items has very particular properties. Sometimes these properties will be described to you the moment you find the item; at other times, you will have to wait for them to be revealed during your adventure. To help you find your way, you have a map you saved from the ashes of the destroyed monastery.",
     "PARAGRAPHE_OR_2": "The currency used in the kingdom is the Crown, a small gold coin. During your adventure, you may use these Crowns to pay for travel or food, and also, if need be, to bribe certain unscrupulous characters. Many of the creatures you will encounter carry Gold Crowns. Whenever you kill one of these creatures, you may take its gold and keep it in your pouch.",
     "PARAGRAPHE_NOURRITURE_2": "Throughout your quest, you will need to eat at regular intervals. If you have no food left when you are required to eat a Meal, you will lose 3 ENDURANCE points. But if you have chosen the Hunting Discipline among your Kai Disciplines, you will not need to cross a Meal off your equipment list whenever you must eat. The Healing Potion restores 4 ENDURANCE points when you drink it after a combat, but you only have a single dose. If, during your adventure, you find other potions, their effects will be explained to you in due course. All Healing Potions must be kept in your Backpack.",
-    "COMBAT": "RULES OF COMBAT"
+    "COMBAT": "COMBAT >",
+    "BACK": "< DISCIPLINES"
   },
   "INTRO_COMBAT": {
     "PARAGRAPHE_1": "You are now about to cross paths with enemies determined to bar your way. The combat ahead of you is not fought here with dice rolled on a sheet of paper: it is the app that rolls for you, number after number, always comparing your COMBAT SKILL to your opponent's. The greater the gap in your favour, the more your blows land, and the more theirs are wasted.",
@@ -326,7 +328,8 @@
     "SECTION_MORT": "Death in combat",
     "PARAGRAPHE_MORT_1": "If your ENDURANCE falls to zero during a combat, you are defeated. This is a different outcome from a death occurring elsewhere in a chapter: here, for <b>1 Premium Coin</b>, you do not revive on the spot — you return to the previous chapter, as if you had turned back just before the fatal encounter.",
     "PARAGRAPHE_MORT_2": "Without a Premium Coin, your adventure ends here. Fight wisely, then: sometimes it is better to defend or flee than to throw yourself headlong into a fight you cannot win.",
-    "TERMINER": "BACK TO MENU"
+    "TERMINER": "MENU >",
+    "BACK": "< EQUIPMENT"
   },
   "VICTOIRE": {
     "SUR_TITRE": "BOOK ONE",

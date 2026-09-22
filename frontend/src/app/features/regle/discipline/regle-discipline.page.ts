@@ -42,4 +42,8 @@ export class RegleDisciplinePage {
   continuer(): void {
     this.router.navigate(['/regle/equipement']);
   }
+
+  back(): void {
+    this.router.navigate(['/regle/intro']);
+  }
 }

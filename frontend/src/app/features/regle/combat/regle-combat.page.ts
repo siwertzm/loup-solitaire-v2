@@ -28,4 +28,8 @@ export class RegleCombatPage {
   terminer(): void {
     this.router.navigate(['/accueil']);
   }
+
+  back(): void {
+    this.router.navigate(['/regle/equipement']);
+  }
 }
