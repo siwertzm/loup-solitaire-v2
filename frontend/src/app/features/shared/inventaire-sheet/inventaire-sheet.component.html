@@ -11,20 +11,24 @@
       (click)="$event.stopPropagation()"
     >
       <div
-        class="poignee"
+        class="zone-fermeture"
         (pointerdown)="commencerGlissement($event)"
         (pointermove)="deplacerGlissement($event)"
         (pointerup)="terminerGlissement($event)"
         (pointercancel)="terminerGlissement($event)"
-      ></div>
+      >
+        <div class="poignee"></div>
+
+        @if (!chargement()) {
+          <div class="sac-entete">
+            <div class="sac-entete-titre">{{ 'INVENTAIRE_SHEET.TITRE_SAC' | translate }}</div>
+          </div>
+        }
+      </div>
 
       @if (chargement()) {
         <div class="sac-chargement">{{ 'INVENTAIRE_SHEET.CHARGEMENT' | translate }}</div>
       } @else {
-        <div class="sac-entete">
-          <div class="sac-entete-titre">{{ 'INVENTAIRE_SHEET.TITRE_SAC' | translate }}</div>
-        </div>
-
         <div class="sac-contenu">
           <div class="sac-section-titre">
             {{ 'INVENTAIRE_SHEET.SECTION_ARMES' | translate }}
@@ -37,7 +41,10 @@
                   <span class="sac-nom">{{ a.nom }}</span>
                   @if (a.maitrisee) {
                     <span class="sac-tag"
-                      >{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }} <span class="sac-bonus">{{ 'INVENTAIRE_SHEET.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}</span></span
+                      >{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}
+                      <span class="sac-bonus">{{
+                        'INVENTAIRE_SHEET.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee }
+                      }}</span></span
                     >
                   } @else {
                     <span class="sac-tag">{{ 'INVENTAIRE_SHEET.TAG_EQUIPEE' | translate }}</span>
@@ -59,7 +66,10 @@
             <div class="sac-ligne sac-ligne-vide">
               <span class="sac-nom">{{ 'INVENTAIRE_SHEET.VIDE' | translate }}</span>
               <span class="sac-tag"
-                >{{ 'INVENTAIRE_SHEET.MAIN_NUE' | translate }} <span class="sac-bonus sac-malus">{{ 'INVENTAIRE_SHEET.MALUS_HABILITE' | translate: { malus: malusSansArme } }}</span></span
+                >{{ 'INVENTAIRE_SHEET.MAIN_NUE' | translate }}
+                <span class="sac-bonus sac-malus">{{
+                  'INVENTAIRE_SHEET.MALUS_HABILITE' | translate: { malus: malusSansArme }
+                }}</span></span
               >
             </div>
           }
@@ -100,38 +110,42 @@
           }
 
           @if (objetsSpeciauxCount() !== 0) {
-          <div class="sac-section-titre">{{ 'INVENTAIRE_SHEET.SECTION_OBJETS_SPECIAUX' | translate }}</div>
-          @for (s of objetsSpeciauxDetail(); track s.objetId) {
-            <ion-item-sliding #slideS>
-              <ion-item
-                lines="none"
-                class="sac-item-hote"
-                [button]="s.objetId === 'carte'"
-                detail="false"
-                (click)="s.objetId === 'carte' && ouvrirCarte()"
-              >
-                <div class="sac-ligne">
-                  <span class="sac-nom">{{ s.nom }}</span>
-                  <span class="sac-tag">×{{ s.quantite }}</span>
-                </div>
-              </ion-item>
-              <ion-item-options side="end">
-                <ion-item-option
-                  color="danger"
-                  [disabled]="retraitEnCours() === s.objetId"
-                  (click)="retirer(s.objetId, slideS)"
+            <div class="sac-section-titre">
+              {{ 'INVENTAIRE_SHEET.SECTION_OBJETS_SPECIAUX' | translate }}
+            </div>
+            @for (s of objetsSpeciauxDetail(); track s.objetId) {
+              <ion-item-sliding #slideS>
+                <ion-item
+                  lines="none"
+                  class="sac-item-hote"
+                  [button]="s.objetId === 'carte'"
+                  detail="false"
+                  (click)="s.objetId === 'carte' && ouvrirCarte()"
                 >
-                  {{ 'INVENTAIRE_SHEET.BOUTON_RETIRER' | translate }}
-                </ion-item-option>
-              </ion-item-options>
-            </ion-item-sliding>
-          }
+                  <div class="sac-ligne">
+                    <span class="sac-nom">{{ s.nom }}</span>
+                    <span class="sac-tag">×{{ s.quantite }}</span>
+                  </div>
+                </ion-item>
+                <ion-item-options side="end">
+                  <ion-item-option
+                    color="danger"
+                    [disabled]="retraitEnCours() === s.objetId"
+                    (click)="retirer(s.objetId, slideS)"
+                  >
+                    {{ 'INVENTAIRE_SHEET.BOUTON_RETIRER' | translate }}
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+            }
           }
         </div>
 
         <div class="sac-pied">
           <span class="sac-bourse-cle">{{ 'INVENTAIRE_SHEET.BOURSE_CLE' | translate }}</span>
-          <span class="sac-bourse-valeur">{{ 'INVENTAIRE_SHEET.BOURSE_VALEUR' | translate: { valeur: bourseCount() } }}</span>
+          <span class="sac-bourse-valeur">{{
+            'INVENTAIRE_SHEET.BOURSE_VALEUR' | translate: { valeur: bourseCount() }
+          }}</span>
         </div>
       }
     </div>
