@@ -61,13 +61,14 @@ $parchemin: #ece2c8;
   padding: 8px 12px;
 
   background: transparent;
-  border: 1px solid $rouge;
+  border: 2px solid $rouge;
   border-radius: 8px;
 
   color: $rouge;
 
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 10px;
+  font-weight: bold;
   letter-spacing: 0.16em;
 
   /*
@@ -81,15 +82,15 @@ $parchemin: #ece2c8;
   -webkit-touch-callout: none;
 
   &:disabled {
-    border-color: rgba(58, 50, 38, 0.25);
-    color: rgba(58, 50, 38, 0.4);
+    border-color: rgba(58, 50, 38, 0.479);
+    color: rgba(58, 50, 38, 0.719);
     cursor: default;
   }
 
   &.objet-prendre-plein {
     border-color: $or;
     color: $or;
-    background: rgba(194, 144, 58, 0.1);
+    background: rgba(194, 144, 58, 0.411);
   }
 
   /*

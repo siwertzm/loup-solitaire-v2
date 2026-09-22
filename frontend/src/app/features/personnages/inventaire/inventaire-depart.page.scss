@@ -85,16 +85,16 @@ ion-content.equipement {
 
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.18em;
-  color: rgba(236, 226, 200, 0.5);
+  color: rgba(236, 226, 200, 0.774);
 }
 
 .cle {
   font-family: 'Cinzel', serif;
   font-size: 9.5px;
   letter-spacing: 0.14em;
-  color: rgba(236, 226, 200, 0.35);
+  color: rgba(236, 226, 200, 0.774);
 }
 
 .entete-bloc {
@@ -126,7 +126,7 @@ ion-content.equipement {
   .cle {
     font-size: 9px;
     letter-spacing: 0.13em;
-    color: rgba(236, 226, 200, 0.5);
+    color: rgba(236, 226, 200, 0.774);
     text-align: center;
   }
 
@@ -155,23 +155,23 @@ ion-content.equipement {
 }
 
 .de {
-  width: 46px;
-  height: 46px;
+  width: 58px;
+  height: 58px;
   border-radius: 13px;
-  font-size: 20px;
+  font-size: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
   &.objet {
-    border: 1px solid rgba(194, 112, 58, 0.45);
-    background: rgba(194, 112, 58, 0.1);
+    border: 2px solid rgba(194, 102, 41, 0.788);
+    background: rgba(194, 112, 58, 0.164);
     color: $cuivre;
   }
 
   &.or {
-    border: 1px solid rgba(217, 169, 74, 0.5);
+    border: 2px solid rgba(217, 169, 74, 0.795);
     background: rgba(217, 169, 74, 0.12);
     color: $or;
   }
