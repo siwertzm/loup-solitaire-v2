@@ -39,11 +39,18 @@
                ne réapparaît qu'avec le nouvel ennemi (nouvelEnnemi). -->
           @if (!ennemiVaincu()) {
             <div class="plaque plaque-ennemi">
-              @if (ennemiResistePuissancePsychique()) {
+              @if (ennemiPossedePuissancePsychique() || ennemiResistePuissancePsychique()) {
                 <div class="bonus-ennemi">
-                  <button type="button" class="bonus-picto resistance-psychique" [attr.title]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('resistance-psychique')">
-                    <img src="/assets/icon/bulle.png" alt="" />
-                  </button>
+                  @if (ennemiPossedePuissancePsychique()) {
+                    <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('ennemi-puissance-psychique')">
+                      <img src="/assets/icon/puissance.png" alt="" />
+                    </button>
+                  }
+                  @if (ennemiResistePuissancePsychique()) {
+                    <button type="button" class="bonus-picto resistance-psychique" [attr.title]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('resistance-psychique')">
+                      <img src="/assets/icon/bulle.png" alt="" />
+                    </button>
+                  }
                 </div>
               }
               <div class="plaque-titre">
@@ -160,6 +167,10 @@
                 @case ('resistance-psychique') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TITRE' | translate }}</h2>
                   <p [innerHTML]="'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TEXTE' | translate: { nom: ennemiActif()?.nom }"></p>
+                }
+                @case ('ennemi-puissance-psychique') {
+                  <h2>{{ 'COMBAT_PAGE.POPUP_ENNEMI_PUISSANCE_PSYCHIQUE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ENNEMI_PUISSANCE_PSYCHIQUE_TEXTE' | translate: { nom: ennemiActif()?.nom }"></p>
                 }
                 @case ('garde') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_GARDE_TITRE' | translate }}</h2>

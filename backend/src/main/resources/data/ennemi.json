@@ -13,7 +13,12 @@
     "description": "Un lieutenant des Maîtres des Ténèbres, capable d’attaques psychiques.",
     "habilite": 17,
     "endurance": 25,
-    "resistance": []
+    "resistance": [],
+    "disciplines": [
+      {
+        "id": "puissance_psychique"
+      }
+    ]
   },
   {
     "id": "vordak_puissant",
@@ -22,6 +27,11 @@
     "habilite": 18,
     "endurance": 26,
     "resistance": [
+      {
+        "id": "puissance_psychique"
+      }
+    ],
+    "disciplines": [
       {
         "id": "puissance_psychique"
       }

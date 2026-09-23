@@ -11,7 +11,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -245,6 +245,17 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     (this.ennemiActif()?.resistances ?? []).some(
       (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
     ),
+  );
+
+  /**
+   * L'ennemi actif possède la Puissance Psychique (ex. Vordaks) et le joueur
+   * n'a pas le Bouclier Psychique pour s'en protéger. Même logique que
+   * bonusPuissancePsychique côté joueur, qui disparaît si l'ennemi résiste.
+   */
+  readonly ennemiPossedePuissancePsychique = computed(() =>
+    (this.ennemiActif()?.disciplines ?? []).some(
+      (discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+    ) && !this.bonusBouclierPsychique(),
   );
 
   readonly bonusBouclierPsychique = computed(() =>

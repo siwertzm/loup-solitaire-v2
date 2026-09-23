@@ -1,7 +1,9 @@
 package com.loupsolitaire.backend.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,4 +50,17 @@ public class Ennemi {
         inverseJoinColumns = @JoinColumn(name = "discipline_id")
     )
     private List<Discipline> resistances = new ArrayList<>();
+
+    // Disciplines que l'ennemi possede lui-meme (ex. Puissance Psychique des
+    // Vordaks). Set et non List : charge dans le meme @EntityGraph que
+    // resistances (voir CombatRepository), et Hibernate refuse de fetcher
+    // deux "bags" (List sans @OrderColumn) en une requete
+    // (MultipleBagFetchException).
+    @ManyToMany
+    @JoinTable(
+        name = "ennemi_discipline",
+        joinColumns = @JoinColumn(name = "ennemi_id"),
+        inverseJoinColumns = @JoinColumn(name = "discipline_id")
+    )
+    private Set<Discipline> disciplines = new HashSet<>();
 }
