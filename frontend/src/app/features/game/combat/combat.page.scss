@@ -285,10 +285,12 @@ $beige: #e0d3b4;
   border-radius: 14px 4px 14px 4px;
 }
 
+// Ancré dans .plaque-joueur (déjà en position absolue) : les pictos suivent
+// la carte quelle que soit la hauteur de l'écran.
 .bonus-joueur {
   position: absolute;
-  right: clamp(14px, 5.8vw, 25px);
-  bottom: clamp(70px, 12.9vh, 120px);
+  right: 0;
+  bottom: calc(100% + 6px);
   z-index: 5;
   display: flex;
   align-items: center;
@@ -336,6 +338,19 @@ $beige: #e0d3b4;
 .bonus-temp { border-color: rgba(217, 169, 74, 0.8); }
 .bonus-arme { border-color: rgba(78, 95, 49, 0.7); }
 .bonus-psychique { border-color: rgba(117, 83, 139, 0.65); }
+
+// Résistances de l'ennemi : même picto que les bonus du joueur, posé
+// juste au-dessus de la plaque ennemie (qui est déjà en position absolue).
+.bonus-ennemi {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  display: flex;
+  align-items: center;
+  gap: clamp(3px, 1.2vw, 5px);
+}
+
+.resistance-psychique { border-color: rgba(117, 83, 139, 0.65); }
 .bonus-garde { border-color: rgba(162, 84, 42, 0.7); }
 .bonus-objet { border-color: rgba(138, 122, 94, 0.7); }
 

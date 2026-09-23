@@ -11,7 +11,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -236,6 +236,13 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly bonusPuissancePsychique = computed(() =>
     (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE') ?? false) &&
     !(this.ennemiActif()?.resistances ?? []).some(
+      (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+    ),
+  );
+
+  /** L'ennemi actif est insensible à la Puissance Psychique (résistance côté backend). */
+  readonly ennemiResistePuissancePsychique = computed(() =>
+    (this.ennemiActif()?.resistances ?? []).some(
       (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
     ),
   );

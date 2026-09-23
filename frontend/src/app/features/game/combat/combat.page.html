@@ -39,6 +39,13 @@
                ne réapparaît qu'avec le nouvel ennemi (nouvelEnnemi). -->
           @if (!ennemiVaincu()) {
             <div class="plaque plaque-ennemi">
+              @if (ennemiResistePuissancePsychique()) {
+                <div class="bonus-ennemi">
+                  <button type="button" class="bonus-picto resistance-psychique" [attr.title]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('resistance-psychique')">
+                    <img src="/assets/icon/bulle.png" alt="" />
+                  </button>
+                </div>
+              }
               <div class="plaque-titre">
                 <span class="nom">{{ ennemi.nom }}</span>
                 <span class="hab">HAB {{ ennemi.habilite }}</span>
@@ -80,38 +87,38 @@
           </div>
         </div>
 
-        <!-- bonus du joueur, au-dessus de la plaque de vie -->
-        <div class="bonus-joueur" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_ACTIFS' | translate">
-            @if (bonusHabiliteTemp() > 0) {
-              <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
-                <img src="/assets/icon/potion.png" alt="" />
-                <small>+{{ bonusHabiliteTemp() }}</small>
-              </button>
-            }
-            @if (bonusArmeMaitrisee(); as arme) {
-              <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
-                <img src="/assets/icon/epee.png" alt="" />
-              </button>
-            }
-            @if (bonusPuissancePsychique()) {
-              <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('puissance')">
-                <img src="/assets/icon/puissance.png" alt="" />
-              </button>
-            }
-            @if (bonusBouclierPsychique()) {
-              <button type="button" class="bonus-picto bonus-bouclier" [attr.title]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('bouclier')">
-                <img src="/assets/icon/bulle.png" alt="" />
-              </button>
-            }
-            @if (bonusGarde()) {
-              <button type="button" class="bonus-picto bonus-garde" [attr.title]="'COMBAT_PAGE.TITLE_GARDE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_GARDE' | translate" (click)="ouvrirExplicationBonus('garde')">
-                <img src="/assets/icon/bouclier.png" alt="" />
-              </button>
-            }
-        </div>
-
         <!-- plaque de vie du joueur -->
         <div class="plaque plaque-joueur">
+          <!-- bonus du joueur, accrochés au-dessus de la plaque de vie -->
+          <div class="bonus-joueur" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_ACTIFS' | translate">
+              @if (bonusHabiliteTemp() > 0) {
+                <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
+                  <img src="/assets/icon/potion.png" alt="" />
+                  <small>+{{ bonusHabiliteTemp() }}</small>
+                </button>
+              }
+              @if (bonusArmeMaitrisee(); as arme) {
+                <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
+                  <img src="/assets/icon/epee.png" alt="" />
+                </button>
+              }
+              @if (bonusPuissancePsychique()) {
+                <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('puissance')">
+                  <img src="/assets/icon/puissance.png" alt="" />
+                </button>
+              }
+              @if (bonusBouclierPsychique()) {
+                <button type="button" class="bonus-picto bonus-bouclier" [attr.title]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('bouclier')">
+                  <img src="/assets/icon/bulle.png" alt="" />
+                </button>
+              }
+              @if (bonusGarde()) {
+                <button type="button" class="bonus-picto bonus-garde" [attr.title]="'COMBAT_PAGE.TITLE_GARDE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_GARDE' | translate" (click)="ouvrirExplicationBonus('garde')">
+                  <img src="/assets/icon/bouclier.png" alt="" />
+                </button>
+              }
+          </div>
+
           <div class="plaque-titre">
             <span class="nom">{{ nomJoueur() }}</span>
             <span class="hab">
@@ -149,6 +156,10 @@
                 @case ('bouclier') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_BOUCLIER_TITRE' | translate }}</h2>
                   <p>{{ 'COMBAT_PAGE.POPUP_BOUCLIER_TEXTE' | translate }}</p>
+                }
+                @case ('resistance-psychique') {
+                  <h2>{{ 'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TEXTE' | translate: { nom: ennemiActif()?.nom }"></p>
                 }
                 @case ('garde') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_GARDE_TITRE' | translate }}</h2>
