@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, NavController } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
 /**
@@ -20,6 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class RegleCombatPage {
   private readonly router = inject(Router);
+  private readonly navCtrl = inject(NavController);
 
   retour(): void {
     this.router.navigate(['/accueil']);
@@ -30,6 +31,6 @@ export class RegleCombatPage {
   }
 
   back(): void {
-    this.router.navigate(['/regle/equipement']);
+    this.navCtrl.navigateBack(['/regle/equipement']);
   }
 }

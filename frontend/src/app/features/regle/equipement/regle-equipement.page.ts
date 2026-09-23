@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, NavController } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { DisciplineResume } from '../../../core/models/personnage.model';
@@ -16,6 +16,7 @@ import { DisciplineService } from '../../../core/services/discipline.service';
 })
 export class RegleEquipementPage {
   private readonly router = inject(Router);
+  private readonly navCtrl = inject(NavController);
   private readonly disciplines$ = inject(DisciplineService);
 
   readonly disciplines = signal<DisciplineResume[]>([]);
@@ -44,6 +45,6 @@ export class RegleEquipementPage {
   }
 
   back(): void {
-    this.router.navigate(['/regle/disciplines']);
+    this.navCtrl.navigateBack(['/regle/disciplines']);
   }
 }
