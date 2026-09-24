@@ -479,7 +479,11 @@
     "ERREUR_AVANCEMENT_RESURRECTION": "Erreur lors de l'avancement après résurrection :",
     "ERREUR_AVANCER_RESURRECTION": "Impossible d'avancer après la résurrection.",
     "ERREUR_RESURRECTION": "Erreur lors de la résurrection :",
-    "ERREUR_RESSUSCITER_INSTANT": "Impossible de ressusciter pour l'instant."
+    "ERREUR_RESSUSCITER_INSTANT": "Impossible de ressusciter pour l'instant.",
+    "POPUP_OBJETS_NON_PRIS_TITRE": "OBJETS NON RAMASSÉS",
+    "POPUP_OBJETS_NON_PRIS_TEXTE": "Il reste des objets à prendre dans ce chapitre. Si tu continues, tu ne pourras plus les récupérer.",
+    "POPUP_OBJETS_NON_PRIS_VOIR": "VOIR LES OBJETS",
+    "POPUP_OBJETS_NON_PRIS_CONTINUER": "CONTINUER QUAND MÊME"
   },
   "COMBAT_PAGE": {
     "ARIA_REGLES": "Règles du combat",

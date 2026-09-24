@@ -89,6 +89,7 @@
               [tousObjets]="tousObjets()"
               [personnage]="personnage()"
               [personnageId]="personnageId()"
+              [(restants)]="restantsObjets"
               (ramasse)="personnage.set($event)"
             />
           </div>
@@ -311,6 +312,48 @@
       }
     </div>
   </div>
+
+  <!-- Confirmation avant de quitter un chapitre dont des objets n'ont pas
+       été pris (voir ChapitrePage.choisirLien / objetsNonPris). -->
+  @if (lienEnAttenteConfirmation()) {
+    <div class="voile-confirmation" (click)="annulerChangementChapitre()">
+      <div
+        class="popup-confirmation"
+        role="dialog"
+        aria-modal="true"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="popup-confirmation-titre">
+          {{ 'CHAPITRE_PAGE.POPUP_OBJETS_NON_PRIS_TITRE' | translate }}
+        </div>
+
+        <p class="popup-confirmation-texte">
+          {{ 'CHAPITRE_PAGE.POPUP_OBJETS_NON_PRIS_TEXTE' | translate }}
+        </p>
+
+        @for (objet of objetsNonPris(); track objet.objetId) {
+          <div class="popup-confirmation-ligne">
+            <span class="popup-confirmation-nom">{{ objet.nom }}</span>
+            @if (objet.restant > 1) {
+              <span class="popup-confirmation-quantite">×{{ objet.restant }}</span>
+            }
+          </div>
+        }
+
+        <button type="button" class="popup-confirmation-voir" (click)="voirObjetsNonPris()">
+          {{ 'CHAPITRE_PAGE.POPUP_OBJETS_NON_PRIS_VOIR' | translate }}
+        </button>
+
+        <button
+          type="button"
+          class="popup-confirmation-continuer"
+          (click)="confirmerChangementChapitre()"
+        >
+          {{ 'CHAPITRE_PAGE.POPUP_OBJETS_NON_PRIS_CONTINUER' | translate }}
+        </button>
+      </div>
+    </div>
+  }
 
   <app-nav-bar [personnageId]="personnageId()!" [mort]="mort()" />
 </ion-content>

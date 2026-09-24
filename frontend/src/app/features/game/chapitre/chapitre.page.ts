@@ -127,6 +127,29 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   readonly effets = computed(() => this.chapitre()?.effets ?? []);
   readonly estCombat = computed(() => this.chapitre()?.combat ?? false);
 
+  // Quantité restante à prendre par objet du chapitre (objetId -> restant),
+  // partagée en liaison bidirectionnelle avec <app-chapitre-objets>
+  // ([(restants)]) qui la décrémente à chaque ramassage. Initialisée à
+  // chaque GET /chapitre (le backend y renvoie déjà "déclaré - déjà pris",
+  // voir ChapitreMapper). Vit ici et pas dans le composant enfant, qui
+  // n'est monté que tant que l'onglet "objets" est ouvert.
+  readonly restantsObjets = signal<Record<string, number>>({});
+
+  // Objets (valeur > 0 : un gain, pas un paiement) qu'il reste encore à
+  // prendre sur ce chapitre — optionnels non ramassés, ou obligatoires
+  // incomplets (catégorie pleine à l'arrivée). Non vide = confirmation
+  // demandée avant de quitter le chapitre (voir choisirLien).
+  readonly objetsNonPris = computed(() =>
+    this.objets()
+      .filter((o) => o.valeur > 0)
+      .map((o) => ({ ...o, restant: this.restantsObjets()[o.objetId] ?? 0 }))
+      .filter((o) => o.restant > 0),
+  );
+
+  // Lien choisi par le joueur alors que des objets restaient à prendre :
+  // non null = popup de confirmation affiché, en attente de sa réponse.
+  readonly lienEnAttenteConfirmation = signal<LienResponse | null>(null);
+
   // Jeton repere dans le champ "text" (voir chapitre.json) : indique
   // l'endroit ou inserer une carte ennemi (visuelle, pas juste textuelle)
   // au milieu du recit. Un vrai composant/element structure ne peut pas
@@ -439,7 +462,9 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       this.enregistrerEnduranceAvant2102();
     }
 
-    this.choisirLien(lien);
+    // Redirection automatique (échec au hasard), pas un choix du joueur :
+    // pas de confirmation "objets non pris".
+    this.choisirLien(lien, true);
     return true;
   }
 
@@ -574,6 +599,11 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (data) => {
         this.chapitre.set(data);
 
+        const restants: Record<string, number> = {};
+        data.objets.forEach((o) => (restants[o.objetId] = o.valeur));
+        this.restantsObjets.set(restants);
+        this.lienEnAttenteConfirmation.set(null);
+
         if (data.id === 2101 || data.id === 2102) {
           const ancien = localStorage.getItem(this.ancienTirageHasardKey);
 
@@ -700,11 +730,23 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   /**
    * Avance vers un chapitre cible choisi par le joueur.
+   *
+   * S'il reste au moins un objet à prendre sur ce chapitre, on demande
+   * d'abord confirmation (popup) au lieu d'avancer directement : une fois
+   * parti, les objets non pris ne sont plus récupérables. `sansConfirmation`
+   * sert à la réponse "continuer" du popup et aux redirections automatiques
+   * (échec au hasard du 21 / 2101), qui ne sont pas un choix du joueur.
    */
-  choisirLien(lien: LienResponse): void {
+  choisirLien(lien: LienResponse, sansConfirmation = false): void {
     const id = this.personnageId();
     if (!id || !lien.disponible || this.mort() || this.chargement()) return;
 
+    if (!sansConfirmation && this.objetsNonPris().length > 0) {
+      this.lienEnAttenteConfirmation.set(lien);
+      return;
+    }
+
+    this.lienEnAttenteConfirmation.set(null);
     this.chargement.set(true);
     this.chapitreService.avancerVersChapitre(id, lien.chapitreCibleId).subscribe({
       next: () => {
@@ -717,6 +759,32 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargement.set(false);
       },
     });
+  }
+
+  /** Popup "objets non pris" : le joueur confirme, on avance quand même. */
+  confirmerChangementChapitre(): void {
+    const lien = this.lienEnAttenteConfirmation();
+    if (!lien) return;
+
+    this.lienEnAttenteConfirmation.set(null);
+    this.choisirLien(lien, true);
+  }
+
+  /** Popup "objets non pris" : le joueur renonce et va voir les objets. */
+  voirObjetsNonPris(): void {
+    this.lienEnAttenteConfirmation.set(null);
+    // Pas de toggle (contrairement à selectionnerOnglet) : l'onglet doit
+    // s'afficher à coup sûr, même s'il était déjà ouvert.
+    this.ongletObjetsClique.set(true);
+    this.enregistrerChapitreObjetClique();
+    this.ongletActif.set('objets');
+    this.ongletLeve.set('objets');
+    setTimeout(() => this.ongletLeve.set(null), 300);
+  }
+
+  /** Popup "objets non pris" : fermé sans rien faire (clic sur le voile). */
+  annulerChangementChapitre(): void {
+    this.lienEnAttenteConfirmation.set(null);
   }
 
   /** Redirige vers la page d'accueil des personnages. */

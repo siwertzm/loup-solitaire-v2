@@ -479,7 +479,11 @@
     "ERREUR_AVANCEMENT_RESURRECTION": "Error while moving on after reviving:",
     "ERREUR_AVANCER_RESURRECTION": "Unable to move on after reviving.",
     "ERREUR_RESURRECTION": "Error while reviving:",
-    "ERREUR_RESSUSCITER_INSTANT": "Unable to revive right now."
+    "ERREUR_RESSUSCITER_INSTANT": "Unable to revive right now.",
+    "POPUP_OBJETS_NON_PRIS_TITRE": "ITEMS LEFT BEHIND",
+    "POPUP_OBJETS_NON_PRIS_TEXTE": "There are still items to take in this chapter. If you continue, you won't be able to get them back.",
+    "POPUP_OBJETS_NON_PRIS_VOIR": "SEE ITEMS",
+    "POPUP_OBJETS_NON_PRIS_CONTINUER": "CONTINUE ANYWAY"
   },
   "COMBAT_PAGE": {
     "ARIA_REGLES": "Combat rules",
