@@ -154,7 +154,7 @@
   },
   {
     "id": "gloks",
-    "nom": "Une groupe de gloks",
+    "nom": "Un groupe de gloks",
     "description": "Des guerriers gobelins.",
     "habilite": 15,
     "endurance": 13,
