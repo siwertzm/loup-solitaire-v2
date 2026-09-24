@@ -229,7 +229,7 @@
                 <span class="assaut">{{ 'COMBAT_PAGE.ASSAUT_LABEL' | translate: { round: round() } }}</span>
               </div>
               <div class="actions">
-                <button type="button" class="action principale" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">{{ 'COMBAT_PAGE.BOUTON_ATTAQUER' | translate }}</button>
+                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">{{ 'COMBAT_PAGE.BOUTON_ATTAQUER' | translate }}</button>
                 <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">{{ 'COMBAT_PAGE.BOUTON_DEFENSE' | translate }}</button>
                 <button type="button" class="action" [disabled]="actionEnCours()" (click)="ouvrirSac()">{{ 'COMBAT_PAGE.BOUTON_SAC' | translate }}</button>
                 <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">{{ 'COMBAT_PAGE.BOUTON_FUITE' | translate }}</button>
