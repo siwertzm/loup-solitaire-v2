@@ -149,6 +149,8 @@
     "CHAMP_MDP_NOUVEAU": "NOUVEAU MOT DE PASSE",
     "AIDE_MDP_NOUVEAU": "8 caractères minimum.",
     "CHAMP_MDP_CONFIRMATION": "CONFIRMATION",
+    "AFFICHER_MDP": "Afficher le mot de passe",
+    "MASQUER_MDP": "Masquer le mot de passe",
     "CHANGER_MDP": "CHANGER LE MOT DE PASSE",
     "ERREUR_CHARGEMENT": "Impossible de charger votre profil.",
     "ERREUR_MAJ": "La mise à jour a échoué.",

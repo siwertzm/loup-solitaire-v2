@@ -149,6 +149,8 @@
     "CHAMP_MDP_NOUVEAU": "NEW PASSWORD",
     "AIDE_MDP_NOUVEAU": "8 characters minimum.",
     "CHAMP_MDP_CONFIRMATION": "CONFIRMATION",
+    "AFFICHER_MDP": "Show password",
+    "MASQUER_MDP": "Hide password",
     "CHANGER_MDP": "CHANGE PASSWORD",
     "ERREUR_CHARGEMENT": "Unable to load your profile.",
     "ERREUR_MAJ": "The update failed.",
