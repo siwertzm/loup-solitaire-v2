@@ -1,6 +1,8 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+    <button type="button" class="retour" (click)="retour()">
+      {{ (personnageCombatId() ? 'INTRO_COMBAT.RETOUR_COMBAT' : 'INTRO_CREATION.RETOUR') | translate }}
+    </button>
 
     <header class="titre">
       <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
@@ -17,6 +19,31 @@
 
       <h3>{{ 'INTRO_COMBAT.DEFENDRE' | translate }}</h3>
       <p>{{ 'INTRO_COMBAT.PARAGRAPHE_DEFENDRE' | translate }}</p>
+      <table class="table-combat table-defense">
+        <caption>{{ 'INTRO_COMBAT.TABLE_DEFENSE_TITRE' | translate }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_CHIFFRE' | translate }}</th>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_ABSORBE' | translate }}</th>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_BONUS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (chiffre of chiffres; track chiffre) {
+            <tr [class.exceptionnel]="chiffre === 0">
+              <th scope="row">{{ chiffre }}</th>
+              <td>
+                @if (reductions[chiffre] === 100) {
+                  {{ 'INTRO_COMBAT.TABLE_BLOCAGE_TOTAL' | translate }}
+                } @else {
+                  {{ reductions[chiffre] }} %
+                }
+              </td>
+              <td>+{{ bonusDefense[chiffre] }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
 
       <h3>{{ 'INTRO_COMBAT.OBJET' | translate }}</h3>
       <p>{{ 'INTRO_COMBAT.PARAGRAPHE_OBJET' | translate }}</p>
@@ -25,7 +52,64 @@
       <p>{{ 'INTRO_COMBAT.PARAGRAPHE_FUITE' | translate }}</p>
 
       <div class="section">{{ 'INTRO_COMBAT.SECTION_RESOLUTION' | translate }}</div>
-      <p>{{ 'INTRO_COMBAT.PARAGRAPHE_RESOLUTION_1' | translate }}</p>
+      <h3>{{ 'INTRO_COMBAT.QUOTIENT' | translate }}</h3>
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_QUOTIENT' | translate"></p>
+
+      <h3>{{ 'INTRO_COMBAT.CHIFFRE' | translate }}</h3>
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_CHIFFRE' | translate"></p>
+
+      <h3>{{ 'INTRO_COMBAT.TABLE_DEGATS' | translate }}</h3>
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_TABLE' | translate"></p>
+
+      <div #rangeeQuotients class="quotients" role="group" [attr.aria-label]="'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate">
+        @for (libelle of colonnes; track $index) {
+          <button
+            type="button"
+            class="quotient"
+            [class.actif]="colonne() === $index"
+            [attr.aria-pressed]="colonne() === $index"
+            (click)="choisirColonne($index)"
+          >
+            {{ libelle }}
+          </button>
+        }
+      </div>
+
+      <table class="table-combat">
+        <caption>
+          {{ 'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate }} : <b>{{ colonnes[colonne()] }}</b>
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_CHIFFRE' | translate }}</th>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_ENNEMI' | translate }}</th>
+            <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_VOUS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ligne of lignes(); track ligne.chiffre) {
+            <tr [class.exceptionnel]="ligne.chiffre === 0">
+              <th scope="row">{{ ligne.chiffre }}</th>
+              <td class="ennemi" [class.fatal]="ligne.ennemi === FATAL">
+                @if (ligne.ennemi === FATAL) {
+                  {{ 'INTRO_COMBAT.TABLE_FATAL' | translate }}
+                } @else {
+                  {{ ligne.ennemi === 0 ? '0' : '−' + ligne.ennemi }}
+                }
+              </td>
+              <td class="vous" [class.fatal]="ligne.vous === FATAL">
+                @if (ligne.vous === FATAL) {
+                  {{ 'INTRO_COMBAT.TABLE_FATAL' | translate }}
+                } @else {
+                  {{ ligne.vous === 0 ? '0' : '−' + ligne.vous }}
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_EXEMPLE' | translate"></p>
       <p>{{ 'INTRO_COMBAT.PARAGRAPHE_RESOLUTION_2' | translate }}</p>
       <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_COUP_FATAL' | translate"></p>
 
@@ -47,7 +131,13 @@
     </div>
 
     <div class="pied">
-      <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+      @if (personnageCombatId()) {
+        <!-- Ouverte depuis un combat : un seul bouton, qui y ramène. -->
+        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.REPRENDRE_COMBAT' | translate }}</button>
+      } @else {
+        <button type="button" class="valider" (click)="back()">{{ 'INTRO_COMBAT.BACK' | translate }}</button>
+        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+      }
     </div>
   </div>
 </ion-content>

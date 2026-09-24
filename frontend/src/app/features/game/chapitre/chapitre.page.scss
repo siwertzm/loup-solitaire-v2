@@ -483,3 +483,91 @@ ion-content.intro {
     opacity: 0.7;
   }
 }
+/*******************************************
+ *  Popup "objets non pris" — confirmation avant de changer de chapitre
+ *  (même apparence que le popup "catégorie pleine" de <app-chapitre-objets>)
+ *******************************************/
+.voile-confirmation {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Au-dessus de la barre de navigation du bas.
+  z-index: 1000;
+  padding: 24px;
+}
+
+.popup-confirmation {
+  width: 100%;
+  max-width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: $parchemin;
+  color: $encre;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.popup-confirmation-titre {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c2903a;
+  text-align: center;
+}
+
+.popup-confirmation-texte {
+  font-size: 13.5px;
+  color: $sepia;
+  text-align: center;
+  margin: 8px 0 16px;
+}
+
+.popup-confirmation-ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(58, 50, 38, 0.06);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.popup-confirmation-nom {
+  flex: 1;
+  font-size: 14.5px;
+}
+
+.popup-confirmation-quantite {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: $sepia;
+}
+
+.popup-confirmation-voir,
+.popup-confirmation-continuer {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+}
+
+.popup-confirmation-voir {
+  background: $cuivre;
+  border: 1px solid $cuivre;
+  color: $parchemin;
+  font-weight: 700;
+}
+
+.popup-confirmation-continuer {
+  background: transparent;
+  border: 1px solid rgba(58, 50, 38, 0.3);
+  color: $sepia;
+}

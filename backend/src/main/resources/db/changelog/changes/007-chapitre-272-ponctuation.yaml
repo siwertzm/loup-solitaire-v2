@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 007-chapitre-272-ponctuation
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 007-chapitre-272-ponctuation.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

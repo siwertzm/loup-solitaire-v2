@@ -5,6 +5,7 @@ import {
   HostListener,
   inject,
   input,
+  model,
   OnDestroy,
   output,
   signal,
@@ -114,7 +115,15 @@ export class ChapitreObjetsComponent implements OnDestroy {
   // valeur). GET /chapitre renvoie déjà ce "restant" calculé côté serveur
   // (déclaré - déjà pris/appliqué), optionnel ou non : on la décrémente
   // localement à chaque prise réussie pour un retour visuel immédiat.
-  readonly restants = signal<Record<string, number>>({});
+  //
+  // model() (liaison bidirectionnelle [(restants)]) : c'est ChapitrePage qui
+  // possède cet état, initialisé à chaque GET /chapitre. Ce composant n'est
+  // monté que tant que l'onglet "objets" est ouvert : si l'état vivait ici,
+  // il serait perdu à la fermeture de l'onglet (et réinitialisé avec les
+  // valeurs périmées du GET à la réouverture). Le parent s'en sert aussi
+  // pour demander confirmation avant de quitter un chapitre dont des
+  // objets n'ont pas été pris.
+  readonly restants = model<Record<string, number>>({});
   readonly ramassageEnCours = signal<string | null>(null);
 
   /*
@@ -152,15 +161,11 @@ export class ChapitreObjetsComponent implements OnDestroy {
   private ignorerProchainClic = false;
 
   constructor() {
-    // Réinitialise les quantités restantes à chaque nouveau chapitre (l'input
-    // `objets` change), remplaçant le reset manuel que faisait auparavant le
-    // parent dans son abonnement à GET /chapitre.
+    // Les quantités restantes sont réinitialisées par le parent à chaque
+    // GET /chapitre (voir `restants`). Ici, seule sécurité : si le chapitre
+    // change pendant un maintien (l'input `objets` change), on l'arrête.
     effect(() => {
-      const init: Record<string, number> = {};
-      this.objets().forEach((o) => (init[o.objetId] = o.valeur));
-      this.restants.set(init);
-
-      // Sécurité : si le chapitre change pendant un maintien.
+      this.objets();
       this.annulerAppui();
     });
   }

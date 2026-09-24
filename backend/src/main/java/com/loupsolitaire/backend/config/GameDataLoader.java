@@ -2,6 +2,7 @@ package com.loupsolitaire.backend.config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,17 +121,23 @@ public class GameDataLoader implements ApplicationRunner {
         ennemi.setEndurance(json.getEndurance());
 
         if (json.getResistance() != null) {
-            List<Discipline> resistances = json.getResistance().stream()
-                    .map(RefJson::getId)
-                    .map(IdDiscipline::fromJson)
-                    .map(id -> disciplineRepository.findById(id)
-                            .orElseThrow(() -> new RessourceNonTrouveeException(
-                                    "Discipline introuvable pour l'ennemi " + json.getId() + " : " + id)))
-                    .toList();
-            ennemi.setResistances(resistances);
+            ennemi.setResistances(disciplinesEnnemi(json.getId(), json.getResistance()));
+        }
+        if (json.getDisciplines() != null) {
+            ennemi.setDisciplines(new HashSet<>(disciplinesEnnemi(json.getId(), json.getDisciplines())));
         }
 
         return ennemi;
+    }
+
+    private List<Discipline> disciplinesEnnemi(String ennemiId, List<RefJson> refs) {
+        return refs.stream()
+                .map(RefJson::getId)
+                .map(IdDiscipline::fromJson)
+                .map(id -> disciplineRepository.findById(id)
+                        .orElseThrow(() -> new RessourceNonTrouveeException(
+                                "Discipline introuvable pour l'ennemi " + ennemiId + " : " + id)))
+                .toList();
     }
 
     private <T> List<T> lireJson(String cheminClasspath, Class<T> type) throws Exception {

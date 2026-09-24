@@ -1,5 +1,7 @@
 package com.loupsolitaire.backend.response;
 
+import java.util.List;
+
 public record CombatEnnemiResponse(
         String id,
         String nom,
@@ -8,5 +10,6 @@ public record CombatEnnemiResponse(
         int enduranceActuelle,
         boolean actif,
         boolean vaincu,
-        java.util.List<String> resistances) {
+        List<String> resistances,
+        List<String> disciplines) {
 }
