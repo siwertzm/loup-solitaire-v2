@@ -1,6 +1,8 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">{{ 'INTRO_CREATION.RETOUR' | translate }}</button>
+    <button type="button" class="retour" (click)="retour()">
+      {{ (personnageCombatId() ? 'INTRO_COMBAT.RETOUR_COMBAT' : 'INTRO_CREATION.RETOUR') | translate }}
+    </button>
 
     <header class="titre">
       <div class="sur-titre">{{ 'INTRO_CREATION.SUR_TITRE' | translate }}</div>
@@ -129,8 +131,13 @@
     </div>
 
     <div class="pied">
-      <button type="button" class="valider" (click)="back()">{{ 'INTRO_COMBAT.BACK' | translate }}</button>
-      <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+      @if (personnageCombatId()) {
+        <!-- Ouverte depuis un combat : un seul bouton, qui y ramène. -->
+        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.REPRENDRE_COMBAT' | translate }}</button>
+      } @else {
+        <button type="button" class="valider" (click)="back()">{{ 'INTRO_COMBAT.BACK' | translate }}</button>
+        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+      }
     </div>
   </div>
 </ion-content>

@@ -1,6 +1,6 @@
 import { Component, ElementRef, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { IonContent, NavController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IonContent, NavController, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import {
@@ -28,9 +28,17 @@ import {
   templateUrl: './regle-combat.page.html',
   styleUrl: './regle-combat.page.scss',
 })
-export class RegleCombatPage {
+export class RegleCombatPage implements ViewWillEnter {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly navCtrl = inject(NavController);
+
+  /**
+   * Id du personnage quand cette page est ouverte depuis un combat (voir
+   * CombatPage.ouvrirRegles : premier combat, ou bouton "?"). Null quand
+   * on arrive par la chaîne "Règles du jeu" (intro -> ... -> combat).
+   */
+  readonly personnageCombatId = signal<string | null>(null);
 
   readonly FATAL = FATAL;
   readonly colonnes = COLONNES_QUOTIENT;
@@ -69,11 +77,34 @@ export class RegleCombatPage {
   }
 
   retour(): void {
+    if (this.revenirAuCombat()) return;
     this.router.navigate(['/accueil']);
   }
 
   terminer(): void {
+    if (this.revenirAuCombat()) return;
     this.router.navigate(['/accueil']);
+  }
+
+  /**
+   * Relu à CHAQUE affichage, pas seulement à la construction : Ionic peut
+   * réutiliser une instance de cette page déjà créée (ouverte avant depuis
+   * le menu des règles), dont le constructeur ne repasserait pas.
+   */
+  ionViewWillEnter(): void {
+    this.personnageCombatId.set(this.route.snapshot.queryParamMap.get('combat'));
+  }
+
+  /**
+   * Ouverte depuis un combat : navigateBack ramène sur la CombatPage déjà
+   * présente dans la pile Ionic (animation de retour), où
+   * ionViewWillEnter relance le chargement et joue l'intro du combat.
+   */
+  private revenirAuCombat(): boolean {
+    const id = this.personnageCombatId();
+    if (!id) return false;
+    this.navCtrl.navigateBack(['/personnages', id, 'combat']);
+    return true;
   }
 
   back(): void {

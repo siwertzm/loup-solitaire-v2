@@ -346,7 +346,9 @@
     "PARAGRAPHE_MORT_1": "If your ENDURANCE falls to zero during a combat, you are defeated. This is a different outcome from a death occurring elsewhere in a chapter: here, for <b>1 Premium Coin</b>, you do not revive on the spot — you return to the previous chapter, as if you had turned back just before the fatal encounter.",
     "PARAGRAPHE_MORT_2": "Without a Premium Coin, your adventure ends here. Fight wisely, then: sometimes it is better to defend or flee than to throw yourself headlong into a fight you cannot win.",
     "TERMINER": "MENU >",
-    "BACK": "< EQUIPMENT"
+    "BACK": "< EQUIPMENT",
+    "RETOUR_COMBAT": "‹ COMBAT",
+    "REPRENDRE_COMBAT": "TO BATTLE >"
   },
   "VICTOIRE": {
     "SUR_TITRE": "BOOK ONE",
@@ -480,6 +482,7 @@
     "ERREUR_RESSUSCITER_INSTANT": "Unable to revive right now."
   },
   "COMBAT_PAGE": {
+    "ARIA_REGLES": "Combat rules",
     "CHARGEMENT": "Loading combat…",
     "ARIA_BONUS_ACTIFS": "Active bonuses",
     "TITLE_HABILITE_TEMP": "Temporary Combat Skill bonus",

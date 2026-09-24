@@ -346,7 +346,9 @@
     "PARAGRAPHE_MORT_1": "Si votre ENDURANCE tombe à zéro pendant un combat, vous êtes vaincu. C'est un dénouement distinct d'une mort survenue au fil d'un chapitre : ici, contre <b>1 Pièce Premium</b>, vous ne ressuscitez pas sur place, vous revenez au chapitre précédent, comme si vous aviez rebroussé chemin juste avant l'affrontement fatal.",
     "PARAGRAPHE_MORT_2": "Sans Pièce Premium, votre aventure s'achève ici. Combattez donc avec discernement : mieux vaut parfois défendre ou fuir que de vous jeter tête la première dans un duel perdu d'avance.",
     "TERMINER": "MENU >",
-    "BACK": "< ÉQUIPEMENT"
+    "BACK": "< ÉQUIPEMENT",
+    "RETOUR_COMBAT": "‹ COMBAT",
+    "REPRENDRE_COMBAT": "AU COMBAT >"
   },
   "VICTOIRE": {
     "SUR_TITRE": "LIVRE PREMIER",
@@ -480,6 +482,7 @@
     "ERREUR_RESSUSCITER_INSTANT": "Impossible de ressusciter pour l'instant."
   },
   "COMBAT_PAGE": {
+    "ARIA_REGLES": "Règles du combat",
     "CHARGEMENT": "Chargement du combat…",
     "ARIA_BONUS_ACTIFS": "Bonus actifs",
     "TITLE_HABILITE_TEMP": "Bonus d'habilite temporaire",
