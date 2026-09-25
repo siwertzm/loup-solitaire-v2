@@ -799,7 +799,8 @@ class PersonnageServiceTest {
         when(inventaireService.listerInventaire(p)).thenReturn(List.of());
 
         assertThatThrownBy(() -> personnageService.revenirApresDefaite(p))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Vous n'avez pas de Piece Premium (coin) pour revenir en arriere");
     }
 
     // =========================================================
@@ -845,7 +846,8 @@ class PersonnageServiceTest {
         when(inventaireService.listerInventaire(p)).thenReturn(List.of());
 
         assertThatThrownBy(() -> personnageService.ressusciter(p))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Vous n'avez pas de Piece Premium (coin) pour ressusciter");
 
         assertThat(p.isMort()).isTrue(); // inchange
     }

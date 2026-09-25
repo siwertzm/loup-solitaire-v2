@@ -1,13 +1,7 @@
 package com.loupsolitaire.backend.service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.HexFormat;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,14 +12,13 @@ import com.loupsolitaire.backend.model.PasswordResetToken;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
+import com.loupsolitaire.backend.util.Tokens;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
-
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final UtilisateurRepository utilisateurRepository;
     private final PasswordResetTokenRepository tokenRepository;
@@ -59,7 +52,7 @@ public class PasswordResetService {
             tokenRepository.findByUtilisateurAndUtiliseFalse(utilisateur)
                     .forEach(token -> token.setUtilise(true));
 
-            String code = genererCode();
+            String code = Tokens.genererCodeASixChiffres();
 
             PasswordResetToken token = new PasswordResetToken();
 
@@ -177,10 +170,10 @@ public class PasswordResetService {
          * Création d'un token de réinitialisation
          * aléatoire et non prédictible.
          */
-        String resetToken = genererResetToken();
+        String resetToken = Tokens.genererAleatoire();
 
         token.setResetTokenHash(
-                hacher(resetToken)
+                Tokens.hacher(resetToken)
         );
 
         /*
@@ -223,7 +216,7 @@ public class PasswordResetService {
 
         PasswordResetToken token = tokenRepository
                 .findByResetTokenHashAndUtiliseFalse(
-                        hacher(resetToken)
+                        Tokens.hacher(resetToken)
                 )
                 .orElseThrow(
                         () -> new IllegalArgumentException(
@@ -275,54 +268,5 @@ public class PasswordResetService {
     @Transactional
     public void supprimerTokens(Utilisateur utilisateur) {
         tokenRepository.deleteByUtilisateur(utilisateur);
-    }
-
-    private String genererCode() {
-
-        int valeur =
-                SECURE_RANDOM.nextInt(1_000_000);
-
-        return String.format(
-                "%06d",
-                valeur
-        );
-    }
-
-    private String genererResetToken() {
-
-        byte[] bytes = new byte[32];
-
-        SECURE_RANDOM.nextBytes(bytes);
-
-        return Base64
-                .getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(bytes);
-    }
-
-    private String hacher(String valeur) {
-
-        try {
-
-            MessageDigest digest =
-                    MessageDigest.getInstance("SHA-256");
-
-            byte[] hash = digest.digest(
-                    valeur.getBytes(
-                            StandardCharsets.UTF_8
-                    )
-            );
-
-            return HexFormat
-                    .of()
-                    .formatHex(hash);
-
-        } catch (NoSuchAlgorithmException e) {
-
-            throw new IllegalStateException(
-                    "SHA-256 indisponible",
-                    e
-            );
-        }
     }
 }

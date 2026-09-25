@@ -1,12 +1,7 @@
 package com.loupsolitaire.backend.service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.HexFormat;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,14 +12,13 @@ import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.RefreshToken;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.RefreshTokenRepository;
+import com.loupsolitaire.backend.util.Tokens;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -35,11 +29,11 @@ public class RefreshTokenService {
     // (a transmettre au client). Seul le hash est persiste en base.
     @Transactional
     public String creerToken(Utilisateur utilisateur) {
-        String rawToken = genererValeurAleatoire();
+        String rawToken = Tokens.genererAleatoire();
 
         RefreshToken token = new RefreshToken();
         token.setUtilisateur(utilisateur);
-        token.setTokenHash(hacher(rawToken));
+        token.setTokenHash(Tokens.hacher(rawToken));
         token.setExpiresAt(Instant.now().plus(refreshExpirationDays, ChronoUnit.DAYS));
         refreshTokenRepository.save(token);
 
@@ -52,7 +46,7 @@ public class RefreshTokenService {
     // toutes les sessions actives de l'utilisateur sont revoquees par securite.
     @Transactional
     public RotationResult validerEtPivoter(String rawToken) {
-        String hash = hacher(rawToken);
+        String hash = Tokens.hacher(rawToken);
         RefreshToken existant = refreshTokenRepository.findByTokenHash(hash)
                 .orElseThrow(() -> new TokenInvalideException("Session invalide, merci de vous reconnecter"));
 
@@ -83,7 +77,7 @@ public class RefreshTokenService {
 
     @Transactional
     public void revoquer(String rawToken) {
-        refreshTokenRepository.findByTokenHash(hacher(rawToken))
+        refreshTokenRepository.findByTokenHash(Tokens.hacher(rawToken))
                 .ifPresent(token -> {
                     token.setRevoked(true);
                     refreshTokenRepository.save(token);
@@ -102,22 +96,6 @@ public class RefreshTokenService {
     @Transactional
     public void supprimerToutesLesSessions(Utilisateur utilisateur) {
         refreshTokenRepository.deleteByUtilisateur(utilisateur);
-    }
-
-    private String genererValeurAleatoire() {
-        byte[] bytes = new byte[32];
-        SECURE_RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    private String hacher(String valeur) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(valeur.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 indisponible", e);
-        }
     }
 
     public record RotationResult(UUID utilisateurId, String nouveauRefreshToken) {

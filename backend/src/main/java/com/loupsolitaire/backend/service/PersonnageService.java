@@ -52,6 +52,10 @@ public class PersonnageService {
     private static final int NB_DISCIPLINES_A_CHOISIR = 5;
     private static final int CHAPITRE_DEPART_ID = 0;
 
+    // Piece Premium : permet de revenir en arriere apres une defaite ou de
+    // ressusciter (voir verifierPossedeCoin).
+    private static final String OBJET_COIN = "coin";
+
     // Table de tirage 0-9 pour l'objet de depart aleatoire (voir doc de
     // conception du parcours utilisateur).
     private static final Map<Integer, ObjetDepart> TABLE_OBJET_DEPART = Map.ofEntries(
@@ -164,7 +168,7 @@ public class PersonnageService {
         // apres une mort narrative, voir chapitre.json). Illimitee pour le
         // MVP1 (categorie OBJETS_SPECIAUX, non plafonnee) ; deviendra un
         // vrai achat en MVP2.
-        ajouter(personnage, "coin", 999);
+        ajouter(personnage, OBJET_COIN, 999);
 
         // Or de depart : tirage unique, peut valoir 0 (rien a ajouter).
         int orDepart = tableDeHasardService.tirerChiffre();
@@ -345,11 +349,7 @@ public class PersonnageService {
             throw new IllegalArgumentException("Aucun chapitre precedent connu pour ce personnage");
         }
 
-        boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()
-                .anyMatch(item -> item.getObjet().getId().equals("coin") && item.getQuantite() >= 1);
-        if (!possedeCoin) {
-            throw new IllegalArgumentException("Vous n'avez pas de Piece Premium (coin) pour revenir en arriere");
-        }
+        verifierPossedeCoin(personnage, "revenir en arriere");
         // MVP1 : coin illimite, on ne le retire pas (coherent avec les
         // retours narratifs via chapitre.json, qui ne consomment rien non
         // plus). A revoir pour le MVP2 si le coin devient une vraie
@@ -369,6 +369,16 @@ public class PersonnageService {
         personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
 
         reinitialiserHabiliteTemp(personnage);
+    }
+
+    // Garde commune a revenirApresDefaite et ressusciter : il faut au moins
+    // une Piece Premium (coin). MVP1 : elle n'est pas retiree (illimitee).
+    private void verifierPossedeCoin(Personnage personnage, String action) {
+        boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> OBJET_COIN.equals(item.getObjet().getId()) && item.getQuantite() >= 1);
+        if (!possedeCoin) {
+            throw new IllegalArgumentException("Vous n'avez pas de Piece Premium (coin) pour " + action);
+        }
     }
 
     // Garde reutilisee par toute action mutant l'etat du personnage : un
@@ -412,11 +422,7 @@ public class PersonnageService {
                             + "POST /personnages/{id}/chapitre/revenir-apres-defaite");
         }
 
-        boolean possedeCoin = inventaireService.listerInventaire(personnage).stream()
-                .anyMatch(item -> item.getObjet().getId().equals("coin") && item.getQuantite() >= 1);
-        if (!possedeCoin) {
-            throw new IllegalArgumentException("Vous n'avez pas de Piece Premium (coin) pour ressusciter");
-        }
+        verifierPossedeCoin(personnage, "ressusciter");
 
         personnage.setEnduranceActuelle(personnage.getEnduranceMax());
         personnage.setMort(false);
