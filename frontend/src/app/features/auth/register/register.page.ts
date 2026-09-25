@@ -44,6 +44,8 @@ export class RegisterPage {
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),
+        // Pas de "@" : le login accepte nom OU email (regle identique au backend).
+        Validators.pattern(/^[^@]*$/),
       ],
     ],
     email: ['', [Validators.required, Validators.email]],

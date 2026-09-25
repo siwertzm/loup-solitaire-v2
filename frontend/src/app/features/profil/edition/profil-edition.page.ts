@@ -51,7 +51,7 @@ export class ProfilEditionPage {
   }
 
   readonly compteForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[^@]*$/)]],
     email: ['', [Validators.required, Validators.email]],
   });
 

@@ -2,6 +2,7 @@ package com.loupsolitaire.backend.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -16,6 +17,10 @@ public class RegisterRequest {
 
     @NotBlank(message = "Le nom d'utilisateur est obligatoire")
     @Size(min = 3, max = 50, message = "Le nom d'utilisateur doit contenir entre 3 et 50 caracteres")
+    // Interdit "@" : le login accepte le nom d'utilisateur OU l'email. Un nom
+    // contenant "@" pourrait reprendre l'email d'un autre joueur et rendre
+    // la connexion ambigue (voir CustomUserDetailsService).
+    @Pattern(regexp = "^[^@]*$", message = "Le nom d'utilisateur ne peut pas contenir le caractere @")
     private String username;
 
     @NotBlank(message = "L'email est obligatoire")

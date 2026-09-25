@@ -33,6 +33,9 @@
               autocomplete="username"
               [placeholder]="'AUTH.REGISTER.CHAMP_USERNAME_PLACEHOLDER' | translate"
             ></ion-input>
+            @if (form.controls.username.hasError('pattern')) {
+              <ion-note class="erreur">{{ 'AUTH.REGISTER.ERREUR_USERNAME_AROBASE' | translate }}</ion-note>
+            }
           </div>
 
           <div class="champ">

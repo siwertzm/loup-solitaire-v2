@@ -2,6 +2,9 @@ package com.loupsolitaire.backend.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -27,29 +30,80 @@ class CustomUserDetailsServiceTest {
     @InjectMocks
     private CustomUserDetailsService service;
 
-    @Test
-    void chargeUnUtilisateurExistantParUsernameOuEmail() {
+    private Utilisateur utilisateur(String username, String email) {
         Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setUsername("marius");
-        utilisateur.setEmail("marius@example.com");
+        utilisateur.setUsername(username);
+        utilisateur.setEmail(email);
         utilisateur.setPassword("hash");
+        return utilisateur;
+    }
 
-        when(utilisateurRepository.findByUsernameOrEmail("marius", "marius"))
-                .thenReturn(Optional.of(utilisateur));
+    @Test
+    void chargeUnUtilisateurParSonNom() {
+        when(utilisateurRepository.findByUsername("marius"))
+                .thenReturn(Optional.of(utilisateur("marius", "marius@example.com")));
 
         UserDetails result = service.loadUserByUsername("marius");
 
         assertThat(result.getUsername()).isEqualTo("marius");
         assertThat(result.getPassword()).isEqualTo("hash");
         assertThat(result.getAuthorities()).extracting(Object::toString).containsExactly("ROLE_USER");
+        // Sans "@", l'identifiant ne peut etre qu'un nom : l'email n'est jamais cherche.
+        verify(utilisateurRepository, never()).findByEmail(anyString());
+    }
+
+    @Test
+    void chargeUnUtilisateurParSonEmail() {
+        when(utilisateurRepository.findByEmail("marius@example.com"))
+                .thenReturn(Optional.of(utilisateur("marius", "marius@example.com")));
+
+        UserDetails result = service.loadUserByUsername("marius@example.com");
+
+        assertThat(result.getUsername()).isEqualTo("marius");
+        verify(utilisateurRepository, never()).findByUsername(anyString());
+    }
+
+    @Test
+    void lEmailEstPrioritaireSurUnNomIdentique() {
+        // Cas d'attaque : "pirate" a pris comme nom d'utilisateur l'email de
+        // "victime". Se connecter avec cet email doit designer la victime,
+        // sans ambiguite ni erreur.
+        when(utilisateurRepository.findByEmail("victime@example.com"))
+                .thenReturn(Optional.of(utilisateur("victime", "victime@example.com")));
+
+        UserDetails result = service.loadUserByUsername("victime@example.com");
+
+        assertThat(result.getUsername()).isEqualTo("victime");
+        verify(utilisateurRepository, never()).findByUsername(anyString());
+    }
+
+    @Test
+    void unAncienNomContenantUnArobaseResteUtilisablePourSeConnecter() {
+        // Compte cree avant l'interdiction du "@" dans les noms, et dont le
+        // nom ne correspond a aucun email : repli sur la recherche par nom.
+        when(utilisateurRepository.findByEmail("ancien@pseudo")).thenReturn(Optional.empty());
+        when(utilisateurRepository.findByUsername("ancien@pseudo"))
+                .thenReturn(Optional.of(utilisateur("ancien@pseudo", "ancien@example.com")));
+
+        UserDetails result = service.loadUserByUsername("ancien@pseudo");
+
+        assertThat(result.getUsername()).isEqualTo("ancien@pseudo");
     }
 
     @Test
     void leveUneExceptionSiAucunUtilisateurNeCorrespond() {
-        when(utilisateurRepository.findByUsernameOrEmail("inconnu", "inconnu"))
-                .thenReturn(Optional.empty());
+        when(utilisateurRepository.findByUsername("inconnu")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.loadUserByUsername("inconnu"))
+                .isInstanceOf(UsernameNotFoundException.class);
+    }
+
+    @Test
+    void leveUneExceptionSiAucunUtilisateurNeCorrespondAUnEmail() {
+        when(utilisateurRepository.findByEmail("inconnu@example.com")).thenReturn(Optional.empty());
+        when(utilisateurRepository.findByUsername("inconnu@example.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.loadUserByUsername("inconnu@example.com"))
                 .isInstanceOf(UsernameNotFoundException.class);
     }
 

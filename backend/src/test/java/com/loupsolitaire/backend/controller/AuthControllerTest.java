@@ -296,6 +296,53 @@ class AuthControllerTest {
     }
 
     @Test
+    void registerRefuseUnUsernameContenantUnArobase()
+            throws Exception {
+
+        RegisterRequest request =
+                new RegisterRequest();
+
+        // Le nom reprend l'email d'un autre joueur : doit etre refuse avant
+        // meme d'interroger la base.
+        request.setUsername("victime@example.com");
+        request.setEmail(
+                "pirate@example.com"
+        );
+        request.setPassword(
+                "motdepasse123"
+        );
+
+        mockMvc.perform(
+                        post("/auth/register")
+                                .contentType(
+                                        MediaType.APPLICATION_JSON
+                                )
+                                .content(
+                                        objectMapper
+                                                .writeValueAsString(
+                                                        request
+                                                )
+                                )
+                )
+                .andExpect(
+                        status().isBadRequest()
+                )
+                .andExpect(
+                        jsonPath("$.message.username")
+                                .value(
+                                        "Le nom d'utilisateur ne peut pas contenir le caractere @"
+                                )
+                );
+
+        verify(
+                utilisateurRepository,
+                never()
+        ).save(
+                any()
+        );
+    }
+
+    @Test
     void registerRefuseUnEmailDejaPris()
             throws Exception {
 
@@ -1200,6 +1247,56 @@ class AuthControllerTest {
                 emailVerificationService,
                 never()
         ).envoyerLienDeVerification(
+                any()
+        );
+    }
+
+    @Test
+    void updateProfilRefuseUnUsernameContenantUnArobase()
+            throws Exception {
+
+        UserDetails principal =
+                User.builder()
+                        .username("marius")
+                        .password("hash")
+                        .authorities("ROLE_USER")
+                        .build();
+
+        UpdateProfilRequest request =
+                new UpdateProfilRequest();
+
+        request.setUsername(
+                "victime@example.com"
+        );
+
+        authentifierComme(principal);
+
+        mockMvc.perform(
+                        put("/auth/me")
+                                .contentType(
+                                        MediaType.APPLICATION_JSON
+                                )
+                                .content(
+                                        objectMapper
+                                                .writeValueAsString(
+                                                        request
+                                                )
+                                )
+                )
+                .andExpect(
+                        status().isBadRequest()
+                )
+                .andExpect(
+                        jsonPath("$.message.username")
+                                .value(
+                                        "Le nom d'utilisateur ne peut pas contenir le caractere @"
+                                )
+                );
+
+        verify(
+                utilisateurRepository,
+                never()
+        ).save(
                 any()
         );
     }
