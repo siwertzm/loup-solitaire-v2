@@ -24,7 +24,7 @@ tome 1 embarqués sous forme de données JSON chargées au démarrage.
 
 | Composant | Détail |
 |---|---|
-| Langage / Framework | Java 17, Spring Boot |
+| Langage / Framework | Java 21, Spring Boot |
 | Sécurité | Spring Security, JWT (access + refresh token) |
 | Persistance | Spring Data JPA / Hibernate, PostgreSQL |
 | Build | Maven (wrapper `mvnw` fourni) |
@@ -34,7 +34,7 @@ tome 1 embarqués sous forme de données JSON chargées au démarrage.
 
 ## Prérequis
 
-- Java 17
+- Java 21
 - PostgreSQL (via Docker ou installation locale)
 - Docker + Docker Compose (recommandé, option A ci-dessous)
 
