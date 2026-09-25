@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +24,12 @@ import lombok.Setter;
 // Un chemin sortant d'un Chapitre vers un autre. Toujours possede par un
 // seul Chapitre (jamais partage) : contrairement a la V1 qui utilisait un
 // ManyToMany Chapitre<->Lien, ici c'est un vrai ManyToOne + cascade.
+//
+// Donnee du catalogue (livre), identique pour tous les joueurs et jamais
+// modifiee en jeu : gardee en cache de second niveau Hibernate (voir
+// application.properties) pour ne pas la relire en base a chaque requete.
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "lien")
 @Getter
 @Setter
@@ -45,5 +53,6 @@ public class Lien {
     private Chapitre chapitreCible;
 
     @OneToMany(mappedBy = "lien", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Cond> conditions = new ArrayList<>();
 }

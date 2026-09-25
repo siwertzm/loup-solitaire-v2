@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +20,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // Identifiant metier (String, slug) : reference directement dans chapitre.json.
+//
+// Donnee du catalogue (livre), identique pour tous les joueurs et jamais
+// modifiee en jeu : gardee en cache de second niveau Hibernate (voir
+// application.properties) pour ne pas la relire en base a chaque requete.
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "ennemi")
 @Getter
 @Setter
@@ -49,6 +57,7 @@ public class Ennemi {
         joinColumns = @JoinColumn(name = "ennemi_id"),
         inverseJoinColumns = @JoinColumn(name = "discipline_id")
     )
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Discipline> resistances = new ArrayList<>();
 
     // Disciplines que l'ennemi possede lui-meme (ex. Puissance Psychique des
@@ -62,5 +71,6 @@ public class Ennemi {
         joinColumns = @JoinColumn(name = "ennemi_id"),
         inverseJoinColumns = @JoinColumn(name = "discipline_id")
     )
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Discipline> disciplines = new HashSet<>();
 }

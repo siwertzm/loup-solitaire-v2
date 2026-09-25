@@ -2,6 +2,9 @@ package com.loupsolitaire.backend.model;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,7 +27,12 @@ import lombok.Setter;
 // optionnel : true si le joueur peut choisir de ne pas prendre l'objet
 // (la plupart des trouvailles), false si l'effet est automatique/obligatoire
 // (ex. un paiement, un vol).
+//
+// Donnee du catalogue (livre), identique pour tous les joueurs et jamais
+// modifiee en jeu : gardee en cache de second niveau Hibernate (voir
+// application.properties) pour ne pas la relire en base a chaque requete.
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "objet_chap")
 @Getter
 @Setter

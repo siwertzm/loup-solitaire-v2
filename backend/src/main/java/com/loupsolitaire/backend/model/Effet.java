@@ -6,6 +6,9 @@ import java.util.UUID;
 
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +28,12 @@ import lombok.Setter;
 // Jamais partage entre deux Objet/Chapitre : toujours possede par un seul
 // parent. D'ou les deux colonnes de cle etrangere nullables ci-dessous
 // (une seule remplie a la fois) plutot qu'une relation ManyToMany comme en V1.
+//
+// Donnee du catalogue (livre), identique pour tous les joueurs et jamais
+// modifiee en jeu : gardee en cache de second niveau Hibernate (voir
+// application.properties) pour ne pas la relire en base a chaque requete.
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "effet")
 @Getter
 @Setter
@@ -52,5 +60,6 @@ public class Effet {
     private Chapitre chapitre;
 
     @OneToMany(mappedBy = "effet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Cond> conditions = new ArrayList<>();
 }

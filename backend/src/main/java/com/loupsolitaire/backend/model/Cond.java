@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,7 +24,12 @@ import lombok.Setter;
 // Jamais partagee entre plusieurs Effet/Lien : toujours possedee par un seul
 // parent (voir doc de conception). Le rattachement a Lien sera ajoute quand
 // on traitera chapitre.json (les liens de chapitre ont aussi des conditions).
+//
+// Donnee du catalogue (livre), identique pour tous les joueurs et jamais
+// modifiee en jeu : gardee en cache de second niveau Hibernate (voir
+// application.properties) pour ne pas la relire en base a chaque requete.
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Table(name = "cond")
 @Getter
 @Setter
