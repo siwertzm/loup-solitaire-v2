@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 008-ennemi-discipline
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 008-ennemi-discipline.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

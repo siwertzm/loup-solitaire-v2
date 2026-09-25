@@ -1,17 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonIcon } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { AuthService } from '../../../core/services/auth.service';
 
+addIcons({ 'eye-outline': eyeOutline, 'eye-off-outline': eyeOffOutline });
+
 @Component({
   selector: 'app-profil-edition',
   standalone: true,
-  imports: [IonContent, ReactiveFormsModule, TranslatePipe],
+  imports: [IonContent, IonIcon, ReactiveFormsModule, TranslatePipe],
   templateUrl: './profil-edition.page.html',
   styleUrl: './profil-edition.page.scss',
 })
@@ -26,6 +30,25 @@ export class ProfilEditionPage {
   readonly message = signal<string | null>(null);
   readonly erreur = signal<string | null>(null);
   readonly emailVerifie = signal(false);
+
+  /** Champs mot de passe actuellement affichés en clair. */
+  private readonly mdpAffiches = signal<ReadonlySet<string>>(new Set());
+
+  mdpVisible(champ: string): boolean {
+    return this.mdpAffiches().has(champ);
+  }
+
+  basculerMdp(champ: string): void {
+    this.mdpAffiches.update((actuels) => {
+      const suivants = new Set(actuels);
+      if (suivants.has(champ)) {
+        suivants.delete(champ);
+      } else {
+        suivants.add(champ);
+      }
+      return suivants;
+    });
+  }
 
   readonly compteForm = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],

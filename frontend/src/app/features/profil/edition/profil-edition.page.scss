@@ -114,6 +114,41 @@ ion-content.profil-edition {
     }
   }
 
+  .saisie-mdp {
+    position: relative;
+    display: block;
+
+    input {
+      padding-right: 46px;
+    }
+  }
+
+  .oeil {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #8a826d; // même teinte que --ion-color-oeil (login / register)
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 21px;
+    }
+
+    &:focus-visible {
+      outline: 1px solid $cuivre;
+      border-radius: 8px;
+    }
+  }
+
   .aide {
     font-size: 13px;
     color: $rouge;

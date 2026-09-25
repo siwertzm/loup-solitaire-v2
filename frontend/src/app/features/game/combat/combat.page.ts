@@ -11,7 +11,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -63,6 +63,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   /** Fond d'arène : foret | brume | crepuscule | pierre | gravure. */
   readonly fond = 'foret';
   private readonly vitesseTexte = 22;
+
+  /**
+   * Route de la page des règles du combat (page existante). Ouverte
+   * automatiquement au tout premier combat sur cet appareil, puis à la
+   * demande via le bouton "?" de l'arène.
+   */
+  private readonly routeReglesCombat = '/regle/combat';
+  private readonly reglesCombatVuesKey = 'loup-solitaire:regles-combat-vues';
 
   readonly personnageId = signal<string | null>(null);
   readonly personnage = signal<PersonnageResume | null>(null);
@@ -240,6 +248,24 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     ),
   );
 
+  /** L'ennemi actif est insensible à la Puissance Psychique (résistance côté backend). */
+  readonly ennemiResistePuissancePsychique = computed(() =>
+    (this.ennemiActif()?.resistances ?? []).some(
+      (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+    ),
+  );
+
+  /**
+   * L'ennemi actif possède la Puissance Psychique (ex. Vordaks) et le joueur
+   * n'a pas le Bouclier Psychique pour s'en protéger. Même logique que
+   * bonusPuissancePsychique côté joueur, qui disparaît si l'ennemi résiste.
+   */
+  readonly ennemiPossedePuissancePsychique = computed(() =>
+    (this.ennemiActif()?.disciplines ?? []).some(
+      (discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+    ) && !this.bonusBouclierPsychique(),
+  );
+
   readonly bonusBouclierPsychique = computed(() =>
     (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'BOUCLIER_PSYCHIQUE') ?? false)
   );
@@ -387,24 +413,74 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (c.assautsLivres === 0) {
-      // Combat tout juste initié : scène d'introduction.
-      const ennemi = this.ennemiActif();
-      if (ennemi) {
-        this.jouerFile([
-          { txt: this.translate.instant('COMBAT_PAGE.MSG_BARRE_ROUTE', { nom: ennemi.nom }) },
-          {
-            txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', { habilite: ennemi.habilite, endurance: ennemi.enduranceMax }),
-            stats: { habilite: ennemi.habilite, endurance: ennemi.enduranceMax },
-          },
-        ]);
-      } else {
-        this.phase.set('MENU');
+      // Tout premier combat sur cet appareil : on affiche d'abord la page
+      // des règles. Le drapeau est posé AVANT de partir : au retour,
+      // ionViewWillEnter -> chargerTout -> combatCharge repasse ici et
+      // joue alors l'intro normalement, sans renvoyer en boucle vers les
+      // règles. Si le stockage est indisponible, on ne redirige pas (sinon
+      // boucle infinie) : le combat démarre directement.
+      if (!this.reglesDejaVues() && this.marquerReglesVues()) {
+        this.ouvrirRegles();
+        return;
       }
+      this.jouerIntro();
     } else {
       // Combat repris en cours (ex. rechargement de page) : direct au menu.
       this.phase.set('MENU');
       this.msg.set('');
     }
+  }
+
+  /** Scène d'introduction d'un combat tout juste initié. */
+  private jouerIntro(): void {
+    const ennemi = this.ennemiActif();
+    if (!ennemi) {
+      this.phase.set('MENU');
+      return;
+    }
+
+    this.jouerFile([
+      { txt: this.translate.instant('COMBAT_PAGE.MSG_BARRE_ROUTE', { nom: ennemi.nom }) },
+      {
+        txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', { habilite: ennemi.habilite, endurance: ennemi.enduranceMax }),
+        stats: { habilite: ennemi.habilite, endurance: ennemi.enduranceMax },
+      },
+    ]);
+  }
+
+  /* ---------------------------------------------------------------- règles */
+
+  private reglesDejaVues(): boolean {
+    try {
+      return localStorage.getItem(this.reglesCombatVuesKey) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  /** Renvoie false si le stockage est indisponible (navigation privée...). */
+  private marquerReglesVues(): boolean {
+    try {
+      localStorage.setItem(this.reglesCombatVuesKey, '1');
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Ouvre la page des règles en lui passant l'id du personnage : elle
+   * affiche alors ses boutons "retour au combat" et ramène à
+   * /personnages/{id}/combat (voir RegleCombatPage). On ne passe PAS
+   * this.router.url : appelé depuis combatCharge() pendant l'entrée sur
+   * cet écran, il peut encore valoir l'URL de la page précédente.
+   */
+  ouvrirRegles(): void {
+    const id = this.personnageId();
+    if (!id || this.actionEnCours()) return;
+    this.router.navigate([this.routeReglesCombat], {
+      queryParams: { combat: id },
+    });
   }
 
   private messageResolu(statut: string): string {

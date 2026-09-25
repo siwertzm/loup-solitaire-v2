@@ -16,6 +16,8 @@ export interface CombatEnnemiResponse {
   actif: boolean;
   vaincu: boolean;
   resistances: string[];
+  /** Disciplines possédées par l'ennemi (ex. PUISSANCE_PSYCHIQUE pour les Vordaks). */
+  disciplines: string[];
 }
 
 /**

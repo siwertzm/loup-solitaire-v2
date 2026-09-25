@@ -91,6 +91,10 @@ public class CombatMapper {
                 vaincu,
                 ce.getEnnemi().getResistances().stream()
                     .map(discipline -> discipline.getId().name())
+                    .toList(),
+                ce.getEnnemi().getDisciplines().stream()
+                    .map(discipline -> discipline.getId().name())
+                    .sorted()
                     .toList());
     }
 }

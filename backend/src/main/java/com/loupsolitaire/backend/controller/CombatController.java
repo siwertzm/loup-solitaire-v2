@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class CombatController {
     // deja EN_COURS (idempotent : rouvrir l'ecran ne relance pas le combat
     // a zero). 400 si le chapitre courant n'est pas combat=true.
     @PostMapping
+    @Transactional
     public ResponseEntity<CombatResponse> initier(
             @PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -56,6 +58,7 @@ public class CombatController {
     // chapitre actuel du personnage. Contrairement a POST, ne cree rien :
     // 404 si aucun combat n'a encore ete initie sur ce chapitre.
     @GetMapping
+    @Transactional
     public CombatResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
         Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
         Combat combat = combatService.combatActuel(personnage)
@@ -68,6 +71,7 @@ public class CombatController {
     // sur le resultat (tirages, table de resolution) : le corps de la
     // requete ne contient que le choix d'action, jamais un resultat.
     @PostMapping("/tour")
+    @Transactional
     public CombatResponse jouerTour(
             @PathVariable UUID id,
             @Valid @RequestBody JouerTourCombatRequest request,

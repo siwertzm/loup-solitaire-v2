@@ -22,7 +22,7 @@ public interface CombatRepository extends JpaRepository<Combat, UUID> {
     // (CombatService.initierCombat -> jouerTour -> CombatMapper), donc ses
     // collections LAZY doivent etre deja chargees avant de quitter la
     // premiere transaction, sous peine de LazyInitializationException.
-    @EntityGraph(attributePaths = {"ennemis", "ennemis.ennemi", "ennemis.ennemi.resistances"})
+    @EntityGraph(attributePaths = {"ennemis", "ennemis.ennemi", "ennemis.ennemi.resistances", "ennemis.ennemi.disciplines"})
     Optional<Combat> findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(Personnage personnage, Integer chapitreId);
 
     List<Combat> findByPersonnage(Personnage personnage);

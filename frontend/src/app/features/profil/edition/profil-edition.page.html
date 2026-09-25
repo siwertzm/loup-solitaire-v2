@@ -48,12 +48,40 @@
 
         <label class="champ">
           <span class="cle">{{ 'PROFIL_EDITION.CHAMP_MDP_ACTUEL' | translate }}</span>
-          <input type="password" formControlName="actuel" autocomplete="current-password" />
+          <span class="saisie-mdp">
+            <input
+              [type]="mdpVisible('actuel') ? 'text' : 'password'"
+              formControlName="actuel"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="oeil"
+              (click)="basculerMdp('actuel')"
+              [attr.aria-label]="(mdpVisible('actuel') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+            >
+              <ion-icon [name]="mdpVisible('actuel') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </span>
         </label>
 
         <label class="champ">
           <span class="cle">{{ 'PROFIL_EDITION.CHAMP_MDP_NOUVEAU' | translate }}</span>
-          <input type="password" formControlName="nouveau" autocomplete="new-password" />
+          <span class="saisie-mdp">
+            <input
+              [type]="mdpVisible('nouveau') ? 'text' : 'password'"
+              formControlName="nouveau"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="oeil"
+              (click)="basculerMdp('nouveau')"
+              [attr.aria-label]="(mdpVisible('nouveau') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+            >
+              <ion-icon [name]="mdpVisible('nouveau') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </span>
           @if (motDePasseForm.controls.nouveau.touched && motDePasseForm.controls.nouveau.invalid) {
             <span class="aide">{{ 'PROFIL_EDITION.AIDE_MDP_NOUVEAU' | translate }}</span>
           }
@@ -61,7 +89,21 @@
 
         <label class="champ">
           <span class="cle">{{ 'PROFIL_EDITION.CHAMP_MDP_CONFIRMATION' | translate }}</span>
-          <input type="password" formControlName="confirmation" autocomplete="new-password" />
+          <span class="saisie-mdp">
+            <input
+              [type]="mdpVisible('confirmation') ? 'text' : 'password'"
+              formControlName="confirmation"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="oeil"
+              (click)="basculerMdp('confirmation')"
+              [attr.aria-label]="(mdpVisible('confirmation') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+            >
+              <ion-icon [name]="mdpVisible('confirmation') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </span>
         </label>
 
         <button type="submit" class="secondaire" [disabled]="motDePasseForm.invalid || envoi()">
