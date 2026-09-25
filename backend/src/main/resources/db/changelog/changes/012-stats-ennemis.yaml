@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 012-stats-ennemis
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 012-stats-ennemis.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

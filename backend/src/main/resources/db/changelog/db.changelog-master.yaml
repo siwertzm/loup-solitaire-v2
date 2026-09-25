@@ -32,3 +32,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changes/011-tirage-creation.yaml
+
+  - include:
+      file: db/changelog/changes/012-stats-ennemis.yaml

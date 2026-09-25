@@ -106,7 +106,7 @@ class GameDataLoaderTest {
     // =========================================================
 
     @Test
-    void chargeLesVingtNeufEnnemisEtResoutLeursResistances() throws Exception {
+    void chargeLesTrenteDeuxEnnemisEtResoutLeursResistances() throws Exception {
         when(disciplineRepository.count()).thenReturn(1L);
         when(ennemiRepository.count()).thenReturn(0L);
         when(objetRepository.count()).thenReturn(1L);
@@ -131,7 +131,7 @@ class GameDataLoaderTest {
 
         List<Ennemi> ennemis = captor.getValue();
 
-        assertThat(ennemis).hasSize(29);
+        assertThat(ennemis).hasSize(32);
 
         Ennemi gluatre = ennemis.stream()
                 .filter(e -> e.getId().equals("gluatre"))
@@ -149,7 +149,7 @@ class GameDataLoaderTest {
     @Test
     void neRechargeRienSiLesEnnemisSontDejaPresents() throws Exception {
         when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(29L);
+        when(ennemiRepository.count()).thenReturn(32L);
         when(objetRepository.count()).thenReturn(1L);
         when(chapitreRepository.count()).thenReturn(1L);
 
@@ -241,7 +241,7 @@ class GameDataLoaderTest {
         when(objetRepository.count()).thenReturn(1L);
         when(chapitreRepository.count()).thenReturn(0L);
 
-        // Le catalogue reel (28 objets, 29 ennemis) n'est pas charge dans ce
+        // Le catalogue reel (28 objets, 32 ennemis) n'est pas charge dans ce
         // test isole : on simule des lookups toujours reussis pour n'importe
         // quel id demande, plutot que de mocker toutes les entrees une par une.
         when(ennemiRepository.findById(anyString())).thenAnswer(inv -> {
