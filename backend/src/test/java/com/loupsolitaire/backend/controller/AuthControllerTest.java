@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +41,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
 import com.loupsolitaire.backend.config.JwtUtil;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
@@ -95,16 +95,11 @@ class AuthControllerTest {
     private MockMvc mockMvc;
 
     /*
-     * WRITE_DATES_AS_TIMESTAMPS désactivé :
-     * sinon LocalDate se sérialise en tableau [1997,5,12]
-     * au lieu de "1997-05-12", contrairement au vrai
-     * comportement de l'application.
+     * Jackson 3 : WRITE_DATES_AS_TIMESTAMPS est désactivé par défaut,
+     * LocalDate se sérialise donc directement en "1997-05-12",
+     * comme dans l'application.
      */
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules()
-            .disable(
-                    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-            );
+    private final JsonMapper objectMapper = JsonMapper.builder().build();
 
     @BeforeEach
     void setUp() {
@@ -134,7 +129,7 @@ class AuthControllerTest {
                         new AuthenticationPrincipalArgumentResolver()
                 )
                 .setMessageConverters(
-                        new MappingJackson2HttpMessageConverter(
+                        new JacksonJsonHttpMessageConverter(
                                 objectMapper
                         ),
                         new StringHttpMessageConverter()

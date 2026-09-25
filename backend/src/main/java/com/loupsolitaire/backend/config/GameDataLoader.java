@@ -13,7 +13,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
 import com.loupsolitaire.backend.dto.ChapitreJson;
 import com.loupsolitaire.backend.dto.CondJson;
 import com.loupsolitaire.backend.dto.DisciplineJson;
@@ -62,7 +64,14 @@ public class GameDataLoader implements ApplicationRunner {
     private final EnnemiRepository ennemiRepository;
     private final ObjetRepository objetRepository;
     private final ChapitreRepository chapitreRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // Jackson 3 a change deux valeurs par defaut par rapport a Jackson 2.
+    // On garde explicitement l'ancien comportement pour les fichiers de donnees :
+    // - un champ inconnu dans un JSON fait echouer le chargement (detecte les fautes de frappe) ;
+    // - un null sur un champ primitif (int, boolean) donne 0 / false au lieu d'une erreur.
+    private final JsonMapper objectMapper = JsonMapper.builder()
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+            .build();
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
