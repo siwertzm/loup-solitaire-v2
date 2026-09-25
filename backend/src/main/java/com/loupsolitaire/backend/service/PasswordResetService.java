@@ -271,6 +271,12 @@ public class PasswordResetService {
                 .revoquerToutesLesSessions(utilisateur);
     }
 
+    // Suppression de compte (voir CompteService.supprimerCompte).
+    @Transactional
+    public void supprimerTokens(Utilisateur utilisateur) {
+        tokenRepository.deleteByUtilisateur(utilisateur);
+    }
+
     private String genererCode() {
 
         int valeur =

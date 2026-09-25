@@ -1,20 +1,11 @@
 package com.loupsolitaire.backend.controller;
 
-import java.time.Instant;
-import java.util.List;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,288 +16,142 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.loupsolitaire.backend.config.JwtUtil;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
-import com.loupsolitaire.backend.exception.CompteNonVerifieException;
-import com.loupsolitaire.backend.exception.ConflitException;
-import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
-import com.loupsolitaire.backend.model.Utilisateur;
-import com.loupsolitaire.backend.repository.EmailVerificationTokenRepository;
-import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
-import com.loupsolitaire.backend.repository.RefreshTokenRepository;
-import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.AuthRequest;
 import com.loupsolitaire.backend.request.ChangePasswordRequest;
 import com.loupsolitaire.backend.request.DeleteAccountRequest;
+import com.loupsolitaire.backend.request.ForgotPasswordRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
 import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
-import com.loupsolitaire.backend.request.UpdateProfilRequest;
-import com.loupsolitaire.backend.response.AuthResponse;
-import com.loupsolitaire.backend.response.PersonnageResponse;
-import com.loupsolitaire.backend.response.UtilisateurResponse;
-import com.loupsolitaire.backend.service.EmailVerificationService;
-import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
-import com.loupsolitaire.backend.service.PersonnageService;
-import com.loupsolitaire.backend.service.RefreshTokenService;
-import com.loupsolitaire.backend.request.ForgotPasswordRequest;
 import com.loupsolitaire.backend.request.ResetPasswordRequest;
-import com.loupsolitaire.backend.service.PasswordResetService;
+import com.loupsolitaire.backend.request.UpdateProfilRequest;
 import com.loupsolitaire.backend.request.VerifyResetCodeRequest;
+import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.ResetCodeResponse;
+import com.loupsolitaire.backend.response.UtilisateurResponse;
+import com.loupsolitaire.backend.service.AuthService;
+import com.loupsolitaire.backend.service.CompteService;
+import com.loupsolitaire.backend.service.EmailVerificationService;
+import com.loupsolitaire.backend.service.PasswordResetService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+// Couche HTTP uniquement : les regles sont dans AuthService (sessions),
+// CompteService (compte), EmailVerificationService et PasswordResetService.
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UtilisateurRepository utilisateurRepository;
-    private final PersonnageRepository personnageRepository;
-    private final PersonnageMapper personnageMapper;
-    private final PersonnageService personnageService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final AuthService authService;
+    private final CompteService compteService;
     private final EmailVerificationService emailVerificationService;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordResetService passwordResetService;
-    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Value("${app.mobile-login-url}")
     private String mobileLoginUrl;
 
+    // =========================================================
+    // Inscription et verification de l'email
+    // =========================================================
+
     @PostMapping("/register")
     public ResponseEntity<UtilisateurResponse> register(@Valid @RequestBody RegisterRequest request) {
-        if (utilisateurRepository.existsByUsername(request.getUsername())) {
-            throw new ConflitException("Nom d'utilisateur deja utilise");
-        }
-        if (utilisateurRepository.existsByEmail(request.getEmail())) {
-            throw new ConflitException("Cet email est deja utilise");
-        }
-
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setUsername(request.getUsername());
-        utilisateur.setEmail(request.getEmail());
-        utilisateur.setPassword(passwordEncoder.encode(request.getPassword()));
-        utilisateur.setDateNaissance(request.getDateNaissance());
-        utilisateur.setDateCreation(Instant.now());
-        utilisateurRepository.save(utilisateur);
-
-        emailVerificationService.envoyerLienDeVerification(utilisateur);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(UtilisateurResponse.fromEntity(utilisateur));
+        return ResponseEntity.status(HttpStatus.CREATED).body(compteService.inscrire(request));
     }
 
-    @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody AuthRequest request) {
-        // identifiant accepte username OU email : voir CustomUserDetailsService.
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getIdentifiant(), request.getPassword()));
-
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
-
-        if (!utilisateur.isEmailVerifie()) {
-            throw new CompteNonVerifieException(
-                    "Merci de confirmer ton adresse email avant de te connecter (verifie ta boite mail)");
-        }
-
-        String accessToken = jwtUtil.generateToken(utilisateur.getId());
-        String refreshToken = refreshTokenService.creerToken(utilisateur);
-
-        return new AuthResponse(accessToken, refreshToken);
-    }
-
+    // Lien recu par email : valide le compte puis redirige vers l'application
+    // mobile (deep link).
     @GetMapping("/verify-email")
-    public ResponseEntity<Void> verifyEmail(
-            @RequestParam String token) {
-
+    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         emailVerificationService.verifier(token);
-
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .location(
-                        URI.create(mobileLoginUrl))
-                .build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(mobileLoginUrl)).build();
     }
 
+    // Reponse identique que l'email existe ou non, et qu'il soit deja verifie
+    // ou non : evite de laisser deviner quels emails sont enregistres.
     @PostMapping("/resend-verification")
     public ResponseEntity<Void> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
-        utilisateurRepository.findByEmail(request.getEmail()).ifPresent(utilisateur -> {
-            if (!utilisateur.isEmailVerifie()) {
-                emailVerificationService.envoyerLienDeVerification(utilisateur);
-            }
-        });
-        // Reponse identique que l'email existe ou non, et qu'il soit deja verifie
-        // ou non : evite de laisser deviner quels emails sont enregistres.
+        compteService.renvoyerVerification(request.getEmail());
         return ResponseEntity.accepted().build();
     }
 
-    // Ne necessite PAS de jeton d'acces valide dans l'en-tete Authorization :
-    // c'est justement le cas d'usage (le jeton d'acces a expire, on en redemande
-    // un via le refresh token, plus longue duree de vie).
-    @PostMapping("/refresh")
-    public AuthResponse refresh(@Valid @RequestBody RefreshRequest request) {
-        RefreshTokenService.RotationResult resultat = refreshTokenService.validerEtPivoter(request.getRefreshToken());
+    // =========================================================
+    // Sessions
+    // =========================================================
 
-        String nouvelAccessToken = jwtUtil.generateToken(resultat.utilisateurId());
-
-        return new AuthResponse(nouvelAccessToken, resultat.nouveauRefreshToken());
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody AuthRequest request) {
+        return authService.connecter(request.getIdentifiant(), request.getPassword());
     }
 
+    // Ne necessite PAS d'access token valide : c'est justement le cas
+    // d'usage (l'access token a expire, on en redemande un).
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@Valid @RequestBody RefreshRequest request) {
+        return authService.rafraichir(request.getRefreshToken());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest request) {
+        authService.deconnecter(request.getRefreshToken());
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================================================
+    // Mot de passe oublie
+    // =========================================================
+
+    // Toujours la meme reponse, que l'adresse existe ou non.
     @PostMapping("/forgot-password")
-    public ResponseEntity<Void> forgotPassword(
-            @Valid @RequestBody ForgotPasswordRequest request) {
-
-        passwordResetService.demanderReinitialisation(
-                request.getEmail());
-
-        /*
-         * Toujours la même réponse que l'adresse existe ou non.
-         */
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.demanderReinitialisation(request.getEmail());
         return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/verify-reset-code")
-    public ResetCodeResponse verifyResetCode(
-            @Valid @RequestBody VerifyResetCodeRequest request) {
-
-        String resetToken = passwordResetService.verifierCode(
-                request.getEmail(),
-                request.getCode());
-
-        return new ResetCodeResponse(
-                resetToken);
+    public ResetCodeResponse verifyResetCode(@Valid @RequestBody VerifyResetCodeRequest request) {
+        return new ResetCodeResponse(passwordResetService.verifierCode(request.getEmail(), request.getCode()));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(
-            @Valid @RequestBody ResetPasswordRequest request) {
-
-        passwordResetService.reinitialiser(
-                request.getResetToken(),
-                request.getNewPassword());
-
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.reinitialiser(request.getResetToken(), request.getNewPassword());
         return ResponseEntity.noContent().build();
     }
+
+    // =========================================================
+    // Compte de l'utilisateur connecte
+    // =========================================================
 
     @GetMapping("/me")
     public UtilisateurResponse getCurrentUser(@AuthenticationPrincipal UtilisateurConnecte connecte) {
-        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
-
-        List<PersonnageResponse> personnages = personnageRepository.findByUtilisateur(utilisateur).stream()
-                .map(personnageMapper::versReponse)
-                .toList();
-
-        return UtilisateurResponse.fromEntity(utilisateur, personnages);
+        return compteService.profil(connecte);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @Valid @RequestBody RefreshRequest request) {
-        refreshTokenService.revoquer(
-                request.getRefreshToken());
-
-        return ResponseEntity.noContent().build();
-    }
-
-    // Complete/modifie le profil (email, date de naissance) apres inscription.
     // Champs optionnels : seuls ceux fournis (non null) sont mis a jour.
     @PutMapping("/me")
     public UtilisateurResponse updateProfil(
             @Valid @RequestBody UpdateProfilRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
-
-        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
-
-        if (request.getUsername() != null && !request.getUsername().equals(utilisateur.getUsername())) {
-            if (utilisateurRepository.existsByUsername(request.getUsername())) {
-                throw new ConflitException("Ce nom d'utilisateur est deja utilise");
-            }
-            utilisateur.setUsername(request.getUsername());
-        }
-
-        if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(utilisateur.getEmail())) {
-            if (utilisateurRepository.existsByEmail(request.getEmail())) {
-                throw new ConflitException("Cet email est deja utilise");
-            }
-            utilisateur.setEmail(request.getEmail());
-            // Changer d'email revoque la verification : il faut reconfirmer la nouvelle
-            // adresse.
-            utilisateur.setEmailVerifie(false);
-            emailVerificationService.envoyerLienDeVerification(utilisateur);
-        }
-
-        if (request.getDateNaissance() != null) {
-            utilisateur.setDateNaissance(request.getDateNaissance());
-        }
-
-        utilisateurRepository.save(utilisateur);
-        return UtilisateurResponse.fromEntity(utilisateur);
+        return compteService.modifierProfil(connecte, request);
     }
 
-    // Verifie le mot de passe actuel avant d'appliquer le nouveau.
-    // Par securite, toutes les autres sessions (refresh tokens) sont revoquees :
-    // seule la session courante repart avec un nouveau couple de tokens.
     @PutMapping("/me/password")
     public AuthResponse changePassword(
             @Valid @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
-
-        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
-
-        if (!passwordEncoder.matches(request.getCurrentPassword(), utilisateur.getPassword())) {
-            throw new BadCredentialsException("Mot de passe actuel incorrect");
-        }
-
-        utilisateur.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        utilisateurRepository.save(utilisateur);
-
-        refreshTokenService.revoquerToutesLesSessions(utilisateur);
-
-        String accessToken = jwtUtil.generateToken(utilisateur.getId());
-        String refreshToken = refreshTokenService.creerToken(utilisateur);
-        return new AuthResponse(accessToken, refreshToken);
+        return compteService.changerMotDePasse(connecte, request.getCurrentPassword(), request.getNewPassword());
     }
 
-    // Suppression definitive et irreversible du compte, apres verification du
-    // mot de passe (meme principe que changePassword ci-dessus). Supprime en
-    // cascade tout ce qui depend de l'utilisateur : personnages (et leurs
-    // propres dependances, voir PersonnageService.supprimerPersonnage), puis
-    // les tokens de session/verification/reinitialisation, avant l'entite
-    // Utilisateur elle-meme (sinon les contraintes de cle etrangere
-    // bloqueraient la suppression).
+    // Suppression definitive et irreversible, apres verification du mot de passe.
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
     public void deleteAccount(
             @Valid @RequestBody DeleteAccountRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
-
-        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
-
-        if (!passwordEncoder.matches(request.getPassword(), utilisateur.getPassword())) {
-            throw new BadCredentialsException("Mot de passe incorrect");
-        }
-
-        personnageRepository.findByUtilisateur(utilisateur)
-                .forEach(personnageService::supprimerPersonnage);
-
-        refreshTokenRepository.deleteByUtilisateur(utilisateur);
-        passwordResetTokenRepository.deleteByUtilisateur(utilisateur);
-        emailVerificationTokenRepository.deleteByUtilisateur(utilisateur);
-
-        utilisateurRepository.delete(utilisateur);
+        compteService.supprimerCompte(connecte, request.getPassword());
     }
 }

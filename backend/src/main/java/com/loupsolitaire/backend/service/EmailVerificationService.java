@@ -74,6 +74,12 @@ public class EmailVerificationService {
         tokenRepository.save(token);
     }
 
+    // Suppression de compte (voir CompteService.supprimerCompte).
+    @Transactional
+    public void supprimerTokens(Utilisateur utilisateur) {
+        tokenRepository.deleteByUtilisateur(utilisateur);
+    }
+
     private String genererValeurAleatoire() {
         byte[] bytes = new byte[32];
         SECURE_RANDOM.nextBytes(bytes);

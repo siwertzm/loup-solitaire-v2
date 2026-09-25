@@ -198,4 +198,11 @@ class RefreshTokenServiceTest {
 
         verify(refreshTokenRepository).findAllByUtilisateurAndRevokedFalse(utilisateur);
     }
+
+    @Test
+    void supprimerToutesLesSessionsSupprimeLesTokensDeL_utilisateur() {
+        service.supprimerToutesLesSessions(utilisateur);
+
+        verify(refreshTokenRepository).deleteByUtilisateur(utilisateur);
+    }
 }

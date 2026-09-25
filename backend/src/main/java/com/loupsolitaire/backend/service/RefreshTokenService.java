@@ -96,6 +96,14 @@ public class RefreshTokenService {
                 .forEach(token -> token.setRevoked(true));
     }
 
+    // Suppression de compte : les sessions sont supprimees (pas seulement
+    // revoquees), sinon la cle etrangere utilisateur_id bloquerait la
+    // suppression de l'utilisateur.
+    @Transactional
+    public void supprimerToutesLesSessions(Utilisateur utilisateur) {
+        refreshTokenRepository.deleteByUtilisateur(utilisateur);
+    }
+
     private String genererValeurAleatoire() {
         byte[] bytes = new byte[32];
         SECURE_RANDOM.nextBytes(bytes);

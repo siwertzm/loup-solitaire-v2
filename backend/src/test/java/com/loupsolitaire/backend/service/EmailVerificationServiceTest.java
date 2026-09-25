@@ -125,4 +125,11 @@ class EmailVerificationServiceTest {
         assertThatThrownBy(() -> service.verifier("token-inconnu"))
                 .isInstanceOf(TokenInvalideException.class);
     }
+
+    @Test
+    void supprimerTokensSupprimeLesLiensDeL_utilisateur() {
+        service.supprimerTokens(utilisateur);
+
+        verify(tokenRepository).deleteByUtilisateur(utilisateur);
+    }
 }

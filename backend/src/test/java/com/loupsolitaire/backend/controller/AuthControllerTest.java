@@ -1,11 +1,12 @@
 package com.loupsolitaire.backend.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -13,30 +14,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,50 +41,37 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import tools.jackson.databind.json.JsonMapper;
 
-import com.loupsolitaire.backend.config.JwtUtil;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
+import com.loupsolitaire.backend.exception.CompteNonVerifieException;
+import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
-import com.loupsolitaire.backend.model.Utilisateur;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
-import com.loupsolitaire.backend.repository.UtilisateurRepository;
-import com.loupsolitaire.backend.request.AuthRequest;
-import com.loupsolitaire.backend.request.RefreshRequest;
 import com.loupsolitaire.backend.request.RegisterRequest;
-import com.loupsolitaire.backend.request.ResendVerificationRequest;
 import com.loupsolitaire.backend.request.UpdateProfilRequest;
+import com.loupsolitaire.backend.response.AuthResponse;
+import com.loupsolitaire.backend.response.UtilisateurResponse;
+import com.loupsolitaire.backend.service.AuthService;
+import com.loupsolitaire.backend.service.CompteService;
 import com.loupsolitaire.backend.service.EmailVerificationService;
 import com.loupsolitaire.backend.service.PasswordResetService;
-import com.loupsolitaire.backend.service.RefreshTokenService;
-import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 
+/**
+ * Couche HTTP uniquement : routes, validation des requetes, codes de retour
+ * et parametres transmis aux services. Les regles (conflits, compte non
+ * verifie, mot de passe...) sont testees dans AuthServiceTest et
+ * CompteServiceTest.
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
-    @Mock
-    private UtilisateurRepository utilisateurRepository;
+    private static final String DEEP_LINK = "loupsolitaire://auth/login?emailVerified=true";
 
     @Mock
-    private PersonnageRepository personnageRepository;
-
+    private AuthService authService;
     @Mock
-    private PersonnageMapper personnageMapper;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
+    private CompteService compteService;
     @Mock
     private EmailVerificationService emailVerificationService;
-
     @Mock
     private PasswordResetService passwordResetService;
 
@@ -96,88 +80,41 @@ class AuthControllerTest {
 
     private MockMvc mockMvc;
 
-    /*
-     * Jackson 3 : WRITE_DATES_AS_TIMESTAMPS est désactivé par défaut,
-     * LocalDate se sérialise donc directement en "1997-05-12",
-     * comme dans l'application.
-     */
+    // Jackson 3 : WRITE_DATES_AS_TIMESTAMPS est desactive par defaut,
+    // LocalDate se serialise donc directement en "1997-05-12".
     private final JsonMapper objectMapper = JsonMapper.builder().build();
+
+    private final UtilisateurConnecte marius = new UtilisateurConnecte(UUID.randomUUID());
 
     @BeforeEach
     void setUp() {
+        // standaloneSetup : pas de contexte Spring, @Value n'est pas injecte.
+        ReflectionTestUtils.setField(controller, "mobileLoginUrl", DEEP_LINK);
 
-        /*
-         * AuthControllerTest utilise standaloneSetup :
-         * Spring Boot n'est donc pas réellement démarré.
-         *
-         * Le @Value("${app.mobile-login-url}") du contrôleur
-         * n'est pas automatiquement injecté.
-         *
-         * On lui donne donc manuellement la valeur utilisée
-         * par l'application.
-         */
-        ReflectionTestUtils.setField(
-                controller,
-                "mobileLoginUrl",
-                "loupsolitaire://auth/login?emailVerified=true"
-        );
-
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setControllerAdvice(
-                        new GlobalExceptionHandler()
-                )
-                .setCustomArgumentResolvers(
-                        new AuthenticationPrincipalArgumentResolver()
-                )
-                .setMessageConverters(
-                        new JacksonJsonHttpMessageConverter(
-                                objectMapper
-                        ),
-                        new StringHttpMessageConverter()
-                )
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(objectMapper), new StringHttpMessageConverter())
                 .build();
     }
 
     @AfterEach
     void tearDown() {
-
-        /*
-         * Le SecurityContextHolder est un ThreadLocal statique.
-         * Sans ce nettoyage, l'authentification d'un test
-         * pourrait fuiter vers le suivant.
-         */
         SecurityContextHolder.clearContext();
     }
 
-    /*
-     * En setup standalone, la vraie chaîne Spring Security
-     * n'est pas démarrée.
-     *
-     * On peuple donc nous-mêmes le SecurityContextHolder
-     * pour tester @AuthenticationPrincipal.
-     */
-    // Identifiant fixe derive du nom : un meme nom donne toujours le meme
-    // UUID (voir UtilisateurConnecte, construit par JwtFilter a partir du
-    // token).
-    private static UUID idDe(String username) {
-        return UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8));
+    private void authentifier() {
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+                marius, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))));
     }
 
-    private void authentifierComme(
-            UserDetails principal
-    ) {
+    private UtilisateurResponse profil(String username, String email) {
+        return new UtilisateurResponse(marius.id(), username, email, LocalDate.of(1997, 5, 12), true,
+                Instant.parse("2026-09-01T10:00:00Z"), List.of());
+    }
 
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        new UtilisateurConnecte(idDe(principal.getUsername())),
-                        null,
-                        principal.getAuthorities()
-                );
-
-        SecurityContextHolder
-                .getContext()
-                .setAuthentication(auth);
+    private String json(Object objet) {
+        return objectMapper.writeValueAsString(objet);
     }
 
     // =========================================================
@@ -185,1262 +122,301 @@ class AuthControllerTest {
     // =========================================================
 
     @Test
-    void registerCreeUnCompteEtDeclencheL_envoiDuLienDeVerification()
-            throws Exception {
-
-        RegisterRequest request =
-                new RegisterRequest();
-
+    void registerRenvoie201AvecLeCompteCree() throws Exception {
+        RegisterRequest request = new RegisterRequest();
         request.setUsername("marius");
-        request.setEmail(
-                "marius@example.com"
-        );
-        request.setPassword(
-                "motdepasse123"
-        );
+        request.setEmail("marius@example.com");
+        request.setPassword("motdepasse123");
+        request.setDateNaissance(LocalDate.of(1997, 5, 12));
+        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
-        when(
-                utilisateurRepository
-                        .existsByUsername("marius")
-        ).thenReturn(false);
-
-        when(
-                utilisateurRepository
-                        .existsByEmail(
-                                "marius@example.com"
-                        )
-        ).thenReturn(false);
-
-        when(
-                passwordEncoder.encode(
-                        "motdepasse123"
-                )
-        ).thenReturn("hash");
-
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isCreated()
-                )
-                .andExpect(
-                        jsonPath("$.username")
-                                .value("marius")
-                )
-                .andExpect(
-                        jsonPath("$.email")
-                                .value(
-                                        "marius@example.com"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.emailVerifie")
-                                .value(false)
-                );
-
-        verify(
-                emailVerificationService
-        ).envoyerLienDeVerification(
-                any(Utilisateur.class)
-        );
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value("marius"))
+                .andExpect(jsonPath("$.dateNaissance").value("1997-05-12"));
     }
 
     @Test
-    void registerRefuseUnUsernameDejaPris()
-            throws Exception {
-
-        RegisterRequest request =
-                new RegisterRequest();
-
-        request.setUsername("marius");
-        request.setEmail(
-                "marius@example.com"
-        );
-        request.setPassword(
-                "motdepasse123"
-        );
-
-        when(
-                utilisateurRepository
-                        .existsByUsername("marius")
-        ).thenReturn(true);
-
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isConflict()
-                )
-                .andExpect(
-                        jsonPath("$.message")
-                                .value(
-                                        "Nom d'utilisateur deja utilise"
-                                )
-                );
-
-        verify(
-                emailVerificationService,
-                never()
-        ).envoyerLienDeVerification(
-                any()
-        );
-    }
-
-    @Test
-    void registerRefuseUnUsernameContenantUnArobase()
-            throws Exception {
-
-        RegisterRequest request =
-                new RegisterRequest();
-
-        // Le nom reprend l'email d'un autre joueur : doit etre refuse avant
-        // meme d'interroger la base.
-        request.setUsername("victime@example.com");
-        request.setEmail(
-                "pirate@example.com"
-        );
-        request.setPassword(
-                "motdepasse123"
-        );
-
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isBadRequest()
-                )
-                .andExpect(
-                        jsonPath("$.message.username")
-                                .value(
-                                        "Le nom d'utilisateur ne peut pas contenir le caractere @"
-                                )
-                );
-
-        verify(
-                utilisateurRepository,
-                never()
-        ).save(
-                any()
-        );
-    }
-
-    @Test
-    void registerRefuseUnEmailDejaPris()
-            throws Exception {
-
-        RegisterRequest request =
-                new RegisterRequest();
-
-        request.setUsername("marius");
-        request.setEmail(
-                "marius@example.com"
-        );
-        request.setPassword(
-                "motdepasse123"
-        );
-
-        when(
-                utilisateurRepository
-                        .existsByUsername("marius")
-        ).thenReturn(false);
-
-        when(
-                utilisateurRepository
-                        .existsByEmail(
-                                "marius@example.com"
-                        )
-        ).thenReturn(true);
-
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isConflict()
-                )
-                .andExpect(
-                        jsonPath("$.message")
-                                .value(
-                                        "Cet email est deja utilise"
-                                )
-                );
-    }
-
-    @Test
-    void registerRefuseUnEmailDejaPrisAvecUneAutreCasse()
-            throws Exception {
-
+    void registerTransmetUnEmailNormalise() throws Exception {
         // JSON ecrit a la main : passer par RegisterRequest.setEmail
-        // normaliserait deja l'email avant l'envoi, et le test ne
-        // verifierait plus rien.
+        // normaliserait deja l'email avant l'envoi.
         String json = """
                 {
-                  "username": "marius2",
+                  "username": "marius",
                   "email": "  Marius@Example.COM ",
                   "password": "motdepasse123"
                 }
                 """;
+        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
-        when(
-                utilisateurRepository
-                        .existsByUsername("marius2")
-        ).thenReturn(false);
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isCreated());
 
-        when(
-                utilisateurRepository
-                        .existsByEmail(
-                                "marius@example.com"
-                        )
-        ).thenReturn(true);
+        ArgumentCaptor<RegisterRequest> requete = ArgumentCaptor.forClass(RegisterRequest.class);
+        verify(compteService).inscrire(requete.capture());
+        assertThat(requete.getValue().getEmail()).isEqualTo("marius@example.com");
+    }
 
-        mockMvc.perform(
-                        post("/auth/register")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(json)
-                )
-                .andExpect(
-                        status().isConflict()
-                )
-                .andExpect(
-                        jsonPath("$.message")
-                                .value(
-                                        "Cet email est deja utilise"
-                                )
-                );
+    @Test
+    void registerRenvoie409EnCasDeConflit() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("marius");
+        request.setEmail("marius@example.com");
+        request.setPassword("motdepasse123");
+        when(compteService.inscrire(any())).thenThrow(new ConflitException("Cet email est deja utilise"));
 
-        verify(
-                utilisateurRepository,
-                never()
-        ).save(
-                any()
-        );
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Cet email est deja utilise"));
+    }
+
+    @Test
+    void registerRefuseUnUsernameContenantUnArobase() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        // Le nom reprend l'email d'un autre joueur : refuse avant tout appel.
+        request.setUsername("victime@example.com");
+        request.setEmail("pirate@example.com");
+        request.setPassword("motdepasse123");
+
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.username")
+                        .value("Le nom d'utilisateur ne peut pas contenir le caractere @"));
+
+        verifyNoInteractions(compteService);
+    }
+
+    @Test
+    void registerRefuseUnMotDePasseTropCourt() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("marius");
+        request.setEmail("marius@example.com");
+        request.setPassword("court");
+
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.password").exists());
+
+        verifyNoInteractions(compteService);
     }
 
     // =========================================================
-    // login
+    // verify-email / resend-verification
     // =========================================================
 
     @Test
-    void loginRenvoieLesTokensQuandLeCompteEstVerifie()
-            throws Exception {
+    void verifyEmailValidePuisRedirigeVersApplication() throws Exception {
+        mockMvc.perform(get("/auth/verify-email").param("token", "un-token-valide"))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", DEEP_LINK));
 
-        AuthRequest request =
-                new AuthRequest();
-
-        request.setIdentifiant("marius");
-        request.setPassword(
-                "motdepasse123"
-        );
-
-        UserDetails userDetails =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
-
-        Authentication auth =
-                mock(Authentication.class);
-
-        when(
-                auth.getPrincipal()
-        ).thenReturn(userDetails);
-
-        when(
-                authenticationManager
-                        .authenticate(any())
-        ).thenReturn(auth);
-
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setId(UUID.randomUUID());
-        utilisateur.setUsername("marius");
-        utilisateur.setEmailVerifie(true);
-
-        when(
-                utilisateurRepository
-                        .findByUsername("marius")
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        // Le token porte l'identifiant (UUID) de l'utilisateur, pas son nom.
-        when(
-                jwtUtil.generateToken(
-                        utilisateur.getId()
-                )
-        ).thenReturn(
-                "access-token"
-        );
-
-        when(
-                refreshTokenService
-                        .creerToken(utilisateur)
-        ).thenReturn(
-                "refresh-token"
-        );
-
-        mockMvc.perform(
-                        post("/auth/login")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath("$.accessToken")
-                                .value(
-                                        "access-token"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.refreshToken")
-                                .value(
-                                        "refresh-token"
-                                )
-                );
+        verify(emailVerificationService).verifier("un-token-valide");
     }
 
     @Test
-    void loginBloqueUnCompteNonVerifie()
-            throws Exception {
+    void verifyEmailRenvoie401SurUnTokenInvalide() throws Exception {
+        doThrow(new TokenInvalideException("Lien de confirmation invalide"))
+                .when(emailVerificationService).verifier("mauvais-token");
 
-        AuthRequest request =
-                new AuthRequest();
-
-        request.setIdentifiant("marius");
-        request.setPassword(
-                "motdepasse123"
-        );
-
-        UserDetails userDetails =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
-
-        Authentication auth =
-                mock(Authentication.class);
-
-        when(
-                auth.getPrincipal()
-        ).thenReturn(userDetails);
-
-        when(
-                authenticationManager
-                        .authenticate(any())
-        ).thenReturn(auth);
-
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setUsername("marius");
-        utilisateur.setEmailVerifie(false);
-
-        when(
-                utilisateurRepository
-                        .findByUsername("marius")
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        mockMvc.perform(
-                        post("/auth/login")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isForbidden()
-                )
-                .andExpect(
-                        jsonPath("$.error")
-                                .value(
-                                        "Compte non verifie"
-                                )
-                );
-
-        verify(
-                jwtUtil,
-                never()
-        ).generateToken(any());
+        mockMvc.perform(get("/auth/verify-email").param("token", "mauvais-token"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void loginRenvoie401SurDeMauvaisIdentifiants()
-            throws Exception {
+    void resendVerificationRenvoieToujours202() throws Exception {
+        mockMvc.perform(post("/auth/resend-verification").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"Marius@Example.com\"}"))
+                .andExpect(status().isAccepted());
 
-        AuthRequest request =
-                new AuthRequest();
-
-        request.setIdentifiant("marius");
-        request.setPassword(
-                "mauvais-mot-de-passe"
-        );
-
-        when(
-                authenticationManager
-                        .authenticate(any())
-        ).thenThrow(
-                new BadCredentialsException(
-                        "bad credentials"
-                )
-        );
-
-        mockMvc.perform(
-                        post("/auth/login")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isUnauthorized()
-                )
-                .andExpect(
-                        jsonPath("$.message")
-                                .value(
-                                        "Nom d'utilisateur ou mot de passe incorrect"
-                                )
-                );
+        verify(compteService).renvoyerVerification("marius@example.com");
     }
 
     // =========================================================
-    // verify-email
+    // login / refresh / logout
     // =========================================================
 
     @Test
-    void verifyEmailValidePuisRedirigeVersApplication()
-            throws Exception {
+    void loginRenvoieLesTokens() throws Exception {
+        when(authService.connecter("marius", "motdepasse123"))
+                .thenReturn(new AuthResponse("access-token", "refresh-token"));
 
-        mockMvc.perform(
-                        get("/auth/verify-email")
-                                .param(
-                                        "token",
-                                        "un-token-valide"
-                                )
-                )
-                .andExpect(
-                        status().isFound()
-                )
-                .andExpect(
-                        header().string(
-                                "Location",
-                                "loupsolitaire://auth/login?emailVerified=true"
-                        )
-                );
-
-        verify(
-                emailVerificationService
-        ).verifier(
-                "un-token-valide"
-        );
+        mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"identifiant\": \"marius\", \"password\": \"motdepasse123\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("access-token"))
+                .andExpect(jsonPath("$.refreshToken").value("refresh-token"))
+                .andExpect(jsonPath("$.tokenType").value("Bearer"));
     }
 
     @Test
-    void verifyEmailRenvoie401SurUnTokenInvalide()
-            throws Exception {
+    void loginRenvoie403PourUnCompteNonVerifie() throws Exception {
+        when(authService.connecter("marius", "motdepasse123"))
+                .thenThrow(new CompteNonVerifieException("Merci de confirmer ton adresse email"));
 
-        doThrow(
-                new TokenInvalideException(
-                        "Lien de confirmation invalide"
-                )
-        )
-        .when(
-                emailVerificationService
-        )
-        .verifier(
-                "mauvais-token"
-        );
-
-        mockMvc.perform(
-                        get("/auth/verify-email")
-                                .param(
-                                        "token",
-                                        "mauvais-token"
-                                )
-                )
-                .andExpect(
-                        status().isUnauthorized()
-                );
-    }
-
-    // =========================================================
-    // resend-verification
-    // =========================================================
-
-    @Test
-    void resendVerificationRenvoieToujours202MemeSiLeCompteEstDejaVerifie()
-            throws Exception {
-
-        ResendVerificationRequest request =
-                new ResendVerificationRequest();
-
-        request.setEmail(
-                "marius@example.com"
-        );
-
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setEmailVerifie(true);
-
-        when(
-                utilisateurRepository
-                        .findByEmail(
-                                "marius@example.com"
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        mockMvc.perform(
-                        post(
-                                "/auth/resend-verification"
-                        )
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isAccepted()
-                );
-
-        verify(
-                emailVerificationService,
-                never()
-        ).envoyerLienDeVerification(
-                any()
-        );
+        mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"identifiant\": \"marius\", \"password\": \"motdepasse123\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Compte non verifie"));
     }
 
     @Test
-    void resendVerificationRenvoie202MemeSiL_emailEstInconnu()
-            throws Exception {
+    void loginRenvoie401SurDeMauvaisIdentifiants() throws Exception {
+        when(authService.connecter("marius", "mauvais"))
+                .thenThrow(new BadCredentialsException("Bad credentials"));
 
-        ResendVerificationRequest request =
-                new ResendVerificationRequest();
+        mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"identifiant\": \"marius\", \"password\": \"mauvais\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Nom d'utilisateur ou mot de passe incorrect"));
+    }
 
-        request.setEmail(
-                "inconnu@example.com"
-        );
+    @Test
+    void refreshRenvoieUnNouveauCoupleDeTokens() throws Exception {
+        when(authService.rafraichir("ancien-refresh-token"))
+                .thenReturn(new AuthResponse("nouveau-access-token", "nouveau-refresh-token"));
 
-        when(
-                utilisateurRepository
-                        .findByEmail(
-                                "inconnu@example.com"
-                        )
-        ).thenReturn(
-                Optional.empty()
-        );
+        mockMvc.perform(post("/auth/refresh").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"refreshToken\": \"ancien-refresh-token\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("nouveau-access-token"))
+                .andExpect(jsonPath("$.refreshToken").value("nouveau-refresh-token"));
+    }
 
-        mockMvc.perform(
-                        post(
-                                "/auth/resend-verification"
-                        )
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isAccepted()
-                );
+    @Test
+    void refreshRenvoie401SurUnTokenInvalide() throws Exception {
+        when(authService.rafraichir("token-invalide"))
+                .thenThrow(new TokenInvalideException("Session invalide, merci de vous reconnecter"));
+
+        mockMvc.perform(post("/auth/refresh").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"refreshToken\": \"token-invalide\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void logoutRevoqueLeTokenEtRenvoie204() throws Exception {
+        mockMvc.perform(post("/auth/logout").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"refreshToken\": \"un-refresh-token\"}"))
+                .andExpect(status().isNoContent());
+
+        verify(authService).deconnecter("un-refresh-token");
     }
 
     // =========================================================
-    // refresh
+    // Mot de passe oublie
     // =========================================================
 
     @Test
-    void refreshRenvoieUnNouveauCoupleDeTokens()
-            throws Exception {
+    void forgotPasswordRenvoieToujours202() throws Exception {
+        mockMvc.perform(post("/auth/forgot-password").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"marius@example.com\"}"))
+                .andExpect(status().isAccepted());
 
-        RefreshRequest request =
-                new RefreshRequest();
-
-        request.setRefreshToken(
-                "ancien-refresh-token"
-        );
-
-        UUID utilisateurId = UUID.randomUUID();
-
-        RefreshTokenService.RotationResult resultat =
-                new RefreshTokenService.RotationResult(
-                        utilisateurId,
-                        "nouveau-refresh-token"
-                );
-
-        when(
-                refreshTokenService
-                        .validerEtPivoter(
-                                "ancien-refresh-token"
-                        )
-        ).thenReturn(
-                resultat
-        );
-
-        when(
-                jwtUtil.generateToken(utilisateurId)
-        ).thenReturn(
-                "nouveau-access-token"
-        );
-
-        mockMvc.perform(
-                        post("/auth/refresh")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath("$.accessToken")
-                                .value(
-                                        "nouveau-access-token"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.refreshToken")
-                                .value(
-                                        "nouveau-refresh-token"
-                                )
-                );
+        verify(passwordResetService).demanderReinitialisation("marius@example.com");
     }
 
     @Test
-    void refreshRenvoie401SurUnTokenInvalide()
-            throws Exception {
+    void verifyResetCodeRenvoieLeJetonDeReinitialisation() throws Exception {
+        when(passwordResetService.verifierCode("marius@example.com", "123456")).thenReturn("jeton-reset");
 
-        RefreshRequest request =
-                new RefreshRequest();
+        mockMvc.perform(post("/auth/verify-reset-code").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"marius@example.com\", \"code\": \"123456\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resetToken").value("jeton-reset"));
+    }
 
-        request.setRefreshToken(
-                "token-vole"
-        );
+    @Test
+    void resetPasswordRenvoie204() throws Exception {
+        mockMvc.perform(post("/auth/reset-password").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"resetToken\": \"jeton-reset\", \"newPassword\": \"nouveaumotdepasse\"}"))
+                .andExpect(status().isNoContent());
 
-        when(
-                refreshTokenService
-                        .validerEtPivoter(
-                                "token-vole"
-                        )
-        ).thenThrow(
-                new TokenInvalideException(
-                        "Reutilisation detectee"
-                )
-        );
-
-        mockMvc.perform(
-                        post("/auth/refresh")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isUnauthorized()
-                );
+        verify(passwordResetService).reinitialiser("jeton-reset", "nouveaumotdepasse");
     }
 
     // =========================================================
-    // logout
+    // /me
     // =========================================================
 
     @Test
-    void logoutRevoqueLeTokenEtRenvoie204()
-            throws Exception {
+    void getCurrentUserRenvoieLeProfilDeL_utilisateurConnecte() throws Exception {
+        authentifier();
+        when(compteService.profil(marius)).thenReturn(profil("marius", "marius@example.com"));
 
-        RefreshRequest request =
-                new RefreshRequest();
-
-        request.setRefreshToken(
-                "token-a-revoquer"
-        );
-
-        mockMvc.perform(
-                        post("/auth/logout")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isNoContent()
-                );
-
-        verify(
-                refreshTokenService
-        ).revoquer(
-                "token-a-revoquer"
-        );
-    }
-
-    // =========================================================
-    // GET /me
-    // =========================================================
-
-    @Test
-    void getCurrentUserRenvoieLeProfilDeL_utilisateurConnecte()
-            throws Exception {
-
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
-
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setId(
-                UUID.randomUUID()
-        );
-
-        utilisateur.setUsername(
-                "marius"
-        );
-
-        utilisateur.setEmail(
-                "marius@example.com"
-        );
-
-        utilisateur.setEmailVerifie(
-                true
-        );
-
-        when(
-                utilisateurRepository
-                        .findById(
-                                idDe("marius")
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        when(
-                personnageRepository
-                        .findByUtilisateur(
-                                utilisateur
-                        )
-        ).thenReturn(
-                java.util.List.of()
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        get("/auth/me")
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath("$.username")
-                                .value(
-                                        "marius"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.email")
-                                .value(
-                                        "marius@example.com"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.personnages")
-                                .isArray()
-                )
-                .andExpect(
-                        jsonPath("$.personnages")
-                                .isEmpty()
-                );
+        mockMvc.perform(get("/auth/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("marius"))
+                .andExpect(jsonPath("$.email").value("marius@example.com"));
     }
 
     @Test
-    void getCurrentUserIncluLesPersonnagesDeLUtilisateur()
-            throws Exception {
+    void updateProfilTransmetLaRequeteDeL_utilisateurConnecte() throws Exception {
+        authentifier();
+        when(compteService.modifierProfil(any(), any())).thenReturn(profil("marius", "nouveau@example.com"));
 
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
+        mockMvc.perform(put("/auth/me").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"Nouveau@Example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("nouveau@example.com"));
 
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setUsername(
-                "marius"
-        );
-
-        utilisateur.setEmail(
-                "marius@example.com"
-        );
-
-        when(
-                utilisateurRepository
-                        .findById(
-                                idDe("marius")
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        com.loupsolitaire.backend.model.Personnage personnage =
-                new com.loupsolitaire.backend.model.Personnage();
-
-        UUID personnageId =
-                UUID.randomUUID();
-
-        personnage.setId(
-                personnageId
-        );
-
-        personnage.setNom(
-                "Loup Solitaire"
-        );
-
-        when(
-                personnageRepository
-                        .findByUtilisateur(
-                                utilisateur
-                        )
-        ).thenReturn(
-                java.util.List.of(
-                        personnage
-                )
-        );
-
-        com.loupsolitaire.backend.response.PersonnageResponse reponsePersonnage =
-                new com.loupsolitaire.backend.response.PersonnageResponse(
-                        personnageId,
-                        "Loup Solitaire",
-                        15,
-                        15,
-                        0,
-                        20,
-                        20,
-                        java.util.List.of(),
-                        null,
-                        0,
-                        null,
-                        false,
-                        java.util.List.of()
-                );
-
-        when(
-                personnageMapper
-                        .versReponse(
-                                personnage
-                        )
-        ).thenReturn(
-                reponsePersonnage
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        get("/auth/me")
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath(
-                                "$.personnages",
-                                Matchers.hasSize(1)
-                        )
-                )
-                .andExpect(
-                        jsonPath(
-                                "$.personnages[0].nom"
-                        )
-                                .value(
-                                        "Loup Solitaire"
-                                )
-                );
-    }
-
-    // =========================================================
-    // PUT /me
-    // =========================================================
-
-    @Test
-    void updateProfilChangeL_emailEtRedemandeUneVerification()
-            throws Exception {
-
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
-
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setUsername(
-                "marius"
-        );
-
-        utilisateur.setEmail(
-                "ancien@example.com"
-        );
-
-        utilisateur.setEmailVerifie(
-                true
-        );
-
-        when(
-                utilisateurRepository
-                        .findById(
-                                idDe("marius")
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        when(
-                utilisateurRepository
-                        .existsByEmail(
-                                "nouveau@example.com"
-                        )
-        ).thenReturn(
-                false
-        );
-
-        UpdateProfilRequest request =
-                new UpdateProfilRequest();
-
-        request.setEmail(
-                "nouveau@example.com"
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        put("/auth/me")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath("$.email")
-                                .value(
-                                        "nouveau@example.com"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.emailVerifie")
-                                .value(false)
-                );
-
-        verify(
-                emailVerificationService
-        ).envoyerLienDeVerification(
-                utilisateur
-        );
+        ArgumentCaptor<UpdateProfilRequest> requete = ArgumentCaptor.forClass(UpdateProfilRequest.class);
+        verify(compteService).modifierProfil(org.mockito.ArgumentMatchers.eq(marius), requete.capture());
+        assertThat(requete.getValue().getEmail()).isEqualTo("nouveau@example.com");
     }
 
     @Test
-    void updateProfilRefuseUnEmailDejaUtiliseParUnAutreCompte()
-            throws Exception {
+    void updateProfilRefuseUnUsernameContenantUnArobase() throws Exception {
+        authentifier();
 
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
+        mockMvc.perform(put("/auth/me").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"victime@example.com\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message.username")
+                        .value("Le nom d'utilisateur ne peut pas contenir le caractere @"));
 
-        Utilisateur utilisateur =
-                new Utilisateur();
-
-        utilisateur.setUsername(
-                "marius"
-        );
-
-        utilisateur.setEmail(
-                "ancien@example.com"
-        );
-
-        when(
-                utilisateurRepository
-                        .findById(
-                                idDe("marius")
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        when(
-                utilisateurRepository
-                        .existsByEmail(
-                                "prisparunautre@example.com"
-                        )
-        ).thenReturn(
-                true
-        );
-
-        UpdateProfilRequest request =
-                new UpdateProfilRequest();
-
-        request.setEmail(
-                "prisparunautre@example.com"
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        put("/auth/me")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isConflict()
-                );
-
-        verify(
-                emailVerificationService,
-                never()
-        ).envoyerLienDeVerification(
-                any()
-        );
+        verifyNoInteractions(compteService);
     }
 
     @Test
-    void updateProfilRefuseUnUsernameContenantUnArobase()
-            throws Exception {
+    void updateProfilRenvoie409SiL_emailEstDejaUtilise() throws Exception {
+        authentifier();
+        when(compteService.modifierProfil(any(), any())).thenThrow(new ConflitException("Cet email est deja utilise"));
 
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
-
-        UpdateProfilRequest request =
-                new UpdateProfilRequest();
-
-        request.setUsername(
-                "victime@example.com"
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        put("/auth/me")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isBadRequest()
-                )
-                .andExpect(
-                        jsonPath("$.message.username")
-                                .value(
-                                        "Le nom d'utilisateur ne peut pas contenir le caractere @"
-                                )
-                );
-
-        verify(
-                utilisateurRepository,
-                never()
-        ).save(
-                any()
-        );
+        mockMvc.perform(put("/auth/me").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"prisparunautre@example.com\"}"))
+                .andExpect(status().isConflict());
     }
 
     @Test
-    void updateProfilMetAJourUniquementLaDateDeNaissance()
-            throws Exception {
+    void changePasswordRenvoieUneNouvelleSession() throws Exception {
+        authentifier();
+        when(compteService.changerMotDePasse(marius, "ancienmotdepasse", "nouveaumotdepasse"))
+                .thenReturn(new AuthResponse("access-token", "refresh-token"));
 
-        UserDetails principal =
-                User.builder()
-                        .username("marius")
-                        .password("hash")
-                        .authorities("ROLE_USER")
-                        .build();
+        mockMvc.perform(put("/auth/me/password").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"currentPassword\": \"ancienmotdepasse\", \"newPassword\": \"nouveaumotdepasse\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("access-token"));
+    }
 
-        Utilisateur utilisateur =
-                new Utilisateur();
+    @Test
+    void changePasswordRenvoie401SiLeMotDePasseActuelEstFaux() throws Exception {
+        authentifier();
+        when(compteService.changerMotDePasse(marius, "faux", "nouveaumotdepasse"))
+                .thenThrow(new BadCredentialsException("Mot de passe actuel incorrect"));
 
-        utilisateur.setUsername(
-                "marius"
-        );
+        mockMvc.perform(put("/auth/me/password").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"currentPassword\": \"faux\", \"newPassword\": \"nouveaumotdepasse\"}"))
+                .andExpect(status().isUnauthorized());
+    }
 
-        utilisateur.setEmail(
-                "marius@example.com"
-        );
+    @Test
+    void deleteAccountRenvoie204() throws Exception {
+        authentifier();
 
-        utilisateur.setEmailVerifie(
-                true
-        );
+        mockMvc.perform(delete("/auth/me").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"password\": \"motdepasse123\"}"))
+                .andExpect(status().isNoContent());
 
-        when(
-                utilisateurRepository
-                        .findById(
-                                idDe("marius")
-                        )
-        ).thenReturn(
-                Optional.of(utilisateur)
-        );
-
-        UpdateProfilRequest request =
-                new UpdateProfilRequest();
-
-        request.setDateNaissance(
-                LocalDate.of(
-                        1997,
-                        5,
-                        12
-                )
-        );
-
-        authentifierComme(principal);
-
-        mockMvc.perform(
-                        put("/auth/me")
-                                .contentType(
-                                        MediaType.APPLICATION_JSON
-                                )
-                                .content(
-                                        objectMapper
-                                                .writeValueAsString(
-                                                        request
-                                                )
-                                )
-                )
-                .andExpect(
-                        status().isOk()
-                )
-                .andExpect(
-                        jsonPath("$.dateNaissance")
-                                .value(
-                                        "1997-05-12"
-                                )
-                )
-                .andExpect(
-                        jsonPath("$.emailVerifie")
-                                .value(true)
-                );
-
-        verify(
-                emailVerificationService,
-                never()
-        ).envoyerLienDeVerification(
-                any()
-        );
+        verify(compteService).supprimerCompte(marius, "motdepasse123");
     }
 }
