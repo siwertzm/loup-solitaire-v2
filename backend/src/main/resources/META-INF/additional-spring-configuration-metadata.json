@@ -1,0 +1,59 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Cle secrete HMAC (Base64, 32 octets minimum) utilisee pour signer les access tokens JWT. A definir via la variable d'environnement JWT_SECRET, jamais en dur."
+    },
+    {
+      "name": "jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Duree de vie d'un access token JWT, en millisecondes.",
+      "defaultValue": 900000
+    },
+    {
+      "name": "jwt.refresh-expiration-days",
+      "type": "java.lang.Long",
+      "description": "Duree de vie d'un refresh token, en jours.",
+      "defaultValue": 30
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Origines autorisees par la configuration CORS, separees par des virgules (Angular local, Capacitor iOS/Android...)."
+    },
+    {
+      "name": "app.mail.from",
+      "type": "java.lang.String",
+      "description": "Adresse email affichee comme expediteur des emails envoyes par l'application."
+    },
+    {
+      "name": "app.base-url",
+      "type": "java.lang.String",
+      "description": "URL de base du backend, utilisee pour construire le lien de confirmation envoye par email."
+    },
+    {
+      "name": "app.email-verification.expiration-hours",
+      "type": "java.lang.Long",
+      "description": "Duree de validite du lien de confirmation d'adresse email, en heures.",
+      "defaultValue": 24
+    },
+    {
+      "name": "app.password-reset.expiration-minutes",
+      "type": "java.lang.Long",
+      "description": "Duree de validite du code de reinitialisation du mot de passe, en minutes.",
+      "defaultValue": 15
+    },
+    {
+      "name": "app.password-reset.max-attempts",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum de codes incorrects avant invalidation du code de reinitialisation.",
+      "defaultValue": 5
+    },
+    {
+      "name": "app.mobile-login-url",
+      "type": "java.lang.String",
+      "description": "Deep link de l'application mobile vers lequel l'utilisateur est redirige apres validation de son adresse email."
+    }
+  ]
+}
