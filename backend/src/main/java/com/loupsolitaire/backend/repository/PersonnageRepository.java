@@ -10,7 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 
-public interface PersonnageRepository extends JpaRepository<Personnage, UUID> {
+// findByIdPourModification est implementee a la main dans
+// PersonnageRepositoryCustomImpl (voir PersonnageRepositoryCustom).
+public interface PersonnageRepository extends JpaRepository<Personnage, UUID>, PersonnageRepositoryCustom {
 
     // @EntityGraph charge disciplines/armeMaitrisee/chapitreActuel/utilisateur
     // dans la meme requete : evite un LazyInitializationException quand le

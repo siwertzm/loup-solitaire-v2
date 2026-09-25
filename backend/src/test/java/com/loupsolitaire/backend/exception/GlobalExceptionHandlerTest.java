@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -106,5 +107,14 @@ class GlobalExceptionHandlerTest {
         assertThat(reponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         // Le message ne doit jamais reveler si c'est le login ou le mot de passe qui est faux.
         assertThat(reponse.getBody().message()).isEqualTo("Nom d'utilisateur ou mot de passe incorrect");
+    }
+
+    @Test
+    void actionSimultaneeSurLeMemePersonnageRenvoie409() {
+        ResponseEntity<ErrorResponse> reponse = handler.handleConflitConcurrent(
+                new ObjectOptimisticLockingFailureException("Personnage", "id-du-personnage"));
+
+        assertThat(reponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(reponse.getBody().error()).isEqualTo("Action simultanee");
     }
 }

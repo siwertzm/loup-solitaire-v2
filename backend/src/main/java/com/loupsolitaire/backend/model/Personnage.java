@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.persistence.CollectionTable;   
 import jakarta.persistence.ElementCollection; 
 import jakarta.persistence.OrderColumn;       
@@ -154,6 +155,17 @@ public class Personnage {
     // a ce cas-la.
     @Column(nullable = false)
     private boolean mort;
+
+    // Verrou optimiste : chaque action qui modifie le personnage incremente
+    // cette version (voir PersonnageRepository.findByIdPourModification).
+    // Si deux requetes arrivent en meme temps (double tap sur "Attaque",
+    // double clic sur "Prendre"...), elles lisent la meme version ; la
+    // premiere a valider gagne, la seconde echoue a la validation et
+    // renvoie une 409 (voir GlobalExceptionHandler) au lieu d'appliquer
+    // l'action une deuxieme fois sur un etat perime.
+    @Version
+    @Column(nullable = false)
+    private long version;
 
     // Journal du parcours : numeros des chapitres traverses, dans l'ordre
     // chronologique. Une valeur par ARRIVEE (chapitre de depart et revisites

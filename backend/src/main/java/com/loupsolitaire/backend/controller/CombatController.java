@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.controller;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class CombatController {
     public ResponseEntity<CombatResponse> initier(
             @PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Combat combat = combatService.initierCombat(personnage);
         return ResponseEntity.status(HttpStatus.CREATED).body(combatMapper.versReponse(combat));
     }
@@ -77,7 +78,7 @@ public class CombatController {
             @Valid @RequestBody JouerTourCombatRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
 
         ActionCombat action = versActionCombat(request.getAction());
         Objet objet = request.getObjetId() != null ? recupererObjet(request.getObjetId()) : null;
@@ -99,8 +100,19 @@ public class CombatController {
                 .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
     }
 
+    // Lecture seule (GET).
     private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
-        Personnage personnage = personnageRepository.findById(id)
+        return verifierProprietaire(id, personnageRepository.findById(id), userDetails);
+    }
+
+    // Toute action qui modifie le personnage : protege contre deux requetes
+    // simultanees (voir PersonnageRepository.findByIdPourModification).
+    private Personnage recupererPourModification(UUID id, UserDetails userDetails) {
+        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), userDetails);
+    }
+
+    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UserDetails userDetails) {
+        Personnage personnage = trouve
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
 
         if (!personnage.getUtilisateur().getUsername().equals(userDetails.getUsername())) {

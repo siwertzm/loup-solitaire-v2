@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.controller;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -123,7 +124,7 @@ public class PersonnageController {
             @PathVariable Integer chapitreCibleId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         personnageService.avancerVersChapitre(personnage, chapitreCibleId);
 
         return personnageMapper.versReponse(personnage);
@@ -140,7 +141,7 @@ public class PersonnageController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         personnageService.revenirApresDefaite(personnage);
 
         return personnageMapper.versReponse(personnage);
@@ -157,7 +158,7 @@ public class PersonnageController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         personnageService.ressusciter(personnage);
 
         return personnageMapper.versReponse(personnage);
@@ -174,7 +175,7 @@ public class PersonnageController {
             @PathVariable String objetId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Objet objet = recupererObjet(objetId);
 
         personnageService.ramasserObjetDuChapitre(personnage, objet);
@@ -192,7 +193,7 @@ public class PersonnageController {
             @RequestParam(defaultValue = "1") int quantite,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Objet objet = recupererObjet(objetId);
 
         inventaireService.retirerObjet(personnage, objet, quantite);
@@ -210,7 +211,7 @@ public class PersonnageController {
             @PathVariable String objetId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Objet objet = recupererObjet(objetId);
 
         objetService.appliquerEffetsConsommation(personnage, objet);
@@ -230,7 +231,7 @@ public class PersonnageController {
             @PathVariable String objetId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Objet objet = recupererObjet(objetId);
 
         effetChapitreService.resoudreVolEnAttente(personnage, objet);
@@ -251,7 +252,7 @@ public class PersonnageController {
             @PathVariable String objetARetirerId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererPourModification(id, userDetails);
         Objet objetAAjouter = recupererObjet(objetAAjouterId);
         Objet objetARetirer = recupererObjet(objetARetirerId);
 
@@ -270,12 +271,25 @@ public class PersonnageController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-    Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
-    personnageService.supprimerPersonnage(personnage);
-}
+        // Lecture simple : la suppression verifie deja la version elle-meme
+        // (DELETE ... WHERE version = ?), pas besoin de forcer un increment.
+        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        personnageService.supprimerPersonnage(personnage);
+    }
 
+    // Lecture seule (GET).
     private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
-        Personnage personnage = personnageRepository.findById(id)
+        return verifierProprietaire(id, personnageRepository.findById(id), userDetails);
+    }
+
+    // Toute action qui modifie le personnage : protege contre deux requetes
+    // simultanees (voir PersonnageRepository.findByIdPourModification).
+    private Personnage recupererPourModification(UUID id, UserDetails userDetails) {
+        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), userDetails);
+    }
+
+    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UserDetails userDetails) {
+        Personnage personnage = trouve
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
 
         if (!personnage.getUtilisateur().getUsername().equals(userDetails.getUsername())) {

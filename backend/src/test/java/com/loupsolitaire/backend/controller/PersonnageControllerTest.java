@@ -290,7 +290,7 @@ class PersonnageControllerTest {
     @Test
     void avancerVersChapitreDeplaceLePersonnage() throws Exception {
         Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
         authentifierComme("marius");
@@ -308,7 +308,7 @@ class PersonnageControllerTest {
     @Test
     void revenirApresDefaiteRestaureLePersonnage() throws Exception {
         Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
         authentifierComme("marius");
@@ -326,7 +326,7 @@ class PersonnageControllerTest {
     @Test
     void ressusciterRestaureLePersonnage() throws Exception {
         Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
         authentifierComme("marius");
@@ -347,7 +347,7 @@ class PersonnageControllerTest {
         Objet objet = new Objet();
         objet.setId("repas");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -362,7 +362,7 @@ class PersonnageControllerTest {
     @Test
     void ajouterObjetRenvoie404SiL_objetEstIntrouvable() throws Exception {
         Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("inconnu")).thenReturn(Optional.empty());
 
         authentifierComme("marius");
@@ -383,7 +383,7 @@ class PersonnageControllerTest {
         Objet objet = new Objet();
         objet.setId("repas");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -401,7 +401,7 @@ class PersonnageControllerTest {
         Objet objet = new Objet();
         objet.setId("repas");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -424,7 +424,7 @@ class PersonnageControllerTest {
         Objet objet = new Objet();
         objet.setId("potion_de_soin");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("potion_de_soin")).thenReturn(Optional.of(objet));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -447,7 +447,7 @@ class PersonnageControllerTest {
         Objet objet = new Objet();
         objet.setId("poignard");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("poignard")).thenReturn(Optional.of(objet));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 
@@ -471,7 +471,7 @@ class PersonnageControllerTest {
         Objet baton = new Objet();
         baton.setId("baton");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("marteau")).thenReturn(Optional.of(marteau));
         when(objetRepository.findById("baton")).thenReturn(Optional.of(baton));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
@@ -492,7 +492,7 @@ class PersonnageControllerTest {
     @Test
     void ressusciterRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
         Personnage personnage = creerPersonnage("quelqu-un-d-autre");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
 
         authentifierComme("marius");
 

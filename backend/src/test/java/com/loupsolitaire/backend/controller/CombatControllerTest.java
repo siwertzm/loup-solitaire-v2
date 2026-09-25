@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -118,7 +119,7 @@ class CombatControllerTest {
         Personnage personnage = creerPersonnage("marius");
         Combat combat = new Combat();
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(combatService.initierCombat(personnage)).thenReturn(combat);
         when(combatMapper.versReponse(combat)).thenReturn(reponseVide());
 
@@ -131,7 +132,7 @@ class CombatControllerTest {
 
     @Test
     void initierRenvoie404SiLePersonnageEstIntrouvable() throws Exception {
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.empty());
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.empty());
 
         authentifierComme("marius");
 
@@ -144,7 +145,7 @@ class CombatControllerTest {
     @Test
     void initierRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
         Personnage personnage = creerPersonnage("quelqu-un-d-autre");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
 
         authentifierComme("marius");
 
@@ -211,7 +212,7 @@ class CombatControllerTest {
         JouerTourCombatRequest request = new JouerTourCombatRequest();
         request.setAction("attaque");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null)).thenReturn(tourJoue);
         when(combatMapper.versReponse(combat, null)).thenReturn(reponseVide());
 
@@ -227,6 +228,28 @@ class CombatControllerTest {
     }
 
     @Test
+    void jouerTourRenvoie409SiUneAutreActionVientD_etreAppliquee() throws Exception {
+        // Double tap sur "Attaque" : la seconde requete arrive sur une version
+        // perimee du personnage et doit etre refusee, pas jouee une 2e fois.
+        Personnage personnage = creerPersonnage("marius");
+
+        JouerTourCombatRequest request = new JouerTourCombatRequest();
+        request.setAction("attaque");
+
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
+        when(combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null))
+                .thenThrow(new ObjectOptimisticLockingFailureException(Personnage.class, personnageId));
+
+        authentifierComme("marius");
+
+        mockMvc.perform(post("/personnages/{id}/combat/tour", personnageId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("Action simultanee"));
+    }
+
+    @Test
     void jouerTourAvecObjetVaChercherL_objetEnBase() throws Exception {
         Personnage personnage = creerPersonnage("marius");
         Combat combat = new Combat();
@@ -238,7 +261,7 @@ class CombatControllerTest {
         request.setAction("OBJET");
         request.setObjetId("potion_de_soin");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("potion_de_soin")).thenReturn(Optional.of(potion));
         when(combatService.jouerTour(personnage, ActionCombat.OBJET, potion)).thenReturn(tourJoue);
         when(combatMapper.versReponse(eq(combat), any())).thenReturn(reponseVide());
@@ -259,7 +282,7 @@ class CombatControllerTest {
         request.setAction("OBJET");
         request.setObjetId("objet-inconnu");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(objetRepository.findById("objet-inconnu")).thenReturn(Optional.empty());
 
         authentifierComme("marius");
@@ -279,7 +302,7 @@ class CombatControllerTest {
         JouerTourCombatRequest request = new JouerTourCombatRequest();
         request.setAction("TELEPORTATION");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
 
         authentifierComme("marius");
 
@@ -303,7 +326,7 @@ class CombatControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
 
-        verify(personnageRepository, never()).findById(any());
+        verify(personnageRepository, never()).findByIdPourModification(any());
     }
 
     @Test
@@ -312,7 +335,7 @@ class CombatControllerTest {
         JouerTourCombatRequest request = new JouerTourCombatRequest();
         request.setAction("ATTAQUE");
 
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
 
         authentifierComme("marius");
 

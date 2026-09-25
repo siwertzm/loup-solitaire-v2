@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import jakarta.persistence.OptimisticLockException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -71,5 +74,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), "Authentification echouee",
                         "Nom d'utilisateur ou mot de passe incorrect"));
+    }
+
+    // Deux actions simultanees sur le meme personnage (double tap, double
+    // clic, deux onglets...) : la premiere a ete appliquee, celle-ci arrive
+    // sur un etat perime et est annulee (voir Personnage.version). Le client
+    // peut simplement recharger l'etat du personnage.
+    @ExceptionHandler({OptimisticLockingFailureException.class, OptimisticLockException.class})
+    public ResponseEntity<ErrorResponse> handleConflitConcurrent(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), "Action simultanee",
+                        "Une autre action vient d'etre appliquee a ce personnage, rechargez puis reessayez"));
     }
 }

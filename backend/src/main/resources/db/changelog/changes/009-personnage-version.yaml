@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 009-personnage-version
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 009-personnage-version.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
