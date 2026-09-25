@@ -1,5 +1,5 @@
 # --- Etape 1 : build ---
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 
 # Copie du wrapper Maven et du pom en premier pour profiter du cache Docker :
@@ -12,7 +12,7 @@ COPY src ./src
 RUN ./mvnw package -DskipTests -B
 
 # --- Etape 2 : runtime ---
-FROM eclipse-temurin:17-jre-jammy AS runtime
+FROM eclipse-temurin:21-jre-jammy AS runtime
 WORKDIR /app
 
 # curl est necessaire au healthcheck defini dans docker-compose.yml (image jammy

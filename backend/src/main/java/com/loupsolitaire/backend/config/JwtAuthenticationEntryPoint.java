@@ -7,12 +7,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loupsolitaire.backend.exception.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Sans ce bean, Spring Security utilise son AuthenticationEntryPoint par
@@ -28,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper;
+    // Spring Boot 4 : le mapper auto-configure est un JsonMapper Jackson 3
+    // (package tools.jackson). Il n'existe plus de bean ObjectMapper Jackson 2.
+    private final JsonMapper jsonMapper;
 
     @Override
     public void commence(
@@ -45,6 +47,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 "Jeton d'acces manquant, invalide ou expire"
         );
 
-        objectMapper.writeValue(response.getWriter(), body);
+        jsonMapper.writeValue(response.getWriter(), body);
     }
 }
