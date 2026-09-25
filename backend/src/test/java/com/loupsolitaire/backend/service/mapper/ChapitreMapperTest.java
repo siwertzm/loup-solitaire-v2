@@ -98,9 +98,9 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(17, personnage);
 
         assertThat(reponse.ennemis()).hasSize(1);
-        assertThat(reponse.ennemis().get(0).id()).isEqualTo("kraan");
-        assertThat(reponse.ennemis().get(0).habilite()).isEqualTo(18);
-        assertThat(reponse.ennemis().get(0).endurance()).isEqualTo(20);
+        assertThat(reponse.ennemis().getFirst().id()).isEqualTo("kraan");
+        assertThat(reponse.ennemis().getFirst().habilite()).isEqualTo(18);
+        assertThat(reponse.ennemis().getFirst().endurance()).isEqualTo(20);
     }
 
     @Test
@@ -120,11 +120,11 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(236, personnage);
 
         assertThat(reponse.effets()).hasSize(1);
-        assertThat(reponse.effets().get(0).type()).isEqualTo("HABILITE");
-        assertThat(reponse.effets().get(0).valeur()).isEqualTo(-1);
-        assertThat(reponse.effets().get(0).conditions()).hasSize(1);
-        assertThat(reponse.effets().get(0).conditions().get(0).type()).isEqualTo("PERMANENT");
-        assertThat(reponse.effets().get(0).resultat()).isNull();
+        assertThat(reponse.effets().getFirst().type()).isEqualTo("HABILITE");
+        assertThat(reponse.effets().getFirst().valeur()).isEqualTo(-1);
+        assertThat(reponse.effets().getFirst().conditions()).hasSize(1);
+        assertThat(reponse.effets().getFirst().conditions().getFirst().type()).isEqualTo("PERMANENT");
+        assertThat(reponse.effets().getFirst().resultat()).isNull();
     }
 
     @Test
@@ -142,8 +142,8 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(37, personnage);
 
         assertThat(reponse.effets()).hasSize(1);
-        assertThat(reponse.effets().get(0).type()).isEqualTo("REPAS");
-        assertThat(reponse.effets().get(0).resultat()).isEqualTo("REPAS_CONSOMME");
+        assertThat(reponse.effets().getFirst().type()).isEqualTo("REPAS");
+        assertThat(reponse.effets().getFirst().resultat()).isEqualTo("REPAS_CONSOMME");
     }
 
     @Test
@@ -186,8 +186,8 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(36, personnage);
 
         assertThat(reponse.effets()).hasSize(1);
-        assertThat(reponse.effets().get(0).type()).isEqualTo("ENDURANCE");
-        assertThat(reponse.effets().get(0).valeur()).isEqualTo(-2);
+        assertThat(reponse.effets().getFirst().type()).isEqualTo("ENDURANCE");
+        assertThat(reponse.effets().getFirst().valeur()).isEqualTo(-2);
     }
 
     @Test
@@ -214,11 +214,11 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
         assertThat(reponse.liens()).hasSize(1);
-        assertThat(reponse.liens().get(0).chapitreCibleId()).isEqualTo(1);
-        assertThat(reponse.liens().get(0).disponible()).isTrue();
-        assertThat(reponse.liens().get(0).conditions()).hasSize(1);
-        assertThat(reponse.liens().get(0).conditions().get(0).type()).isEqualTo("DISCIPLINE");
-        assertThat(reponse.liens().get(0).conditions().get(0).targetId()).isEqualTo("chasse");
+        assertThat(reponse.liens().getFirst().chapitreCibleId()).isEqualTo(1);
+        assertThat(reponse.liens().getFirst().disponible()).isTrue();
+        assertThat(reponse.liens().getFirst().conditions()).hasSize(1);
+        assertThat(reponse.liens().getFirst().conditions().getFirst().type()).isEqualTo("DISCIPLINE");
+        assertThat(reponse.liens().getFirst().conditions().getFirst().targetId()).isEqualTo("chasse");
     }
 
     @Test
@@ -241,7 +241,7 @@ class ChapitreMapperTest {
 
         // Le lien est toujours present dans la reponse, juste marque indisponible.
         assertThat(reponse.liens()).hasSize(1);
-        assertThat(reponse.liens().get(0).disponible()).isFalse();
+        assertThat(reponse.liens().getFirst().disponible()).isFalse();
     }
 
     @Test
@@ -264,7 +264,7 @@ class ChapitreMapperTest {
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
-        assertThat(reponse.liens().get(0).disponible()).isTrue();
+        assertThat(reponse.liens().getFirst().disponible()).isTrue();
     }
 
     @Test
@@ -285,9 +285,9 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(20, personnage);
 
         assertThat(reponse.objets()).hasSize(1);
-        assertThat(reponse.objets().get(0).objetId()).isEqualTo("repas");
-        assertThat(reponse.objets().get(0).valeur()).isEqualTo(1);
-        assertThat(reponse.objets().get(0).optionnel()).isTrue();
+        assertThat(reponse.objets().getFirst().objetId()).isEqualTo("repas");
+        assertThat(reponse.objets().getFirst().valeur()).isEqualTo(1);
+        assertThat(reponse.objets().getFirst().optionnel()).isTrue();
     }
 
     @Test
@@ -314,7 +314,7 @@ class ChapitreMapperTest {
         ChapitreResponse reponse = chapitreMapper.versReponse(20, personnage);
 
         // 2 proposes - 1 deja pris = 1 restant, pas 2 (la valeur brute du chapitre).
-        assertThat(reponse.objets().get(0).valeur()).isEqualTo(1);
+        assertThat(reponse.objets().getFirst().valeur()).isEqualTo(1);
     }
 
     @Test
@@ -342,8 +342,8 @@ class ChapitreMapperTest {
 
         // 6 declares - 2 deja appliques automatiquement = 4 restant a completer
         // manuellement (voir PersonnageService.ramasserObjetDuChapitre).
-        assertThat(reponse.objets().get(0).valeur()).isEqualTo(4);
-        assertThat(reponse.objets().get(0).optionnel()).isFalse();
+        assertThat(reponse.objets().getFirst().valeur()).isEqualTo(4);
+        assertThat(reponse.objets().getFirst().optionnel()).isFalse();
     }
 
     @Test

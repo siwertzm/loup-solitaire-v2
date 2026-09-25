@@ -359,7 +359,7 @@ class EffetChapitreServiceTest {
                 "[0, 4]");
 
         when(conditionService.estDisponible(
-                effet.getConditions().get(0),
+                effet.getConditions().getFirst(),
                 personnage))
                 .thenReturn(true);
 
@@ -378,7 +378,7 @@ class EffetChapitreServiceTest {
                 "[0, 4]");
 
         when(conditionService.estDisponible(
-                effet.getConditions().get(0),
+                effet.getConditions().getFirst(),
                 personnage))
                 .thenReturn(false);
 
@@ -634,7 +634,7 @@ class EffetChapitreServiceTest {
                 "[0, 6]");
 
         when(conditionService.estDisponible(
-                effet.getConditions().get(0),
+                effet.getConditions().getFirst(),
                 personnage))
                 .thenReturn(false);
 

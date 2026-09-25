@@ -174,8 +174,8 @@ class CombatServiceTest {
         assertThat(combat.getChapitreId()).isEqualTo(17);
         assertThat(combat.getEnnemiActifIndex()).isZero();
         assertThat(combat.getEnnemis()).hasSize(1);
-        assertThat(combat.getEnnemis().get(0).getEnduranceActuelle()).isEqualTo(8);
-        assertThat(combat.getEnnemis().get(0).getEnnemi()).isEqualTo(kraan);
+        assertThat(combat.getEnnemis().getFirst().getEnduranceActuelle()).isEqualTo(8);
+        assertThat(combat.getEnnemis().getFirst().getEnnemi()).isEqualTo(kraan);
     }
 
     @Test

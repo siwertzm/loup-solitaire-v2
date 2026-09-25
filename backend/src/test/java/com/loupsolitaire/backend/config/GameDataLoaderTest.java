@@ -198,7 +198,7 @@ class GameDataLoaderTest {
 
         assertThat(casque.getEffets()).hasSize(1);
 
-        Effet effetCasque = casque.getEffets().get(0);
+        Effet effetCasque = casque.getEffets().getFirst();
 
         assertThat(effetCasque.getType())
                 .isEqualTo(TypeEffet.ENDURANCE);
@@ -275,7 +275,7 @@ class GameDataLoaderTest {
         assertThat(appelsCaptures).hasSize(2);
 
         List<Chapitre> chapitresFinaux =
-                appelsCaptures.get(appelsCaptures.size() - 1);
+                appelsCaptures.getLast();
 
         assertThat(chapitresFinaux).hasSize(353);
 
@@ -288,7 +288,7 @@ class GameDataLoaderTest {
 
         assertThat(
                 chapitre0.getLiens()
-                        .get(0)
+                        .getFirst()
                         .getChapitreCible()
                         .getId()
         ).isEqualTo(1);
@@ -305,7 +305,7 @@ class GameDataLoaderTest {
 
         assertThat(
                 chapitre53.getLiens()
-                        .get(0)
+                        .getFirst()
                         .getChapitreCible()
                         .getId()
         ).isEqualTo(47);

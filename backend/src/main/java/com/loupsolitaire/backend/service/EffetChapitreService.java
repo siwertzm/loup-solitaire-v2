@@ -107,7 +107,7 @@ public class EffetChapitreService {
          * On le traite avant les protections OBJET/DISCIPLINE.
          */
         if (conditions.size() == 1
-                && conditions.get(0).getType() == TypeCondition.PERMANENT) {
+                && conditions.getFirst().getType() == TypeCondition.PERMANENT) {
 
             appliquerHabilitePermanent(
                     personnage,
@@ -136,28 +136,18 @@ public class EffetChapitreService {
 
             boolean toutesProtectionsPossedees =
                     conditions.stream()
-                            .allMatch(condition -> {
-
-                                if (condition.getType()
-                                        == TypeCondition.OBJET) {
-
-                                    return possedeObjet(
-                                            personnage,
-                                            condition.getTargetId()
-                                    );
-                                }
-
-                                if (condition.getType()
-                                        == TypeCondition.DISCIPLINE) {
-
-                                    return possedeDiscipline(
-                                            personnage,
-                                            condition.getTargetId()
-                                    );
-                                }
-
-                                return false;
-                            });
+                            .allMatch(condition ->
+                                    switch (condition.getType()) {
+                                        case OBJET -> possedeObjet(
+                                                personnage,
+                                                condition.getTargetId()
+                                        );
+                                        case DISCIPLINE -> possedeDiscipline(
+                                                personnage,
+                                                condition.getTargetId()
+                                        );
+                                        default -> false;
+                                    });
 
             /*
              * Au moins une protection manque :

@@ -7,7 +7,6 @@ import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
-import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -78,10 +77,12 @@ public class ObjetService {
 
     private void appliquerEffets(Personnage personnage, Objet objet, int signe) {
         for (Effet effet : objet.getEffets()) {
-            if (effet.getType() == TypeEffet.ENDURANCE) {
-                appliquerEndurance(personnage, objet, signe * effet.getValeur());
-            } else if (effet.getType() == TypeEffet.HABILITE) {
-                personnage.setHabiliteTemp(personnage.getHabiliteTemp() + signe * effet.getValeur());
+            switch (effet.getType()) {
+                case ENDURANCE -> appliquerEndurance(personnage, objet, signe * effet.getValeur());
+                case HABILITE -> personnage.setHabiliteTemp(personnage.getHabiliteTemp() + signe * effet.getValeur());
+                default -> {
+                    // Les autres types d'effet ne modifient pas les caracteristiques.
+                }
             }
         }
     }

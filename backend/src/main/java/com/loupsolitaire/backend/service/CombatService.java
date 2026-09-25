@@ -351,8 +351,8 @@ public class CombatService {
         return chapitre.getEffets().stream()
                 .filter(effet -> effet.getType() == TypeEffet.HABILITE)
                 .filter(effet -> effet.getConditions().size() == 1
-                        && effet.getConditions().get(0).getType() == TypeCondition.ASSAUT_MAX)
-                .filter(effet -> combat.getAssautsLivres() < parseValeur(effet.getConditions().get(0)))
+                        && effet.getConditions().getFirst().getType() == TypeCondition.ASSAUT_MAX)
+                .filter(effet -> combat.getAssautsLivres() < parseValeur(effet.getConditions().getFirst()))
                 .mapToInt(Effet::getValeur)
                 .sum();
     }
