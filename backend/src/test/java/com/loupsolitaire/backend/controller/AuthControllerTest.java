@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +45,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.json.JsonMapper;
 
 import com.loupsolitaire.backend.config.JwtUtil;
+import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -155,13 +157,20 @@ class AuthControllerTest {
      * On peuple donc nous-mêmes le SecurityContextHolder
      * pour tester @AuthenticationPrincipal.
      */
+    // Identifiant fixe derive du nom : un meme nom donne toujours le meme
+    // UUID (voir UtilisateurConnecte, construit par JwtFilter a partir du
+    // token).
+    private static UUID idDe(String username) {
+        return UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8));
+    }
+
     private void authentifierComme(
             UserDetails principal
     ) {
 
         Authentication auth =
                 new UsernamePasswordAuthenticationToken(
-                        principal,
+                        new UtilisateurConnecte(idDe(principal.getUsername())),
                         null,
                         principal.getAuthorities()
                 );
@@ -988,8 +997,8 @@ class AuthControllerTest {
 
         when(
                 utilisateurRepository
-                        .findByUsername(
-                                "marius"
+                        .findById(
+                                idDe("marius")
                         )
         ).thenReturn(
                 Optional.of(utilisateur)
@@ -1058,8 +1067,8 @@ class AuthControllerTest {
 
         when(
                 utilisateurRepository
-                        .findByUsername(
-                                "marius"
+                        .findById(
+                                idDe("marius")
                         )
         ).thenReturn(
                 Optional.of(utilisateur)
@@ -1172,8 +1181,8 @@ class AuthControllerTest {
 
         when(
                 utilisateurRepository
-                        .findByUsername(
-                                "marius"
+                        .findById(
+                                idDe("marius")
                         )
         ).thenReturn(
                 Optional.of(utilisateur)
@@ -1254,8 +1263,8 @@ class AuthControllerTest {
 
         when(
                 utilisateurRepository
-                        .findByUsername(
-                                "marius"
+                        .findById(
+                                idDe("marius")
                         )
         ).thenReturn(
                 Optional.of(utilisateur)
@@ -1381,8 +1390,8 @@ class AuthControllerTest {
 
         when(
                 utilisateurRepository
-                        .findByUsername(
-                                "marius"
+                        .findById(
+                                idDe("marius")
                         )
         ).thenReturn(
                 Optional.of(utilisateur)

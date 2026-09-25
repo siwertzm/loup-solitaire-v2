@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.AccesRefuseException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Combat;
@@ -48,9 +48,9 @@ public class CombatController {
     @PostMapping
     @Transactional
     public ResponseEntity<CombatResponse> initier(
-            @PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable UUID id, @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Combat combat = combatService.initierCombat(personnage);
         return ResponseEntity.status(HttpStatus.CREATED).body(combatMapper.versReponse(combat));
     }
@@ -60,8 +60,8 @@ public class CombatController {
     // 404 si aucun combat n'a encore ete initie sur ce chapitre.
     @GetMapping
     @Transactional
-    public CombatResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+    public CombatResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UtilisateurConnecte connecte) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, connecte);
         Combat combat = combatService.combatActuel(personnage)
                 .orElseThrow(() -> new RessourceNonTrouveeException(
                         "Aucun combat en cours sur le chapitre " + personnage.getChapitreActuel().getId()));
@@ -76,9 +76,9 @@ public class CombatController {
     public CombatResponse jouerTour(
             @PathVariable UUID id,
             @Valid @RequestBody JouerTourCombatRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
 
         ActionCombat action = versActionCombat(request.getAction());
         Objet objet = request.getObjetId() != null ? recupererObjet(request.getObjetId()) : null;
@@ -101,21 +101,23 @@ public class CombatController {
     }
 
     // Lecture seule (GET).
-    private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
-        return verifierProprietaire(id, personnageRepository.findById(id), userDetails);
+    private Personnage recupererEtVerifierProprietaire(UUID id, UtilisateurConnecte connecte) {
+        return verifierProprietaire(id, personnageRepository.findById(id), connecte);
     }
 
     // Toute action qui modifie le personnage : protege contre deux requetes
     // simultanees (voir PersonnageRepository.findByIdPourModification).
-    private Personnage recupererPourModification(UUID id, UserDetails userDetails) {
-        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), userDetails);
+    private Personnage recupererPourModification(UUID id, UtilisateurConnecte connecte) {
+        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), connecte);
     }
 
-    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UserDetails userDetails) {
+    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UtilisateurConnecte connecte) {
         Personnage personnage = trouve
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
 
-        if (!personnage.getUtilisateur().getUsername().equals(userDetails.getUsername())) {
+        // Comparaison d'identifiants : l'utilisateur du personnage est deja
+        // charge avec lui, aucune requete supplementaire.
+        if (!personnage.getUtilisateur().getId().equals(connecte.id())) {
             throw new AccesRefuseException("Ce personnage ne vous appartient pas");
         }
 

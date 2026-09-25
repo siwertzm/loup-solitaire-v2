@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,15 +28,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import tools.jackson.databind.json.JsonMapper;
 
+import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Objet;
@@ -104,15 +105,24 @@ class PersonnageControllerTest {
         SecurityContextHolder.clearContext();
     }
 
+    // Identifiant fixe derive du nom : un meme nom donne toujours le meme
+    // UUID, ce qui permet aux tests de raisonner avec des noms lisibles
+    // ("marius", "quelqu-un-d-autre") alors que l'application compare des
+    // identifiants (voir UtilisateurConnecte).
+    private static UUID idDe(String username) {
+        return UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8));
+    }
+
     private void authentifierComme(String username) {
-        UserDetails principal = User.builder()
-                .username(username).password("hash").authorities("ROLE_USER").build();
-        Authentication auth = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        UtilisateurConnecte principal = new UtilisateurConnecte(idDe(username));
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                principal, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     private Personnage creerPersonnage(String proprietaire) {
         Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(idDe(proprietaire));
         utilisateur.setUsername(proprietaire);
 
         Chapitre chapitre = new Chapitre();
@@ -147,7 +157,7 @@ class PersonnageControllerTest {
 
         Personnage personnage = creerPersonnage("marius");
 
-        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
         when(personnageService.creerPersonnage(eq(utilisateur), eq("Loup Solitaire"),
                 eq(List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE, IdDiscipline.SIXIEME_SENS,
                         IdDiscipline.ORIENTATION, IdDiscipline.GUERISON)),
@@ -168,7 +178,7 @@ class PersonnageControllerTest {
     void creerRenvoie400SiUneDisciplineEstInconnue() throws Exception {
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setUsername("marius");
-        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
 
         CreerPersonnageRequest request = new CreerPersonnageRequest();
         request.setNom("Loup Solitaire");
@@ -201,7 +211,7 @@ class PersonnageControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
 
-        verify(utilisateurRepository, never()).findByUsername(any());
+        verify(utilisateurRepository, never()).findById(any());
     }
 
     // =========================================================
@@ -214,7 +224,7 @@ class PersonnageControllerTest {
         utilisateur.setUsername("marius");
         Personnage personnage = creerPersonnage("marius");
 
-        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
         when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(List.of(personnage));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
 

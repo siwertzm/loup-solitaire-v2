@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.loupsolitaire.backend.config.JwtUtil;
+import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
@@ -197,8 +198,8 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UtilisateurResponse getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+    public UtilisateurResponse getCurrentUser(@AuthenticationPrincipal UtilisateurConnecte connecte) {
+        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
         List<PersonnageResponse> personnages = personnageRepository.findByUtilisateur(utilisateur).stream()
@@ -222,9 +223,9 @@ public class AuthController {
     @PutMapping("/me")
     public UtilisateurResponse updateProfil(
             @Valid @RequestBody UpdateProfilRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
         if (request.getUsername() != null && !request.getUsername().equals(utilisateur.getUsername())) {
@@ -259,9 +260,9 @@ public class AuthController {
     @PutMapping("/me/password")
     public AuthResponse changePassword(
             @Valid @RequestBody ChangePasswordRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), utilisateur.getPassword())) {
@@ -290,9 +291,9 @@ public class AuthController {
     @Transactional
     public void deleteAccount(
             @Valid @RequestBody DeleteAccountRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())
+        Utilisateur utilisateur = utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
 
         if (!passwordEncoder.matches(request.getPassword(), utilisateur.getPassword())) {

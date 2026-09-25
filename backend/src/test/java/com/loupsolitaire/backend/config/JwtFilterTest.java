@@ -14,10 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -32,8 +30,6 @@ class JwtFilterTest {
     @Mock
     private JwtUtil jwtUtil;
     @Mock
-    private CustomUserDetailsService userDetailsService;
-    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
@@ -42,8 +38,9 @@ class JwtFilterTest {
 
     // JwtFilter utilise @RequiredArgsConstructor (champs final) : pas de
     // @InjectMocks ici, on construit l'instance nous-memes dans chaque test.
+    // Plus aucune dependance vers la base : seul JwtUtil est necessaire.
     private JwtFilter creerFiltre() {
-        return new JwtFilter(jwtUtil, userDetailsService);
+        return new JwtFilter(jwtUtil);
     }
 
     @AfterEach
@@ -59,7 +56,7 @@ class JwtFilterTest {
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
-        verify(userDetailsService, never()).loadUserById(any());
+        verify(jwtUtil, never()).extractUtilisateurId(any());
     }
 
     @Test
@@ -73,37 +70,18 @@ class JwtFilterTest {
     }
 
     @Test
-    void authentifieLeContexteQuandLeTokenEstValide() throws Exception {
+    void authentifieAvecL_identifiantDuTokenSansInterrogerLaBase() throws Exception {
         when(request.getHeader("Authorization")).thenReturn("Bearer un-token-valide");
         when(jwtUtil.extractUtilisateurId("un-token-valide")).thenReturn(UTILISATEUR_ID);
 
-        UserDetails userDetails = User.builder()
-                .username("marius").password("hash").authorities("ROLE_USER").build();
-        when(userDetailsService.loadUserById(UTILISATEUR_ID)).thenReturn(userDetails);
-
         creerFiltre().doFilterInternal(request, response, filterChain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication())
-                .isInstanceOf(UsernamePasswordAuthenticationToken.class);
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("marius");
+        Authentication authentification = SecurityContextHolder.getContext().getAuthentication();
+        assertThat(authentification).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+        assertThat(authentification.getPrincipal()).isEqualTo(new UtilisateurConnecte(UTILISATEUR_ID));
+        assertThat(authentification.getName()).isEqualTo(UTILISATEUR_ID.toString());
+        assertThat(authentification.getAuthorities()).extracting(Object::toString).containsExactly("ROLE_USER");
         verify(filterChain).doFilter(request, response);
-    }
-
-    @Test
-    void lePrincipalPorteLeNomActuelApresUnRenommage() throws Exception {
-        // Le token a ete emis quand l'utilisateur s'appelait encore "bob" :
-        // il ne contient que son UUID, donc le principal reflete le nom
-        // ACTUEL lu en base ("bob2"), et jamais l'ancien nom.
-        when(request.getHeader("Authorization")).thenReturn("Bearer token-emis-avant-renommage");
-        when(jwtUtil.extractUtilisateurId("token-emis-avant-renommage")).thenReturn(UTILISATEUR_ID);
-
-        UserDetails userDetails = User.builder()
-                .username("bob2").password("hash").authorities("ROLE_USER").build();
-        when(userDetailsService.loadUserById(UTILISATEUR_ID)).thenReturn(userDetails);
-
-        creerFiltre().doFilterInternal(request, response, filterChain);
-
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("bob2");
     }
 
     @Test
@@ -111,20 +89,6 @@ class JwtFilterTest {
         when(request.getHeader("Authorization")).thenReturn("Bearer un-token-expire");
         when(jwtUtil.extractUtilisateurId("un-token-expire"))
                 .thenThrow(new ExpiredJwtException(null, null, "token expire"));
-
-        creerFiltre().doFilterInternal(request, response, filterChain);
-
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        verify(userDetailsService, never()).loadUserById(any());
-        verify(filterChain).doFilter(request, response);
-    }
-
-    @Test
-    void neAuthentifiePasSiLUtilisateurAEteSupprime() throws Exception {
-        when(request.getHeader("Authorization")).thenReturn("Bearer un-token-valide");
-        when(jwtUtil.extractUtilisateurId("un-token-valide")).thenReturn(UTILISATEUR_ID);
-        when(userDetailsService.loadUserById(UTILISATEUR_ID))
-                .thenThrow(new UsernameNotFoundException("Utilisateur introuvable"));
 
         creerFiltre().doFilterInternal(request, response, filterChain);
 
@@ -160,7 +124,6 @@ class JwtFilterTest {
         // L'authentification existante n'a pas ete remplacee.
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isEqualTo(dejaLa);
         verify(jwtUtil, never()).extractUtilisateurId(any());
-        verify(userDetailsService, never()).loadUserById(any());
         verify(filterChain).doFilter(request, response);
     }
 }

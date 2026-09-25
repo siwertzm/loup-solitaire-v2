@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.AccesRefuseException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Objet;
@@ -64,9 +64,9 @@ public class PersonnageController {
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
             @Valid @RequestBody CreerPersonnageRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Utilisateur utilisateur = recupererUtilisateur(userDetails);
+        Utilisateur utilisateur = recupererUtilisateur(connecte);
 
         List<IdDiscipline> disciplines = request.getDisciplines().stream()
                 .map(this::versIdDiscipline)
@@ -82,8 +82,8 @@ public class PersonnageController {
     // affiche toujours le premier element comme "a reprendre", donc le
     // personnage le plus recemment joue doit arriver en tete.
     @GetMapping
-    public List<PersonnageResponse> lister(@AuthenticationPrincipal UserDetails userDetails) {
-        Utilisateur utilisateur = recupererUtilisateur(userDetails);
+    public List<PersonnageResponse> lister(@AuthenticationPrincipal UtilisateurConnecte connecte) {
+        Utilisateur utilisateur = recupererUtilisateur(connecte);
 
         return personnageRepository.findByUtilisateur(utilisateur).stream()
                 .sorted(Comparator.<Personnage, Instant>comparing(
@@ -96,8 +96,8 @@ public class PersonnageController {
     // Fiche personnage complete (reprise d'une partie).
     @GetMapping("/{id}")
     @Transactional
-    public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+    public PersonnageResponse recuperer(@PathVariable UUID id, @AuthenticationPrincipal UtilisateurConnecte connecte) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, connecte);
         return personnageMapper.versReponse(personnage);
     }
 
@@ -107,8 +107,8 @@ public class PersonnageController {
     // ecran plusieurs fois ne le fait jamais changer.
     @GetMapping("/{id}/chapitre")
     @Transactional
-    public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UserDetails userDetails) {
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+    public ChapitreResponse chapitreCourant(@PathVariable UUID id, @AuthenticationPrincipal UtilisateurConnecte connecte) {
+        Personnage personnage = recupererEtVerifierProprietaire(id, connecte);
         return chapitreMapper.versReponse(personnage.getChapitreActuel().getId(), personnage);
     }
 
@@ -122,9 +122,9 @@ public class PersonnageController {
     public PersonnageResponse avancerVersChapitre(
             @PathVariable UUID id,
             @PathVariable Integer chapitreCibleId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         personnageService.avancerVersChapitre(personnage, chapitreCibleId);
 
         return personnageMapper.versReponse(personnage);
@@ -139,9 +139,9 @@ public class PersonnageController {
     @Transactional
     public PersonnageResponse revenirApresDefaite(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         personnageService.revenirApresDefaite(personnage);
 
         return personnageMapper.versReponse(personnage);
@@ -156,9 +156,9 @@ public class PersonnageController {
     @Transactional
     public PersonnageResponse ressusciter(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         personnageService.ressusciter(personnage);
 
         return personnageMapper.versReponse(personnage);
@@ -173,9 +173,9 @@ public class PersonnageController {
     public PersonnageResponse ajouterObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Objet objet = recupererObjet(objetId);
 
         personnageService.ramasserObjetDuChapitre(personnage, objet);
@@ -191,9 +191,9 @@ public class PersonnageController {
             @PathVariable UUID id,
             @PathVariable String objetId,
             @RequestParam(defaultValue = "1") int quantite,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Objet objet = recupererObjet(objetId);
 
         inventaireService.retirerObjet(personnage, objet, quantite);
@@ -209,9 +209,9 @@ public class PersonnageController {
     public PersonnageResponse consommerObjet(
             @PathVariable UUID id,
             @PathVariable String objetId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Objet objet = recupererObjet(objetId);
 
         objetService.appliquerEffetsConsommation(personnage, objet);
@@ -229,9 +229,9 @@ public class PersonnageController {
     public PersonnageResponse resoudreVol(
             @PathVariable UUID id,
             @PathVariable String objetId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Objet objet = recupererObjet(objetId);
 
         effetChapitreService.resoudreVolEnAttente(personnage, objet);
@@ -250,9 +250,9 @@ public class PersonnageController {
             @PathVariable UUID id,
             @PathVariable String objetAAjouterId,
             @PathVariable String objetARetirerId,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererPourModification(id, userDetails);
+        Personnage personnage = recupererPourModification(id, connecte);
         Objet objetAAjouter = recupererObjet(objetAAjouterId);
         Objet objetARetirer = recupererObjet(objetARetirerId);
 
@@ -269,30 +269,32 @@ public class PersonnageController {
     @Transactional
     public void supprimer(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
         // Lecture simple : la suppression verifie deja la version elle-meme
         // (DELETE ... WHERE version = ?), pas besoin de forcer un increment.
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererEtVerifierProprietaire(id, connecte);
         personnageService.supprimerPersonnage(personnage);
     }
 
     // Lecture seule (GET).
-    private Personnage recupererEtVerifierProprietaire(UUID id, UserDetails userDetails) {
-        return verifierProprietaire(id, personnageRepository.findById(id), userDetails);
+    private Personnage recupererEtVerifierProprietaire(UUID id, UtilisateurConnecte connecte) {
+        return verifierProprietaire(id, personnageRepository.findById(id), connecte);
     }
 
     // Toute action qui modifie le personnage : protege contre deux requetes
     // simultanees (voir PersonnageRepository.findByIdPourModification).
-    private Personnage recupererPourModification(UUID id, UserDetails userDetails) {
-        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), userDetails);
+    private Personnage recupererPourModification(UUID id, UtilisateurConnecte connecte) {
+        return verifierProprietaire(id, personnageRepository.findByIdPourModification(id), connecte);
     }
 
-    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UserDetails userDetails) {
+    private Personnage verifierProprietaire(UUID id, Optional<Personnage> trouve, UtilisateurConnecte connecte) {
         Personnage personnage = trouve
                 .orElseThrow(() -> new RessourceNonTrouveeException("Personnage introuvable : " + id));
 
-        if (!personnage.getUtilisateur().getUsername().equals(userDetails.getUsername())) {
+        // Comparaison d'identifiants : l'utilisateur du personnage est deja
+        // charge avec lui, aucune requete supplementaire.
+        if (!personnage.getUtilisateur().getId().equals(connecte.id())) {
             throw new AccesRefuseException("Ce personnage ne vous appartient pas");
         }
 
@@ -306,9 +308,9 @@ public class PersonnageController {
     @Transactional
     public List<ChapitreParcouruResponse> historique(
             @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UtilisateurConnecte connecte) {
 
-        Personnage personnage = recupererEtVerifierProprietaire(id, userDetails);
+        Personnage personnage = recupererEtVerifierProprietaire(id, connecte);
         return journalService.lister(personnage);
     }
 
@@ -317,8 +319,8 @@ public class PersonnageController {
                 .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
     }
 
-    private Utilisateur recupererUtilisateur(UserDetails userDetails) {
-        return utilisateurRepository.findByUsername(userDetails.getUsername())
+    private Utilisateur recupererUtilisateur(UtilisateurConnecte connecte) {
+        return utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
     }
 
