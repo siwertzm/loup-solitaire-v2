@@ -69,7 +69,7 @@ class GameDataLoaderTest {
 
         creerLoader().run(null);
 
-        ArgumentCaptor<List<Discipline>> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Discipline>> captor = ArgumentCaptor.captor();
         verify(disciplineRepository).saveAll(captor.capture());
 
         List<Discipline> disciplines = captor.getValue();
@@ -122,7 +122,7 @@ class GameDataLoaderTest {
 
         creerLoader().run(null);
 
-        ArgumentCaptor<List<Ennemi>> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Ennemi>> captor = ArgumentCaptor.captor();
         verify(ennemiRepository).saveAll(captor.capture());
 
         List<Ennemi> ennemis = captor.getValue();
@@ -179,7 +179,7 @@ class GameDataLoaderTest {
 
         creerLoader().run(null);
 
-        ArgumentCaptor<List<Objet>> captor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Objet>> captor = ArgumentCaptor.captor();
         verify(objetRepository).saveAll(captor.capture());
 
         List<Objet> objets = captor.getValue();
