@@ -15,6 +15,7 @@ import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
+import com.loupsolitaire.backend.model.TirageCreation;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.ActionCombat;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
@@ -25,6 +26,7 @@ import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.CombatResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.response.TirageResponse;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
 import com.loupsolitaire.backend.service.mapper.CombatMapper;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
@@ -67,6 +69,7 @@ public class PartieService {
     private final EffetChapitreService effetChapitreService;
     private final CombatService combatService;
     private final JournalService journalService;
+    private final TirageCreationService tirageCreationService;
 
     private final PersonnageMapper personnageMapper;
     private final ChapitreMapper chapitreMapper;
@@ -76,13 +79,24 @@ public class PartieService {
     // Personnages
     // =========================================================
 
+    // Tirage des caracteristiques, fait par le serveur (SEC-01). Le meme
+    // tirage est renvoye tant qu'aucun personnage n'a ete cree avec lui : le
+    // joueur ne peut pas relancer les des, meme en rechargeant l'ecran.
+    @Transactional
+    public TirageResponse tirerCaracteristiques(UtilisateurConnecte connecte) {
+        Utilisateur utilisateur = recupererUtilisateurVerrouille(connecte);
+        return versReponse(tirageCreationService.tirerOuRelire(utilisateur.getId()));
+    }
+
+    // Les chiffres d'HABILETE et d'ENDURANCE viennent du tirage en attente
+    // (POST /personnages/tirage), jamais de la requete du client.
     @Transactional
     public PersonnageResponse creerPersonnage(UtilisateurConnecte connecte, String nom,
-                                              List<IdDiscipline> disciplines,
-                                              Integer hasardHabilite, Integer hasardEndurance) {
-        Utilisateur utilisateur = recupererUtilisateur(connecte);
+                                              List<IdDiscipline> disciplines) {
+        Utilisateur utilisateur = recupererUtilisateurVerrouille(connecte);
+        TirageCreation tirage = tirageCreationService.consommer(utilisateur.getId());
         Personnage personnage = personnageService.creerPersonnage(
-                utilisateur, nom, disciplines, hasardHabilite, hasardEndurance);
+                utilisateur, nom, disciplines, tirage.getHasardHabilite(), tirage.getHasardEndurance());
         return personnageMapper.versReponse(personnage);
     }
 
@@ -249,6 +263,21 @@ public class PartieService {
     private Objet recupererObjet(String objetId) {
         return objetRepository.findById(objetId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Objet introuvable : " + objetId));
+    }
+
+    // Verrouille la ligne de l'utilisateur jusqu'a la fin de la transaction :
+    // tirage et creation d'un meme utilisateur passent l'un apres l'autre.
+    private Utilisateur recupererUtilisateurVerrouille(UtilisateurConnecte connecte) {
+        return utilisateurRepository.findByIdPourModification(connecte.id())
+                .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
+    }
+
+    private static TirageResponse versReponse(TirageCreation tirage) {
+        return new TirageResponse(
+                tirage.getHasardHabilite(),
+                tirage.getHasardEndurance(),
+                TirageCreationService.BASE_HABILITE + tirage.getHasardHabilite(),
+                TirageCreationService.BASE_ENDURANCE + tirage.getHasardEndurance());
     }
 
     private Utilisateur recupererUtilisateur(UtilisateurConnecte connecte) {

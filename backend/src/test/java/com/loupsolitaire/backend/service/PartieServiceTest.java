@@ -29,6 +29,7 @@ import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
+import com.loupsolitaire.backend.model.TirageCreation;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.ActionCombat;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
@@ -37,6 +38,7 @@ import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.response.CombatResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.response.TirageResponse;
 import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
 import com.loupsolitaire.backend.service.mapper.CombatMapper;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
@@ -63,6 +65,8 @@ class PartieServiceTest {
     private CombatService combatService;
     @Mock
     private JournalService journalService;
+    @Mock
+    private TirageCreationService tirageCreationService;
     @Mock
     private PersonnageMapper personnageMapper;
     @Mock
@@ -177,25 +181,59 @@ class PartieServiceTest {
     // Personnages
     // =========================================================
 
+    private TirageCreation tirage(int hasardHabilite, int hasardEndurance) {
+        TirageCreation tirage = new TirageCreation();
+        tirage.setUtilisateurId(marius.id());
+        tirage.setHasardHabilite(hasardHabilite);
+        tirage.setHasardEndurance(hasardEndurance);
+        return tirage;
+    }
+
     @Test
-    void creerPersonnageRattacheLePersonnageAL_utilisateurConnecte() {
+    void tirerCaracteristiquesRenvoieLeTirageDuServeurEtLesTotaux() {
         Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(marius.id());
+        when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.of(utilisateur));
+        when(tirageCreationService.tirerOuRelire(marius.id())).thenReturn(tirage(4, 7));
+
+        assertThat(partieService.tirerCaracteristiques(marius)).isEqualTo(new TirageResponse(4, 7, 14, 27));
+    }
+
+    @Test
+    void creerPersonnageUtiliseLeTirageEnAttenteEtRattacheLePersonnageAL_utilisateurConnecte() {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(marius.id());
         List<IdDiscipline> disciplines = List.of(IdDiscipline.CHASSE);
-        when(utilisateurRepository.findById(marius.id())).thenReturn(Optional.of(utilisateur));
+        when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.of(utilisateur));
+        when(tirageCreationService.consommer(marius.id())).thenReturn(tirage(5, 3));
         when(personnageService.creerPersonnage(utilisateur, "Loup", disciplines, 5, 3)).thenReturn(personnage);
         when(personnageMapper.versReponse(personnage)).thenReturn(reponse);
 
-        assertThat(partieService.creerPersonnage(marius, "Loup", disciplines, 5, 3)).isEqualTo(reponse);
+        assertThat(partieService.creerPersonnage(marius, "Loup", disciplines)).isEqualTo(reponse);
+    }
+
+    @Test
+    void creerPersonnageRenvoie400SansTirageEnAttente() {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(marius.id());
+        when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.of(utilisateur));
+        when(tirageCreationService.consommer(marius.id()))
+                .thenThrow(new IllegalArgumentException("Aucun tirage en attente"));
+
+        assertThatThrownBy(() -> partieService.creerPersonnage(marius, "Loup", List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(personnageService);
     }
 
     @Test
     void creerPersonnageRenvoie404SiLeCompteN_existePlus() {
-        when(utilisateurRepository.findById(marius.id())).thenReturn(Optional.empty());
+        when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> partieService.creerPersonnage(marius, "Loup", List.of(), 5, 3))
+        assertThatThrownBy(() -> partieService.creerPersonnage(marius, "Loup", List.of()))
                 .isInstanceOf(RessourceNonTrouveeException.class);
 
-        verifyNoInteractions(personnageService);
+        verifyNoInteractions(personnageService, tirageCreationService);
     }
 
     @Test

@@ -127,6 +127,18 @@ class PersonnageServiceTest {
     }
 
     @Test
+    void refuseUnTirageHorsDeLaTableDeHasard() {
+        assertThatThrownBy(() -> personnageService.creerPersonnage(
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 1000, 3))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> personnageService.creerPersonnage(
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 3, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(personnageRepository, never()).save(any());
+    }
+
+    @Test
     void calculeHabiliteEtEnduranceSelonLesTirages() {
         // hasardHabilite=7, hasardEndurance=3 passes en parametres ; ordre des
         // tirages restants (tableDeHasardService) : tirage hasard initial, or de depart, objet de depart

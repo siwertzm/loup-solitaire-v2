@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { ChapitreParcouru, MoiResponse, PersonnageResume } from '../models/personnage.model';
+import { ChapitreParcouru, MoiResponse, PersonnageResume, TirageCreation } from '../models/personnage.model';
 
 @Injectable({ providedIn: 'root' })
 export class PersonnageService {
@@ -54,19 +54,21 @@ export class PersonnageService {
     );
   }
 
-  /** POST /personnages — nom, exactement 5 disciplines, et les deux jets de hasard (habilite/endurance). */
-  creer(
-    nom: string,
-    disciplines: string[],
-    hasardHabilite: number,
-    hasardEndurance: number,
-  ): Observable<PersonnageResume> {
-    return this.http.post<PersonnageResume>(`${this.base}/personnages`, {
-      nom,
-      disciplines,
-      hasardHabilite,
-      hasardEndurance,
-    });
+  /**
+   * POST /personnages/tirage — tirage d'HABILETÉ et d'ENDURANCE fait par le
+   * serveur. Tant qu'aucun personnage n'est créé, le serveur renvoie toujours
+   * le même tirage : pas de relance possible, même en rechargeant l'écran.
+   */
+  tirer(): Observable<TirageCreation> {
+    return this.http.post<TirageCreation>(`${this.base}/personnages/tirage`, {});
+  }
+
+  /**
+   * POST /personnages — nom et exactement 5 disciplines. Les caractéristiques
+   * viennent du tirage en attente côté serveur (voir tirer()).
+   */
+  creer(nom: string, disciplines: string[]): Observable<PersonnageResume> {
+    return this.http.post<PersonnageResume>(`${this.base}/personnages`, { nom, disciplines });
   }
 
   /**
