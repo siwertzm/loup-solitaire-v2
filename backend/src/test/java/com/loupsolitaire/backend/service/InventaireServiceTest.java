@@ -218,8 +218,10 @@ class InventaireServiceTest {
         Objet or = creerObjet("or", CategorieObjet.BOURSE);
         when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or")).thenReturn(Optional.empty());
 
+        // IllegalArgumentException -> 400 (voir GlobalExceptionHandler), pas 500.
         assertThatThrownBy(() -> inventaireService.retirerObjet(personnage, or, 5))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("ne possede pas or");
     }
 
     @Test
@@ -229,7 +231,8 @@ class InventaireServiceTest {
                 .thenReturn(Optional.of(creerLigne(or, 3)));
 
         assertThatThrownBy(() -> inventaireService.retirerObjet(personnage, or, 10))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Quantite insuffisante");
     }
 
     @Test

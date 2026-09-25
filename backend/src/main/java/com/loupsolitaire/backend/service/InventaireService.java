@@ -117,13 +117,17 @@ public class InventaireService {
             throw new IllegalArgumentException("La quantite a retirer doit etre strictement positive");
         }
 
+        // IllegalArgumentException (400) et non IllegalStateException (500) :
+        // ces deux cas sont declenchables par le joueur (DELETE /objets,
+        // consommer, echanger un objet qu'il n'a pas ou plus). Ce n'est pas
+        // une erreur du serveur mais une requete invalide.
         InventaireItem item = inventaireItemRepository
                 .findByPersonnageIdAndObjetId(personnage.getId(), objet.getId())
-                .orElseThrow(() -> new IllegalStateException(
+                .orElseThrow(() -> new IllegalArgumentException(
                         "Le personnage ne possede pas " + objet.getId() + ", impossible d'en retirer"));
 
         if (item.getQuantite() < quantite) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                     "Quantite insuffisante de " + objet.getId() + " (possede " + item.getQuantite()
                             + ", retrait demande " + quantite + ")");
         }

@@ -2,6 +2,7 @@ package com.loupsolitaire.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -393,6 +394,26 @@ class PersonnageControllerTest {
                 .andExpect(status().isOk());
 
         verify(inventaireService).retirerObjet(personnage, objet, 1);
+    }
+
+    @Test
+    void retirerObjetRenvoie400SiLePersonnageNeLePossedePas() throws Exception {
+        // Avant : IllegalStateException non geree -> 500. C'est une requete
+        // invalide du joueur, pas une erreur du serveur.
+        Personnage personnage = creerPersonnage("marius");
+        Objet objet = new Objet();
+        objet.setId("repas");
+
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
+        when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
+        doThrow(new IllegalArgumentException("Le personnage ne possede pas repas, impossible d'en retirer"))
+                .when(inventaireService).retirerObjet(personnage, objet, 1);
+
+        authentifierComme("marius");
+
+        mockMvc.perform(delete("/personnages/{id}/objets/{objetId}", personnageId, "repas"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Le personnage ne possede pas repas, impossible d'en retirer"));
     }
 
     @Test

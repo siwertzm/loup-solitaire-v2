@@ -274,7 +274,9 @@ public class EffetChapitreService {
         }
         PorteeVol portee = personnage.getVolEnAttente();
         if (portee == null) {
-            throw new IllegalStateException("Aucun vol en attente pour ce personnage");
+            // 400 et non 500 : declenchable par le joueur (POST /vol/{objetId}
+            // alors qu'aucun vol n'est en attente, ex. double envoi).
+            throw new IllegalArgumentException("Aucun vol en attente pour ce personnage");
         }
 
         boolean categorieValide = portee == PorteeVol.ARME

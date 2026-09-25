@@ -698,7 +698,7 @@ class EffetChapitreServiceTest {
                 () -> effetChapitreService.resoudreVolEnAttente(
                         personnage,
                         hache))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalArgumentException.class);
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
