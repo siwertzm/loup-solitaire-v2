@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import com.loupsolitaire.backend.util.Emails;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,6 +44,13 @@ public class Utilisateur {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    // Filet de securite : quel que soit l'appelant, l'email est enregistre
+    // normalise (voir Emails). La contrainte UNIQUE devient ainsi insensible
+    // a la casse en pratique.
+    public void setEmail(String email) {
+        this.email = Emails.normaliser(email);
+    }
 
     // Optionnelle : peut etre completee apres inscription via PUT /auth/me.
     // Date de naissance plutot qu'un age en dur, qui deviendrait faux avec le temps.

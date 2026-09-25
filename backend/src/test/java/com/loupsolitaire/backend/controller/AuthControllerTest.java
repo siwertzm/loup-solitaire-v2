@@ -392,6 +392,58 @@ class AuthControllerTest {
                 );
     }
 
+    @Test
+    void registerRefuseUnEmailDejaPrisAvecUneAutreCasse()
+            throws Exception {
+
+        // JSON ecrit a la main : passer par RegisterRequest.setEmail
+        // normaliserait deja l'email avant l'envoi, et le test ne
+        // verifierait plus rien.
+        String json = """
+                {
+                  "username": "marius2",
+                  "email": "  Marius@Example.COM ",
+                  "password": "motdepasse123"
+                }
+                """;
+
+        when(
+                utilisateurRepository
+                        .existsByUsername("marius2")
+        ).thenReturn(false);
+
+        when(
+                utilisateurRepository
+                        .existsByEmail(
+                                "marius@example.com"
+                        )
+        ).thenReturn(true);
+
+        mockMvc.perform(
+                        post("/auth/register")
+                                .contentType(
+                                        MediaType.APPLICATION_JSON
+                                )
+                                .content(json)
+                )
+                .andExpect(
+                        status().isConflict()
+                )
+                .andExpect(
+                        jsonPath("$.message")
+                                .value(
+                                        "Cet email est deja utilise"
+                                )
+                );
+
+        verify(
+                utilisateurRepository,
+                never()
+        ).save(
+                any()
+        );
+    }
+
     // =========================================================
     // login
     // =========================================================

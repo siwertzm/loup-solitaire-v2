@@ -64,6 +64,18 @@ class CustomUserDetailsServiceTest {
     }
 
     @Test
+    void retrouveLeCompteQuelleQueSoitLaCasseDeLEmailSaisi() {
+        // Les emails sont stockes en minuscules : la saisie est normalisee
+        // avant la recherche.
+        when(utilisateurRepository.findByEmail("marius@example.com"))
+                .thenReturn(Optional.of(utilisateur("marius", "marius@example.com")));
+
+        UserDetails result = service.loadUserByUsername("  Marius@Example.COM ");
+
+        assertThat(result.getUsername()).isEqualTo("marius");
+    }
+
+    @Test
     void lEmailEstPrioritaireSurUnNomIdentique() {
         // Cas d'attaque : "pirate" a pris comme nom d'utilisateur l'email de
         // "victime". Se connecter avec cet email doit designer la victime,

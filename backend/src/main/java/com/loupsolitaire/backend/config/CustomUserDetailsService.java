@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
+import com.loupsolitaire.backend.util.Emails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,8 +35,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     // - identifiant sans "@" : ce ne peut etre qu'un nom d'utilisateur.
     @Override
     public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
+        // Les emails sont stockes en minuscules (voir Emails) : "Bob@Mail.fr"
+        // doit retrouver le compte "bob@mail.fr".
         Optional<Utilisateur> trouve = identifiant.contains("@")
-                ? utilisateurRepository.findByEmail(identifiant)
+                ? utilisateurRepository.findByEmail(Emails.normaliser(identifiant))
                         .or(() -> utilisateurRepository.findByUsername(identifiant))
                 : utilisateurRepository.findByUsername(identifiant);
 

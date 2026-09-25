@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
+import com.loupsolitaire.backend.util.Emails;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +28,12 @@ public class RegisterRequest {
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Format d'email invalide")
     private String email;
+
+    // Email normalise des la lecture du JSON (espaces retires, minuscules) :
+    // toutes les recherches en base se font ensuite sur cette forme unique.
+    public void setEmail(String email) {
+        this.email = Emails.normaliser(email);
+    }
 
     @NotBlank(message = "Le mot de passe est obligatoire")
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caracteres")
