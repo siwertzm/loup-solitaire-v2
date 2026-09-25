@@ -274,7 +274,7 @@ public class CombatService {
     public boolean peutFuir(Chapitre chapitre, Combat combat) {
         for (Lien lien : chapitre.getLiens()) {
             for (Cond cond : lien.getConditions()) {
-                if (cond.getType() == TypeCondition.FUITE && combat.getAssautsLivres() >= parseValeur(cond)) {
+                if (cond.getType() == TypeCondition.FUITE && combat.getAssautsLivres() >= cond.valeurEntiere()) {
                     return true;
                 }
             }
@@ -287,7 +287,7 @@ public class CombatService {
     private boolean assautEchecAtteint(Chapitre chapitre, Combat combat) {
         for (Lien lien : chapitre.getLiens()) {
             for (Cond cond : lien.getConditions()) {
-                if (cond.getType() == TypeCondition.ASSAUT_ECHEC && combat.getAssautsLivres() >= parseValeur(cond)) {
+                if (cond.getType() == TypeCondition.ASSAUT_ECHEC && combat.getAssautsLivres() >= cond.valeurEntiere()) {
                     return true;
                 }
             }
@@ -356,7 +356,7 @@ public class CombatService {
                 .filter(effet -> effet.getType() == TypeEffet.HABILITE)
                 .filter(effet -> effet.getConditions().size() == 1
                         && effet.getConditions().getFirst().getType() == TypeCondition.ASSAUT_MAX)
-                .filter(effet -> combat.getAssautsLivres() < parseValeur(effet.getConditions().getFirst()))
+                .filter(effet -> combat.getAssautsLivres() < effet.getConditions().getFirst().valeurEntiere())
                 .mapToInt(Effet::getValeur)
                 .sum();
     }
@@ -393,14 +393,6 @@ public class CombatService {
             throw new IllegalArgumentException(
                     "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
                             + "POST /personnages/{id}/ressusciter avant de continuer");
-        }
-    }
-
-    private int parseValeur(Cond cond) {
-        try {
-            return Integer.parseInt(cond.getValeur().trim());
-        } catch (NumberFormatException e) {
-            return 0;
         }
     }
 }

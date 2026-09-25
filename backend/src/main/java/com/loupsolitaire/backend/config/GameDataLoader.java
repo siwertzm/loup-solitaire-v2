@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.ApplicationArguments;
@@ -163,15 +164,19 @@ public class GameDataLoader implements ApplicationRunner {
 
         List<ObjetJson> donnees = lireJson("data/objet.json", ObjetJson.class);
 
+        // Les objets ne sont pas encore en base : les conditions de leurs
+        // effets sont verifiees par rapport au contenu du fichier lui-meme.
+        Set<String> idsObjets = donnees.stream().map(ObjetJson::getId).collect(Collectors.toSet());
+
         List<Objet> objets = donnees.stream()
-                .map(this::versEntite)
+                .map(json -> versEntite(json, idsObjets::contains))
                 .toList();
 
         objetRepository.saveAll(objets);
         log.info("✅ {} objets charges", objets.size());
     }
 
-    private Objet versEntite(ObjetJson json) {
+    private Objet versEntite(ObjetJson json, Predicate<String> objetExiste) {
         Objet objet = new Objet();
         objet.setId(json.getId());
         objet.setNom(json.getNom());
@@ -180,7 +185,7 @@ public class GameDataLoader implements ApplicationRunner {
 
         if (json.getEffet() != null) {
             List<Effet> effets = json.getEffet().stream()
-                    .map(effetJson -> versEntite(effetJson, objet))
+                    .map(effetJson -> versEntite(effetJson, objet, objetExiste))
                     .toList();
             objet.setEffets(effets);
         }
@@ -190,7 +195,7 @@ public class GameDataLoader implements ApplicationRunner {
 
     // objet et chapitre sont mutuellement exclusifs : un seul est non-null
     // selon le contexte d'appel (voir doc de conception, Effet).
-    private Effet versEntite(EffetJson json, Objet objetParent) {
+    private Effet versEntite(EffetJson json, Objet objetParent, Predicate<String> objetExiste) {
         Effet effet = new Effet();
         effet.setType(TypeEffet.fromJson(json.getType()));
         effet.setValeur(json.getValeur());
@@ -198,8 +203,13 @@ public class GameDataLoader implements ApplicationRunner {
         effet.setObjet(objetParent);
 
         if (json.getCond() != null) {
+            String origine = "effet de l'objet " + objetParent.getId();
             List<Cond> conditions = json.getCond().stream()
-                    .map(condJson -> versEntite(condJson, effet))
+                    .map(condJson -> {
+                        Cond cond = versEntite(condJson, origine, objetExiste);
+                        cond.setEffet(effet);
+                        return cond;
+                    })
                     .toList();
             effet.setConditions(conditions);
         }
@@ -207,14 +217,6 @@ public class GameDataLoader implements ApplicationRunner {
         return effet;
     }
 
-    private Cond versEntite(CondJson json, Effet effetParent) {
-        Cond cond = new Cond();
-        cond.setType(TypeCondition.fromJson(json.getType()));
-        cond.setTargetId(json.getTargetId());
-        cond.setValeur(json.getValeur());
-        cond.setEffet(effetParent);
-        return cond;
-    }
 
     private void chargerChapitres() throws Exception {
         if (chapitreRepository.count() > 0) {
@@ -297,8 +299,13 @@ public class GameDataLoader implements ApplicationRunner {
         effet.setChapitre(chapitreParent);
 
         if (json.getCond() != null) {
+            String origine = "effet du chapitre " + chapitreParent.getId();
             List<Cond> conditions = json.getCond().stream()
-                    .map(condJson -> versEntite(condJson, effet))
+                    .map(condJson -> {
+                        Cond cond = versEntite(condJson, origine, this::objetEnBase);
+                        cond.setEffet(effet);
+                        return cond;
+                    })
                     .toList();
             effet.setConditions(conditions);
         }
@@ -320,8 +327,13 @@ public class GameDataLoader implements ApplicationRunner {
         lien.setChapitreCible(cible);
 
         if (json.getCond() != null) {
+            String origine = "lien du chapitre " + chapitreSourceId + " vers " + idCible;
             List<Cond> conditions = json.getCond().stream()
-                    .map(condJson -> versEntite(condJson, lien))
+                    .map(condJson -> {
+                        Cond cond = versEntite(condJson, origine, this::objetEnBase);
+                        cond.setLien(lien);
+                        return cond;
+                    })
                     .toList();
             lien.setConditions(conditions);
         }
@@ -329,13 +341,65 @@ public class GameDataLoader implements ApplicationRunner {
         return lien;
     }
 
-    private Cond versEntite(CondJson json, Lien lienParent) {
-        Cond cond = new Cond();
-        cond.setType(TypeCondition.fromJson(json.getType()));
-        cond.setTargetId(json.getTargetId());
-        cond.setValeur(json.getValeur());
-        cond.setLien(lienParent);
-        return cond;
+    // Cree une condition (d'effet ou de lien) et VERIFIE ses donnees : une
+    // faute de frappe dans un JSON du livre fait echouer le demarrage avec
+    // un message precis, au lieu de donner en jeu une condition toujours
+    // vraie ou toujours fausse sans que personne ne s'en apercoive.
+    private Cond versEntite(CondJson json, String origine, Predicate<String> objetExiste) {
+        try {
+            Cond cond = new Cond();
+            cond.setType(TypeCondition.fromJson(json.getType()));
+            cond.setTargetId(json.getTargetId());
+            cond.setValeur(json.getValeur());
+            validerCondition(cond, objetExiste);
+            return cond;
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new IllegalStateException("Condition invalide (" + origine + ") : " + e.getMessage(), e);
+        }
+    }
+
+    // Verifie ce que chaque type de condition utilise reellement en jeu
+    // (voir ConditionService, CombatService et EffetChapitreService).
+    // Visible dans le package pour les tests.
+    static void validerCondition(Cond cond, Predicate<String> objetExiste) {
+        switch (cond.getType()) {
+            // "[min, max]" entre 0 et 9.
+            case HASARD -> cond.plageHasard();
+            // Marqueur sans valeur ; la valeur de VICTOIRE n'est pas lue.
+            case PERMANENT, VICTOIRE -> {
+            }
+            // 1 = possede, -1 = ne possede PAS (voir EffetChapitreService).
+            case DISCIPLINE -> {
+                cond.valeurEntiere();
+                IdDiscipline.fromJson(cond.getTargetId());
+            }
+            case OBJET, BOURSE -> {
+                cond.valeurEntiere();
+                verifierObjet(cond.getTargetId(), objetExiste);
+            }
+            // Sans targetId : "une arme quelconque" (ex. vol d'arme, chapitre 274).
+            case ARME -> {
+                cond.valeurEntiere();
+                if (cond.getTargetId() != null) {
+                    verifierObjet(cond.getTargetId(), objetExiste);
+                }
+            }
+            // Seuils numeriques (endurance, nombre d'assauts, 1/0...).
+            case ENDURANCE, ENDURANCE_INF, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> cond.valeurEntiere();
+        }
+    }
+
+    private static void verifierObjet(String objetId, Predicate<String> objetExiste) {
+        if (objetId == null) {
+            throw new IllegalStateException("Objet cible manquant");
+        }
+        if (!objetExiste.test(objetId)) {
+            throw new IllegalStateException("Objet inconnu : " + objetId);
+        }
+    }
+
+    private boolean objetEnBase(String objetId) {
+        return objetRepository.findById(objetId).isPresent();
     }
 
     private ObjetChap versEntite(ObjetChapJson json, Chapitre chapitreParent, int chapitreId) {

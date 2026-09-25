@@ -91,15 +91,19 @@ public class ConditionService {
             return false;
         }
         Combat combat = combatOpt.get();
-        int valeur = parseValeur(cond.getValeur());
 
+        // La valeur n'est lue que pour les conditions qui en ont besoin :
+        // celle de VICTOIRE n'a pas de sens, et celle de FUITE (nombre
+        // d'assauts avant de pouvoir fuir) est utilisee par CombatService.
         return switch (cond.getType()) {
             case VICTOIRE -> combat.getStatut() == StatutCombat.VICTOIRE;
             case FUITE -> combat.getStatut() == StatutCombat.FUITE;
-            case ASSAUT_MAX -> combat.getStatut() == StatutCombat.VICTOIRE && combat.getAssautsLivres() <= valeur;
-            case ASSAUT_ECHEC -> combat.getStatut() == StatutCombat.INTERROMPU && combat.getAssautsLivres() >= valeur;
+            case ASSAUT_MAX -> combat.getStatut() == StatutCombat.VICTOIRE
+                    && combat.getAssautsLivres() <= cond.valeurEntiere();
+            case ASSAUT_ECHEC -> combat.getStatut() == StatutCombat.INTERROMPU
+                    && combat.getAssautsLivres() >= cond.valeurEntiere();
             case ENDURANCE_PERDUE -> combat.getStatut() == StatutCombat.VICTOIRE
-                    && (valeur == 1) == combat.isEndurancePerdue();
+                    && (cond.valeurEntiere() == 1) == combat.isEndurancePerdue();
             default -> false;
         };
     }
@@ -111,13 +115,13 @@ public class ConditionService {
     }
 
     private boolean enduranceInferieure(Cond cond, Personnage personnage) {
-        return personnage.getEnduranceActuelle() < parseValeur(cond.getValeur());
+        return personnage.getEnduranceActuelle() < cond.valeurEntiere();
     }
 
     // Meme logique pour OBJET/ARME/BOURSE : possede-t-on au moins la
     // quantite requise de l'objet designe par targetId (ex. "or" pour BOURSE).
     private boolean possedeQuantiteObjet(Cond cond, ContexteConditions contexte) {
-        int quantiteRequise = parseValeur(cond.getValeur());
+        int quantiteRequise = cond.valeurEntiere();
         return contexte.quantitePossedee(cond.getTargetId()) >= quantiteRequise;
     }
 
@@ -131,7 +135,7 @@ public class ConditionService {
     }
 
     private boolean enduranceSuffisante(Cond cond, Personnage personnage) {
-        return personnage.getEnduranceActuelle() >= parseValeur(cond.getValeur());
+        return personnage.getEnduranceActuelle() >= cond.valeurEntiere();
     }
 
     // valeur au format "[min, max]" (ex. "[0, 4]"). Si aucun tirage n'a
@@ -144,22 +148,6 @@ public class ConditionService {
             return false;
         }
 
-        String valeur = cond.getValeur().replace("[", "").replace("]", "").trim();
-        String[] bornes = valeur.split(",");
-        int min = Integer.parseInt(bornes[0].trim());
-        int max = Integer.parseInt(bornes[1].trim());
-
-        return tirage >= min && tirage <= max;
-    }
-
-    private int parseValeur(String valeur) {
-        if (valeur == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(valeur.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return cond.plageHasard().contient(tirage);
     }
 }

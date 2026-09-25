@@ -1,6 +1,7 @@
 package com.loupsolitaire.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -176,6 +177,18 @@ class ConditionServiceTest {
         Cond cond = creerCond(TypeCondition.ENDURANCE, null, "10");
 
         assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    // Avant : une valeur mal ecrite valait 0 en silence (ici "endurance >=
+    // 0", donc toujours vrai). Desormais l'erreur est visible.
+    @Test
+    void uneValeurMalEcriteLeveUneErreurAuLieuDeValoirZero() {
+        personnage.setEnduranceActuelle(5);
+        Cond cond = creerCond(TypeCondition.ENDURANCE, null, "dix");
+
+        assertThatThrownBy(() -> conditionService.estDisponible(cond, personnage))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("dix");
     }
 
     // =========================================================

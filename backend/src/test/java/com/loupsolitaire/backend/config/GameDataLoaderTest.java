@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,11 +23,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.Chapitre;
+import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Discipline;
 import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Ennemi;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.Objet;
+import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
@@ -350,5 +354,82 @@ class GameDataLoaderTest {
         creerLoader().run(null);
 
         verify(chapitreRepository, never()).saveAll(anyList());
+    }
+
+    // =========================================================
+    // Validation des conditions au chargement
+    // (le chargement complet ci-dessus prouve deja que les 137
+    // conditions du livre sont valides)
+    // =========================================================
+
+    private static final Predicate<String> OBJETS_CONNUS = Set.of("torche", "or", "marteau")::contains;
+
+    private static Cond cond(TypeCondition type, String targetId, String valeur) {
+        Cond cond = new Cond();
+        cond.setType(type);
+        cond.setTargetId(targetId);
+        cond.setValeur(valeur);
+        return cond;
+    }
+
+    @Test
+    void accepteLesConditionsBienFormees() {
+        GameDataLoader.validerCondition(cond(TypeCondition.HASARD, null, "[0, 4]"), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.DISCIPLINE, "bouclier_psychique", "-1"), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.OBJET, "torche", "-1"), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.BOURSE, "or", "10"), OBJETS_CONNUS);
+        // ARME sans cible : "une arme quelconque".
+        GameDataLoader.validerCondition(cond(TypeCondition.ARME, null, "1"), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.ARME, "marteau", "1"), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.FUITE, null, "3"), OBJETS_CONNUS);
+        // Valeur non utilisee : peut manquer.
+        GameDataLoader.validerCondition(cond(TypeCondition.VICTOIRE, null, null), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.PERMANENT, null, null), OBJETS_CONNUS);
+    }
+
+    @Test
+    void refuseUneValeurNumeriqueMalEcrite() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.ENDURANCE, null, "10 points"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("10 points");
+    }
+
+    @Test
+    void refuseUneValeurManquanteQuandElleEstUtilisee() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.FUITE, null, null), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void refuseUnePlageDeHasardInvalide() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.HASARD, null, "[0, 10]"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void refuseUneDisciplineInconnue() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.DISCIPLINE, "telepathie", "1"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("telepathie");
+    }
+
+    @Test
+    void refuseUnObjetInconnuOuManquant() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.OBJET, "torch", "1"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("torch");
+
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.BOURSE, null, "10"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class);
+
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.ARME, "baton_magique", "1"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class);
     }
 }
