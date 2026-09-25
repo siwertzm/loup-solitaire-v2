@@ -12,11 +12,11 @@ import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
@@ -30,7 +30,6 @@ class EmailServiceTest {
     @Mock
     private JavaMailSender mailSender;
 
-    @InjectMocks
     private EmailService emailService;
 
     private MimeMessage mimeMessage;
@@ -38,11 +37,8 @@ class EmailServiceTest {
     @BeforeEach
     void setUp() {
 
-        ReflectionTestUtils.setField(
-                emailService,
-                "from",
-                "no-reply@loup-solitaire.local"
-        );
+        // Expediteur : no-reply@loup-solitaire.local.
+        emailService = new EmailService(mailSender, ProprietesDeTest.app());
 
         mimeMessage = new MimeMessage(
                 Session.getInstance(

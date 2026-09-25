@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.loupsolitaire.backend.config.JwtProperties;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.RefreshToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -21,9 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-
-    @Value("${jwt.refresh-expiration-days}")
-    private long refreshExpirationDays;
+    private final JwtProperties jwtProperties;
 
     // Cree un nouveau refresh token pour l'utilisateur et renvoie la valeur BRUTE
     // (a transmettre au client). Seul le hash est persiste en base.
@@ -34,7 +32,7 @@ public class RefreshTokenService {
         RefreshToken token = new RefreshToken();
         token.setUtilisateur(utilisateur);
         token.setTokenHash(Tokens.hacher(rawToken));
-        token.setExpiresAt(Instant.now().plus(refreshExpirationDays, ChronoUnit.DAYS));
+        token.setExpiresAt(Instant.now().plus(jwtProperties.refreshExpirationDays(), ChronoUnit.DAYS));
         refreshTokenRepository.save(token);
 
         return rawToken;

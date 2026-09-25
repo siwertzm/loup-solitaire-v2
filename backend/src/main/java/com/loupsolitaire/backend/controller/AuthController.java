@@ -2,7 +2,6 @@ package com.loupsolitaire.backend.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.loupsolitaire.backend.config.AppProperties;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.request.AuthRequest;
 import com.loupsolitaire.backend.request.ChangePasswordRequest;
@@ -49,9 +49,7 @@ public class AuthController {
     private final CompteService compteService;
     private final EmailVerificationService emailVerificationService;
     private final PasswordResetService passwordResetService;
-
-    @Value("${app.mobile-login-url}")
-    private String mobileLoginUrl;
+    private final AppProperties appProperties;
 
     // =========================================================
     // Inscription et verification de l'email
@@ -67,7 +65,7 @@ public class AuthController {
     @GetMapping("/verify-email")
     public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         emailVerificationService.verifier(token);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(mobileLoginUrl)).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.mobileLoginUrl())).build();
     }
 
     // Reponse identique que l'email existe ou non, et qu'il soit deja verifie

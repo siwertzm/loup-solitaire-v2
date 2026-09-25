@@ -3,11 +3,11 @@ package com.loupsolitaire.backend.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.loupsolitaire.backend.config.AppProperties;
 import com.loupsolitaire.backend.model.PasswordResetToken;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
@@ -25,12 +25,7 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final RefreshTokenService refreshTokenService;
-
-    @Value("${app.password-reset.expiration-minutes:15}")
-    private long expirationMinutes;
-
-    @Value("${app.password-reset.max-attempts:5}")
-    private int maxAttempts;
+    private final AppProperties appProperties;
 
     /*
      * ETAPE 1
@@ -61,7 +56,7 @@ public class PasswordResetService {
 
             token.setExpiresAt(
                     Instant.now().plus(
-                            expirationMinutes,
+                            expirationMinutes(),
                             ChronoUnit.MINUTES
                     )
             );
@@ -71,7 +66,7 @@ public class PasswordResetService {
             emailService.envoyerCodeReinitialisationMotDePasse(
                     utilisateur.getEmail(),
                     code,
-                    expirationMinutes
+                    expirationMinutes()
             );
         });
     }
@@ -130,7 +125,7 @@ public class PasswordResetService {
             );
         }
 
-        if (token.getTentatives() >= maxAttempts) {
+        if (token.getTentatives() >= maxAttempts()) {
 
             token.setUtilise(true);
             tokenRepository.save(token);
@@ -153,7 +148,7 @@ public class PasswordResetService {
 
             token.setTentatives(nouvellesTentatives);
 
-            if (nouvellesTentatives >= maxAttempts) {
+            if (nouvellesTentatives >= maxAttempts()) {
                 token.setUtilise(true);
             }
 
@@ -184,7 +179,7 @@ public class PasswordResetService {
          */
         token.setResetTokenExpiresAt(
                 Instant.now().plus(
-                        expirationMinutes,
+                        expirationMinutes(),
                         ChronoUnit.MINUTES
                 )
         );
@@ -262,6 +257,14 @@ public class PasswordResetService {
          */
         refreshTokenService
                 .revoquerToutesLesSessions(utilisateur);
+    }
+
+    private long expirationMinutes() {
+        return appProperties.passwordReset().expirationMinutes();
+    }
+
+    private int maxAttempts() {
+        return appProperties.passwordReset().maxAttempts();
     }
 
     // Suppression de compte (voir CompteService.supprimerCompte).

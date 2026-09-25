@@ -2,7 +2,6 @@ package com.loupsolitaire.backend.config;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,11 +26,7 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    // Lu depuis app.cors.allowed-origins (variable d'environnement CORS_ALLOWED_ORIGINS).
-    // Unique source de verite pour le CORS : evite l'incoherence @CrossOrigin/SecurityConfig de la V1.
-    @Value("${app.cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    private final AppProperties appProperties;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,14 +56,21 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    // Origines lues depuis app.cors.allowed-origins (variable d'environnement
+    // CORS_ALLOWED_ORIGINS). Unique source de verite pour le CORS : evite
+    // l'incoherence @CrossOrigin/SecurityConfig de la V1.
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedOrigins(appProperties.cors().allowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true);
+        // Pas de "credentials" : l'API n'utilise aucun cookie, le token JWT
+        // passe dans l'en-tete Authorization (autorise juste au-dessus). Les
+        // autoriser quand meme permettrait inutilement aux origines listees
+        // d'envoyer des cookies du navigateur.
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

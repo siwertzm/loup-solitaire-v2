@@ -5,14 +5,11 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 
 /**
  * Genere et lit les access tokens JWT.
@@ -26,13 +23,16 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    // Injecte depuis application.properties (jwt.secret), lui-meme lu depuis la
-    // variable d'environnement JWT_SECRET. Plus jamais de secret en dur dans le code.
-    @Value("${jwt.secret}")
-    private String secretKey;
+    // Calculee une seule fois au demarrage (avant : decodee a chaque requete),
+    // a partir de jwt.secret (variable d'environnement JWT_SECRET, verifiee
+    // dans JwtProperties).
+    private final SecretKey cleDeSignature;
+    private final long expirationMs;
 
-    @Value("${jwt.expiration-ms}")
-    private long expirationMs;
+    public JwtUtil(JwtProperties proprietes) {
+        this.cleDeSignature = proprietes.cleDeSignature();
+        this.expirationMs = proprietes.expirationMs();
+    }
 
     public String generateToken(UUID utilisateurId) {
         Date maintenant = new Date();
@@ -40,7 +40,7 @@ public class JwtUtil {
                 .subject(utilisateurId.toString())
                 .issuedAt(maintenant)
                 .expiration(new Date(maintenant.getTime() + expirationMs))
-                .signWith(getSignInKey(), Jwts.SIG.HS256)
+                .signWith(cleDeSignature, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -57,15 +57,10 @@ public class JwtUtil {
      */
     public UUID extractUtilisateurId(String token) {
         Claims claims = Jwts.parser()
-                .verifyWith(getSignInKey())
+                .verifyWith(cleDeSignature)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
         return UUID.fromString(claims.getSubject());
-    }
-
-    private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -24,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -35,12 +34,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import tools.jackson.databind.json.JsonMapper;
 
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.exception.ConflitException;
@@ -75,7 +74,6 @@ class AuthControllerTest {
     @Mock
     private PasswordResetService passwordResetService;
 
-    @InjectMocks
     private AuthController controller;
 
     private MockMvc mockMvc;
@@ -88,8 +86,9 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        // standaloneSetup : pas de contexte Spring, @Value n'est pas injecte.
-        ReflectionTestUtils.setField(controller, "mobileLoginUrl", DEEP_LINK);
+        // Deep link de ProprietesDeTest.app() : DEEP_LINK.
+        controller = new AuthController(authService, compteService, emailVerificationService, passwordResetService,
+                ProprietesDeTest.app());
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -182,6 +181,21 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message.username")
                         .value("Le nom d'utilisateur ne peut pas contenir le caractere @"));
+
+        verifyNoInteractions(compteService);
+    }
+
+    // BCrypt ne sait pas hacher plus de 72 octets : refuse avec un 400 clair
+    // au lieu d'une erreur au moment du hachage.
+    @Test
+    void registerRefuseUnMotDePasseTropLongPourBcrypt() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setUsername("marius");
+        request.setEmail("marius@example.com");
+        request.setPassword("a".repeat(73));
+
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
+                .andExpect(status().isBadRequest());
 
         verifyNoInteractions(compteService);
     }

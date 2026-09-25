@@ -4,13 +4,14 @@ import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
@@ -31,8 +32,14 @@ class PasswordResetServiceTest {
     @Mock
     private RefreshTokenService refreshTokenService;
 
-    @InjectMocks
     private PasswordResetService service;
+
+    @BeforeEach
+    void setUp() {
+        // Code valable 15 minutes, 5 essais maximum.
+        service = new PasswordResetService(utilisateurRepository, tokenRepository, passwordEncoder, emailService,
+                refreshTokenService, ProprietesDeTest.app());
+    }
 
     @Test
     void supprimerTokensSupprimeLesDemandesDeL_utilisateur() {

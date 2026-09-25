@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -27,11 +26,7 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JwtUtil();
-        // secretKey et expirationMs sont injectes par @Value en production ;
-        // on les fixe manuellement ici puisqu'il n'y a pas de contexte Spring.
-        ReflectionTestUtils.setField(jwtUtil, "secretKey", SECRET);
-        ReflectionTestUtils.setField(jwtUtil, "expirationMs", 3_600_000L);
+        jwtUtil = new JwtUtil(ProprietesDeTest.jwt(SECRET, 3_600_000L));
     }
 
     @Test
@@ -44,7 +39,7 @@ class JwtUtilTest {
     @Test
     void unTokenDejaExpireEstRefuse() {
         // Expiration negative : le token est genere deja perime.
-        ReflectionTestUtils.setField(jwtUtil, "expirationMs", -1_000L);
+        jwtUtil = new JwtUtil(ProprietesDeTest.jwt(SECRET, -1_000L));
         String token = jwtUtil.generateToken(utilisateurId);
 
         assertThatThrownBy(() -> jwtUtil.extractUtilisateurId(token))
@@ -53,9 +48,7 @@ class JwtUtilTest {
 
     @Test
     void unTokenSigneAvecUneAutreCleEstRefuse() {
-        JwtUtil autreServeur = new JwtUtil();
-        ReflectionTestUtils.setField(autreServeur, "secretKey", AUTRE_SECRET);
-        ReflectionTestUtils.setField(autreServeur, "expirationMs", 3_600_000L);
+        JwtUtil autreServeur = new JwtUtil(ProprietesDeTest.jwt(AUTRE_SECRET, 3_600_000L));
         String tokenEtranger = autreServeur.generateToken(utilisateurId);
 
         assertThatThrownBy(() -> jwtUtil.extractUtilisateurId(tokenEtranger))

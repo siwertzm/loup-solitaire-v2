@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
+import com.loupsolitaire.backend.request.validation.TailleMaxBcrypt;
 import com.loupsolitaire.backend.util.Emails;
 
 import lombok.Getter;
@@ -37,6 +38,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "Le mot de passe est obligatoire")
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caracteres")
+    @TailleMaxBcrypt
     private String password;
 
     // Optionnelle : peut etre completee plus tard via PUT /auth/me.

@@ -19,11 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.RefreshToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -35,14 +34,14 @@ class RefreshTokenServiceTest {
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
 
-    @InjectMocks
     private RefreshTokenService service;
 
     private Utilisateur utilisateur;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(service, "refreshExpirationDays", 30L);
+        // Refresh token valable 30 jours.
+        service = new RefreshTokenService(refreshTokenRepository, ProprietesDeTest.jwt());
 
         utilisateur = new Utilisateur();
         utilisateur.setId(UUID.randomUUID());

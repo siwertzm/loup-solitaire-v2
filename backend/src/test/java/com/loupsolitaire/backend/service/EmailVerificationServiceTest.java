@@ -17,11 +17,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.EmailVerificationToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -40,15 +39,15 @@ class EmailVerificationServiceTest {
     @Mock
     private EmailService emailService;
 
-    @InjectMocks
     private EmailVerificationService service;
 
     private Utilisateur utilisateur;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(service, "expirationHours", 24L);
-        ReflectionTestUtils.setField(service, "baseUrl", "http://localhost:8080");
+        // Expiration 24 h, base-url http://localhost:8080.
+        service = new EmailVerificationService(tokenRepository, utilisateurRepository, emailService,
+                ProprietesDeTest.app());
 
         utilisateur = new Utilisateur();
         utilisateur.setId(UUID.randomUUID());

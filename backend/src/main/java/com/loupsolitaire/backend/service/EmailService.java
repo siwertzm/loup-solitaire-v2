@@ -1,9 +1,10 @@
 package com.loupsolitaire.backend.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.loupsolitaire.backend.config.AppProperties;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
-    @Value("${app.mail.from}")
-    private String from;
+    private final AppProperties appProperties;
 
     /**
      * Email envoyé après la création du compte.
@@ -32,7 +31,7 @@ public class EmailService {
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(from);
+            helper.setFrom(appProperties.mail().from());
             helper.setTo(destinataire);
             helper.setSubject("Confirme ton entrée dans l'aventure — Loup Solitaire");
 
@@ -352,7 +351,7 @@ public class EmailService {
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(from);
+            helper.setFrom(appProperties.mail().from());
             helper.setTo(destinataire);
             helper.setSubject("Ton code de vérification — Loup Solitaire");
 

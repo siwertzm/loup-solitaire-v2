@@ -3,10 +3,10 @@ package com.loupsolitaire.backend.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.loupsolitaire.backend.config.AppProperties;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.EmailVerificationToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -23,12 +23,7 @@ public class EmailVerificationService {
     private final EmailVerificationTokenRepository tokenRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final EmailService emailService;
-
-    @Value("${app.email-verification.expiration-hours}")
-    private long expirationHours;
-
-    @Value("${app.base-url}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     // Genere un token, le persiste (hash uniquement) et envoie l'email.
     // Utilise a l'inscription ET pour /auth/resend-verification.
@@ -39,10 +34,10 @@ public class EmailVerificationService {
         EmailVerificationToken token = new EmailVerificationToken();
         token.setUtilisateur(utilisateur);
         token.setTokenHash(Tokens.hacher(rawToken));
-        token.setExpiresAt(Instant.now().plus(expirationHours, ChronoUnit.HOURS));
+        token.setExpiresAt(Instant.now().plus(appProperties.emailVerification().expirationHours(), ChronoUnit.HOURS));
         tokenRepository.save(token);
 
-        String lien = baseUrl + "/auth/verify-email?token=" + rawToken;
+        String lien = appProperties.baseUrl() + "/auth/verify-email?token=" + rawToken;
         emailService.envoyerEmailVerification(utilisateur.getEmail(), lien);
     }
 
