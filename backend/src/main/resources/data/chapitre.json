@@ -1371,7 +1371,7 @@
     "id": 62,
     "objet": [
       { "id": "or", "valeur": 28, "optionnel": false },
-      { "id": "repas", "valeur": 3, "optionnel": false },
+      { "id": "repas", "valeur": 3, "optionnel": true },
       { "id": "epee", "valeur": 1, "optionnel": true }
     ]
   },
@@ -3325,11 +3325,11 @@
     "objet": []
   },
   {
-    "text": "Vous suivez le sentier pendant une heure environ, puis vous découvrez un autre chemin plus large qui part en direction du sud.\n\nSi vous souhaitez suivre ce chemin orienté au sud, rendez-vous au <strong>238</strong>.\nSi vous souhaitez aller à l'est, rendez-vous au <strong>215</strong>.\nSi vous préférez aller vers l'ouest, rendez-vous au <strong>130</strong>.",
+    "text": "Vous suivez le sentier pendant une heure environ, puis vous découvrez un autre chemin plus large qui part en direction du sud.\n\nSi vous souhaitez suivre ce chemin orienté au sud, rendez-vous au <strong>238</strong>.\nSi vous souhaitez aller à l'est, rendez-vous au <strong>15</strong>.\nSi vous préférez aller vers l'ouest, rendez-vous au <strong>130</strong>.",
     "combat": false,
     "lien": [
       { "page": "238", "cond": null },
-      { "page": "215", "cond": null },
+      { "page": "15", "cond": null },
       { "page": "130", "cond": null }
     ],
     "id": 201,
@@ -3558,7 +3558,7 @@
   {
     "text": "Le Garde du Corps dégaine un long cimeterre et s'apprête à vous en enfoncer la lame dans la poitrine.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>24</strong>.\nSi vous souhaitez prendre la fuite au cours du combat, vous pouvez sauter de la roulotte en vous rendant au <strong>234</strong>.",
     "combat": true,
-    "ennemi": [{ "id": "garde_corps" }],
+    "ennemi": [{ "id": "garde_corps_220" }],
     "effet": null,
     "lien": [
       {
@@ -3675,7 +3675,7 @@
   {
     "text": "Le Kraan vole au-dessus de votre tête en soulevant des nuages de poussière par le seul battement de ses ailes immenses. Bientôt, vous avez le nez et les yeux pleins de poussière et vous vous mettez à tousser et à cligner les paupières.\n\nPuis, soudain, le monstre vous attaque. Vous allez devoir le combattre jusqu'à la mort de l'un de vous deux, mais en raison de la poussière qui vous désavantage, il vous faut réduire de 1 point votre total d'<strong>HABILITÉ</strong> pendant toute la durée de l'affrontement.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, vous avez le choix entre : vérifier si la créature ne transportait pas quelque objet qui pourrait mériter votre intérêt. Rendez-vous alors au <strong>267</strong>\n\nOu poursuivre votre chemin le long du sentier orienté à l'est. Rendez-vous pour cela au <strong>125</strong>.",
     "combat": true,
-    "ennemi": [{ "id": "kraan" }],
+    "ennemi": [{ "id": "kraan_229" }],
     "effet": [
       { "type": "habilite", "valeur": -1, "cond": null }
     ],
@@ -4490,7 +4490,7 @@
     "combat": false,
     "objet": [
       { "id": "or", "valeur": 6, "optionnel": true },
-      { "id": "lance", "valeur": 2, "optionnel": true },
+      { "id": "lance", "valeur": 1, "optionnel": true },
       { "id": "poignard", "valeur": 1, "optionnel": true }
     ],
     "effet": null,
@@ -5243,7 +5243,7 @@
     "effet": null,
     "ennemi": [
       {
-        "id": "glok_loup_maudit"
+        "id": "glok_loup_maudit_340"
       }
     ],
     "lien": [

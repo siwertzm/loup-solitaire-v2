@@ -8,6 +8,14 @@
     "resistance": []
   },
   {
+    "id": "kraan_229",
+    "nom": "Kraan",
+    "description": "Une créature volante",
+    "habilite": 16,
+    "endurance": 25,
+    "resistance": []
+  },
+  {
     "id": "vordak",
     "nom": "Vordak",
     "description": "Un lieutenant des Maîtres des Ténèbres, capable d’attaques psychiques.",
@@ -70,6 +78,14 @@
     "resistance": []
   },
   {
+    "id": "glok_loup_maudit_340",
+    "nom": "Glok Loup Maudit",
+    "description": "Un guerrier gobelin monté sur un loup.",
+    "habilite": 14,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
     "id": "glok_premier_112",
     "nom": "Glok",
     "description": "Un guerrier gobelin.",
@@ -89,8 +105,8 @@
     "id": "serpent_aile",
     "nom": "Serpent Ailé",
     "description": "Un serpent ailé.",
-    "habilite": 12,
-    "endurance": 10,
+    "habilite": 16,
+    "endurance": 18,
     "resistance": [
       {
         "id": "puissance_psychique"
@@ -150,6 +166,14 @@
     "description": "Un garde du corps.",
     "habilite": 11,
     "endurance": 21,
+    "resistance": []
+  },
+  {
+    "id": "garde_corps_220",
+    "nom": "Garde du corps",
+    "description": "Un garde du corps.",
+    "habilite": 11,
+    "endurance": 20,
     "resistance": []
   },
   {
