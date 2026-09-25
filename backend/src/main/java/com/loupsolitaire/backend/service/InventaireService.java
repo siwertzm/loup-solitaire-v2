@@ -11,7 +11,6 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.repository.InventaireItemRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,11 @@ import lombok.RequiredArgsConstructor;
 // au bonus d'armure (delta par objet, gere par ObjetService), cette regle
 // depend de l'etat GLOBAL des armes possedees, d'ou un recalcul complet a
 // chaque fois plutot qu'un delta.
+//
+// Le Personnage recu est suivi par la transaction en cours (charge par
+// PartieService) : ses modifications sont enregistrees automatiquement a la
+// validation, sans save() explicite. Seules les NOUVELLES entites sont
+// enregistrees avec save().
 @Service
 @RequiredArgsConstructor
 public class InventaireService {
@@ -44,7 +48,6 @@ public class InventaireService {
     );
 
     private final InventaireItemRepository inventaireItemRepository;
-    private final PersonnageRepository personnageRepository;
     private final ObjetService objetService;
 
     // Pour la fiche personnage : consultation en lecture seule.
@@ -87,6 +90,8 @@ public class InventaireService {
                     });
 
             item.setQuantite(item.getQuantite() + quantiteAjoutee);
+            // Necessaire uniquement pour une NOUVELLE ligne (orElseGet
+            // ci-dessus) ; sans effet sur une ligne deja chargee.
             inventaireItemRepository.save(item);
 
             objetService.appliquerBonusRecuperation(personnage, objet);
@@ -140,8 +145,9 @@ public class InventaireService {
             // (reste > 0) ne doit rien changer au bonus.
             objetService.retirerBonusPerte(personnage, objet);
         } else {
+            // Ligne deja chargee dans la transaction : Hibernate enregistre
+            // la nouvelle quantite tout seul.
             item.setQuantite(reste);
-            inventaireItemRepository.save(item);
         }
 
         // Contrairement au bonus d'armure (delta, seulement a la perte
@@ -180,7 +186,6 @@ public class InventaireService {
         }
 
         personnage.setHabilite(nouvelleHabilite);
-        personnageRepository.save(personnage);
     }
 
     private Integer limitePour(CategorieObjet categorie) {

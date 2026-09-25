@@ -2,9 +2,6 @@ package com.loupsolitaire.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
@@ -20,13 +17,10 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ObjetServiceTest {
 
-    @Mock
-    private PersonnageRepository personnageRepository;
 
     @InjectMocks
     private ObjetService objetService;
@@ -70,7 +64,6 @@ class ObjetServiceTest {
 
         assertThat(personnage.getEnduranceMax()).isEqualTo(22);
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -111,7 +104,6 @@ class ObjetServiceTest {
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(18); // inchange
         assertThat(personnage.getEnduranceMax()).isEqualTo(20); // inchange
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -121,7 +113,6 @@ class ObjetServiceTest {
         objetService.retirerBonusPerte(personnage, potion);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(18);
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -132,7 +123,6 @@ class ObjetServiceTest {
 
         assertThat(personnage.getEnduranceMax()).isEqualTo(20);
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(20); // 18 + 4, plafonne
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -176,7 +166,6 @@ class ObjetServiceTest {
 
         assertThatThrownBy(() -> objetService.appliquerEffetsConsommation(personnage, casque))
                 .isInstanceOf(IllegalArgumentException.class);
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -209,6 +198,5 @@ class ObjetServiceTest {
                 .hasMessageContaining("mort");
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(18); // inchange
-        verify(personnageRepository, never()).save(any());
     }
 }

@@ -1,10 +1,12 @@
 package com.loupsolitaire.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,7 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -37,50 +38,27 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.json.JsonMapper;
 
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
+import com.loupsolitaire.backend.exception.AccesRefuseException;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
-import com.loupsolitaire.backend.model.Chapitre;
-import com.loupsolitaire.backend.model.Objet;
-import com.loupsolitaire.backend.model.Personnage;
-import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
-import com.loupsolitaire.backend.repository.ObjetRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
-import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.CreerPersonnageRequest;
 import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
-import com.loupsolitaire.backend.service.EffetChapitreService;
-import com.loupsolitaire.backend.service.InventaireService;
-import com.loupsolitaire.backend.service.JournalService;
-import com.loupsolitaire.backend.service.ObjetService;
-import com.loupsolitaire.backend.service.PersonnageService;
-import com.loupsolitaire.backend.service.mapper.ChapitreMapper;
-import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
+import com.loupsolitaire.backend.service.PartieService;
 
+/**
+ * Couche HTTP uniquement : routes, codes de retour, traduction des erreurs
+ * et transmission des bons parametres a PartieService. La logique
+ * (proprietaire, regles du jeu) est testee dans PartieServiceTest et les
+ * tests des services metier.
+ */
 @ExtendWith(MockitoExtension.class)
 class PersonnageControllerTest {
 
     @Mock
-    private PersonnageService personnageService;
-    @Mock
-    private PersonnageRepository personnageRepository;
-    @Mock
-    private UtilisateurRepository utilisateurRepository;
-    @Mock
-    private ObjetRepository objetRepository;
-    @Mock
-    private InventaireService inventaireService;
-    @Mock
-    private ObjetService objetService;
-    @Mock
-    private EffetChapitreService effetChapitreService;
-    @Mock
-    private PersonnageMapper personnageMapper;
-    @Mock
-    private ChapitreMapper chapitreMapper;
-    @Mock
-    private JournalService journalService;
+    private PartieService partieService;
 
     @InjectMocks
     private PersonnageController controller;
@@ -90,6 +68,7 @@ class PersonnageControllerTest {
     private final JsonMapper objectMapper = JsonMapper.builder().build();
 
     private final UUID personnageId = UUID.randomUUID();
+    private final UtilisateurConnecte marius = new UtilisateurConnecte(idDe("marius"));
 
     @BeforeEach
     void setUp() {
@@ -98,6 +77,7 @@ class PersonnageControllerTest {
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver())
                 .setMessageConverters(new JacksonJsonHttpMessageConverter(objectMapper))
                 .build();
+        authentifierComme(marius);
     }
 
     @AfterEach
@@ -105,39 +85,29 @@ class PersonnageControllerTest {
         SecurityContextHolder.clearContext();
     }
 
-    // Identifiant fixe derive du nom : un meme nom donne toujours le meme
-    // UUID, ce qui permet aux tests de raisonner avec des noms lisibles
-    // ("marius", "quelqu-un-d-autre") alors que l'application compare des
-    // identifiants (voir UtilisateurConnecte).
+    // Identifiant fixe derive du nom (voir UtilisateurConnecte).
     private static UUID idDe(String username) {
         return UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8));
     }
 
-    private void authentifierComme(String username) {
-        UtilisateurConnecte principal = new UtilisateurConnecte(idDe(username));
+    private void authentifierComme(UtilisateurConnecte principal) {
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 principal, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
-    private Personnage creerPersonnage(String proprietaire) {
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setId(idDe(proprietaire));
-        utilisateur.setUsername(proprietaire);
-
-        Chapitre chapitre = new Chapitre();
-        chapitre.setId(17);
-
-        Personnage personnage = new Personnage();
-        personnage.setId(personnageId);
-        personnage.setUtilisateur(utilisateur);
-        personnage.setChapitreActuel(chapitre);
-        return personnage;
+    private PersonnageResponse reponse(String nom) {
+        return new PersonnageResponse(personnageId, nom, 15, 15, 0, 20, 20,
+                List.of(), null, 17, null, false, List.of());
     }
 
-    private PersonnageResponse reponseVide() {
-        return new PersonnageResponse(personnageId, "Loup Solitaire", 15, 15, 0, 20, 20,
-                List.of(), null, 17, null, false, List.of());
+    private CreerPersonnageRequest requeteCreation(List<String> disciplines) {
+        CreerPersonnageRequest request = new CreerPersonnageRequest();
+        request.setNom("Loup Solitaire");
+        request.setDisciplines(disciplines);
+        request.setHasardHabilite(5);
+        request.setHasardEndurance(3);
+        return request;
     }
 
     // =========================================================
@@ -146,118 +116,67 @@ class PersonnageControllerTest {
 
     @Test
     void creerRenvoie201AvecLePersonnageCree() throws Exception {
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setUsername("marius");
-
-        CreerPersonnageRequest request = new CreerPersonnageRequest();
-        request.setNom("Loup Solitaire");
-        request.setDisciplines(List.of("CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"));
-        request.setHasardHabilite(5);
-        request.setHasardEndurance(3);
-
-        Personnage personnage = creerPersonnage("marius");
-
-        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
-        when(personnageService.creerPersonnage(eq(utilisateur), eq("Loup Solitaire"),
-                eq(List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE, IdDiscipline.SIXIEME_SENS,
-                        IdDiscipline.ORIENTATION, IdDiscipline.GUERISON)),
-                eq(5), eq(3)))
-                .thenReturn(personnage);
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+        List<IdDiscipline> disciplines = List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE,
+                IdDiscipline.SIXIEME_SENS, IdDiscipline.ORIENTATION, IdDiscipline.GUERISON);
+        when(partieService.creerPersonnage(marius, "Loup Solitaire", disciplines, 5, 3))
+                .thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requeteCreation(
+                                disciplines.stream().map(Enum::name).toList()))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nom").value("Loup Solitaire"));
     }
 
     @Test
     void creerRenvoie400SiUneDisciplineEstInconnue() throws Exception {
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setUsername("marius");
-        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
-
-        CreerPersonnageRequest request = new CreerPersonnageRequest();
-        request.setNom("Loup Solitaire");
-        request.setDisciplines(List.of("VOL_DIRECT", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"));
-        request.setHasardHabilite(5);
-        request.setHasardEndurance(3);
-
-        authentifierComme("marius");
-
         mockMvc.perform(post("/personnages")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                        .content(objectMapper.writeValueAsString(requeteCreation(
+                                List.of("CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "TELEPORTATION")))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Discipline inconnue : TELEPORTATION"));
 
-        verify(personnageService, never()).creerPersonnage(any(), any(), any(), any(), any());
+        verifyNoInteractions(partieService);
     }
 
     @Test
     void creerRenvoie400SiLeNombreDeDisciplinesEstIncorrect() throws Exception {
-        CreerPersonnageRequest request = new CreerPersonnageRequest();
-        request.setNom("Loup Solitaire");
-        request.setDisciplines(List.of("CAMOUFLAGE", "CHASSE"));
-        request.setHasardHabilite(5);
-        request.setHasardEndurance(3);
-
-        authentifierComme("marius");
-
         mockMvc.perform(post("/personnages")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(objectMapper.writeValueAsString(requeteCreation(List.of("CAMOUFLAGE", "CHASSE")))))
                 .andExpect(status().isBadRequest());
 
-        verify(utilisateurRepository, never()).findById(any());
+        verifyNoInteractions(partieService);
     }
 
     // =========================================================
-    // GET /personnages (lister)
+    // Lectures
     // =========================================================
 
     @Test
     void listerRenvoieLesPersonnagesDeL_utilisateurConnecte() throws Exception {
-        Utilisateur utilisateur = new Utilisateur();
-        utilisateur.setUsername("marius");
-        Personnage personnage = creerPersonnage("marius");
-
-        when(utilisateurRepository.findById(idDe("marius"))).thenReturn(Optional.of(utilisateur));
-        when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(List.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+        when(partieService.listerPersonnages(marius)).thenReturn(List.of(reponse("Loup Solitaire")));
 
         mockMvc.perform(get("/personnages"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(1)))
                 .andExpect(jsonPath("$[0].nom").value("Loup Solitaire"));
     }
 
-    // =========================================================
-    // GET /personnages/{id} (recuperer)
-    // =========================================================
-
     @Test
     void recupererRenvoieLaFicheDuPersonnage() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+        when(partieService.recupererPersonnage(personnageId, marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(get("/personnages/{id}", personnageId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom").value("Loup Solitaire"));
+                .andExpect(jsonPath("$.chapitreActuelId").value(17));
     }
 
     @Test
     void recupererRenvoie404SiLePersonnageEstIntrouvable() throws Exception {
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.empty());
-
-        authentifierComme("marius");
+        when(partieService.recupererPersonnage(personnageId, marius))
+                .thenThrow(new RessourceNonTrouveeException("Personnage introuvable : " + personnageId));
 
         mockMvc.perform(get("/personnages/{id}", personnageId))
                 .andExpect(status().isNotFound());
@@ -265,161 +184,121 @@ class PersonnageControllerTest {
 
     @Test
     void recupererRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
-        Personnage personnage = creerPersonnage("quelqu-un-d-autre");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
-
-        authentifierComme("marius");
+        when(partieService.recupererPersonnage(personnageId, marius))
+                .thenThrow(new AccesRefuseException("Ce personnage ne vous appartient pas"));
 
         mockMvc.perform(get("/personnages/{id}", personnageId))
                 .andExpect(status().isForbidden());
     }
 
-    // =========================================================
-    // GET /personnages/{id}/chapitre
-    // =========================================================
-
     @Test
     void chapitreCourantRenvoieLeChapitreActuelDuPersonnage() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        ChapitreResponse reponse = new ChapitreResponse(
-                17, "Un texte de chapitre", true, null, List.of(), List.of(), List.of(), List.of());
-
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
-        when(chapitreMapper.versReponse(17, personnage)).thenReturn(reponse);
-
-        authentifierComme("marius");
+        when(partieService.chapitreCourant(personnageId, marius)).thenReturn(
+                new ChapitreResponse(17, "Texte du chapitre", false, 4, List.of(), List.of(), List.of(), List.of()));
 
         mockMvc.perform(get("/personnages/{id}/chapitre", personnageId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(17));
+                .andExpect(jsonPath("$.id").value(17))
+                .andExpect(jsonPath("$.tirageHasard").value(4));
+    }
+
+    @Test
+    void historiqueRenvoieLesChapitresDansL_ordreDuService() throws Exception {
+        when(partieService.historique(personnageId, marius)).thenReturn(List.of(
+                new ChapitreParcouruResponse(85, "Plus recent", false, false, false, false),
+                new ChapitreParcouruResponse(1, "Plus ancien", false, false, false, false)));
+
+        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].chapitreId").value(85))
+                .andExpect(jsonPath("$[1].chapitreId").value(1));
     }
 
     // =========================================================
-    // POST /personnages/{id}/chapitre/{chapitreCibleId}
+    // Actions
     // =========================================================
 
     @Test
-    void avancerVersChapitreDeplaceLePersonnage() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
+    void avancerVersChapitreTransmetLeChapitreCible() throws Exception {
+        when(partieService.avancerVersChapitre(personnageId, 85, marius)).thenReturn(reponse("Loup Solitaire"));
 
-        authentifierComme("marius");
-
-        mockMvc.perform(post("/personnages/{id}/chapitre/{chapitreCibleId}", personnageId, 85))
+        mockMvc.perform(post("/personnages/{id}/chapitre/{cible}", personnageId, 85))
                 .andExpect(status().isOk());
 
-        verify(personnageService).avancerVersChapitre(personnage, 85);
+        verify(partieService).avancerVersChapitre(personnageId, 85, marius);
     }
 
-    // =========================================================
-    // POST /personnages/{id}/chapitre/revenir-apres-defaite
-    // =========================================================
+    @Test
+    void avancerVersChapitreRenvoie400SiLeLienEstInvalide() throws Exception {
+        when(partieService.avancerVersChapitre(personnageId, 999, marius))
+                .thenThrow(new IllegalArgumentException("Aucun lien vers le chapitre 999"));
+
+        mockMvc.perform(post("/personnages/{id}/chapitre/{cible}", personnageId, 999))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Aucun lien vers le chapitre 999"));
+    }
 
     @Test
-    void revenirApresDefaiteRestaureLePersonnage() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+    void revenirApresDefaiteUtiliseLaRouteLitteraleEtNonLeChapitreCible() throws Exception {
+        when(partieService.revenirApresDefaite(personnageId, marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages/{id}/chapitre/revenir-apres-defaite", personnageId))
                 .andExpect(status().isOk());
 
-        verify(personnageService).revenirApresDefaite(personnage);
+        verify(partieService).revenirApresDefaite(personnageId, marius);
+        verify(partieService, never()).avancerVersChapitre(any(), any(), any());
     }
 
-    // =========================================================
-    // POST /personnages/{id}/ressusciter
-    // =========================================================
-
     @Test
-    void ressusciterRestaureLePersonnage() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+    void ressusciterDelegueAuService() throws Exception {
+        when(partieService.ressusciter(personnageId, marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages/{id}/ressusciter", personnageId))
                 .andExpect(status().isOk());
-
-        verify(personnageService).ressusciter(personnage);
     }
-
-    // =========================================================
-    // POST /personnages/{id}/objets/{objetId} (ajouterObjet)
-    // =========================================================
 
     @Test
     void ajouterObjetRamasseL_objetDuChapitre() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("repas");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+        when(partieService.ramasserObjet(personnageId, "repas", marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages/{id}/objets/{objetId}", personnageId, "repas"))
                 .andExpect(status().isOk());
-
-        verify(personnageService).ramasserObjetDuChapitre(personnage, objet);
     }
 
     @Test
     void ajouterObjetRenvoie404SiL_objetEstIntrouvable() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("inconnu")).thenReturn(Optional.empty());
-
-        authentifierComme("marius");
+        when(partieService.ramasserObjet(personnageId, "inconnu", marius))
+                .thenThrow(new RessourceNonTrouveeException("Objet introuvable : inconnu"));
 
         mockMvc.perform(post("/personnages/{id}/objets/{objetId}", personnageId, "inconnu"))
                 .andExpect(status().isNotFound());
-
-        verify(personnageService, never()).ramasserObjetDuChapitre(any(), any());
     }
-
-    // =========================================================
-    // DELETE /personnages/{id}/objets/{objetId} (retirerObjet)
-    // =========================================================
 
     @Test
     void retirerObjetUtiliseUneQuantiteParDefautDeUn() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("repas");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+        when(partieService.retirerObjet(personnageId, "repas", 1, marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(delete("/personnages/{id}/objets/{objetId}", personnageId, "repas"))
                 .andExpect(status().isOk());
 
-        verify(inventaireService).retirerObjet(personnage, objet, 1);
+        verify(partieService).retirerObjet(personnageId, "repas", 1, marius);
+    }
+
+    @Test
+    void retirerObjetUtiliseLaQuantiteFournieEnParametre() throws Exception {
+        when(partieService.retirerObjet(personnageId, "repas", 3, marius)).thenReturn(reponse("Loup Solitaire"));
+
+        mockMvc.perform(delete("/personnages/{id}/objets/{objetId}", personnageId, "repas")
+                        .param("quantite", "3"))
+                .andExpect(status().isOk());
+
+        verify(partieService).retirerObjet(personnageId, "repas", 3, marius);
     }
 
     @Test
     void retirerObjetRenvoie400SiLePersonnageNeLePossedePas() throws Exception {
-        // Avant : IllegalStateException non geree -> 500. C'est une requete
-        // invalide du joueur, pas une erreur du serveur.
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("repas");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
-        doThrow(new IllegalArgumentException("Le personnage ne possede pas repas, impossible d'en retirer"))
-                .when(inventaireService).retirerObjet(personnage, objet, 1);
-
-        authentifierComme("marius");
+        when(partieService.retirerObjet(eq(personnageId), eq("repas"), anyInt(), eq(marius)))
+                .thenThrow(new IllegalArgumentException("Le personnage ne possede pas repas, impossible d'en retirer"));
 
         mockMvc.perform(delete("/personnages/{id}/objets/{objetId}", personnageId, "repas"))
                 .andExpect(status().isBadRequest())
@@ -427,184 +306,45 @@ class PersonnageControllerTest {
     }
 
     @Test
-    void retirerObjetUtiliseLaQuantiteFournieEnParametre() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("repas");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("repas")).thenReturn(Optional.of(objet));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
-
-        mockMvc.perform(delete("/personnages/{id}/objets/{objetId}", personnageId, "repas")
-                        .param("quantite", "3"))
-                .andExpect(status().isOk());
-
-        verify(inventaireService).retirerObjet(personnage, objet, 3);
-    }
-
-    // =========================================================
-    // POST /personnages/{id}/objets/{objetId}/consommer
-    // =========================================================
-
-    @Test
-    void consommerObjetAppliqueL_effetPuisRetireL_objet() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("potion_de_soin");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("potion_de_soin")).thenReturn(Optional.of(objet));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+    void consommerObjetDelegueAuService() throws Exception {
+        when(partieService.consommerObjet(personnageId, "potion_de_soin", marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages/{id}/objets/{objetId}/consommer", personnageId, "potion_de_soin"))
                 .andExpect(status().isOk());
-
-        verify(objetService).appliquerEffetsConsommation(personnage, objet);
-        verify(inventaireService).retirerObjet(personnage, objet, 1);
     }
 
-    // =========================================================
-    // POST /personnages/{id}/vol/{objetId} (resoudreVol)
-    // =========================================================
-
     @Test
-    void resoudreVolDelegueAuServiceDesEffets() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet objet = new Objet();
-        objet.setId("poignard");
-
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("poignard")).thenReturn(Optional.of(objet));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
+    void resoudreVolDelegueAuService() throws Exception {
+        when(partieService.resoudreVol(personnageId, "poignard", marius)).thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages/{id}/vol/{objetId}", personnageId, "poignard"))
                 .andExpect(status().isOk());
-
-        verify(effetChapitreService).resoudreVolEnAttente(personnage, objet);
     }
 
-    // =========================================================
-    // POST /personnages/{id}/objets/{a}/echanger-contre/{b}
-    // =========================================================
-
     @Test
-    void echangerObjetRetireUnObjetEtEnAjouteUnAutre() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        Objet marteau = new Objet();
-        marteau.setId("marteau");
-        Objet baton = new Objet();
-        baton.setId("baton");
+    void echangerObjetTransmetLesDeuxObjetsDansLeBonOrdre() throws Exception {
+        when(partieService.echangerObjet(personnageId, "marteau", "baton", marius)).thenReturn(reponse("Loup Solitaire"));
 
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-        when(objetRepository.findById("marteau")).thenReturn(Optional.of(marteau));
-        when(objetRepository.findById("baton")).thenReturn(Optional.of(baton));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponseVide());
-
-        authentifierComme("marius");
-
-        mockMvc.perform(post("/personnages/{id}/objets/{a}/echanger-contre/{b}",
-                        personnageId, "marteau", "baton"))
+        mockMvc.perform(post("/personnages/{id}/objets/{a}/echanger-contre/{b}", personnageId, "marteau", "baton"))
                 .andExpect(status().isOk());
 
-        verify(personnageService).echangerObjet(personnage, baton, marteau);
-    }
-
-    // =========================================================
-    // Verification proprietaire partagee (echantillon sur un endpoint POST)
-    // =========================================================
-
-    @Test
-    void ressusciterRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
-        Personnage personnage = creerPersonnage("quelqu-un-d-autre");
-        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
-
-        authentifierComme("marius");
-
-        mockMvc.perform(post("/personnages/{id}/ressusciter", personnageId))
-                .andExpect(status().isForbidden());
-
-        verify(personnageService, never()).ressusciter(any());
-    }
-
-    // =========================================================
-    // GET /personnages/{id}/historique
-    // =========================================================
-
-    @Test
-    void historiqueRenvoieLesChapitresAvecLeurExtraitDansLOrdreDuService() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
-        // Le tri (plus recent en premier) est fait par JournalService : le
-        // controleur restitue simplement l'ordre recu.
-        when(journalService.lister(personnage)).thenReturn(List.of(
-                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true, false),
-                new ChapitreParcouruResponse(85, "Le chemin est large et mene droit...", true, false, true, false),
-                new ChapitreParcouruResponse(1, "Il faut vous hater", false, true, false, true),
-                new ChapitreParcouruResponse(0, "", false, false, false, false)));
-
-        authentifierComme("marius");
-
-        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].chapitreId").value(85))
-                .andExpect(jsonPath("$[0].extrait").value("Le chemin est large et mene droit..."))
-                .andExpect(jsonPath("$[0].avecCombat").value(true))
-                .andExpect(jsonPath("$[0].avecEffets").value(false))
-                .andExpect(jsonPath("$[0].avecObjets").value(true))
-                .andExpect(jsonPath("$[1].chapitreId").value(85))
-                .andExpect(jsonPath("$[2].chapitreId").value(1))
-                .andExpect(jsonPath("$[2].extrait").value("Il faut vous hater"))
-                .andExpect(jsonPath("$[2].avecCombat").value(false))
-                .andExpect(jsonPath("$[2].avecEffets").value(true))
-                .andExpect(jsonPath("$[2].avecObjets").value(false))
-                .andExpect(jsonPath("$[3].chapitreId").value(0))
-                .andExpect(jsonPath("$[3].extrait").value(""))
-                .andExpect(jsonPath("$[3].avecCombat").value(false))
-                .andExpect(jsonPath("$[0].mort").value(false))
-                .andExpect(jsonPath("$[2].mort").value(true));
+        verify(partieService).echangerObjet(personnageId, "marteau", "baton", marius);
     }
 
     @Test
-    void historiqueRenvoieUneListeVideSiAucunChapitreTraverse() throws Exception {
-        Personnage personnage = creerPersonnage("marius");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
-        when(journalService.lister(personnage)).thenReturn(List.of());
+    void supprimerRenvoie204() throws Exception {
+        mockMvc.perform(delete("/personnages/{id}", personnageId))
+                .andExpect(status().isNoContent());
 
-        authentifierComme("marius");
-
-        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+        verify(partieService).supprimerPersonnage(personnageId, marius);
     }
 
     @Test
-    void historiqueRenvoie403SiLePersonnageNAppartientPasAL_utilisateur() throws Exception {
-        Personnage personnage = creerPersonnage("quelqu-un-d-autre");
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.of(personnage));
+    void actionSimultaneeRenvoie409() throws Exception {
+        when(partieService.ramasserObjet(eq(personnageId), anyString(), eq(marius)))
+                .thenThrow(new org.springframework.orm.ObjectOptimisticLockingFailureException("Personnage", personnageId));
 
-        authentifierComme("marius");
-
-        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
-                .andExpect(status().isForbidden());
-
-        verify(journalService, never()).lister(any());
-    }
-
-    @Test
-    void historiqueRenvoie404SiLePersonnageEstInconnu() throws Exception {
-        when(personnageRepository.findById(personnageId)).thenReturn(Optional.empty());
-
-        authentifierComme("marius");
-
-        mockMvc.perform(get("/personnages/{id}/historique", personnageId))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(post("/personnages/{id}/objets/{objetId}", personnageId, "repas"))
+                .andExpect(status().isConflict());
     }
 }

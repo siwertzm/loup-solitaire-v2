@@ -22,7 +22,6 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.repository.InventaireItemRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatAjout;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,8 +29,6 @@ class InventaireServiceTest {
 
     @Mock
     private InventaireItemRepository inventaireItemRepository;
-    @Mock
-    private PersonnageRepository personnageRepository;
     @Mock
     private ObjetService objetService;
 
@@ -79,7 +76,6 @@ class InventaireServiceTest {
         assertThat(resultat.objetsRemplacables()).isEmpty();
         verify(objetService).appliquerBonusRecuperation(personnage, repas);
         // Pas une arme : pas de recalcul d'habilite.
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -142,7 +138,6 @@ class InventaireServiceTest {
         verify(inventaireItemRepository, never()).save(any());
         // Rien n'a ete ajoute : pas de bonus a appliquer, pas de recalcul.
         verify(objetService, never()).appliquerBonusRecuperation(any(), any());
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -190,13 +185,14 @@ class InventaireServiceTest {
         InventaireItem ligne = creerLigne(or, 10);
         when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "or"))
                 .thenReturn(Optional.of(ligne));
-        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         inventaireService.retirerObjet(personnage, or, 2);
 
         assertThat(ligne.getQuantite()).isEqualTo(8);
         verify(objetService, never()).retirerBonusPerte(any(), any());
-        verify(personnageRepository, never()).save(any()); // pas une arme
+        // Ligne deja chargee dans la transaction : la nouvelle quantite est
+        // enregistree automatiquement, sans save() explicite.
+        verify(inventaireItemRepository, never()).save(any());
     }
 
     @Test
@@ -261,7 +257,6 @@ class InventaireServiceTest {
         inventaireService.retirerObjet(personnage, hache, 1);
 
         assertThat(personnage.getHabilite()).isEqualTo(11); // 15 - 4
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -274,7 +269,6 @@ class InventaireServiceTest {
         inventaireService.ajouterObjet(personnage, hache, 1);
 
         assertThat(personnage.getHabilite()).isEqualTo(15); // inchange, sans malus ni bonus
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -300,7 +294,6 @@ class InventaireServiceTest {
         inventaireService.ajouterObjet(personnage, repas, 1);
 
         assertThat(personnage.getHabilite()).isEqualTo(15);
-        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================

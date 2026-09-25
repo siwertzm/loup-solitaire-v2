@@ -29,7 +29,6 @@ import com.loupsolitaire.backend.model.enums.PorteeVol;
 import com.loupsolitaire.backend.model.enums.StatutRepas;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 @ExtendWith(MockitoExtension.class)
 class EffetChapitreServiceTest {
@@ -37,8 +36,6 @@ class EffetChapitreServiceTest {
     @Mock
     private InventaireService inventaireService;
 
-    @Mock
-    private PersonnageRepository personnageRepository;
 
     @Mock
     private ConditionService conditionService;
@@ -85,8 +82,6 @@ class EffetChapitreServiceTest {
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(15);
         assertThat(personnage.getDernierStatutRepas())
                 .isEqualTo(StatutRepas.REPAS_CONSOMME);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -102,8 +97,6 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), eq(1));
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -119,8 +112,6 @@ class EffetChapitreServiceTest {
         assertThat(personnage.isMort()).isTrue();
         assertThat(personnage.getDernierStatutRepas())
                 .isEqualTo(StatutRepas.MALUS_ENDURANCE);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -139,8 +130,6 @@ class EffetChapitreServiceTest {
         verify(inventaireService, never()).listerInventaire(any());
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -157,8 +146,6 @@ class EffetChapitreServiceTest {
 
         assertThat(personnage.getDernierStatutRepas())
                 .isEqualTo(StatutRepas.REPAS_CONSOMME);
-
-        verify(personnageRepository).save(personnage);
     }
 
     // =========================================================
@@ -196,8 +183,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(4);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -212,8 +197,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(-2);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -231,8 +214,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -248,8 +229,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(-3);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -272,8 +251,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -289,8 +266,6 @@ class EffetChapitreServiceTest {
 
         assertThat(personnage.getHabiliteBase()).isEqualTo(14);
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
-
-        verify(personnageRepository).save(personnage);
         verify(inventaireService).recalculerHabiliteArmes(personnage);
     }
 
@@ -304,8 +279,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
-
-        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================
@@ -345,8 +318,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetEndurance(personnage, effet);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(13);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -366,8 +337,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetEndurance(personnage, effet);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(13);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -385,8 +354,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetEndurance(personnage, effet);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(15);
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -399,8 +366,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetEndurance(personnage, effet);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -413,8 +378,6 @@ class EffetChapitreServiceTest {
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(0);
         assertThat(personnage.isMort()).isTrue();
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -427,8 +390,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetEndurance(personnage, effet);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(15);
-
-        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================
@@ -568,8 +529,6 @@ class EffetChapitreServiceTest {
         assertThat(personnage.getVolEnAttente())
                 .isEqualTo(PorteeVol.ARME);
 
-        verify(personnageRepository).save(personnage);
-
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
     }
@@ -588,8 +547,6 @@ class EffetChapitreServiceTest {
 
         assertThat(personnage.getVolEnAttente())
                 .isEqualTo(PorteeVol.TOUT);
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -605,8 +562,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetVol(personnage, effet);
 
         assertThat(personnage.getVolEnAttente()).isNull();
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -622,8 +577,6 @@ class EffetChapitreServiceTest {
         effetChapitreService.appliquerEffetVol(personnage, effet);
 
         assertThat(personnage.getVolEnAttente()).isNull();
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -644,8 +597,6 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -662,8 +613,6 @@ class EffetChapitreServiceTest {
                 .retirerObjet(personnage, hache, 1);
 
         assertThat(personnage.getVolEnAttente()).isNull();
-
-        verify(personnageRepository).save(personnage);
     }
 
     @Test
@@ -682,8 +631,6 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -702,8 +649,6 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
-
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -724,8 +669,6 @@ class EffetChapitreServiceTest {
 
         verify(inventaireService, never())
                 .retirerObjet(any(), any(), anyInt());
-
-        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================

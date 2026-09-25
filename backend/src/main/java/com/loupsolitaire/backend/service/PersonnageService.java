@@ -40,6 +40,11 @@ import lombok.RequiredArgsConstructor;
 // Orchestre la creation de personnage telle que specifiee dans le parcours
 // utilisateur : tirages de stats, disciplines choisies, arme de Maitrise des
 // Armes (si applicable), equipement de depart fixe + aleatoire.
+//
+// Le Personnage recu est suivi par la transaction en cours (charge par
+// PartieService) : ses modifications sont enregistrees automatiquement a la
+// validation, sans save() explicite. Seules les NOUVELLES entites sont
+// enregistrees avec save().
 @Service
 @RequiredArgsConstructor
 public class PersonnageService {
@@ -128,10 +133,9 @@ public class PersonnageService {
         }
 
         // ArrayList, PAS .toList() (immuable) : Hibernate doit pouvoir
-        // vider/remplir cette collection lors d'un merge (ex. lors du
-        // 2e save() lance par ObjetService apres l'ajout d'un objet), ce
-        // qui echoue avec UnsupportedOperationException sur une liste
-        // immuable.
+        // modifier cette collection (ajout/suppression) une fois
+        // l'entite enregistree, ce qui echoue avec
+        // UnsupportedOperationException sur une liste immuable.
         return new ArrayList<>(disciplinesChoisies.stream()
                 .map(id -> disciplineRepository.findById(id)
                         .orElseThrow(() -> new RessourceNonTrouveeException("Discipline introuvable : " + id)))
@@ -186,7 +190,6 @@ public class PersonnageService {
     public void reinitialiserHabiliteTemp(Personnage personnage) {
         if (personnage.getHabiliteTemp() != 0) {
             personnage.setHabiliteTemp(0);
-            personnageRepository.save(personnage);
         }
     }
 
@@ -268,7 +271,6 @@ public class PersonnageService {
         // plusieurs fois (voir aussi creerPersonnage, meme logique au
         // premier chapitre).
         personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
-        personnageRepository.save(personnage);
 
         reinitialiserHabiliteTemp(personnage);
         appliquerGuerison(personnage, nouveauChapitre);
@@ -295,7 +297,6 @@ public class PersonnageService {
             effetChapitreService.appliquerEffetRepas(personnage);
         } else {
             personnage.setDernierStatutRepas(null);
-            personnageRepository.save(personnage);
         }
 
         nouveauChapitre.getEffets().stream()
@@ -366,7 +367,6 @@ public class PersonnageService {
         personnage.setMort(false);
         // Nouveau tirage FIGE, comme pour tout changement de chapitre.
         personnage.setDernierTirageHasard(tableDeHasardService.tirerChiffre());
-        personnageRepository.save(personnage);
 
         reinitialiserHabiliteTemp(personnage);
     }
@@ -420,7 +420,6 @@ public class PersonnageService {
 
         personnage.setEnduranceActuelle(personnage.getEnduranceMax());
         personnage.setMort(false);
-        personnageRepository.save(personnage);
     }
 
     // Discipline Kai Guerison : +1 point d'ENDURANCE (plafonne a
@@ -442,7 +441,6 @@ public class PersonnageService {
 
         int nouvelleEndurance = Math.min(personnage.getEnduranceMax(), personnage.getEnduranceActuelle() + 1);
         personnage.setEnduranceActuelle(nouvelleEndurance);
-        personnageRepository.save(personnage);
     }
 
     private void appliquerObjetChap(Personnage personnage, Chapitre chapitre, ObjetChap objetChap) {

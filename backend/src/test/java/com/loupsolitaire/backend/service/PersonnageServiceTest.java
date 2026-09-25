@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -273,17 +272,16 @@ class PersonnageServiceTest {
         personnageService.reinitialiserHabiliteTemp(p);
 
         assertThat(p.getHabiliteTemp()).isEqualTo(0);
-        verify(personnageRepository).save(p);
     }
 
     @Test
-    void neSauvegardeRienSiHabiliteTempEstDejaAZero() {
+    void laisseHabiliteTempAZeroSiEllEstDejaAZero() {
         Personnage p = new Personnage();
         p.setHabiliteTemp(0);
 
         personnageService.reinitialiserHabiliteTemp(p);
 
-        verify(personnageRepository, never()).save(any());
+        assertThat(p.getHabiliteTemp()).isZero();
     }
 
     // =========================================================
@@ -319,7 +317,6 @@ class PersonnageServiceTest {
         // Nouveau tirage fige des l'arrivee sur le chapitre, pas re-tire au
         // prochain GET /chapitre.
         assertThat(p.getDernierTirageHasard()).isEqualTo(9);
-        verify(personnageRepository, atLeastOnce()).save(p);
     }
 
     @Test
@@ -736,7 +733,6 @@ class PersonnageServiceTest {
         assertThat(p.getChapitreActuel()).isEqualTo(chapitrePrecedent);
         assertThat(p.getEnduranceActuelle()).isEqualTo(20);
         assertThat(p.getDernierTirageHasard()).isEqualTo(4);
-        verify(personnageRepository, atLeastOnce()).save(p);
     }
 
     @Test
@@ -827,7 +823,6 @@ class PersonnageServiceTest {
 
         assertThat(p.isMort()).isFalse();
         assertThat(p.getEnduranceActuelle()).isEqualTo(20);
-        verify(personnageRepository).save(p);
     }
 
     @Test
@@ -853,7 +848,6 @@ class PersonnageServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(p.isMort()).isTrue(); // inchange
-        verify(personnageRepository, never()).save(any());
     }
 
     @Test
@@ -873,7 +867,6 @@ class PersonnageServiceTest {
                 .hasMessageContaining("defaite en combat");
 
         verify(inventaireService, never()).listerInventaire(any());
-        verify(personnageRepository, never()).save(any());
     }
 
     // =========================================================

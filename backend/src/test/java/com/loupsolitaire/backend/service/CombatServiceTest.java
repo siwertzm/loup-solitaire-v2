@@ -38,7 +38,6 @@ import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatTour;
 import com.loupsolitaire.backend.service.record.TourJoue;
 
@@ -49,8 +48,6 @@ class CombatServiceTest {
     private CombatRepository combatRepository;
     @Mock
     private ChapitreRepository chapitreRepository;
-    @Mock
-    private PersonnageRepository personnageRepository;
     @Mock
     private TableDeHasardService tableDeHasardService;
     @Mock

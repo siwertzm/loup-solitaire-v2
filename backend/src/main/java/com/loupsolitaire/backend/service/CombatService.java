@@ -26,7 +26,6 @@ import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.service.record.ResultatTour;
 import com.loupsolitaire.backend.service.record.TourJoue;
 
@@ -41,13 +40,17 @@ import lombok.RequiredArgsConstructor;
 // voir Combat.ennemiActifIndex. Une fois le dernier ennemi vaincu, le
 // combat passe VICTOIRE ; le Personnage peut alors quitter le chapitre via
 // PersonnageService.avancerVersChapitre (qui verifie ce statut).
+//
+// Le Personnage recu est suivi par la transaction en cours (charge par
+// PartieService) : ses modifications sont enregistrees automatiquement a la
+// validation, sans save() explicite. Seules les NOUVELLES entites sont
+// enregistrees avec save().
 @Service
 @RequiredArgsConstructor
 public class CombatService {
 
     private final CombatRepository combatRepository;
     private final ChapitreRepository chapitreRepository;
-    private final PersonnageRepository personnageRepository;
     private final TableDeHasardService tableDeHasardService;
     private final TableCombatService tableCombatService;
     private final InventaireService inventaireService;
@@ -155,9 +158,10 @@ public class CombatService {
             }
         }
 
-        personnageRepository.save(personnage);
-        Combat sauvegarde = combatRepository.save(combat);
-        return new TourJoue(sauvegarde, resultat);
+        // Personnage et combat sont deja suivis par la transaction (combat
+        // retrouve en base, ou cree et enregistre par creerCombat) :
+        // Hibernate enregistre leurs changements tout seul a la validation.
+        return new TourJoue(combat, resultat);
     }
 
     private ResultatTour jouerAttaque(Personnage personnage, Combat combat) {

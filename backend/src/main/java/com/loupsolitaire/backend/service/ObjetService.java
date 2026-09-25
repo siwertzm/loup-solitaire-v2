@@ -7,7 +7,6 @@ import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,11 +25,15 @@ import lombok.RequiredArgsConstructor;
 //
 // HABILITE : toujours TEMPORAIRE (habiliteTemp), remis a zero a chaque
 // changement de chapitre (voir PersonnageService.reinitialiserHabiliteTemp).
+//
+// Le Personnage recu est suivi par la transaction en cours (charge par
+// PartieService) : ses modifications sont enregistrees automatiquement a la
+// validation, sans save() explicite. Seules les NOUVELLES entites sont
+// enregistrees avec save().
 @Service
 @RequiredArgsConstructor
 public class ObjetService {
 
-    private final PersonnageRepository personnageRepository;
 
     // Uniquement pour l'armure (OBJETS_SPECIAUX) : les consommables
     // (OBJET) n'ont plus aucun effet a la recuperation.
@@ -40,7 +43,6 @@ public class ObjetService {
             return;
         }
         appliquerEffets(personnage, objet, 1);
-        personnageRepository.save(personnage);
     }
 
     // Symetrique : uniquement pour l'armure. Rien a faire pour un
@@ -51,7 +53,6 @@ public class ObjetService {
             return;
         }
         appliquerEffets(personnage, objet, -1);
-        personnageRepository.save(personnage);
     }
 
     // Applique les effets d'un consommable au moment ou le joueur choisit
@@ -72,7 +73,6 @@ public class ObjetService {
                     "Impossible de consommer un objet de categorie " + objet.getCategorie());
         }
         appliquerEffets(personnage, objet, 1);
-        personnageRepository.save(personnage);
     }
 
     private void appliquerEffets(Personnage personnage, Objet objet, int signe) {

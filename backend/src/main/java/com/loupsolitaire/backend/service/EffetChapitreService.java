@@ -17,12 +17,16 @@ import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.PorteeVol;
 import com.loupsolitaire.backend.model.enums.StatutRepas;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
-import com.loupsolitaire.backend.repository.PersonnageRepository;
 
 import lombok.RequiredArgsConstructor;
 
 // Applique les effets de Chapitre (distincts des effets d'Objet, geres par
 // ObjetService). REPAS, HABILITE, ENDURANCE, VOL et MORT geres.
+//
+// Le Personnage recu est suivi par la transaction en cours (charge par
+// PartieService) : ses modifications sont enregistrees automatiquement a la
+// validation, sans save() explicite. Seules les NOUVELLES entites sont
+// enregistrees avec save().
 @Service
 @RequiredArgsConstructor
 public class EffetChapitreService {
@@ -47,7 +51,6 @@ public class EffetChapitreService {
             Set.of(CategorieObjet.OBJET, CategorieObjet.REPAS, CategorieObjet.ARME);
 
     private final InventaireService inventaireService;
-    private final PersonnageRepository personnageRepository;
     private final ConditionService conditionService;
 
     // Regle du Repas : la Discipline Kai de la Chasse en dispense
@@ -60,7 +63,6 @@ public class EffetChapitreService {
                 .anyMatch(d -> d.getId() == IdDiscipline.CHASSE);
         if (possedeChasse) {
             personnage.setDernierStatutRepas(StatutRepas.CHASSE);
-            personnageRepository.save(personnage);
             return;
         }
 
@@ -71,7 +73,6 @@ public class EffetChapitreService {
         if (repas.isPresent()) {
             inventaireService.retirerObjet(personnage, repas.get().getObjet(), 1);
             personnage.setDernierStatutRepas(StatutRepas.REPAS_CONSOMME);
-            personnageRepository.save(personnage);
         } else {
             int nouvelleEndurance = Math.max(0, personnage.getEnduranceActuelle() + MALUS_SANS_REPAS);
             personnage.setEnduranceActuelle(nouvelleEndurance);
@@ -79,7 +80,6 @@ public class EffetChapitreService {
                 personnage.marquerMort();
             }
             personnage.setDernierStatutRepas(StatutRepas.MALUS_ENDURANCE);
-            personnageRepository.save(personnage);
         }
     }
 
@@ -196,7 +196,6 @@ public class EffetChapitreService {
         if (nouvelleEndurance <= 0) {
             personnage.marquerMort();
         }
-        personnageRepository.save(personnage);
     }
 
     // Regle MORT : mort narrative (ex. chapitre 53, 108, 127...), distincte
@@ -224,7 +223,6 @@ public class EffetChapitreService {
 
         personnage.setEnduranceActuelle(0);
         personnage.marquerMort();
-        personnageRepository.save(personnage);
     }
 
     // Regle VOL : voir les constantes VOL_* en tete de classe pour le
@@ -254,7 +252,6 @@ public class EffetChapitreService {
 
             if (aQuelqueChoseAPerdre) {
                 personnage.setVolEnAttente(gateArme ? PorteeVol.ARME : PorteeVol.TOUT);
-                personnageRepository.save(personnage);
             }
             // Sinon : rien a voler, on ne bloque pas la partie pour un vol
             // impossible a resoudre.
@@ -289,7 +286,6 @@ public class EffetChapitreService {
 
         inventaireService.retirerObjet(personnage, objet, 1);
         personnage.setVolEnAttente(null);
-        personnageRepository.save(personnage);
     }
 
     // Retire integralement tous les objets possedes dans les categories
@@ -316,12 +312,10 @@ public class EffetChapitreService {
 
     private void appliquerHabiliteTemp(Personnage personnage, int valeur) {
         personnage.setHabiliteTemp(personnage.getHabiliteTemp() + valeur);
-        personnageRepository.save(personnage);
     }
 
     private void appliquerHabilitePermanent(Personnage personnage, int valeur) {
         personnage.setHabiliteBase(personnage.getHabiliteBase() + valeur);
-        personnageRepository.save(personnage);
         // habilite depend de habiliteBase + etat des armes : recalcul
         // necessaire pour que le changement permanent soit reellement
         // reflete dans la valeur effective.
