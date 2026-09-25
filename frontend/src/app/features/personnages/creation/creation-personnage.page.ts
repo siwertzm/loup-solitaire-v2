@@ -3,8 +3,9 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Observable, forkJoin, shareReplay, timer } from 'rxjs';
 
-import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR } from '../../../core/models/personnage.model';
+import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR, TirageCreation } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { DisciplineService } from '../../../core/services/discipline.service';
 
@@ -42,6 +43,13 @@ export class CreationPersonnagePage {
   readonly erreurParams = signal<Record<string, unknown> | undefined>(undefined);
   readonly envoi = signal(false);
   readonly description = signal<DisciplineCatalogue | null>(null);
+
+  /**
+   * Tirage fait par le serveur (POST /personnages/tirage), demandé une seule
+   * fois pour les deux dés puis partagé : le serveur renvoie de toute façon
+   * le même tirage tant que le personnage n'est pas créé.
+   */
+  private tirage$?: Observable<TirageCreation>;
 
   /** Catalogue des 10 Disciplines Kaï (id, nom, description), depuis GET /disciplines. */
   readonly catalogue = signal<DisciplineCatalogue[]>([]);
@@ -81,30 +89,39 @@ export class CreationPersonnagePage {
   }
 
   /**
-   * Tirage côté client : purement cosmétique (le backend refait les tirages
-   * dans PersonnageService.creerPersonnage à partir des valeurs qu'on lui
-   * envoie). Une seule écriture d'état par lancer : l'animation du dé est en CSS.
+   * Lance un dé : le résultat vient du serveur (SEC-01), l'animation dure au
+   * moins 640 ms. Un dé déjà tiré ne se relance pas.
    */
   lancerDe(quoi: 'hab' | 'end'): void {
-    if (quoi === 'hab' ? this.roulantHab() : this.roulantEnd()) return;
+    const roulant = quoi === 'hab' ? this.roulantHab : this.roulantEnd;
+    const dejaTire = quoi === 'hab' ? this.habilite() !== null : this.endurance() !== null;
+    if (dejaTire || roulant()) return;
     this.erreur.set(null);
-    const de = Math.floor(Math.random() * 10);
+    roulant.set(true);
 
-    if (quoi === 'hab') {
-      this.roulantHab.set(true);
-      setTimeout(() => {
-        this.faceHab.set(de);
-        this.habilite.set(10 + de);
-        this.roulantHab.set(false);
-      }, 640);
-    } else {
-      this.roulantEnd.set(true);
-      setTimeout(() => {
-        this.faceEnd.set(de);
-        this.endurance.set(20 + de);
-        this.roulantEnd.set(false);
-      }, 640);
-    }
+    forkJoin([this.tirage(), timer(640)]).subscribe({
+      next: ([tirage]) => {
+        if (quoi === 'hab') {
+          this.faceHab.set(tirage.hasardHabilite);
+          this.habilite.set(tirage.habilite);
+        } else {
+          this.faceEnd.set(tirage.hasardEndurance);
+          this.endurance.set(tirage.endurance);
+        }
+        roulant.set(false);
+      },
+      error: () => {
+        // Permet de réessayer : la prochaine demande repart vers le serveur.
+        this.tirage$ = undefined;
+        roulant.set(false);
+        this.erreur.set('CREATION_PERSONNAGE.ERREUR_TIRAGE');
+      },
+    });
+  }
+
+  private tirage(): Observable<TirageCreation> {
+    this.tirage$ ??= this.personnages$.tirer().pipe(shareReplay(1));
+    return this.tirage$;
   }
 
   ouvrirDescription(d: DisciplineCatalogue): void {
@@ -143,9 +160,7 @@ export class CreationPersonnagePage {
     this.envoi.set(true);
     this.erreur.set(null);
     const nomFinal = this.nom.value.trim() || this.translate.instant('CREATION_PERSONNAGE.NOM');
-    const hasardHabilite = this.habilite()! - 10;
-    const hasardEndurance = this.endurance()! - 20;
-    this.personnages$.creer(nomFinal, this.choisies(), hasardHabilite, hasardEndurance).subscribe({
+    this.personnages$.creer(nomFinal, this.choisies()).subscribe({
       next: (p) => {
         this.envoi.set(false);
         this.router.navigate(['/personnages', p.id, 'inventaire', 'intro'], { replaceUrl: true });

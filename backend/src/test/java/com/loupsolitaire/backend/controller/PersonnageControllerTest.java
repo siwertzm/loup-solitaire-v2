@@ -46,6 +46,7 @@ import com.loupsolitaire.backend.request.CreerPersonnageRequest;
 import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.response.TirageResponse;
 import com.loupsolitaire.backend.service.PartieService;
 
 /**
@@ -105,8 +106,6 @@ class PersonnageControllerTest {
         CreerPersonnageRequest request = new CreerPersonnageRequest();
         request.setNom("Loup Solitaire");
         request.setDisciplines(disciplines);
-        request.setHasardHabilite(5);
-        request.setHasardEndurance(3);
         return request;
     }
 
@@ -118,7 +117,7 @@ class PersonnageControllerTest {
     void creerRenvoie201AvecLePersonnageCree() throws Exception {
         List<IdDiscipline> disciplines = List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE,
                 IdDiscipline.SIXIEME_SENS, IdDiscipline.ORIENTATION, IdDiscipline.GUERISON);
-        when(partieService.creerPersonnage(marius, "Loup Solitaire", disciplines, 5, 3))
+        when(partieService.creerPersonnage(marius, "Loup Solitaire", disciplines))
                 .thenReturn(reponse("Loup Solitaire"));
 
         mockMvc.perform(post("/personnages")
@@ -137,6 +136,59 @@ class PersonnageControllerTest {
                                 List.of("CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "TELEPORTATION")))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Discipline inconnue : TELEPORTATION"));
+
+        verifyNoInteractions(partieService);
+    }
+
+    @Test
+    void tirerRenvoieLeTirageDuServeur() throws Exception {
+        when(partieService.tirerCaracteristiques(marius)).thenReturn(new TirageResponse(4, 7, 14, 27));
+
+        mockMvc.perform(post("/personnages/tirage"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.habilite").value(14))
+                .andExpect(jsonPath("$.endurance").value(27));
+    }
+
+    @Test
+    void creerIgnoreLesTiragesEnvoyesParLeClient() throws Exception {
+        List<IdDiscipline> disciplines = List.of(IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE,
+                IdDiscipline.SIXIEME_SENS, IdDiscipline.ORIENTATION, IdDiscipline.GUERISON);
+        when(partieService.creerPersonnage(marius, "Loup Solitaire", disciplines))
+                .thenReturn(reponse("Loup Solitaire"));
+
+        mockMvc.perform(post("/personnages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"nom": "Loup Solitaire",
+                                 "disciplines": ["CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"],
+                                 "hasardHabilite": 1000, "hasardEndurance": 1000}
+                                """))
+                .andExpect(status().isCreated());
+
+        verify(partieService).creerPersonnage(marius, "Loup Solitaire", disciplines);
+    }
+
+    @Test
+    void creerRenvoie400SiLesDisciplinesManquent() throws Exception {
+        mockMvc.perform(post("/personnages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nom\": \"Loup Solitaire\"}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(partieService);
+    }
+
+    @Test
+    void creerRenvoie400SiLeNomEstTropLong() throws Exception {
+        CreerPersonnageRequest request = requeteCreation(
+                List.of("CAMOUFLAGE", "CHASSE", "SIXIEME_SENS", "ORIENTATION", "GUERISON"));
+        request.setNom("L".repeat(41));
+
+        mockMvc.perform(post("/personnages")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
 
         verifyNoInteractions(partieService);
     }

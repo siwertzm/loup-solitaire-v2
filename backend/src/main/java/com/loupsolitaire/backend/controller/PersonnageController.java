@@ -22,6 +22,7 @@ import com.loupsolitaire.backend.request.CreerPersonnageRequest;
 import com.loupsolitaire.backend.response.ChapitreParcouruResponse;
 import com.loupsolitaire.backend.response.ChapitreResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.response.TirageResponse;
 import com.loupsolitaire.backend.service.PartieService;
 
 import jakarta.validation.Valid;
@@ -37,6 +38,15 @@ public class PersonnageController {
 
     private final PartieService partieService;
 
+    // Tirage des caracteristiques (HABILETE = 10 + chiffre, ENDURANCE = 20 +
+    // chiffre), fait par le serveur. Appels repetes : toujours le meme
+    // tirage, jusqu'a la creation du personnage.
+    @PostMapping("/tirage")
+    public TirageResponse tirer(@AuthenticationPrincipal UtilisateurConnecte connecte) {
+        return partieService.tirerCaracteristiques(connecte);
+    }
+
+    // Utilise le tirage en attente ; 400 si aucun tirage n'a ete fait.
     @PostMapping
     public ResponseEntity<PersonnageResponse> creer(
             @Valid @RequestBody CreerPersonnageRequest request,
@@ -46,8 +56,7 @@ public class PersonnageController {
                 .map(this::versIdDiscipline)
                 .toList();
 
-        PersonnageResponse reponse = partieService.creerPersonnage(
-                connecte, request.getNom(), disciplines, request.getHasardHabilite(), request.getHasardEndurance());
+        PersonnageResponse reponse = partieService.creerPersonnage(connecte, request.getNom(), disciplines);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reponse);
     }

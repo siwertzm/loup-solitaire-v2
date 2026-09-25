@@ -15,6 +15,15 @@ export type IdDiscipline =
 
 export const NB_DISCIPLINES_A_CHOISIR = 5;
 
+// Aligné sur backend/.../response/TirageResponse.java (POST /personnages/tirage).
+// Tirage fait par le serveur : chiffres 0-9 et totaux (10 + / 20 +).
+export interface TirageCreation {
+  hasardHabilite: number;
+  hasardEndurance: number;
+  habilite: number;
+  endurance: number;
+}
+
 // Aligné sur backend/.../response/DisciplineResponse.java (GET /disciplines).
 export interface DisciplineResume {
   id: IdDiscipline;

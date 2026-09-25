@@ -199,6 +199,7 @@
     "ERREUR_CHARGEMENT_DISCIPLINES": "Unable to load the Disciplines.",
     "ERREUR_NOM_MANQUANT": "Give your character a name.",
     "ERREUR_TIRAGE_MANQUANT": "Roll both dice to determine your attributes.",
+    "ERREUR_TIRAGE": "The dice roll failed. Tap the die again to retry.",
     "ERREUR_TROP_DE_DISCIPLINES": "Exactly {{n}} Disciplines: remove one first.",
     "ERREUR_NOMBRE_DISCIPLINES": "Choose exactly {{n}} Disciplines.",
     "ERREUR_CREATION": "Character creation failed."

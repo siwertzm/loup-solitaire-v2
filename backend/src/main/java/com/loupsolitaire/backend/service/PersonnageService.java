@@ -92,6 +92,8 @@ public class PersonnageService {
 
     @Transactional
     public Personnage creerPersonnage(Utilisateur utilisateur, String nom, List<IdDiscipline> disciplinesChoisies, Integer hasardHabilite, Integer hasardEndurance) {
+        verifierChiffreDeHasard(hasardHabilite, "HABILETE");
+        verifierChiffreDeHasard(hasardEndurance, "ENDURANCE");
         List<Discipline> disciplines = resoudreDisciplines(disciplinesChoisies);
 
         Personnage personnage = new Personnage();
@@ -126,6 +128,16 @@ public class PersonnageService {
         equiperMateriel(personnage);
 
         return personnage;
+    }
+
+    // Garde-fou : les chiffres viennent du tirage serveur (TirageCreationService),
+    // mais un chiffre hors de la Table de Hasard (0-9) ne doit jamais creer de
+    // personnage.
+    private static void verifierChiffreDeHasard(Integer chiffre, String caracteristique) {
+        if (chiffre == null || chiffre < 0 || chiffre > 9) {
+            throw new IllegalArgumentException(
+                    "Tirage d'" + caracteristique + " invalide : " + chiffre + " (attendu entre 0 et 9)");
+        }
     }
 
     private List<Discipline> resoudreDisciplines(List<IdDiscipline> disciplinesChoisies) {
