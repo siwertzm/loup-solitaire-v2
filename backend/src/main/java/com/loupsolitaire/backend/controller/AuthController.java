@@ -117,7 +117,7 @@ public class AuthController {
                     "Merci de confirmer ton adresse email avant de te connecter (verifie ta boite mail)");
         }
 
-        String accessToken = jwtUtil.generateToken(userDetails);
+        String accessToken = jwtUtil.generateToken(utilisateur.getId());
         String refreshToken = refreshTokenService.creerToken(utilisateur);
 
         return new AuthResponse(accessToken, refreshToken);
@@ -155,13 +155,7 @@ public class AuthController {
     public AuthResponse refresh(@Valid @RequestBody RefreshRequest request) {
         RefreshTokenService.RotationResult resultat = refreshTokenService.validerEtPivoter(request.getRefreshToken());
 
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(resultat.username())
-                .password(resultat.passwordHash())
-                .authorities("ROLE_USER")
-                .build();
-
-        String nouvelAccessToken = jwtUtil.generateToken(userDetails);
+        String nouvelAccessToken = jwtUtil.generateToken(resultat.utilisateurId());
 
         return new AuthResponse(nouvelAccessToken, resultat.nouveauRefreshToken());
     }
@@ -279,7 +273,7 @@ public class AuthController {
 
         refreshTokenService.revoquerToutesLesSessions(utilisateur);
 
-        String accessToken = jwtUtil.generateToken(userDetails);
+        String accessToken = jwtUtil.generateToken(utilisateur.getId());
         String refreshToken = refreshTokenService.creerToken(utilisateur);
         return new AuthResponse(accessToken, refreshToken);
     }

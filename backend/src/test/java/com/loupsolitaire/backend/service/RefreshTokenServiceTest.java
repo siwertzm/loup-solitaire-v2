@@ -87,8 +87,7 @@ class RefreshTokenServiceTest {
 
         RefreshTokenService.RotationResult resultat = service.validerEtPivoter("un-token-quelconque");
 
-        assertThat(resultat.username()).isEqualTo("marius");
-        assertThat(resultat.passwordHash()).isEqualTo("hash");
+        assertThat(resultat.utilisateurId()).isEqualTo(utilisateur.getId());
         assertThat(resultat.nouveauRefreshToken()).isNotBlank();
         assertThat(existant.isRevoked()).isTrue();
         // Une fois pivote, l'ancien est sauvegarde comme revoque et un nouveau est cree.

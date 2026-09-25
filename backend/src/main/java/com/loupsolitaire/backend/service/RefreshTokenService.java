@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HexFormat;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -69,18 +70,15 @@ public class RefreshTokenService {
         existant.setRevoked(true);
         refreshTokenRepository.save(existant);
 
-        // On lit username/password ICI, pendant que la transaction (et donc la
-        // session Hibernate) est encore active. Ne JAMAIS renvoyer l'entite
-        // Utilisateur elle-meme hors de cette methode : son champ 'utilisateur'
-        // sur RefreshToken est charge en LAZY, et tenter de le lire plus tard
-        // (ex. dans le controleur) leve LazyInitializationException, la session
-        // etant deja fermee.
+        // On ne renvoie que l'identifiant de l'utilisateur, pas l'entite
+        // elle-meme : son champ 'utilisateur' sur RefreshToken est charge en
+        // LAZY, et le lire hors de cette transaction (ex. dans le controleur)
+        // leverait LazyInitializationException. L'identifiant suffit pour
+        // generer le nouvel access token (voir JwtUtil).
         Utilisateur utilisateur = existant.getUtilisateur();
-        String username = utilisateur.getUsername();
-        String passwordHash = utilisateur.getPassword();
 
         String nouveauToken = creerToken(utilisateur);
-        return new RotationResult(username, passwordHash, nouveauToken);
+        return new RotationResult(utilisateur.getId(), nouveauToken);
     }
 
     @Transactional
@@ -114,6 +112,6 @@ public class RefreshTokenService {
         }
     }
 
-    public record RotationResult(String username, String passwordHash, String nouveauRefreshToken) {
+    public record RotationResult(UUID utilisateurId, String nouveauRefreshToken) {
     }
 }

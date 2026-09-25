@@ -383,6 +383,7 @@ class AuthControllerTest {
         Utilisateur utilisateur =
                 new Utilisateur();
 
+        utilisateur.setId(UUID.randomUUID());
         utilisateur.setUsername("marius");
         utilisateur.setEmailVerifie(true);
 
@@ -393,9 +394,10 @@ class AuthControllerTest {
                 Optional.of(utilisateur)
         );
 
+        // Le token porte l'identifiant (UUID) de l'utilisateur, pas son nom.
         when(
                 jwtUtil.generateToken(
-                        userDetails
+                        utilisateur.getId()
                 )
         ).thenReturn(
                 "access-token"
@@ -722,10 +724,11 @@ class AuthControllerTest {
                 "ancien-refresh-token"
         );
 
+        UUID utilisateurId = UUID.randomUUID();
+
         RefreshTokenService.RotationResult resultat =
                 new RefreshTokenService.RotationResult(
-                        "marius",
-                        "hash",
+                        utilisateurId,
                         "nouveau-refresh-token"
                 );
 
@@ -739,7 +742,7 @@ class AuthControllerTest {
         );
 
         when(
-                jwtUtil.generateToken(any())
+                jwtUtil.generateToken(utilisateurId)
         ).thenReturn(
                 "nouveau-access-token"
         );

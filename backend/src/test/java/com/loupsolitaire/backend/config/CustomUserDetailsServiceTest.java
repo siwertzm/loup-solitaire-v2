@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +50,32 @@ class CustomUserDetailsServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.loadUserByUsername("inconnu"))
+                .isInstanceOf(UsernameNotFoundException.class);
+    }
+
+    @Test
+    void chargeUnUtilisateurParSonIdentifiantAvecSonNomActuel() {
+        UUID id = UUID.randomUUID();
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(id);
+        utilisateur.setUsername("bob2");
+        utilisateur.setPassword("hash");
+
+        when(utilisateurRepository.findById(id)).thenReturn(Optional.of(utilisateur));
+
+        UserDetails result = service.loadUserById(id);
+
+        assertThat(result.getUsername()).isEqualTo("bob2");
+        assertThat(result.getPassword()).isEqualTo("hash");
+        assertThat(result.getAuthorities()).extracting(Object::toString).containsExactly("ROLE_USER");
+    }
+
+    @Test
+    void leveUneExceptionSiAucunUtilisateurNePorteCetIdentifiant() {
+        UUID id = UUID.randomUUID();
+        when(utilisateurRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.loadUserById(id))
                 .isInstanceOf(UsernameNotFoundException.class);
     }
 }
