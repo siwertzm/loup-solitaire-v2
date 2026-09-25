@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.service;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -39,14 +41,30 @@ public class ConditionService {
     private final InventaireService inventaireService;
     private final CombatRepository combatRepository;
 
+    // Contexte a partager entre toutes les conditions evaluees pour une meme
+    // requete (typiquement tout un chapitre dans ChapitreMapper) : inventaire
+    // et combat ne sont alors lus qu'une seule fois (voir ContexteConditions).
+    public ContexteConditions nouveauContexte(Personnage personnage) {
+        return new ContexteConditions(
+                () -> quantitesParObjet(personnage),
+                () -> combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(
+                        personnage, personnage.getChapitreActuel().getId()));
+    }
+
+    // Evaluation isolee : cree son propre contexte (une seule condition,
+    // donc au plus une lecture de chaque donnee de toute facon).
     public boolean estDisponible(Cond cond, Personnage personnage) {
+        return estDisponible(cond, personnage, nouveauContexte(personnage));
+    }
+
+    public boolean estDisponible(Cond cond, Personnage personnage, ContexteConditions contexte) {
         return switch (cond.getType()) {
             case DISCIPLINE -> possedeDiscipline(cond, personnage);
-            case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, personnage);
+            case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, contexte);
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
             case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
-            case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, personnage);
+            case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, contexte);
             case PERMANENT -> true;
         };
     }
@@ -57,15 +75,18 @@ public class ConditionService {
     // (validation avant d'avancer). Un seul et meme calcul pour les deux,
     // pour eviter que l'affichage et la validation divergent.
     public boolean estLienDisponible(Lien lien, Personnage personnage) {
-        return lien.getConditions().stream().allMatch(cond -> estDisponible(cond, personnage));
+        return estLienDisponible(lien, personnage, nouveauContexte(personnage));
+    }
+
+    public boolean estLienDisponible(Lien lien, Personnage personnage, ContexteConditions contexte) {
+        return lien.getConditions().stream().allMatch(cond -> estDisponible(cond, personnage, contexte));
     }
 
     // Cherche le Combat le plus recent du personnage sur son chapitre
     // actuel (peut etre absent si le combat n'a jamais ete engage, ou
     // encore EN_COURS si le joueur n'a pas fini de jouer ses tours).
-    private boolean conditionDeCombat(Cond cond, Personnage personnage) {
-        Optional<Combat> combatOpt = combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(
-                personnage, personnage.getChapitreActuel().getId());
+    private boolean conditionDeCombat(Cond cond, ContexteConditions contexte) {
+        Optional<Combat> combatOpt = contexte.combatDuChapitreActuel();
         if (combatOpt.isEmpty()) {
             return false;
         }
@@ -95,13 +116,18 @@ public class ConditionService {
 
     // Meme logique pour OBJET/ARME/BOURSE : possede-t-on au moins la
     // quantite requise de l'objet designe par targetId (ex. "or" pour BOURSE).
-    private boolean possedeQuantiteObjet(Cond cond, Personnage personnage) {
+    private boolean possedeQuantiteObjet(Cond cond, ContexteConditions contexte) {
         int quantiteRequise = parseValeur(cond.getValeur());
-        int quantitePossedee = inventaireService.listerInventaire(personnage).stream()
-                .filter(item -> item.getObjet().getId().equals(cond.getTargetId()))
-                .mapToInt(InventaireItem::getQuantite)
-                .sum();
-        return quantitePossedee >= quantiteRequise;
+        return contexte.quantitePossedee(cond.getTargetId()) >= quantiteRequise;
+    }
+
+    // Quantite totale possedee par id d'objet, en une seule lecture de
+    // l'inventaire.
+    private Map<String, Integer> quantitesParObjet(Personnage personnage) {
+        return inventaireService.listerInventaire(personnage).stream()
+                .collect(Collectors.groupingBy(
+                        item -> item.getObjet().getId(),
+                        Collectors.summingInt(InventaireItem::getQuantite)));
     }
 
     private boolean enduranceSuffisante(Cond cond, Personnage personnage) {

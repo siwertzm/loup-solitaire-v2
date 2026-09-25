@@ -1,6 +1,9 @@
 package com.loupsolitaire.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -378,5 +381,70 @@ class ConditionServiceTest {
         lien.setConditions(List.of());
 
         assertThat(conditionService.estLienDisponible(lien, personnage)).isTrue();
+    }
+
+    // =========================================================
+    // ContexteConditions : inventaire et combat lus AU PLUS UNE FOIS pour
+    // toutes les conditions d'un meme chapitre (GET /chapitre).
+    // =========================================================
+
+    @Test
+    void unContexteNeLitLInventaireQuUneSeuleFoisPourPlusieursConditions() {
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(
+                creerLigne("or", 12), creerLigne("corde", 1)));
+        ContexteConditions contexte = conditionService.nouveauContexte(personnage);
+
+        Lien lienOr = new Lien();
+        lienOr.setConditions(List.of(creerCond(TypeCondition.BOURSE, "or", "10")));
+        Lien lienCorde = new Lien();
+        lienCorde.setConditions(List.of(creerCond(TypeCondition.OBJET, "corde", "1")));
+        Lien lienLanterne = new Lien();
+        lienLanterne.setConditions(List.of(creerCond(TypeCondition.OBJET, "lanterne", "1")));
+
+        assertThat(conditionService.estLienDisponible(lienOr, personnage, contexte)).isTrue();
+        assertThat(conditionService.estLienDisponible(lienCorde, personnage, contexte)).isTrue();
+        assertThat(conditionService.estLienDisponible(lienLanterne, personnage, contexte)).isFalse();
+
+        verify(inventaireService, times(1)).listerInventaire(personnage);
+    }
+
+    @Test
+    void unContexteAdditionneLesQuantitesDUnMemeObjet() {
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(
+                creerLigne("or", 6), creerLigne("or", 5)));
+        ContexteConditions contexte = conditionService.nouveauContexte(personnage);
+
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.BOURSE, "or", "11"), personnage, contexte))
+                .isTrue();
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.BOURSE, "or", "12"), personnage, contexte))
+                .isFalse();
+    }
+
+    @Test
+    void unContexteNeLitLeCombatQuUneSeuleFoisPourPlusieursConditions() {
+        stuberCombat(Optional.of(creerCombat(StatutCombat.VICTOIRE, 3, false)));
+        ContexteConditions contexte = conditionService.nouveauContexte(personnage);
+
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.VICTOIRE, null, null), personnage, contexte))
+                .isTrue();
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.FUITE, null, null), personnage, contexte))
+                .isFalse();
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.ASSAUT_MAX, null, "4"), personnage, contexte))
+                .isTrue();
+
+        verify(combatRepository, times(1)).findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, 17);
+    }
+
+    @Test
+    void unContexteNeLitRienSiAucuneConditionNEnABesoin() {
+        personnage.setEnduranceActuelle(15);
+        ContexteConditions contexte = conditionService.nouveauContexte(personnage);
+
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.ENDURANCE, null, "10"), personnage, contexte))
+                .isTrue();
+        assertThat(conditionService.estDisponible(creerCond(TypeCondition.PERMANENT, null, null), personnage, contexte))
+                .isTrue();
+
+        verifyNoInteractions(inventaireService, combatRepository);
     }
 }

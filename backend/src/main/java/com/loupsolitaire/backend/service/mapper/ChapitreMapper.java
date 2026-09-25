@@ -25,6 +25,7 @@ import com.loupsolitaire.backend.response.EnnemiChapitreResponse;
 import com.loupsolitaire.backend.response.LienResponse;
 import com.loupsolitaire.backend.response.ObjetChapResponse;
 import com.loupsolitaire.backend.service.ConditionService;
+import com.loupsolitaire.backend.service.ContexteConditions;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,13 +56,18 @@ public class ChapitreMapper {
                 .map(e -> new EnnemiChapitreResponse(e.getId(), e.getNom(), e.getHabilite(), e.getEndurance()))
                 .toList();
 
+        // Un seul contexte pour tout le chapitre : l'inventaire et le combat
+        // sont lus au plus une fois, quel que soit le nombre de conditions
+        // a evaluer sur les effets et les liens (voir ContexteConditions).
+        ContexteConditions contexte = conditionService.nouveauContexte(personnage);
+
         List<EffetResponse> effets = chapitre.getEffets().stream()
-                .filter(e -> estEffetActif(e, personnage))
+                .filter(e -> estEffetActif(e, personnage, contexte))
                 .map(e -> versReponseEffet(e, personnage))
                 .toList();
 
         List<LienResponse> liens = chapitre.getLiens().stream()
-                .map(lien -> versReponseLien(lien, personnage))
+                .map(lien -> versReponseLien(lien, personnage, contexte))
                 .toList();
 
         // Deja ramasse ici, par objetId : une seule requete pour tout le
@@ -97,10 +103,10 @@ public class ChapitreMapper {
         return new ObjetChapResponse(objetId, objetChap.getObjet().getNom(), valeur, objetChap.isOptionnel());
     }
 
-    private boolean estEffetActif(Effet effet, Personnage personnage) {
+    private boolean estEffetActif(Effet effet, Personnage personnage, ContexteConditions contexte) {
         return effet.getConditions().stream()
                 .filter(c -> c.getType() == TypeCondition.HASARD)
-                .allMatch(c -> conditionService.estDisponible(c, personnage));
+                .allMatch(c -> conditionService.estDisponible(c, personnage, contexte));
     }
 
     private EffetResponse versReponseEffet(Effet effet, Personnage personnage) {
@@ -115,12 +121,12 @@ public class ChapitreMapper {
         return new EffetResponse(effet.getType().name(), effet.getValeur(), effet.getNom(), conditions, resultat);
     }
 
-    private LienResponse versReponseLien(Lien lien, Personnage personnage) {
+    private LienResponse versReponseLien(Lien lien, Personnage personnage, ContexteConditions contexte) {
         List<CondResponse> conditions = lien.getConditions().stream()
                 .map(this::versReponseCond)
                 .toList();
 
-        boolean disponible = conditionService.estLienDisponible(lien, personnage);
+        boolean disponible = conditionService.estLienDisponible(lien, personnage, contexte);
 
         return new LienResponse(lien.getChapitreCible().getId(), disponible, conditions);
     }

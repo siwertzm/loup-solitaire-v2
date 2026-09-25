@@ -160,7 +160,7 @@ class ChapitreMapperTest {
         chapitre.setEffets(List.of(effet));
 
         when(chapitreRepository.findById(36)).thenReturn(Optional.of(chapitre));
-        when(conditionService.estDisponible(hasard, personnage)).thenReturn(false);
+        when(conditionService.estDisponible(eq(hasard), eq(personnage), any())).thenReturn(false);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(36, personnage);
 
@@ -181,7 +181,7 @@ class ChapitreMapperTest {
         chapitre.setEffets(List.of(effet));
 
         when(chapitreRepository.findById(36)).thenReturn(Optional.of(chapitre));
-        when(conditionService.estDisponible(hasard, personnage)).thenReturn(true);
+        when(conditionService.estDisponible(eq(hasard), eq(personnage), any())).thenReturn(true);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(36, personnage);
 
@@ -204,12 +204,12 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
-        // Le mapper appelle conditionService.estLienDisponible(lien, personnage),
+        // Le mapper appelle conditionService.estLienDisponible(lien, personnage, contexte),
         // pas estDisponible(cond, personnage) directement : conditionService
         // etant un mock, stubber estDisponible() n'a aucun effet sur ce que
         // renvoie estLienDisponible() (le mock n'execute pas la vraie logique
         // de delegation de l'un vers l'autre).
-        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(true);
+        when(conditionService.estLienDisponible(eq(lien), eq(personnage), any())).thenReturn(true);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
@@ -235,7 +235,7 @@ class ChapitreMapperTest {
         chapitre.setLiens(List.of(lien));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre));
-        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(false);
+        when(conditionService.estLienDisponible(eq(lien), eq(personnage), any())).thenReturn(false);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
@@ -260,7 +260,7 @@ class ChapitreMapperTest {
         // disponible - mais conditionService est ici un mock : il faut le
         // stubber explicitement, le "true" par defaut du vrai service n'est
         // pas reproduit automatiquement.
-        when(conditionService.estLienDisponible(lien, personnage)).thenReturn(true);
+        when(conditionService.estLienDisponible(eq(lien), eq(personnage), any())).thenReturn(true);
 
         ChapitreResponse reponse = chapitreMapper.versReponse(0, personnage);
 
