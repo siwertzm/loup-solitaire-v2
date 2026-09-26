@@ -2,6 +2,8 @@ package com.loupsolitaire.backend.config;
 
 import java.util.List;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +43,12 @@ public class SecurityConfig {
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
                         // le conteneur doit pouvoir interroger ce endpoint sans jeton.
                         .requestMatchers("/actuator/health").permitAll()
+                        // OPS-04 : 404 tant que app.diagnostic.erreur-test=false.
+                        .requestMatchers("/diagnostic/erreur-test").permitAll()
+                        // Page d'erreur de Spring Boot : sans cette regle, une erreur
+                        // 500 est renvoyee vers /error, que la securite bloque, et le
+                        // client recoit un 401 "jeton manquant" au lieu de la 500.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .anyRequest().authenticated()
                 )
                 // Limitation de debit d'abord (SEC-02) : une requete refusee ne
