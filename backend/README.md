@@ -116,6 +116,10 @@ Les autres variables ont une valeur par défaut adaptée au dev.
 | `MAIL_FROM` | `no-reply@loup-solitaire.local` | Adresse expéditeur affichée |
 | `APP_BASE_URL` | `http://localhost:8080` | Base de l'URL utilisée dans le lien de confirmation envoyé par email |
 | `EMAIL_VERIFICATION_EXPIRATION_HOURS` | `24` | Durée de validité du lien de confirmation d'email |
+| `SENTRY_DSN` | *(vide = désactivé)* | Clé du projet Sentry backend : chaque erreur 500 y est envoyée (OPS-04) |
+| `SENTRY_ENVIRONMENT` | `local` | Environnement affiché dans Sentry (`production` sur Render) |
+| `LOGGING_STRUCTURED_FORMAT_CONSOLE` | *(vide = texte)* | `ecs` sur Render : logs au format JSON, faciles à filtrer (OPS-04) |
+| `DIAGNOSTIC_ERREUR_TEST` | `false` | `true` le temps d'un test : `GET /diagnostic/erreur-test` renvoie une 500 volontaire pour vérifier l'alerte Sentry |
 
 En dev, utiliser [Mailtrap](https://mailtrap.io) (sandbox gratuite) pour
 capturer les emails de vérification sans les envoyer réellement. En

@@ -179,6 +179,12 @@
       "type": "java.lang.Integer",
       "description": "Nombre maximum d'emails en attente d'envoi ; au-dela, l'email est abandonne et journalise (OPS-02).",
       "defaultValue": 500
+    },
+    {
+      "name": "app.diagnostic.erreur-test",
+      "type": "java.lang.Boolean",
+      "description": "OPS-04 : active GET /diagnostic/erreur-test, qui renvoie une 500 volontaire pour verifier l'alerte Sentry. A laisser a false hors test.",
+      "defaultValue": false
     }
   ]
 }

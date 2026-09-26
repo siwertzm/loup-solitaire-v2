@@ -44,6 +44,10 @@ services:
       EMAIL_VERIFICATION_EXPIRATION_HOURS: ${EMAIL_VERIFICATION_EXPIRATION_HOURS:-24}
       # En local, aucun proxy devant l'API : X-Forwarded-For est ignore (SEC-02).
       RATE_LIMIT_TRUSTED_PROXIES: ${RATE_LIMIT_TRUSTED_PROXIES:-0}
+      # OPS-04 : Sentry (vide = desactive) et point de test de l'alerte.
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-local}
+      DIAGNOSTIC_ERREUR_TEST: ${DIAGNOSTIC_ERREUR_TEST:-false}
     ports:
       - "8080:8080"
     healthcheck:
