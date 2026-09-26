@@ -289,20 +289,37 @@ class PartieServiceTest {
     }
 
     @Test
-    void consommerObjetAutoriseAvantLePremierAssaut() {
-        // Essence d'Alether bue avant le combat, comme dans le livre.
-        Objet alether = objet("alether");
+    void consommerObjetRefuseDesQueLeCombatEstLanceMemeAvantLePremierAssaut() {
+        // Combat lance (page de combat ouverte), aucun assaut joue : l'objet
+        // doit passer par l'action OBJET, qui coute un tour.
         Combat combat = new Combat();
         combat.setStatut(StatutCombat.EN_COURS);
         combat.setAssautsLivres(0);
         when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(combatService.combatActuel(personnage)).thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> partieService.consommerObjet(personnageId, "alether", marius))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("OBJET");
+
+        verifyNoInteractions(objetService, inventaireService);
+    }
+
+    @Test
+    void consommerObjetAutoriseUneFoisLeCombatTermine() {
+        // Potion bue apres la victoire, sur le meme chapitre.
+        Objet potion = objet("potion_de_soin");
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.VICTOIRE);
+        combat.setAssautsLivres(3);
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
+        when(combatService.combatActuel(personnage)).thenReturn(Optional.of(combat));
         when(personnageMapper.versReponse(personnage)).thenReturn(reponse);
 
-        partieService.consommerObjet(personnageId, "alether", marius);
+        partieService.consommerObjet(personnageId, "potion_de_soin", marius);
 
-        verify(objetService).appliquerEffetsConsommation(personnage, alether);
-        verify(inventaireService).retirerObjet(personnage, alether, 1);
+        verify(objetService).appliquerEffetsConsommation(personnage, potion);
+        verify(inventaireService).retirerObjet(personnage, potion, 1);
     }
 
     @Test

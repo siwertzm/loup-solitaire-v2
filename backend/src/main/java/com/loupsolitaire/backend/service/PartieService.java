@@ -171,16 +171,17 @@ public class PartieService {
 
     // Applique l'effet PUIS retire 1 exemplaire de l'inventaire.
     //
-    // REGLE-05 : interdit une fois le combat engage (au moins un assaut
-    // joue) : un objet utilise en combat remplace l'attaque ou la defense et
-    // subit la riposte de l'ennemi (action OBJET, CombatService.jouerObjet).
-    // Avant le premier assaut, l'objet reste utilisable librement (ex.
-    // Essence d'Alether bue avant le combat, comme dans le livre).
+    // REGLE-05 : interdit des que le combat est lance (combat EN_COURS sur le
+    // chapitre, cree en entrant sur la page de combat), meme avant le
+    // premier assaut : en combat, consommer un objet coute un tour (action
+    // OBJET, CombatService.jouerObjet) et subit la riposte de l'ennemi.
+    // Pour boire une potion ou l'Essence d'Alether sans riposte, le faire
+    // depuis la page du chapitre, avant de lancer le combat.
     @Transactional
     public PersonnageResponse consommerObjet(UUID id, String objetId, UtilisateurConnecte connecte) {
         Personnage personnage = pourModification(id, connecte);
         boolean combatEngage = combatService.combatActuel(personnage)
-                .filter(combat -> combat.getStatut() == StatutCombat.EN_COURS && combat.getAssautsLivres() > 0)
+                .filter(combat -> combat.getStatut() == StatutCombat.EN_COURS)
                 .isPresent();
         if (combatEngage) {
             throw new IllegalArgumentException(
