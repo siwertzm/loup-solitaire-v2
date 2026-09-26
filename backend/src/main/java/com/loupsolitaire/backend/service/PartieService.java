@@ -19,6 +19,7 @@ import com.loupsolitaire.backend.model.TirageCreation;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.ActionCombat;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
@@ -169,9 +170,22 @@ public class PartieService {
     }
 
     // Applique l'effet PUIS retire 1 exemplaire de l'inventaire.
+    //
+    // REGLE-05 : interdit une fois le combat engage (au moins un assaut
+    // joue) : un objet utilise en combat remplace l'attaque ou la defense et
+    // subit la riposte de l'ennemi (action OBJET, CombatService.jouerObjet).
+    // Avant le premier assaut, l'objet reste utilisable librement (ex.
+    // Essence d'Alether bue avant le combat, comme dans le livre).
     @Transactional
     public PersonnageResponse consommerObjet(UUID id, String objetId, UtilisateurConnecte connecte) {
         Personnage personnage = pourModification(id, connecte);
+        boolean combatEngage = combatService.combatActuel(personnage)
+                .filter(combat -> combat.getStatut() == StatutCombat.EN_COURS && combat.getAssautsLivres() > 0)
+                .isPresent();
+        if (combatEngage) {
+            throw new IllegalArgumentException(
+                    "Un combat est en cours : utilisez l'objet comme action de combat (OBJET)");
+        }
         Objet objet = recupererObjet(objetId);
         objetService.appliquerEffetsConsommation(personnage, objet);
         inventaireService.retirerObjet(personnage, objet, 1);

@@ -42,7 +42,9 @@ export class PersonnagePage implements ViewWillEnter {
   readonly nom = computed(() => this.personnage()?.nom ?? '');
   readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || this.translate.instant('PERSONNAGE.INITIALE_PAR_DEFAUT'));
   readonly chapitre = computed(() => this.personnage()?.chapitreActuelId ?? 1);
-  readonly habilite = computed(() => this.personnage()?.habilite ?? 0);
+  readonly habilite = computed(
+    () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),
+  );
   readonly habiliteMax = computed(() => this.personnage()?.habiliteBase ?? 0);
   readonly endurance = computed(() => this.personnage()?.enduranceActuelle ?? 0);
   readonly enduranceMax = computed(() => this.personnage()?.enduranceMax ?? 0);

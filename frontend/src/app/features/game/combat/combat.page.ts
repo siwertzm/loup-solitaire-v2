@@ -6,7 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ActionCombat, CombatEnnemiResponse, CombatResponse, ResultatTourResponse } from '../../../core/models/combat.model';
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { CombatService } from '../../../core/services/combat.service';
-import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
+import { EffetsObjetCombat, InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
 import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
@@ -27,6 +27,12 @@ interface Message {
   ennemiId?: string;
   hit?: Cible;
   actualiser?: 'ennemi' | 'joueur';
+  /** ENDURANCE du joueur à afficher dès ce message, avant la mise à jour
+   * complète (ex. soin d'une potion affiché avant la riposte). */
+  enduranceJoueur?: number;
+  /** HABILETÉ temporaire à afficher dès ce message (ex. Essence d'Alether),
+   * avant la mise à jour complète. */
+  habiliteTempJoueur?: number;
   de?: {
     valeur: number;
   };
@@ -202,7 +208,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   readonly bonusPsychiqueAffiche = computed(() => (this.bonusPuissancePsychique() ? 2 : 0));
 
-  readonly bonusTempAffiche = computed(() => this.personnage()?.habiliteTemp ?? 0);
+  /** HABILETÉ temporaire affichée en attendant la fiche à jour (voir
+   * Message.habiliteTempJoueur) ; null = valeur réelle du personnage. */
+  private readonly habiliteTempForcee = signal<number | null>(null);
+  readonly bonusTempAffiche = computed(() => this.habiliteTempForcee() ?? this.personnage()?.habiliteTemp ?? 0);
 
   readonly bonusGardeAffiche = computed(() => this.combat()?.bonusHabiliteEnAttente ?? 0);
 
@@ -225,9 +234,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     const suffixe = termes.map((v) => (v >= 0 ? '+' + v : String(v))).join('');
     return this.baseHabiliteJoueur() + suffixe;
   });
-  readonly enduranceJoueur = computed(() => this.personnage()?.enduranceActuelle ?? 0);
+  /** Valeur d'ENDURANCE affichée en attendant la fiche à jour (voir
+   * Message.enduranceJoueur) ; null = valeur réelle du personnage. */
+  private readonly enduranceJoueurForcee = signal<number | null>(null);
+  readonly enduranceJoueur = computed(
+    () => this.enduranceJoueurForcee() ?? this.personnage()?.enduranceActuelle ?? 0,
+  );
   readonly enduranceMaxJoueur = computed(() => this.personnage()?.enduranceMax ?? 1);
-  readonly bonusHabiliteTemp = computed(() => this.personnage()?.habiliteTemp ?? 0);
+  readonly bonusHabiliteTemp = computed(() => this.bonusTempAffiche());
   readonly bonusArmeMaitrisee = computed(() => {
     const personnage = this.personnage();
     if (!personnage?.armeMaitrisee) return null;
@@ -515,10 +529,28 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
   ouvrirSac(): void {
     const id = this.personnageId();
-    if (id) {
+    if (!id) return;
+    // En combat en cours, utiliser un objet remplace l'attaque ou la
+    // défense (action OBJET, l'ennemi riposte) : REGLE-05.
+    if (this.statut() === 'EN_COURS') {
+      this.inventaireSheet.ouvrir(id, (objetId, nom, effets) => this.utiliserObjet(objetId, nom, effets));
+    } else {
       this.inventaireSheet.ouvrir(id);
     }
   }
+
+  private utiliserObjet(objetId: string, nom: string, effets: EffetsObjetCombat): void {
+    if (this.phase() !== 'MENU' || this.statut() !== 'EN_COURS' || this.actionEnCours()) return;
+    this.objetUtiliseNom = nom;
+    this.objetUtiliseSoin = effets.endurance;
+    this.objetUtiliseBonusHabilite = effets.habilite;
+    this.appellerTour('OBJET', objetId);
+  }
+
+  /** Nom de l'objet joué au dernier tour OBJET, pour le message du combat. */
+  private objetUtiliseNom: string | null = null;
+  private objetUtiliseSoin = 0;
+  private objetUtiliseBonusHabilite = 0;
 
   private appellerTour(action: ActionCombat, objetId?: string): void {
     const id = this.personnageId();
@@ -527,6 +559,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.actionEnCours.set(true);
     const ennemiAvant = this.ennemiActif();
     const enduranceJoueurAvant = this.enduranceJoueur();
+    const habiliteTempAvant = this.bonusTempAffiche();
 
     if (action === 'ATTAQUE' || action === 'DEFENSE') {
       this.phase.set('TEXTE');
@@ -551,7 +584,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.combatService.jouerTour(id, action, objetId).subscribe({
       next: (c) => {
-        const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant);
+        const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant, habiliteTempAvant);
 
         const afficherResultat = () => {
           this.actionEnCours.set(false);
@@ -613,6 +646,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     combat: CombatResponse,
     ennemiAvant: CombatEnnemiResponse | null,
     enduranceJoueurAvant: number,
+    habiliteTempAvant: number,
   ): Message[] {
     const tour = combat.dernierTour;
     const nomEnnemi = ennemiAvant?.nom ?? "l'ennemi";
@@ -627,6 +661,24 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // "riposte" ci-dessous) ; le message de fuite ne vient qu'ensuite, et
       // seulement si ce coup n'a pas été fatal.
       messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_TENTE_FUITE', { nom: this.nomJoueur() }) });
+    } else if (action === 'OBJET') {
+      messages.push({
+        txt: this.translate.instant('COMBAT_PAGE.MSG_UTILISE_OBJET', {
+          nom: this.nomJoueur(),
+          objet: this.objetUtiliseNom ?? '',
+        }),
+        // Le soin apparaît sur la barre dès ce message ; la riposte qui suit
+        // applique ensuite la valeur finale renvoyée par le serveur.
+        enduranceJoueur:
+          this.objetUtiliseSoin > 0
+            ? Math.min(this.enduranceMaxJoueur(), enduranceJoueurAvant + this.objetUtiliseSoin)
+            : undefined,
+        // Même principe pour l'HABILETÉ temporaire (total et détail).
+        habiliteTempJoueur:
+          this.objetUtiliseBonusHabilite !== 0
+            ? habiliteTempAvant + this.objetUtiliseBonusHabilite
+            : undefined,
+      });
     } else if (action === 'ATTAQUE') {
       messages.push({
         txt: this.translate.instant('COMBAT_PAGE.MSG_PORTE_ATTAQUE', { nom: this.nomJoueur() }),
@@ -782,6 +834,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       this.combatEnAttente = null;
     }
     if (cible === 'joueur') {
+      this.enduranceJoueurForcee.set(null);
+      this.habiliteTempForcee.set(null);
       this.joueurVieAppliquee = true;
       if (this.personnageEnAttente) {
         this.personnage.set(this.personnageEnAttente);
@@ -809,6 +863,12 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     const m = this.file.shift()!;
     this.appliquerMiseAJourEnAttente(m.actualiser);
+    if (m.enduranceJoueur !== undefined) {
+      this.enduranceJoueurForcee.set(m.enduranceJoueur);
+    }
+    if (m.habiliteTempJoueur !== undefined) {
+      this.habiliteTempForcee.set(m.habiliteTempJoueur);
+    }
     if (m.ennemiVaincu) {
       this.ennemiVaincu.set(true);
       // Toutes les cartes disparaissent ensemble à la mort de l'ennemi

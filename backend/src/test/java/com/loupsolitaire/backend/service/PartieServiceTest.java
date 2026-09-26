@@ -33,6 +33,7 @@ import com.loupsolitaire.backend.model.TirageCreation;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.ActionCombat;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
@@ -269,6 +270,39 @@ class PartieServiceTest {
         InOrder ordre = inOrder(objetService, inventaireService);
         ordre.verify(objetService).appliquerEffetsConsommation(personnage, potion);
         ordre.verify(inventaireService).retirerObjet(personnage, potion, 1);
+    }
+
+    @Test
+    void consommerObjetRefuseUneFoisLeCombatEngage() {
+        // REGLE-05 : en combat, un objet remplace l'attaque (action OBJET).
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.EN_COURS);
+        combat.setAssautsLivres(1);
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
+        when(combatService.combatActuel(personnage)).thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> partieService.consommerObjet(personnageId, "potion_de_soin", marius))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("OBJET");
+
+        verifyNoInteractions(objetService, inventaireService);
+    }
+
+    @Test
+    void consommerObjetAutoriseAvantLePremierAssaut() {
+        // Essence d'Alether bue avant le combat, comme dans le livre.
+        Objet alether = objet("alether");
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.EN_COURS);
+        combat.setAssautsLivres(0);
+        when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
+        when(combatService.combatActuel(personnage)).thenReturn(Optional.of(combat));
+        when(personnageMapper.versReponse(personnage)).thenReturn(reponse);
+
+        partieService.consommerObjet(personnageId, "alether", marius);
+
+        verify(objetService).appliquerEffetsConsommation(personnage, alether);
+        verify(inventaireService).retirerObjet(personnage, alether, 1);
     }
 
     @Test

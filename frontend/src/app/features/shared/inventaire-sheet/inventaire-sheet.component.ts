@@ -30,6 +30,8 @@ export class InventaireSheetComponent {
   private readonly translate = inject(TranslateService);
 
   readonly ouvert = computed(() => this.sheet.personnageId() !== null);
+  /** Vrai quand la feuille est ouverte depuis l'écran de combat (REGLE-05). */
+  readonly enCombat = computed(() => this.sheet.utiliserEnCombat() !== null);
   readonly enFermeture = signal(false);
   readonly fermetureParGlissement = signal(false);
   readonly visible = computed(() => this.ouvert() || this.enFermeture());
@@ -193,6 +195,25 @@ export class InventaireSheetComponent {
     const id = this.sheet.personnageId();
     if (!attente || !id || this.consommationEnCours()) return;
 
+    // REGLE-05 : en combat, l'objet est joué comme action OBJET par l'écran
+    // de combat (riposte de l'ennemi), pas consommé gratuitement ici.
+    const utiliserEnCombat = this.sheet.utiliserEnCombat();
+    if (utiliserEnCombat) {
+      attente.sliding.close();
+      this.fermerImmediatement();
+      this.objetAConfirmer.set(null);
+      // Effets de l'objet (ENDURANCE, HABILETÉ), pour que l'écran de combat
+      // les affiche dès le message d'utilisation (avant la riposte).
+      const catalogue = this.tousObjets().find((o) => o.id.toLowerCase() === attente.objetId.toLowerCase());
+      const somme = (type: 'ENDURANCE' | 'HABILITE') =>
+        (catalogue?.effets ?? []).filter((e) => e.type === type).reduce((total, e) => total + e.valeur, 0);
+      utiliserEnCombat(attente.objetId, attente.nom, {
+        endurance: somme('ENDURANCE'),
+        habilite: somme('HABILITE'),
+      });
+      return;
+    }
+
     this.consommationEnCours.set(attente.objetId);
     this.personnageService.consommerObjet(id, attente.objetId).subscribe({
       next: (p) => {
@@ -200,6 +221,9 @@ export class InventaireSheetComponent {
         this.consommationEnCours.set(null);
         this.sheet.notifierMiseAJour(p);
         attente.sliding.close();
+        // Après consommation, retour direct à l'écran (chapitre ou combat) :
+        // le sac ne réapparaît pas derrière le popup qui se ferme.
+        this.fermerImmediatement();
         this.objetAConfirmer.set(null);
       },
       error: (err) => {
@@ -266,6 +290,14 @@ export class InventaireSheetComponent {
       return;
     }
 
+    this.deplacementGlissement.set(0);
+  }
+
+  /** Ferme le sac sans animation (après une consommation). */
+  private fermerImmediatement(): void {
+    this.sheet.fermer();
+    this.enFermeture.set(false);
+    this.fermetureParGlissement.set(false);
     this.deplacementGlissement.set(0);
   }
 
