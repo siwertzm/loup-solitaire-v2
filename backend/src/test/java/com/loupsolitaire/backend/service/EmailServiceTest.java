@@ -38,7 +38,10 @@ class EmailServiceTest {
     void setUp() {
 
         // Expediteur : no-reply@loup-solitaire.local.
-        emailService = new EmailService(mailSender, ProprietesDeTest.app());
+        // Executor synchrone : sans transaction active, l'envoi part tout de
+        // suite dans le fil du test (le differe apres commit est teste dans
+        // EmailServiceApresCommitTest).
+        emailService = new EmailService(mailSender, ProprietesDeTest.app(), Runnable::run);
 
         mimeMessage = new MimeMessage(
                 Session.getInstance(

@@ -167,6 +167,18 @@
       "name": "app.limitation-debit.regles.renvoi-verification-email.fenetre",
       "type": "java.time.Duration",
       "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : renvois du lien de verification, par email."
+    },
+    {
+      "name": "app.mail.envois-paralleles",
+      "type": "java.lang.Integer",
+      "description": "Nombre d'emails envoyes en parallele par la file d'envoi (OPS-02).",
+      "defaultValue": 2
+    },
+    {
+      "name": "app.mail.file-attente-max",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'emails en attente d'envoi ; au-dela, l'email est abandonne et journalise (OPS-02).",
+      "defaultValue": 500
     }
   ]
 }
