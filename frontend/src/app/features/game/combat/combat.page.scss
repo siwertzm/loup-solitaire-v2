@@ -281,8 +281,19 @@ $beige: #e0d3b4;
 .plaque-joueur {
   right: clamp(8px, 3.25vw, 14px);
   bottom: clamp(10px, 2.1vh, 18px);
-  width: clamp(164px, 46.5vw, 200px);
+  // La largeur suit le contenu (nom long + détail d'HABILETÉ avec plusieurs
+  // bonus) : elle part de la largeur habituelle et s'élargit vers la gauche
+  // (carte ancrée à droite), sans dépasser l'écran.
+  width: max-content;
+  min-width: clamp(164px, 46.5vw, 200px);
+  max-width: calc(100vw - 2 * clamp(8px, 3.25vw, 14px));
   border-radius: 14px 4px 14px 4px;
+
+  .plaque-titre .nom {
+    // Coupe seulement entre deux mots (jamais "Solitair|e"), et seulement si
+    // la carte a atteint sa largeur maximale.
+    overflow-wrap: normal;
+  }
 }
 
 // Ancré dans .plaque-joueur (déjà en position absolue) : les pictos suivent
@@ -425,6 +436,7 @@ $beige: #e0d3b4;
   }
   .hab {
     flex: none;
+    white-space: nowrap;
     font-family: 'Cinzel', serif;
     font-size: clamp(8px, 2.9vw, 10.5px);
     letter-spacing: 0.1em;
