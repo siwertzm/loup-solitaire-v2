@@ -9,7 +9,6 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
-  dateNaissance?: string; // format ISO (yyyy-MM-dd), optionnel
 }
 
 export interface RefreshRequest {
@@ -30,14 +29,12 @@ export interface UtilisateurResponse {
   id: string;
   username: string;
   email: string;
-  dateNaissance?: string;
   emailVerifie: boolean;
   personnages: unknown[]; // affiné quand le modèle Personnage sera défini
 }
 
 export interface UpdateProfilRequest {
   email?: string;
-  dateNaissance?: string;
 }
 
 export interface ErrorResponse {

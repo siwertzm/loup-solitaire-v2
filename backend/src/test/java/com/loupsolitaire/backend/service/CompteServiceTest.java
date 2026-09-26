@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,7 +89,6 @@ class CompteServiceTest {
         request.setUsername("marius");
         request.setEmail("marius@example.com");
         request.setPassword("motdepasse123");
-        request.setDateNaissance(LocalDate.of(1997, 5, 12));
         return request;
     }
 
@@ -111,7 +109,6 @@ class CompteServiceTest {
         assertThat(cree.getValue().getDateCreation()).isNotNull();
         verify(emailVerificationService).envoyerLienDeVerification(cree.getValue());
         assertThat(reponse.username()).isEqualTo("marius");
-        assertThat(reponse.dateNaissance()).isEqualTo(LocalDate.of(1997, 5, 12));
     }
 
     @Test
@@ -306,14 +303,11 @@ class CompteServiceTest {
     }
 
     @Test
-    void modifierProfilMetAJourUniquementLaDateDeNaissance() {
+    void modifierProfilSansAucunChampNeChangeRien() {
         utilisateurConnecteExiste();
-        UpdateProfilRequest request = new UpdateProfilRequest();
-        request.setDateNaissance(LocalDate.of(1997, 5, 12));
 
-        compteService.modifierProfil(connecte, request);
+        compteService.modifierProfil(connecte, new UpdateProfilRequest());
 
-        assertThat(utilisateur.getDateNaissance()).isEqualTo(LocalDate.of(1997, 5, 12));
         assertThat(utilisateur.getUsername()).isEqualTo("marius");
         assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
         verifyNoInteractions(emailVerificationService);

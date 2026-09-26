@@ -1,7 +1,6 @@
 package com.loupsolitaire.backend.model;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -51,10 +50,6 @@ public class Utilisateur {
     public void setEmail(String email) {
         this.email = Emails.normaliser(email);
     }
-
-    // Optionnelle : peut etre completee apres inscription via PUT /auth/me.
-    // Date de naissance plutot qu'un age en dur, qui deviendrait faux avec le temps.
-    private LocalDate dateNaissance;
 
     // Passe a true uniquement apres clic sur le lien de confirmation recu par email.
     // Le login est bloque tant que ce flag est false (voir AuthController.login).
