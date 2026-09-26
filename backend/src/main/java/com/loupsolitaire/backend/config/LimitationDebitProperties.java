@@ -31,7 +31,7 @@ public record LimitationDebitProperties(
         @DefaultValue("true") boolean active,
         @DefaultValue("") String enteteIpClient,
         @DefaultValue("1") @PositiveOrZero int proxiesDeConfiance,
-        @NotNull @Valid Map<String, Regle> regles) {
+        @NotNull Map<String, @Valid Regle> regles) {
 
     /**
      * Au plus {@code limite} evenements par {@code fenetre}, par cle (IP,

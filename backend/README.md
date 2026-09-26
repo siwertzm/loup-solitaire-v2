@@ -69,7 +69,12 @@ lui-même).
 # 1. Démarrer uniquement PostgreSQL
 docker run --name loup-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=loup -p 5432:5432 -d postgres
 
-# 2. Lancer le backend
+# 2. Créer backend/.env (une seule fois) avec au minimum :
+#    DB_PASSWORD=postgres
+#    JWT_SECRET=<valeur générée par : openssl rand -base64 32>
+#    (le backend lit ce fichier tout seul quand il est lancé depuis backend/)
+
+# 3. Lancer le backend
 ./mvnw spring-boot:run       # Linux/Mac
 .\mvnw.cmd spring-boot:run    # Windows PowerShell
 ```
@@ -81,19 +86,27 @@ idempotent : il est ignoré si les données sont déjà présentes.
 
 ## Variables d'environnement
 
-Aucune n'est strictement obligatoire en dev grâce aux valeurs par défaut
-dans `application.properties`, mais **`JWT_SECRET` doit être définie
-explicitement avant tout déploiement réel** (la valeur par défaut est
-volontairement marquée `CHANGE_ME`).
+**`JWT_SECRET` et `DB_PASSWORD` sont obligatoires, en local comme en
+production** : ils n'ont aucune valeur par défaut et l'application refuse
+de démarrer s'ils manquent (SEC-03). Une clé JWT invalide, trop courte ou
+déjà publiée dans le dépôt est aussi refusée au démarrage.
+
+- En local : les mettre dans `backend/.env` (voir `.env.example`), lu à la
+  fois par `docker compose` et par `mvnw spring-boot:run` lancé depuis
+  `backend/`.
+- Sur Render : les définir dans les variables d'environnement du service
+  **avant** de déployer.
+
+Les autres variables ont une valeur par défaut adaptée au dev.
 
 | Variable | Défaut (dev) | Description |
 |---|---|---|
 | `DB_URL` | `jdbc:postgresql://localhost:5432/loup` | URL JDBC PostgreSQL |
 | `DB_USERNAME` | `postgres` | Utilisateur DB |
-| `DB_PASSWORD` | `postgres` | Mot de passe DB — à définir dans un `.env` local, jamais committé |
+| `DB_PASSWORD` | **aucun (obligatoire)** | Mot de passe DB — dans `backend/.env` en local, jamais committé |
 | `DDL_AUTO` | `update` | Stratégie Hibernate (`update` conserve les données ; `create` repart de zéro à chaque démarrage — dev only) |
 | `SHOW_SQL` | `true` | Affiche les requêtes SQL générées dans les logs |
-| `JWT_SECRET` | secret de dev non sécurisé | Clé Base64 (256 bits mini). Générer avec `openssl rand -base64 32` |
+| `JWT_SECRET` | **aucun (obligatoire)** | Clé Base64 (256 bits mini). Générer avec `openssl rand -base64 32` |
 | `JWT_EXPIRATION_MS` | `900000` (15 min) | Durée de validité du token d'accès |
 | `JWT_REFRESH_EXPIRATION_DAYS` | `30` | Durée de validité du refresh token (jours) |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:4200,capacitor://localhost,http://localhost,https://localhost` | Origines autorisées, séparées par des virgules (dev Angular + apps natives Capacitor) |
@@ -109,10 +122,11 @@ capturer les emails de vérification sans les envoyer réellement. En
 production, remplacer `MAIL_*` par un vrai fournisseur (Resend, SendGrid,
 Brevo...) sans toucher au code.
 
-Exemple pour lancer avec une vraie clé en local (Option B) :
+Sans `.env`, on peut aussi passer les variables dans le terminal (Option B) :
 
 ```powershell
 # PowerShell
+$env:DB_PASSWORD = "postgres"
 $env:JWT_SECRET = "<valeur générée par openssl rand -base64 32>"
 .\mvnw.cmd spring-boot:run
 ```

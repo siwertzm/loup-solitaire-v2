@@ -33,6 +33,7 @@ import com.loupsolitaire.backend.model.Utilisateur;
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.datasource.password=",
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "spring.liquibase.enabled=false",
         "jwt.secret=dGVzdF9zZWNyZXRfa2V5X2Zvcl91bml0X3Rlc3RzX29ubHlfMzJi",

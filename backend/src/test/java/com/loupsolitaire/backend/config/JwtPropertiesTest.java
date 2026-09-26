@@ -29,4 +29,13 @@ class JwtPropertiesTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("32 octets");
     }
+
+    @Test
+    void refuseLaCleDeDevPublieeDansLeDepot() {
+        // SEC-03 : ancienne valeur par defaut, Base64 valide et assez longue.
+        assertThatThrownBy(() -> new JwtProperties(
+                "bG91cC1zb2xpdGFpcmUtREVWLU9OTFktc2VjcmV0LW5ldmVyLXVzZS1pbi1wcm9k", 900_000L, 30))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("publiee");
+    }
 }
