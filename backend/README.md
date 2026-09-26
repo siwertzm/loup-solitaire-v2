@@ -294,8 +294,15 @@ Toutes les erreurs suivent le même format JSON (`ErrorResponse`) :
 ## Tests
 
 ```bash
-./mvnw test
+./mvnw test     # tests unitaires et Spring sur H2 : rapides, sans Docker
+./mvnw verify   # + tests d'integration *IT sur un vrai PostgreSQL (Docker doit tourner)
 ```
+
+Les classes `*IT` (package `integration`, QUAL-01) démarrent un PostgreSQL 16
+avec Testcontainers : le schéma est créé par les vraies migrations Liquibase,
+Hibernate le valide (`ddl-auto=validate`) et le catalogue du livre est chargé,
+comme sur Render. La CI (`.github/workflows/sonar.yml`) lance `mvn verify` :
+un test en échec fait échouer le contrôle de la PR.
 
 Tests unitaires présents sur : authentification (JWT, filtre, service
 utilisateur), `PersonnageService`, `InventaireService`, `ObjetService`,

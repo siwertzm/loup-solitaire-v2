@@ -6,10 +6,12 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/sonar.yml'
+  # QUAL-01 : sur les PR, pas de filtre de chemins. Ce job est le controle
+  # obligatoire avant fusion (protection de la branche main) : filtre, il ne
+  # tournerait pas sur une PR sans changement backend, qui resterait alors
+  # bloquee en attente d'un controle jamais lance.
   pull_request:
     branches: [ main ]
-    paths:
-      - 'backend/**'
 
 jobs:
   build-and-analyze:
@@ -46,8 +48,11 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # mvn verify execute les tests (avec couverture JaCoCo instrumentee),
-      # puis le plugin Sonar envoie le rapport + le code a SonarCloud.
+      # mvn verify execute les tests unitaires, puis les tests d'integration
+      # (*IT) sur un vrai PostgreSQL lance par Testcontainers (Docker est
+      # disponible sur ubuntu-latest), avec couverture JaCoCo ; un test en
+      # echec fait echouer le job. Puis le plugin Sonar envoie le rapport +
+      # le code a SonarCloud.
       - name: Build, tests et analyse SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

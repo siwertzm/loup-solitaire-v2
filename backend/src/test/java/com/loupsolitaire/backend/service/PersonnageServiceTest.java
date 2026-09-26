@@ -18,6 +18,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -151,6 +153,20 @@ class PersonnageServiceTest {
         assertThat(personnage.getHabilite()).isEqualTo(17);
         assertThat(personnage.getEnduranceMax()).isEqualTo(23);
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(23);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })
+    void lesCaracteristiquesRestentDansLesBornesDuLivrePourChaqueTirage(int chiffre) {
+        // SEC-01 : quel que soit le chiffre tire par le serveur (0 a 9),
+        // HABILETE est dans [10, 19] et ENDURANCE dans [20, 29].
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
+
+        Personnage personnage = personnageService.creerPersonnage(
+                utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, chiffre, chiffre);
+
+        assertThat(personnage.getHabiliteBase()).isBetween(10, 19);
+        assertThat(personnage.getEnduranceMax()).isBetween(20, 29);
     }
 
     @Test
