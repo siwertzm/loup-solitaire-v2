@@ -232,11 +232,17 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     const personnage = this.personnage();
     if (!personnage?.armeMaitrisee) return null;
 
+    // Comparaison par NOM, comme l'inventaire et le chapitre : le backend
+    // (PersonnageMapper) envoie armeMaitrisee sous forme de nom ("Masse
+    // d'Armes"), pas d'identifiant ("masse"). L'ancienne comparaison par
+    // objetId ne marchait que si le nom en minuscules egalait l'identifiant
+    // (Lance, Hache...), jamais pour Epee, Masse d'Armes, Marteau de Guerre
+    // ni Baton.
     const armePossedee = personnage.inventaire.find(
       (item) =>
         item.categorie === 'ARME' &&
         item.quantite > 0 &&
-        item.objetId.toLowerCase() === personnage.armeMaitrisee?.toLowerCase(),
+        item.nom === personnage.armeMaitrisee,
     );
 
     return armePossedee?.nom ?? null;
@@ -585,13 +591,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
             this.actionEnCours.set(false);
           }, 850);
         } else {
-          if (action === 'FUITE') {
-            this.combat.set(c);
-            this.combatEnAttente = null;
-            this.jouerFile(messages);
-          } else {
-            afficherResultat();
-          }
+          // FUITE comprise (REGLE-03) : la riposte met à jour la barre
+          // d'ENDURANCE du joueur au bon moment, comme pour OBJET.
+          afficherResultat();
         }
       },
       error: (err) => {
@@ -621,11 +623,11 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     }
 
     if (action === 'FUITE') {
-      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_FUITE') });
-      return messages;
-    }
-
-    if (action === 'ATTAQUE') {
+      // REGLE-03 : l'ennemi porte un dernier coup pendant la fuite (bloc
+      // "riposte" ci-dessous) ; le message de fuite ne vient qu'ensuite, et
+      // seulement si ce coup n'a pas été fatal.
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_TENTE_FUITE', { nom: this.nomJoueur() }) });
+    } else if (action === 'ATTAQUE') {
       messages.push({
         txt: this.translate.instant('COMBAT_PAGE.MSG_PORTE_ATTAQUE', { nom: this.nomJoueur() }),
         de: { valeur: tour.tirageAttaque ?? 0 },
@@ -715,7 +717,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       });
     }
 
-    if (combat.statut === 'DEFAITE') {
+    if (combat.statut === 'FUITE') {
+      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_FUITE') });
+    } else if (combat.statut === 'DEFAITE') {
       messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_VAINCU'), defaite: true });
     } else if (combat.statut === 'INTERROMPU') {
       messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_INTERROMPU') });

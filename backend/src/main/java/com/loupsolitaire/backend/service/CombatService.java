@@ -262,9 +262,24 @@ public class CombatService {
             throw new IllegalArgumentException(
                     "La fuite n'est pas encore possible (seuil d'assauts non atteint pour ce combat)");
         }
-        // Reussie a coup sur des qu'elle est proposee ; aucune riposte.
-        combat.setStatut(StatutCombat.FUITE);
-        return new ResultatTour("FUITE", null, null, null, null, null, null, null, null, null, null);
+        // REGLE-03 : comme dans le livre, l'assaut de la fuite est joue et
+        // seul Loup Solitaire subit des degats (l'ennemi en inflige, n'en
+        // recoit pas). La fuite reussit sauf si ce dernier coup le tue :
+        // appliquerDegatsAuJoueur passe alors le combat en DEFAITE.
+        CombatEnnemi ennemiActif = ennemiActifRequis(combat);
+        Ennemi ennemi = ennemiActif.getEnnemi();
+        combat.setAssautsLivres(combat.getAssautsLivres() + 1);
+
+        int rapportRiposte = habiliteEffective(personnage, ennemi, chapitre, combat) - ennemi.getHabilite();
+        int tirageRiposte = tableDeHasardService.tirerChiffre();
+        int degatsSubis = tableCombatService.degatsSubis(rapportRiposte, tirageRiposte);
+        appliquerDegatsAuJoueur(personnage, combat, degatsSubis);
+
+        if (combat.getStatut() == StatutCombat.EN_COURS) {
+            combat.setStatut(StatutCombat.FUITE);
+        }
+        return new ResultatTour("FUITE", null, null, null,
+                rapportRiposte, tirageRiposte, degatsSubis, degatsSubis, null, null, null);
     }
 
     // Vrai si au moins un Lien du chapitre porte une condition FUITE dont

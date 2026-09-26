@@ -569,6 +569,86 @@ class PersonnageServiceTest {
         assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
     }
 
+    // Lien de fuite a 0 assaut (chapitres 112, 180) : eviter le combat
+
+    private com.loupsolitaire.backend.model.Cond fuiteAZero() {
+        com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();
+        cond.setType(com.loupsolitaire.backend.model.enums.TypeCondition.FUITE);
+        cond.setValeur("0");
+        return cond;
+    }
+
+    @Test
+    void autoriseDEviterLeCombatParLeLienDeFuiteAZeroAvantToutCombat() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.empty());
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
+    }
+
+    @Test
+    void eviterLeCombatClotEnFuiteUnCombatOuvertSansAssaut() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.EN_COURS);
+        combat.setAssautsLivres(0);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.of(combat));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.FUITE);
+    }
+
+    @Test
+    void refuseDEviterLeCombatUneFoisUnAssautJoue() {
+        // Le combat est engage : il faut fuir depuis l'ecran de combat, et
+        // subir la riposte (REGLE-03).
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        chapitre0.setCombat(true);
+
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        Combat combat = new Combat();
+        combat.setStatut(StatutCombat.EN_COURS);
+        combat.setAssautsLivres(1);
+        when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
+                .thenReturn(Optional.of(combat));
+
+        assertThatThrownBy(() -> personnageService.avancerVersChapitre(p, 1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("pas termine");
+
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.EN_COURS);
+        assertThat(p.getChapitreActuel()).isEqualTo(chapitre0);
+    }
+
     // =========================================================
     // Arrivee sur un chapitre de combat : un ancien combat resolu est
     // supprime pour permettre un affrontement entierement neuf
