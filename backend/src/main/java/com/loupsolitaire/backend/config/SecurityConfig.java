@@ -43,6 +43,10 @@ public class SecurityConfig {
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
                         // le conteneur doit pouvoir interroger ce endpoint sans jeton.
                         .requestMatchers("/actuator/health").permitAll()
+                        // RGPD-04 : politique de confidentialite et CGU, pages
+                        // statiques publiques (liens depuis l'app, les emails et
+                        // les stores).
+                        .requestMatchers("/legal/**").permitAll()
                         // OPS-04 : 404 tant que app.diagnostic.erreur-test=false.
                         .requestMatchers("/diagnostic/erreur-test").permitAll()
                         // Page d'erreur de Spring Boot : sans cette regle, une erreur

@@ -47,7 +47,12 @@
       "BOUTON_ALLER_LOGIN": "Aller à la connexion",
       "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirmer le mot de passe",
       "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Retapez votre mot de passe",
-      "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas."
+      "ERREUR_PASSWORDS_DIFFERENTS": "Les mots de passe ne correspondent pas.",
+      "MENTION_LEGALE_1": "En créant un compte, vous acceptez les",
+      "MENTION_LEGALE_CGU": "conditions d'utilisation",
+      "MENTION_LEGALE_2": "et reconnaissez avoir lu la",
+      "MENTION_LEGALE_CONFIDENTIALITE": "politique de confidentialité",
+      "MENTION_LEGALE_FIN": "."
     },
     "FORGOT_PASSWORD": {
       "TITRE": "Mot de passe oublié",
@@ -138,7 +143,9 @@
     "SUPPRESSION_ANNULER": "Annuler",
     "SUPPRESSION_CONFIRMER": "Supprimer définitivement",
     "ERREUR_SUPPRESSION_MDP": "Mot de passe incorrect",
-    "ERREUR_SUPPRESSION": "La suppression du compte a échoué, réessayez plus tard"
+    "ERREUR_SUPPRESSION": "La suppression du compte a échoué, réessayez plus tard",
+    "CONFIDENTIALITE": "Politique de confidentialité",
+    "CGU": "Conditions d'utilisation"
   },
   "PROFIL_EDITION": {
     "RETOUR": "‹ PROFIL",

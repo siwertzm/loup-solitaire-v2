@@ -1,0 +1,41 @@
+/* RGPD-04 : pages legales publiques (servies par le backend). */
+:root {
+  --fond: #f4ecd8;
+  --texte: #2e281e;
+  --doux: #6b604c;
+  --trait: #d8caa6;
+  --accent: #8a4b22;
+  --a-completer: #fde68a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #232a1c;
+    --texte: #ece2c8;
+    --doux: #b5aa8e;
+    --trait: #463d27;
+    --accent: #d9a94a;
+    --a-completer: #7c5e10;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font: 17px/1.6 Georgia, "Times New Roman", serif;
+}
+main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+header { border-bottom: 1px solid var(--trait); margin-bottom: 24px; }
+.sur-titre { color: var(--doux); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; }
+h1 { font-size: 28px; line-height: 1.25; margin: 6px 0 8px; }
+.maj { color: var(--doux); font-size: 14px; margin: 0 0 16px; }
+h2 { font-size: 20px; margin: 32px 0 8px; }
+h3 { font-size: 17px; margin: 20px 0 4px; }
+a { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+th, td { border: 1px solid var(--trait); padding: 8px; text-align: left; vertical-align: top; }
+th { font-weight: 600; }
+.defiler { overflow-x: auto; }
+.a-completer { background: var(--a-completer); padding: 0 4px; border-radius: 3px; }
+nav.autres { border-top: 1px solid var(--trait); margin-top: 40px; padding-top: 16px; font-size: 15px; }
+nav.autres a { margin-right: 16px; }

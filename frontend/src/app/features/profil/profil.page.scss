@@ -233,3 +233,17 @@ ion-content.profil {
     }
   }
 }
+
+// RGPD-04
+.liens-legaux {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 28px;
+  font-size: 13px;
+
+  a {
+    color: rgba(236, 226, 200, 0.58);
+  }
+}

@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MoiResponse } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
 import { AuthService } from '../../core/services/auth.service';
+import { LIENS_LEGAUX } from '../../core/liens-legaux';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -119,6 +120,9 @@ export class ProfilPage implements ViewWillEnter {
       },
     });
   }
+
+  // RGPD-04 : pages légales publiques (pied du profil).
+  readonly liensLegaux = LIENS_LEGAUX;
 
   private static readonly URL_FEEDBACK = 'https://forms.gle/vgSVnrKR1t8aiucr9';
 

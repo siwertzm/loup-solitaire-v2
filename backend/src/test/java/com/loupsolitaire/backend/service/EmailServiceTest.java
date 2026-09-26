@@ -105,6 +105,39 @@ class EmailServiceTest {
     }
 
     @Test
+    void chaqueEmailContientLeLienVersLaPolitiqueDeConfidentialite()
+            throws Exception {
+
+        // RGPD-04 : lien en pied de mail (HTML et texte brut).
+        String lien = "http://localhost:8080/legal/confidentialite.html";
+
+        emailService.envoyerEmailVerification(
+                "marius@example.com",
+                "http://localhost:8080/auth/verify-email?token=abc123"
+        );
+        mimeMessage.saveChanges();
+        String verification = extraireTexte(mimeMessage);
+
+        mimeMessage = new MimeMessage(Session.getInstance(new Properties()));
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        emailService.envoyerCodeReinitialisationMotDePasse(
+                "marius@example.com",
+                "123456",
+                15
+        );
+        mimeMessage.saveChanges();
+        String reinitialisation = extraireTexte(mimeMessage);
+
+        for (String contenu : new String[] { verification, reinitialisation }) {
+            assertThat(contenu)
+                    .contains("href=\"" + lien + "\"")
+                    .contains("Politique de confidentialité : " + lien)
+                    .doesNotContain("{{CONFIDENTIALITE}}")
+                    .doesNotContain("100%%");
+        }
+    }
+
+    @Test
     void unEchecSmtpNePropagePasD_exception() {
 
         doThrow(
