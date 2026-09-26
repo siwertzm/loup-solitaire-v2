@@ -1,22 +1,50 @@
 package com.loupsolitaire.backend.service;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.loupsolitaire.backend.config.AppProperties;
+import com.loupsolitaire.backend.config.EnvoiEmailsConfig;
 
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Construction et envoi des emails.
+ *
+ * OPS-02 : le message est construit tout de suite, mais l'envoi SMTP part
+ * APRES la validation de la transaction en cours, et hors du fil de la
+ * requete (file EnvoiEmailsConfig) :
+ * - si la transaction est annulee, aucun email ne part avec un lien ou un
+ *   code qui n'existe pas en base ;
+ * - un SMTP lent ne bloque plus la reponse HTTP ;
+ * - un echec SMTP est journalise, jamais propage (comportement inchange).
+ * Sans transaction active, l'envoi est simplement mis en file.
+ */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
+    private final Executor envoiEmails;
+
+    public EmailService(
+            JavaMailSender mailSender,
+            AppProperties appProperties,
+            @Qualifier(EnvoiEmailsConfig.EXECUTOR) Executor envoiEmails
+    ) {
+        this.mailSender = mailSender;
+        this.appProperties = appProperties;
+        this.envoiEmails = envoiEmails;
+    }
 
     /**
      * Email envoyé après la création du compte.
@@ -324,12 +352,12 @@ public class EmailService {
 
             helper.setText(texteBrut, html);
 
-            mailSender.send(message);
+            envoyerApresCommit(message, "verification", destinataire);
 
         } catch (Exception e) {
 
             log.error(
-                    "Echec de l'envoi de l'email de verification a {} : {}",
+                    "Echec de la preparation de l'email de verification a {} : {}",
                     destinataire,
                     e.getMessage()
             );
@@ -616,15 +644,57 @@ public class EmailService {
 
             helper.setText(texteBrut, html);
 
-            mailSender.send(message);
+            envoyerApresCommit(message, "reinitialisation", destinataire);
 
         } catch (Exception e) {
 
             log.error(
-                    "Echec de l'envoi de l'email de reinitialisation a {} : {}",
+                    "Echec de la preparation de l'email de reinitialisation a {} : {}",
                     destinataire,
                     e.getMessage()
             );
+        }
+    }
+
+    /**
+     * OPS-02 : envoi apres validation de la transaction, dans la file
+     * d'envoi. Une transaction annulee n'envoie rien.
+     */
+    private void envoyerApresCommit(MimeMessage message, String type, String destinataire) {
+
+        Runnable envoi = () -> {
+            try {
+                mailSender.send(message);
+            } catch (Exception e) {
+                log.error(
+                        "Echec de l'envoi de l'email de {} a {} : {}",
+                        type,
+                        destinataire,
+                        e.getMessage()
+                );
+            }
+        };
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    mettreEnFile(envoi, type, destinataire);
+                }
+            });
+        } else {
+            mettreEnFile(envoi, type, destinataire);
+        }
+    }
+
+    private void mettreEnFile(Runnable envoi, String type, String destinataire) {
+        try {
+            envoiEmails.execute(envoi);
+        } catch (RejectedExecutionException e) {
+            // File pleine ou application en cours d'arret : l'email est
+            // perdu, mais la requete du joueur ne doit pas echouer (il peut
+            // redemander un lien ou un code).
+            log.error("File d'envoi pleine : email de {} a {} abandonne", type, destinataire);
         }
     }
 
