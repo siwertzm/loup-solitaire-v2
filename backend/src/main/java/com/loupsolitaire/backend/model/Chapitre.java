@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,12 +48,15 @@ public class Chapitre {
 
     // Catalogue partage : plusieurs chapitres peuvent faire combattre le
     // meme ennemi (ex. plusieurs "Glok" identiques a differents endroits).
+    // REGLE-08 : l'ordre de la liste est l'ordre d'affrontement (colonne
+    // chapitre_ennemi.ordre, maintenue par Hibernate).
     @ManyToMany
     @JoinTable(
         name = "chapitre_ennemi",
         joinColumns = @JoinColumn(name = "chapitre_id"),
         inverseJoinColumns = @JoinColumn(name = "ennemi_id")
     )
+    @OrderColumn(name = "ordre")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Ennemi> ennemis = new ArrayList<>();
 

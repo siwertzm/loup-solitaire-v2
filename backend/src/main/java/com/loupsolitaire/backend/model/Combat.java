@@ -19,7 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,8 +55,11 @@ public class Combat {
     @Column(nullable = false)
     private Integer chapitreId;
 
+    // REGLE-08 : triee par CombatEnnemi.ordre (0 = premier affronte), fixe
+    // a la creation du combat. @OrderBy et non @OrderColumn : sur le cote
+    // inverse (mappedBy), @OrderColumn est deconseille par Hibernate 7.
     @OneToMany(mappedBy = "combat", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderColumn(name = "ordre_liste")
+    @OrderBy("ordre ASC")
     private List<CombatEnnemi> ennemis = new ArrayList<>();
 
     // Index dans "ennemis" de l'adversaire actuellement affronte. Avance

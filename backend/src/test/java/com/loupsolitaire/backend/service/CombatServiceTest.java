@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -357,7 +358,7 @@ class CombatServiceTest {
         puissancePsychique.setId(IdDiscipline.PUISSANCE_PSYCHIQUE);
 
         Ennemi ennemi = creerEnnemi("gluatre", 5, 10);
-        ennemi.setResistances(List.of(puissancePsychique));
+        ennemi.setResistances(Set.of(puissancePsychique));
         Chapitre chapitre = creerChapitreCombat(17, List.of(ennemi), null);
         Personnage personnage = creerPersonnage(10, 20, chapitre);
         personnage.setDisciplines(List.of(puissancePsychique));

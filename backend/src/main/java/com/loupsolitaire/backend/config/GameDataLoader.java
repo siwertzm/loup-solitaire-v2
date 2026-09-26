@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.config;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,7 +132,7 @@ public class GameDataLoader implements ApplicationRunner {
         ennemi.setEndurance(json.getEndurance());
 
         if (json.getResistance() != null) {
-            ennemi.setResistances(disciplinesEnnemi(json.getId(), json.getResistance()));
+            ennemi.setResistances(new LinkedHashSet<>(disciplinesEnnemi(json.getId(), json.getResistance())));
         }
         if (json.getDisciplines() != null) {
             ennemi.setDisciplines(new HashSet<>(disciplinesEnnemi(json.getId(), json.getDisciplines())));
