@@ -12,6 +12,7 @@ import {
 } from '@ionic/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { LIENS_LEGAUX } from '../../../core/liens-legaux';
 
 @Component({
   selector: 'app-register',
@@ -37,6 +38,8 @@ export class RegisterPage {
   readonly enCours = signal(false);
   readonly erreur = signal<string | null>(null);
   readonly succes = signal(false);
+  // RGPD-04 : CGU et politique de confidentialité, sous le formulaire.
+  readonly liensLegaux = LIENS_LEGAUX;
 
   readonly form = this.fb.nonNullable.group({
     username: [

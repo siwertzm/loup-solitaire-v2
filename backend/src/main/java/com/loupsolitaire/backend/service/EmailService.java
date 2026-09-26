@@ -74,117 +74,13 @@ public class EmailService {
                     lienConfirmation + "\n\n" +
                     "Ce lien est valable pendant 24 heures.\n\n" +
                     "Si tu n'es pas à l'origine de cette inscription, " +
-                    "tu peux simplement ignorer cet email.";
+                    "tu peux simplement ignorer cet email.\n\n" +
+                    "Politique de confidentialité : " + lienConfidentialite();
 
-            String html = """
-                    <!doctype html>
-                    <html lang="fr">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Loup Solitaire</title>
-                    </head>
-
-                    <body style="
-                        margin:0;
-                        padding:0;
-                        background-color:#2c3323;
-                        font-family:Georgia, 'Times New Roman', serif;
-                        color:#ece2c8;
-                    ">
-
-                    <table
-                        role="presentation"
-                        width="100%%"
-                        cellspacing="0"
-                        cellpadding="0"
-                        border="0"
-                        style="background-color:#2c3323;"
-                    >
-                        <tr>
-                            <td
-                                align="center"
-                                style="padding:40px 18px;"
-                            >
-
-                                <table
-                                    role="presentation"
-                                    width="100%%"
-                                    cellspacing="0"
-                                    cellpadding="0"
-                                    border="0"
-                                    style="
-                                        max-width:560px;
-                                        background-color:#171c13;
-                                        border:1px solid #66552f;
-                                        border-radius:18px;
-                                        overflow:hidden;
-                                    "
-                                >
-
-                                    <!-- HEADER -->
-                                    <tr>
-                                        <td
-                                            align="center"
-                                            style="
-                                                padding:38px 30px 28px 30px;
-                                                border-bottom:1px solid #463d27;
-                                            "
-                                        >
-
-                                            <div style="
-                                                color:#c2703a;
-                                                font-family:Georgia, 'Times New Roman', serif;
-                                                font-size:11px;
-                                                letter-spacing:4px;
-                                                text-transform:uppercase;
-                                                margin-bottom:10px;
-                                            ">
-                                                Une aventure légendaire
-                                            </div>
-
-                                            <div style="
-                                                color:#ece2c8;
-                                                font-family:Georgia, 'Times New Roman', serif;
-                                                font-size:30px;
-                                                line-height:1.1;
-                                                font-weight:bold;
-                                                letter-spacing:2px;
-                                                text-transform:uppercase;
-                                            ">
-                                                Loup Solitaire
-                                            </div>
-
-                                            <div style="
-                                                color:#a9a18c;
-                                                font-size:15px;
-                                                font-style:italic;
-                                                margin-top:9px;
-                                            ">
-                                                Les Livres dont vous êtes le héros
-                                            </div>
-
-                                        </td>
-                                    </tr>
-
-                                    <!-- CONTENU -->
-                                    <tr>
-                                        <td style="padding:34px 34px 18px 34px;">
-
-                                            <div
-                                                align="center"
-                                                style="
-                                                    color:#d9a94a;
-                                                    font-size:18px;
-                                                    font-weight:bold;
-                                                    letter-spacing:2px;
-                                                    text-transform:uppercase;
-                                                    margin-bottom:20px;
-                                                "
-                                            >
-                                                Ton aventure va commencer
-                                            </div>
-
+            String html = miseEnPage(
+                    "34px 34px 18px 34px",
+                    "Ton aventure va commencer",
+                    """
                                             <p style="
                                                 margin:0 0 17px 0;
                                                 color:#ece2c8;
@@ -218,7 +114,7 @@ public class EmailService {
                                             <!-- BOUTON -->
                                             <table
                                                 role="presentation"
-                                                width="100%%"
+                                                width="100%"
                                                 cellspacing="0"
                                                 cellpadding="0"
                                                 border="0"
@@ -296,58 +192,9 @@ public class EmailService {
                                                 </p>
 
                                             </div>
-
-                                        </td>
-                                    </tr>
-
-                                    <!-- FOOTER -->
-                                    <tr>
-                                        <td
-                                            align="center"
-                                            style="
-                                                padding:22px 30px 28px 30px;
-                                                border-top:1px solid #463d27;
-                                            "
-                                        >
-
-                                            <div style="
-                                                color:#d9a94a;
-                                                font-size:22px;
-                                                margin-bottom:9px;
-                                            ">
-                                                ◆
-                                            </div>
-
-                                            <p style="
-                                                margin:0 0 8px 0;
-                                                color:#8f8977;
-                                                font-size:12px;
-                                                line-height:1.5;
-                                            ">
-                                                Si tu n'es pas à l'origine de cette
-                                                inscription, ignore simplement cet email.
-                                            </p>
-
-                                            <p style="
-                                                margin:0;
-                                                color:#605d51;
-                                                font-size:11px;
-                                            ">
-                                                Loup Solitaire
-                                            </p>
-
-                                        </td>
-                                    </tr>
-
-                                </table>
-
-                            </td>
-                        </tr>
-                    </table>
-
-                    </body>
-                    </html>
-                    """
+                    """,
+                    "Si tu n'es pas à l'origine de cette inscription, ignore simplement cet email."
+            )
                     .replace("{{LIEN}}", lienSecurise);
 
             helper.setText(texteBrut, html);
@@ -395,115 +242,13 @@ public class EmailService {
                     expirationMinutes +
                     " minutes.\n\n" +
                     "Si tu n'es pas à l'origine de cette demande, " +
-                    "ignore simplement cet email.";
+                    "ignore simplement cet email.\n\n" +
+                    "Politique de confidentialité : " + lienConfidentialite();
 
-            String html = """
-                    <!doctype html>
-                    <html lang="fr">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Loup Solitaire</title>
-                    </head>
-
-                    <body style="
-                        margin:0;
-                        padding:0;
-                        background-color:#2c3323;
-                        font-family:Georgia, 'Times New Roman', serif;
-                        color:#ece2c8;
-                    ">
-
-                    <table
-                        role="presentation"
-                        width="100%%"
-                        cellspacing="0"
-                        cellpadding="0"
-                        border="0"
-                        style="background-color:#2c3323;"
-                    >
-                        <tr>
-                            <td
-                                align="center"
-                                style="padding:40px 18px;"
-                            >
-
-                                <table
-                                    role="presentation"
-                                    width="100%%"
-                                    cellspacing="0"
-                                    cellpadding="0"
-                                    border="0"
-                                    style="
-                                        max-width:560px;
-                                        background-color:#171c13;
-                                        border:1px solid #66552f;
-                                        border-radius:18px;
-                                        overflow:hidden;
-                                    "
-                                >
-
-                                    <!-- HEADER -->
-                                    <tr>
-                                        <td
-                                            align="center"
-                                            style="
-                                                padding:38px 30px 28px 30px;
-                                                border-bottom:1px solid #463d27;
-                                            "
-                                        >
-
-                                            <div style="
-                                                color:#c2703a;
-                                                font-size:11px;
-                                                letter-spacing:4px;
-                                                text-transform:uppercase;
-                                                margin-bottom:10px;
-                                            ">
-                                                Une aventure légendaire
-                                            </div>
-
-                                            <div style="
-                                                color:#ece2c8;
-                                                font-size:30px;
-                                                line-height:1.1;
-                                                font-weight:bold;
-                                                letter-spacing:2px;
-                                                text-transform:uppercase;
-                                            ">
-                                                Loup Solitaire
-                                            </div>
-
-                                            <div style="
-                                                color:#a9a18c;
-                                                font-size:15px;
-                                                font-style:italic;
-                                                margin-top:9px;
-                                            ">
-                                                Les Livres dont vous êtes le héros
-                                            </div>
-
-                                        </td>
-                                    </tr>
-
-                                    <!-- CONTENU -->
-                                    <tr>
-                                        <td style="padding:34px;">
-
-                                            <div
-                                                align="center"
-                                                style="
-                                                    color:#d9a94a;
-                                                    font-size:18px;
-                                                    font-weight:bold;
-                                                    letter-spacing:2px;
-                                                    text-transform:uppercase;
-                                                    margin-bottom:20px;
-                                                "
-                                            >
-                                                Code de vérification
-                                            </div>
-
+            String html = miseEnPage(
+                    "34px",
+                    "Code de vérification",
+                    """
                                             <p style="
                                                 margin:0 0 17px 0;
                                                 color:#ece2c8;
@@ -527,7 +272,7 @@ public class EmailService {
                                             <!-- CODE -->
                                             <table
                                                 role="presentation"
-                                                width="100%%"
+                                                width="100%"
                                                 cellspacing="0"
                                                 cellpadding="0"
                                                 border="0"
@@ -583,59 +328,9 @@ public class EmailService {
                                                 Ne communique jamais ce code à
                                                 une autre personne.
                                             </p>
-
-                                        </td>
-                                    </tr>
-
-                                    <!-- FOOTER -->
-                                    <tr>
-                                        <td
-                                            align="center"
-                                            style="
-                                                padding:22px 30px 28px 30px;
-                                                border-top:1px solid #463d27;
-                                            "
-                                        >
-
-                                            <div style="
-                                                color:#d9a94a;
-                                                font-size:22px;
-                                                margin-bottom:9px;
-                                            ">
-                                                ◆
-                                            </div>
-
-                                            <p style="
-                                                margin:0 0 8px 0;
-                                                color:#8f8977;
-                                                font-size:12px;
-                                                line-height:1.5;
-                                            ">
-                                                Si tu n'es pas à l'origine de cette
-                                                demande, ignore simplement cet email.
-                                                Ton mot de passe ne sera pas modifié.
-                                            </p>
-
-                                            <p style="
-                                                margin:0;
-                                                color:#605d51;
-                                                font-size:11px;
-                                            ">
-                                                Loup Solitaire
-                                            </p>
-
-                                        </td>
-                                    </tr>
-
-                                </table>
-
-                            </td>
-                        </tr>
-                    </table>
-
-                    </body>
-                    </html>
-                    """
+                    """,
+                    "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email. Ton mot de passe ne sera pas modifié."
+            )
                     .replace("{{CODE}}", codeSecurise)
                     .replace(
                             "{{EXPIRATION}}",
@@ -701,6 +396,200 @@ public class EmailService {
     /**
      * Evite d'injecter directement une valeur dynamique dans le HTML.
      */
+    /**
+     * Mise en page commune a tous les emails (en-tete, cadre, pied avec le
+     * lien vers la politique de confidentialite). Chaque email ne fournit
+     * que sa marge, son titre, son contenu et la phrase du pied.
+     */
+    private static final String GABARIT = """
+            <!doctype html>
+            <html lang="fr">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Loup Solitaire</title>
+            </head>
+
+            <body style="
+                margin:0;
+                padding:0;
+                background-color:#2c3323;
+                font-family:Georgia, 'Times New Roman', serif;
+                color:#ece2c8;
+            ">
+
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="background-color:#2c3323;"
+            >
+                <tr>
+                    <td
+                        align="center"
+                        style="padding:40px 18px;"
+                    >
+
+                        <table
+                            role="presentation"
+                            width="100%"
+                            cellspacing="0"
+                            cellpadding="0"
+                            border="0"
+                            style="
+                                max-width:560px;
+                                background-color:#171c13;
+                                border:1px solid #66552f;
+                                border-radius:18px;
+                                overflow:hidden;
+                            "
+                        >
+
+                            <!-- HEADER -->
+                            <tr>
+                                <td
+                                    align="center"
+                                    style="
+                                        padding:38px 30px 28px 30px;
+                                        border-bottom:1px solid #463d27;
+                                    "
+                                >
+
+                                    <div style="
+                                        color:#c2703a;
+                                        font-family:Georgia, 'Times New Roman', serif;
+                                        font-size:11px;
+                                        letter-spacing:4px;
+                                        text-transform:uppercase;
+                                        margin-bottom:10px;
+                                    ">
+                                        Une aventure légendaire
+                                    </div>
+
+                                    <div style="
+                                        color:#ece2c8;
+                                        font-family:Georgia, 'Times New Roman', serif;
+                                        font-size:30px;
+                                        line-height:1.1;
+                                        font-weight:bold;
+                                        letter-spacing:2px;
+                                        text-transform:uppercase;
+                                    ">
+                                        Loup Solitaire
+                                    </div>
+
+                                    <div style="
+                                        color:#a9a18c;
+                                        font-size:15px;
+                                        font-style:italic;
+                                        margin-top:9px;
+                                    ">
+                                        Les Livres dont vous êtes le héros
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                            <!-- CONTENU -->
+                            <tr>
+                                <td style="padding:{{PADDING}};">
+
+                                    <div
+                                        align="center"
+                                        style="
+                                            color:#d9a94a;
+                                            font-size:18px;
+                                            font-weight:bold;
+                                            letter-spacing:2px;
+                                            text-transform:uppercase;
+                                            margin-bottom:20px;
+                                        "
+                                    >
+                                        {{TITRE}}
+                                    </div>
+
+                            {{CONTENU}}
+
+                                </td>
+                            </tr>
+
+                            <!-- FOOTER -->
+                            <tr>
+                                <td
+                                    align="center"
+                                    style="
+                                        padding:22px 30px 28px 30px;
+                                        border-top:1px solid #463d27;
+                                    "
+                                >
+
+                                    <div style="
+                                        color:#d9a94a;
+                                        font-size:22px;
+                                        margin-bottom:9px;
+                                    ">
+                                        ◆
+                                    </div>
+
+                                    <p style="
+                                        margin:0 0 8px 0;
+                                        color:#8f8977;
+                                        font-size:12px;
+                                        line-height:1.5;
+                                    ">
+                                        {{PIED}}
+                                    </p>
+
+                                    <p style="
+                                        margin:0 0 8px 0;
+                                        font-size:11px;
+                                    ">
+                                        <a
+                                            href="{{CONFIDENTIALITE}}"
+                                            style="color:#8f8977;"
+                                        >Politique de confidentialité</a>
+                                    </p>
+
+                                    <p style="
+                                        margin:0;
+                                        color:#605d51;
+                                        font-size:11px;
+                                    ">
+                                        Loup Solitaire
+                                    </p>
+
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+
+            </body>
+            </html>
+            """;
+
+    private String miseEnPage(String marge, String titre, String contenu, String messagePied) {
+        return GABARIT
+                .replace("{{PADDING}}", marge)
+                .replace("{{TITRE}}", titre)
+                .replace("{{CONTENU}}", contenu)
+                .replace("{{PIED}}", messagePied)
+                .replace("{{CONFIDENTIALITE}}", echapperHtml(lienConfidentialite()));
+    }
+
+    /**
+     * RGPD-04 : lien vers la politique de confidentialite, en pied de chaque
+     * email (page statique servie par le backend, voir static/legal).
+     */
+    private String lienConfidentialite() {
+        return appProperties.baseUrl() + "/legal/confidentialite.html";
+    }
+
     private String echapperHtml(String valeur) {
 
         if (valeur == null) {

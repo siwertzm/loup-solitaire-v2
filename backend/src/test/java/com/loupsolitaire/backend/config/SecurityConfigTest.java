@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -126,6 +127,19 @@ class SecurityConfigTest {
     @Test
     void leHealthcheckEstPublic() throws Exception {
         mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void lesPagesLegalesSontPubliques() throws Exception {
+        // RGPD-04 : liens depuis l'app et les emails, sans connexion.
+        mockMvc.perform(get("/legal/confidentialite.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
+        mockMvc.perform(get("/legal/cgu.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
+        mockMvc.perform(get("/legal/legal.css"))
                 .andExpect(status().isOk());
     }
 

@@ -172,6 +172,19 @@ form {
   }
 }
 
+// RGPD-04
+.mentions-legales {
+  margin: 16px 0 0;
+  color: rgba(236, 226, 200, 0.58);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+
+  a {
+    color: $or;
+  }
+}
+
 .retour-login {
   color: rgba(236, 226, 200, 0.58);
   font-size: 15px;

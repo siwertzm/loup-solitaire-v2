@@ -64,6 +64,14 @@
           </div>
         }
       </div>
+
+      <!-- RGPD-04 -->
+      <nav class="liens-legaux">
+        <a [href]="liensLegaux.confidentialite" target="_blank" rel="noopener">{{
+          'PROFIL.CONFIDENTIALITE' | translate
+        }}</a>
+        <a [href]="liensLegaux.cgu" target="_blank" rel="noopener">{{ 'PROFIL.CGU' | translate }}</a>
+      </nav>
     }
   </div>
 </ion-content>

@@ -110,6 +110,17 @@
           </ion-button>
         </form>
 
+        <p class="mentions-legales">
+          {{ 'AUTH.REGISTER.MENTION_LEGALE_1' | translate }}
+          <a [href]="liensLegaux.cgu" target="_blank" rel="noopener">{{
+            'AUTH.REGISTER.MENTION_LEGALE_CGU' | translate
+          }}</a>
+          {{ 'AUTH.REGISTER.MENTION_LEGALE_2' | translate }}
+          <a [href]="liensLegaux.confidentialite" target="_blank" rel="noopener">{{
+            'AUTH.REGISTER.MENTION_LEGALE_CONFIDENTIALITE' | translate
+          }}</a>{{ 'AUTH.REGISTER.MENTION_LEGALE_FIN' | translate }}
+        </p>
+
         <div class="separateur">
           <span>{{ 'AUTH.REGISTER.SEPARATEUR_OU' | translate }}</span>
         </div>

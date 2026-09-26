@@ -12,6 +12,17 @@
 @import '@ionic/angular/css/text-transformation.css';
 @import '@ionic/angular/css/flex-utils.css';
 
+/* Polices embarquees dans l'app (RGPD-04) : plus aucun appel a Google
+ * Fonts, donc l'adresse IP des joueurs n'est pas transmise a Google, et
+ * les polices marchent hors ligne. Memes graisses qu'avant, sans italique
+ * (comme avec Google Fonts, l'italique reste simule par le navigateur). */
+@import '@fontsource/cinzel/500.css';
+@import '@fontsource/cinzel/600.css';
+@import '@fontsource/cinzel/700.css';
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/eb-garamond/600.css';
+
 /* Styles globaux de l'app */
 
 /* La safe-area du haut (encoche / Dynamic Island / barre de statut) est
