@@ -28,7 +28,10 @@ public final class ContexteConditions {
     private final Supplier<Optional<Combat>> chargeurCombat;
 
     private Map<String, Integer> quantites;
-    private Optional<Combat> combat;
+    // Pas de champ Optional (Sonar java:S2789) : un booleen dit si le combat
+    // a deja ete lu, et combat vaut null s'il n'y en a pas.
+    private boolean combatCharge;
+    private Combat combat;
 
     ContexteConditions(Supplier<Map<String, Integer>> chargeurQuantites,
                        Supplier<Optional<Combat>> chargeurCombat) {
@@ -44,9 +47,10 @@ public final class ContexteConditions {
     }
 
     Optional<Combat> combatDuChapitreActuel() {
-        if (combat == null) {
-            combat = chargeurCombat.get();
+        if (!combatCharge) {
+            combat = chargeurCombat.get().orElse(null);
+            combatCharge = true;
         }
-        return combat;
+        return Optional.ofNullable(combat);
     }
 }
