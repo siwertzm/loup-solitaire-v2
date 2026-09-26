@@ -198,14 +198,14 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/auth/register` | 🔓 | Crée un compte (`username`, `email`, `password`, `dateNaissance` optionnelle). Envoie un email de vérification. `409` si username/email déjà pris. |
+| POST | `/auth/register` | 🔓 | Crée un compte (`username`, `email`, `password`). Envoie un email de vérification. `409` si username/email déjà pris. |
 | GET | `/auth/verify-email?token=...` | 🔓 | Active le compte depuis le lien reçu par email. Retourne une page HTML simple. |
 | POST | `/auth/resend-verification` | 🔓 | Renvoie l'email de vérification (`email`). Réponse identique que l'email existe ou non, pour ne pas divulguer les comptes enregistrés. |
 | POST | `/auth/login` | 🔓 | Connexion (`identifiant` = username ou email, `password`). `403` si l'email n'est pas encore vérifié. Retourne `{ accessToken, refreshToken, tokenType }`. |
 | POST | `/auth/refresh` | 🔓 | Échange un refresh token valide contre un nouveau couple access/refresh (rotation ; l'ancien refresh token est révoqué). |
 | POST | `/auth/logout` | 🔓 | Révoque un refresh token (`refreshToken`). `204 No Content`. |
 | GET | `/auth/me` | 🔒 | Profil de l'utilisateur connecté + liste de ses personnages. |
-| PUT | `/auth/me` | 🔒 | Met à jour `email` et/ou `dateNaissance` (champs optionnels). Changer d'email repasse `emailVerifie` à `false` et renvoie un email de confirmation. |
+| PUT | `/auth/me` | 🔒 | Met à jour `username` et/ou `email` (champs optionnels). Changer d'email repasse `emailVerifie` à `false` et renvoie un email de confirmation. |
 
 ### Personnages (`/personnages`)
 

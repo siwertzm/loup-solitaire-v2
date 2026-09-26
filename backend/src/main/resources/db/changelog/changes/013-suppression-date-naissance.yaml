@@ -1,0 +1,17 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 013-suppression-date-naissance
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 013-suppression-date-naissance.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+      # Recree la colonne vide : les dates supprimees ne reviennent pas.
+      rollback:
+        - sql:
+            sql: ALTER TABLE public.utilisateur ADD COLUMN IF NOT EXISTS date_naissance date;

@@ -1,19 +1,22 @@
 package com.loupsolitaire.backend.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
 import com.loupsolitaire.backend.request.validation.TailleMaxBcrypt;
 import com.loupsolitaire.backend.util.Emails;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Getter;
 import lombok.Setter;
 
+// RGPD-01 : la date de naissance n'est plus collectee (decision D-08). Les
+// anciennes versions de l'app peuvent encore envoyer "dateNaissance" : le
+// champ est ignore au lieu de faire echouer la requete.
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
 public class RegisterRequest {
@@ -40,8 +43,4 @@ public class RegisterRequest {
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caracteres")
     @TailleMaxBcrypt
     private String password;
-
-    // Optionnelle : peut etre completee plus tard via PUT /auth/me.
-    @Past(message = "La date de naissance doit etre dans le passe")
-    private LocalDate dateNaissance;
 }

@@ -61,7 +61,6 @@ public class CompteService {
         utilisateur.setUsername(request.getUsername());
         utilisateur.setEmail(request.getEmail());
         utilisateur.setPassword(passwordEncoder.encode(request.getPassword()));
-        utilisateur.setDateNaissance(request.getDateNaissance());
         utilisateur.setDateCreation(Instant.now());
         utilisateurRepository.save(utilisateur);
 
@@ -136,10 +135,6 @@ public class CompteService {
             // la nouvelle adresse.
             utilisateur.setEmailVerifie(false);
             emailVerificationService.envoyerLienDeVerification(utilisateur);
-        }
-
-        if (request.getDateNaissance() != null) {
-            utilisateur.setDateNaissance(request.getDateNaissance());
         }
 
         return UtilisateurResponse.fromEntity(utilisateur);

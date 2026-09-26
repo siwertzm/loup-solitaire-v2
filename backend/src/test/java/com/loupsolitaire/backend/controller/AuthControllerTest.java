@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,8 +77,6 @@ class AuthControllerTest {
 
     private MockMvc mockMvc;
 
-    // Jackson 3 : WRITE_DATES_AS_TIMESTAMPS est desactive par defaut,
-    // LocalDate se serialise donc directement en "1997-05-12".
     private final JsonMapper objectMapper = JsonMapper.builder().build();
 
     private final UtilisateurConnecte marius = new UtilisateurConnecte(UUID.randomUUID());
@@ -108,7 +105,7 @@ class AuthControllerTest {
     }
 
     private UtilisateurResponse profil(String username, String email) {
-        return new UtilisateurResponse(marius.id(), username, email, LocalDate.of(1997, 5, 12), true,
+        return new UtilisateurResponse(marius.id(), username, email, true,
                 Instant.parse("2026-09-01T10:00:00Z"), List.of());
     }
 
@@ -126,13 +123,32 @@ class AuthControllerTest {
         request.setUsername("marius");
         request.setEmail("marius@example.com");
         request.setPassword("motdepasse123");
-        request.setDateNaissance(LocalDate.of(1997, 5, 12));
         when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("marius"))
-                .andExpect(jsonPath("$.dateNaissance").value("1997-05-12"));
+                // RGPD-01 : la date de naissance n'est plus renvoyee.
+                .andExpect(jsonPath("$.dateNaissance").doesNotExist());
+    }
+
+    @Test
+    void registerIgnoreLaDateDeNaissanceEnvoyeeParUneAncienneVersionDeLApp() throws Exception {
+        // RGPD-01 : une ancienne version de l'app envoie encore le champ ;
+        // il est ignore (pas de 400) et n'est transmis nulle part.
+        String json = """
+                {
+                  "username": "marius",
+                  "email": "marius@example.com",
+                  "password": "motdepasse123",
+                  "dateNaissance": "1997-05-12"
+                }
+                """;
+        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
+
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.dateNaissance").doesNotExist());
     }
 
     @Test
