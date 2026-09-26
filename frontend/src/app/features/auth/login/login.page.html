@@ -47,6 +47,30 @@
           <ion-note class="erreur">{{ erreur() | translate }}</ion-note>
         }
 
+        @if (compteNonVerifie()) {
+          <div class="non-verifie" role="alert">
+            <p>{{ 'AUTH.LOGIN.COMPTE_NON_VERIFIE' | translate }}</p>
+            <button
+              type="button"
+              class="renvoyer"
+              [disabled]="renvoiEnCours()"
+              (click)="renvoyerVerification()"
+            >
+              {{
+                renvoiEnCours()
+                  ? ('AUTH.LOGIN.RENVOI_EN_COURS' | translate)
+                  : ('AUTH.LOGIN.RENVOYER_EMAIL' | translate)
+              }}
+            </button>
+            @if (messageRenvoi()) {
+              <ion-note class="succes">{{ messageRenvoi() | translate }}</ion-note>
+            }
+            @if (erreurRenvoi()) {
+              <ion-note class="erreur">{{ erreurRenvoi() | translate }}</ion-note>
+            }
+          </div>
+        }
+
         <ion-button
           expand="block"
           type="submit"

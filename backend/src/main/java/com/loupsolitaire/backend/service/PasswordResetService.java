@@ -26,6 +26,7 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final RefreshTokenService refreshTokenService;
     private final AppProperties appProperties;
+    private final LimiteurDeDebit limiteurDeDebit;
 
     /*
      * ETAPE 1
@@ -35,6 +36,14 @@ public class PasswordResetService {
      */
     @Transactional
     public void demanderReinitialisation(String email) {
+
+        /*
+         * SEC-02 : quelques codes par heure et par email, que l'adresse
+         * existe ou non. Sans cette limite, chaque nouvelle demande donnait
+         * un nouveau code avec un compteur d'essais remis a zero : essais
+         * illimites sur un code a 6 chiffres.
+         */
+        limiteurDeDebit.consommer(LimiteurDeDebit.RESET_DEMANDE_EMAIL, email);
 
         /*
          * Ne jamais révéler si l'adresse existe ou non.
@@ -81,6 +90,29 @@ public class PasswordResetService {
      */
     @Transactional(noRollbackFor = IllegalArgumentException.class)
     public String verifierCode(
+            String email,
+            String code
+    ) {
+
+        /*
+         * SEC-02 : un nombre limite de codes faux par email et par jour, tous
+         * codes confondus (le compteur de tentatives du token, lui, repart a
+         * zero a chaque nouveau code). Un echec compte aussi pour un email
+         * inconnu : la reponse reste identique.
+         */
+        limiteurDeDebit.verifier(LimiteurDeDebit.RESET_CODE_EMAIL, email);
+
+        try {
+            String resetToken = verifierCodeSansLimite(email, code);
+            limiteurDeDebit.reinitialiser(LimiteurDeDebit.RESET_CODE_EMAIL, email);
+            return resetToken;
+        } catch (IllegalArgumentException e) {
+            limiteurDeDebit.enregistrerEchec(LimiteurDeDebit.RESET_CODE_EMAIL, email);
+            throw e;
+        }
+    }
+
+    private String verifierCodeSansLimite(
             String email,
             String code
     ) {

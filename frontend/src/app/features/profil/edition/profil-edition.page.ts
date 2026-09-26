@@ -127,7 +127,8 @@ export class ProfilEditionPage {
     const email = this.compteForm.controls.email.value;
     this.personnages$.renvoyerVerification(email).subscribe({
       next: () => this.message.set('PROFIL_EDITION.SUCCES_VERIFICATION'),
-      error: () => this.erreur.set('PROFIL_EDITION.ERREUR_VERIFICATION'),
+      error: (err: HttpErrorResponse) =>
+        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'PROFIL_EDITION.ERREUR_VERIFICATION'),
     });
   }
 }

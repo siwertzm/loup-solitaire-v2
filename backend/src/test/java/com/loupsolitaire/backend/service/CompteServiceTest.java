@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
+import com.loupsolitaire.backend.exception.TropDeRequetesException;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -60,6 +62,8 @@ class CompteServiceTest {
     private RefreshTokenService refreshTokenService;
     @Mock
     private AuthService authService;
+    @Mock
+    private LimiteurDeDebit limiteurDeDebit;
 
     @InjectMocks
     private CompteService compteService;
@@ -149,6 +153,15 @@ class CompteServiceTest {
     }
 
     @Test
+    void renvoyerVerificationCompteLaDemandePourL_email() {
+        when(utilisateurRepository.findByEmail("inconnu@example.com")).thenReturn(Optional.empty());
+
+        compteService.renvoyerVerification("inconnu@example.com");
+
+        verify(limiteurDeDebit).consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, "inconnu@example.com");
+    }
+
+    @Test
     void renvoyerVerificationNeFaitRienSiLeCompteEstDejaVerifie() {
         when(utilisateurRepository.findByEmail("marius@example.com")).thenReturn(Optional.of(utilisateur));
 
@@ -162,6 +175,51 @@ class CompteServiceTest {
         when(utilisateurRepository.findByEmail("inconnu@example.com")).thenReturn(Optional.empty());
 
         compteService.renvoyerVerification("inconnu@example.com");
+
+        verifyNoInteractions(emailVerificationService);
+    }
+
+    @Test
+    void renvoyerVerificationRetrouveLeCompteParSonPseudo() {
+        utilisateur.setEmailVerifie(false);
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+
+        compteService.renvoyerVerification("marius");
+
+        verify(emailVerificationService).envoyerLienDeVerification(utilisateur);
+    }
+
+    @Test
+    void renvoyerVerificationParPseudoCompteSurL_emailDuCompte() {
+        // Pseudo et email partagent le meme compteur : sinon on aurait
+        // 3 renvois avec le pseudo + 3 avec l'email pour le meme compte.
+        utilisateur.setEmailVerifie(false);
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+
+        compteService.renvoyerVerification("marius");
+
+        verify(limiteurDeDebit).consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, "marius@example.com");
+    }
+
+    @Test
+    void renvoyerVerificationPourUnPseudoInconnuCompteSurLeTexteSaisi() {
+        when(utilisateurRepository.findByUsername("fantome")).thenReturn(Optional.empty());
+
+        compteService.renvoyerVerification("fantome");
+
+        verify(limiteurDeDebit).consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, "fantome");
+        verifyNoInteractions(emailVerificationService);
+    }
+
+    @Test
+    void renvoyerVerificationRefuseAuQuatriemeRenvoi() {
+        doThrow(new TropDeRequetesException(3600))
+                .when(limiteurDeDebit).consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, "marius@example.com");
+        utilisateur.setEmailVerifie(false);
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+
+        assertThatThrownBy(() -> compteService.renvoyerVerification("marius"))
+                .isInstanceOf(TropDeRequetesException.class);
 
         verifyNoInteractions(emailVerificationService);
     }

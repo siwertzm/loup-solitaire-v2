@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.config;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Valeurs de configuration pour les tests unitaires (sans contexte Spring),
@@ -22,6 +24,24 @@ public final class ProprietesDeTest {
                 new AppProperties.Mail("no-reply@loup-solitaire.local"),
                 new AppProperties.EmailVerification(24),
                 new AppProperties.PasswordReset(15, 5));
+    }
+
+    // Memes regles que application.properties (SEC-02).
+    public static LimitationDebitProperties limitationDebit() {
+        return new LimitationDebitProperties(true, "", 1, Map.of(
+                "auth-ip", regle(60, Duration.ofMinutes(1)),
+                "login-ip", regle(10, Duration.ofMinutes(1)),
+                "inscription-ip", regle(5, Duration.ofHours(1)),
+                "email-ip", regle(10, Duration.ofHours(1)),
+                "refresh-ip", regle(30, Duration.ofMinutes(1)),
+                "login-compte", regle(10, Duration.ofMinutes(15)),
+                "reset-demande-email", regle(3, Duration.ofHours(1)),
+                "reset-code-email", regle(10, Duration.ofHours(24)),
+                "renvoi-verification-email", regle(3, Duration.ofHours(1))));
+    }
+
+    private static LimitationDebitProperties.Regle regle(int limite, Duration fenetre) {
+        return new LimitationDebitProperties.Regle(limite, fenetre);
     }
 
     public static JwtProperties jwt() {

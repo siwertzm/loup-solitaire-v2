@@ -5,6 +5,7 @@
     "NON": "Non"
   },
   "AUTH": {
+    "ERREUR_TROP_DE_TENTATIVES": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
     "LOGIN": {
       "TITRE": "Connexion",
       "INTRODUCTION": "Reprenez votre aventure là où vous l'avez laissée.",
@@ -17,7 +18,12 @@
       "SEPARATEUR_OU": "OU",
       "LIEN_INSCRIPTION": "Pas encore de compte ? <strong>S'inscrire</strong>",
       "ERREUR_IDENTIFIANTS": "Identifiants invalides, ou compte non vérifié.",
-      "MOT_DE_PASSE_OUBLIE": "Mot de passe oublié ?"
+      "MOT_DE_PASSE_OUBLIE": "Mot de passe oublié ?",
+      "COMPTE_NON_VERIFIE": "Votre adresse email n'est pas encore vérifiée.",
+      "RENVOYER_EMAIL": "Renvoyer l'email",
+      "RENVOI_EN_COURS": "Envoi...",
+      "LIEN_RENVOYE": "Email envoyé. Pensez à regarder dans vos spams.",
+      "ERREUR_RENVOI": "Impossible d'envoyer l'email. Réessayez plus tard."
     },
     "REGISTER": {
       "TITRE": "Inscription",

@@ -245,6 +245,24 @@ class AuthControllerTest {
         verify(compteService).renvoyerVerification("marius@example.com");
     }
 
+    @Test
+    void resendVerificationAccepteUnIdentifiant() throws Exception {
+        mockMvc.perform(post("/auth/resend-verification").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"identifiant\": \" marius \"}"))
+                .andExpect(status().isAccepted());
+
+        verify(compteService).renvoyerVerification("marius");
+    }
+
+    @Test
+    void resendVerificationRefuseUneRequeteSansEmailNiIdentifiant() throws Exception {
+        mockMvc.perform(post("/auth/resend-verification").contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(compteService);
+    }
+
     // =========================================================
     // login / refresh / logout
     // =========================================================

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -86,9 +87,9 @@ export class RegisterPage {
         this.enCours.set(false);
         this.succes.set(true);
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.enCours.set(false);
-        this.erreur.set('AUTH.REGISTER.ERREUR_INSCRIPTION');
+        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.REGISTER.ERREUR_INSCRIPTION');
       },
     });
   }
