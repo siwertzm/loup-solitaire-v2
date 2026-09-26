@@ -366,6 +366,20 @@ class PersonnageControllerTest {
     }
 
     @Test
+    void consommerPotionPendantCombatRefuse() throws Exception {
+        // REGLE-05 : une fois le combat engage, l'objet s'utilise comme action
+        // de combat (OBJET), pas par /consommer. Regle testee dans
+        // PartieServiceTest ; ici, la reponse HTTP.
+        when(partieService.consommerObjet(personnageId, "potion_de_soin", marius)).thenThrow(
+                new IllegalArgumentException("Un combat est en cours : utilisez l'objet comme action de combat (OBJET)"));
+
+        mockMvc.perform(post("/personnages/{id}/objets/{objetId}/consommer", personnageId, "potion_de_soin"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Un combat est en cours : utilisez l'objet comme action de combat (OBJET)"));
+    }
+
+    @Test
     void resoudreVolDelegueAuService() throws Exception {
         when(partieService.resoudreVol(personnageId, "poignard", marius)).thenReturn(reponse("Loup Solitaire"));
 

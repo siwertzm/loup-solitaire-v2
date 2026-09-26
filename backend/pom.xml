@@ -129,6 +129,23 @@
 			<artifactId>spring-boot-starter-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- QUAL-01 : tests d'integration (*IT) sur un vrai PostgreSQL lance
+		     dans Docker par Testcontainers. Versions gerees par Spring Boot. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -170,14 +187,38 @@
             			</goals>
         			</execution>
         			<execution>
-            			<!-- Genere target/site/jacoco/jacoco.xml, lu par Sonar -->
+            			<!-- Genere target/site/jacoco/jacoco.xml, lu par Sonar.
+            			     Phase verify (QUAL-01) : apres les tests d'integration,
+            			     pour que leur couverture soit comptee aussi. -->
             			<id>report</id>
-            			<phase>test</phase>
+            			<phase>verify</phase>
             			<goals>
                 			<goal>report</goal>
             			</goals>
         			</execution>
     			</executions>
+			</plugin>
+			<!-- QUAL-01 : les classes *IT (PostgreSQL via Testcontainers) sont
+			     lancees par "mvn verify", apres les tests unitaires ; un echec
+			     fait echouer le build, donc la CI. "mvn test" ne les lance pas
+			     (pas besoin de Docker pour les tests rapides). Placee apres
+			     JaCoCo : l'agent de couverture est deja prepare. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<!-- Classes compilees, pas le jar repackage par Spring Boot
+					     (BOOT-INF/classes introuvable pour les tests). -->
+					<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
