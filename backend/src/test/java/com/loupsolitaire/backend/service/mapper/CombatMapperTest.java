@@ -154,7 +154,7 @@ class CombatMapperTest {
     @Test
     void listeLesResistancesEtLesDisciplinesTrieesDeLEnnemi() {
         CombatEnnemi vordak = ennemi("vordak", 18);
-        vordak.getEnnemi().setResistances(List.of(discipline(IdDiscipline.PUISSANCE_PSYCHIQUE)));
+        vordak.getEnnemi().setResistances(Set.of(discipline(IdDiscipline.PUISSANCE_PSYCHIQUE)));
         vordak.getEnnemi().setDisciplines(Set.of(
                 discipline(IdDiscipline.PUISSANCE_PSYCHIQUE), discipline(IdDiscipline.CAMOUFLAGE)));
         Combat combat = combat(StatutCombat.EN_COURS, List.of(vordak), 0);

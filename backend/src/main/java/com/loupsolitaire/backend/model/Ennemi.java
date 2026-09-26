@@ -1,8 +1,7 @@
 package com.loupsolitaire.backend.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.Cache;
@@ -58,13 +57,14 @@ public class Ennemi {
         inverseJoinColumns = @JoinColumn(name = "discipline_id")
     )
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private List<Discipline> resistances = new ArrayList<>();
+    private Set<Discipline> resistances = new LinkedHashSet<>();
 
     // Disciplines que l'ennemi possede lui-meme (ex. Puissance Psychique des
-    // Vordaks). Set et non List : charge dans le meme @EntityGraph que
-    // resistances (voir CombatRepository), et Hibernate refuse de fetcher
-    // deux "bags" (List sans @OrderColumn) en une requete
-    // (MultipleBagFetchException).
+    // Vordaks). Set et non List, comme resistances : les deux sont charges
+    // dans le meme @EntityGraph que Combat.ennemis (voir CombatRepository),
+    // et Hibernate refuse de fetcher deux "bags" (List sans @OrderColumn) en
+    // une requete (MultipleBagFetchException). Combat.ennemis (List triee
+    // par @OrderBy, REGLE-08) doit rester le seul bag de ce graphe.
     @ManyToMany
     @JoinTable(
         name = "ennemi_discipline",
