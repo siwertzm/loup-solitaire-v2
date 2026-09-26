@@ -13,6 +13,7 @@ import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
+import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.repository.CombatRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -87,6 +88,9 @@ public class ConditionService {
     // encore EN_COURS si le joueur n'a pas fini de jouer ses tours).
     private boolean conditionDeCombat(Cond cond, ContexteConditions contexte) {
         Optional<Combat> combatOpt = contexte.combatDuChapitreActuel();
+        if (estEvitementDuCombat(cond)) {
+            return combatEvitable(combatOpt);
+        }
         if (combatOpt.isEmpty()) {
             return false;
         }
@@ -106,6 +110,29 @@ public class ConditionService {
                     && (cond.valeurEntiere() == 1) == combat.isEndurancePerdue();
             default -> false;
         };
+    }
+
+    // FUITE a 0 assaut : le texte du livre permet de ne pas livrer le combat
+    // du tout (chapitres 112 et 180). Le lien est alors empruntable AVANT le
+    // combat, sans subir de riposte. Une fois le combat engage (au moins un
+    // assaut joue), il faut fuir depuis l'ecran de combat, avec la riposte
+    // de REGLE-03.
+    public static boolean estEvitementDuCombat(Cond cond) {
+        return cond.getType() == TypeCondition.FUITE
+                && cond.getValeur() != null
+                && "0".equals(cond.getValeur().trim());
+    }
+
+    // Vrai si le combat n'a pas encore commence : aucun combat, ou un combat
+    // ouvert sans aucun assaut joue. Vrai aussi apres une fuite deja reussie
+    // (le lien reste le meme).
+    public static boolean combatEvitable(Optional<Combat> combat) {
+        if (combat.isEmpty()) {
+            return true;
+        }
+        Combat c = combat.get();
+        return c.getStatut() == StatutCombat.FUITE
+                || (c.getStatut() == StatutCombat.EN_COURS && c.getAssautsLivres() == 0);
     }
 
     private boolean possedeDiscipline(Cond cond, Personnage personnage) {

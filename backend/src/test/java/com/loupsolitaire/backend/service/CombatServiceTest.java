@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -539,21 +540,53 @@ class CombatServiceTest {
     }
 
     @Test
-    void jouerTourFuiteReussitSansRiposteQuandLeSeuilEstAtteint() {
+    void jouerTourFuiteReussitApresLeDernierCoupDeLEnnemi() {
+        // REGLE-03 : l'ennemi porte un dernier coup pendant la fuite.
         Ennemi ennemi = creerEnnemi("kraan", 5, 10);
         Lien lienFuite = creerLienAvecCondition(TypeCondition.FUITE, "3");
         Chapitre chapitre = creerChapitreCombat(17, List.of(ennemi), List.of(lienFuite));
         Personnage personnage = creerPersonnage(10, 20, chapitre);
-        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        CombatEnnemi ce = creerCombatEnnemi(ennemi, 0, 10);
+        Combat combat = creerCombatEnCours(chapitre, List.of(ce));
         combat.setAssautsLivres(3);
         stuberCombatExistant(personnage, chapitre, combat);
+
+        // Rapport 10 - 5 = 5.
+        when(tableDeHasardService.tirerChiffre()).thenReturn(4);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-2);
 
         TourJoue tourJoue = combatService.jouerTour(personnage, ActionCombat.FUITE, null);
 
         assertThat(combat.getStatut()).isEqualTo(StatutCombat.FUITE);
+        assertThat(personnage.getEnduranceActuelle()).isEqualTo(18);
+        // Seul Loup Solitaire subit des degats : l'ennemi n'en recoit pas.
+        assertThat(ce.getEnduranceActuelle()).isEqualTo(10);
         assertThat(tourJoue.resultat().action()).isEqualTo("FUITE");
-        assertThat(personnage.getEnduranceActuelle()).isEqualTo(20);
-        verify(tableDeHasardService, never()).tirerChiffre();
+        assertThat(tourJoue.resultat().rapportRiposte()).isEqualTo(5);
+        assertThat(tourJoue.resultat().tirageRiposte()).isEqualTo(4);
+        assertThat(tourJoue.resultat().degatsSubis()).isEqualTo(-2);
+        assertThat(tourJoue.resultat().degatsInfliges()).isNull();
+        verify(tableCombatService, never()).degatsInfliges(anyInt(), anyInt());
+    }
+
+    @Test
+    void jouerTourFuiteEchoueSiLeDernierCoupTueLeJoueur() {
+        Ennemi ennemi = creerEnnemi("kraan", 5, 10);
+        Lien lienFuite = creerLienAvecCondition(TypeCondition.FUITE, "3");
+        Chapitre chapitre = creerChapitreCombat(17, List.of(ennemi), List.of(lienFuite));
+        Personnage personnage = creerPersonnage(10, 2, chapitre);
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        combat.setAssautsLivres(3);
+        stuberCombatExistant(personnage, chapitre, combat);
+
+        when(tableDeHasardService.tirerChiffre()).thenReturn(8);
+        when(tableCombatService.degatsSubis(5, 8)).thenReturn(-3);
+
+        combatService.jouerTour(personnage, ActionCombat.FUITE, null);
+
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.DEFAITE);
+        assertThat(personnage.getEnduranceActuelle()).isZero();
+        assertThat(personnage.isMort()).isTrue();
     }
 
     // =========================================================

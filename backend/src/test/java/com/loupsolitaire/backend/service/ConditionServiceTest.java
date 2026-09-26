@@ -275,6 +275,48 @@ class ConditionServiceTest {
         assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
     }
 
+    // Fuite a 0 assaut : eviter le combat (chapitres 112, 180)
+
+    @Test
+    void fuiteAZeroDisponibleAvantToutCombat() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+
+        stuberCombat(Optional.empty());
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+    }
+
+    @Test
+    void fuiteAZeroDisponibleSiLeCombatEstOuvertSansAssaut() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+
+        stuberCombat(Optional.of(creerCombat(StatutCombat.EN_COURS, 0, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+    }
+
+    @Test
+    void fuiteAZeroIndisponibleUneFoisLeCombatEngage() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+
+        stuberCombat(Optional.of(creerCombat(StatutCombat.EN_COURS, 1, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    @Test
+    void fuiteAZeroIndisponibleApresUneVictoire() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+
+        stuberCombat(Optional.of(creerCombat(StatutCombat.VICTOIRE, 3, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    @Test
+    void fuiteAvecUnSeuilIndisponibleAvantToutCombat() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "3");
+
+        stuberCombat(Optional.empty());
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
     @Test
     void assautMaxDisponibleSiVictoireEnPeuDassauts() {
         Cond cond = creerCond(TypeCondition.ASSAUT_MAX, null, "4");

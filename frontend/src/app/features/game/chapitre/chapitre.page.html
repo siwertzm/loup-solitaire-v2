@@ -192,6 +192,16 @@
         >
           {{ 'CHAPITRE_PAGE.BOUTON_COMBAT' | translate }}
         </button>
+        @for (lien of liensEvitementCombat(); track lien.chapitreCibleId) {
+          <button
+            type="button"
+            class="valider"
+            [disabled]="chargement()"
+            (click)="choisirLien(lien)"
+          >
+            {{ 'CHAPITRE_PAGE.LIEN_FUITE' | translate }}
+          </button>
+        }
       } @else if (aConditionHasard() && !hasardTermine()) {
         <div class="tirage-hasard">
           @if (hasardResultatVisible()) {

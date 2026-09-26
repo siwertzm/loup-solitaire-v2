@@ -337,9 +337,9 @@ backend/src/main/resources/
   avec un seul tirage sur une table unique (dégâts des deux camps
   simultanément), sans décision tactique. Ce projet ajoute des actions
   ATTAQUE/DEFENSE/OBJET et des tables rééquilibrées maison.
-- **Fuite sans risque** : dans le livre, fuir un combat résout quand même le
-  round (le joueur encaisse ses dégâts, ceux de l'ennemi sont ignorés).
-  Ici, la fuite réussit toujours sans aucun dégât.
+- **Fuite** : comme dans le livre, l'ennemi porte un dernier coup pendant la
+  fuite (seul Loup Solitaire subit des dégâts). La fuite réussit sauf si ce
+  coup le tue (REGLE-03).
 - **Chapitre 350 (fin du tome) sans lien de sortie** : son unique lien
   (`351`) est un marqueur de fin de partie filtré au chargement des
   données (`GameDataLoader.PAGES_FIN_DE_JEU`) — il n'existe aucun écran de

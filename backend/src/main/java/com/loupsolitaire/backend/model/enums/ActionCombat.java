@@ -9,8 +9,9 @@ package com.loupsolitaire.backend.model.enums;
 //            mecanique que POST /objets/{objetId}/consommer ; l'ennemi
 //            riposte quand meme, sans attenuation.
 // FUITE    : n'est propose que si le Lien de sortie correspondant a une
-//            condition FUITE dont le seuil d'assauts est atteint ; toujours
-//            reussie des lors qu'elle est proposee, aucune riposte.
+//            condition FUITE dont le seuil d'assauts est atteint. L'ennemi
+//            porte un dernier coup (REGLE-03, comme dans le livre) ; la
+//            fuite reussit sauf si ce coup tue Loup Solitaire.
 public enum ActionCombat {
     ATTAQUE,
     DEFENSE,

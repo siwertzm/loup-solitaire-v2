@@ -247,9 +247,18 @@ public class PersonnageService {
             Optional<Combat> combat = combatRepository
                     .findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(personnage, chapitreActuelId);
             boolean combatResolu = combat.isPresent() && STATUTS_PERMETTANT_LA_SORTIE.contains(combat.get().getStatut());
-            if (!combatResolu) {
+            // Lien de fuite a 0 assaut (chapitres 112, 180) : le joueur peut
+            // ne pas livrer le combat du tout, tant qu'aucun assaut n'a ete
+            // joue. Un combat ouvert mais pas commence est alors clos en FUITE.
+            boolean combatEvite = lienChoisi.getConditions().stream().anyMatch(ConditionService::estEvitementDuCombat)
+                    && ConditionService.combatEvitable(combat);
+            if (!combatResolu && !combatEvite) {
                 throw new IllegalArgumentException(
                         "Le combat du chapitre " + chapitreActuelId + " n'est pas termine");
+            }
+            if (combatEvite) {
+                combat.filter(c -> c.getStatut() == StatutCombat.EN_COURS)
+                        .ifPresent(c -> c.setStatut(StatutCombat.FUITE));
             }
         }
 

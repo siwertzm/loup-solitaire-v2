@@ -24,7 +24,8 @@ export interface CombatEnnemiResponse {
  * Détail du tour qui vient d'être joué. Champs à null selon l'action jouée
  * (voir commentaire du record Java) :
  * - rapportAttaque/tirageAttaque/degatsInfliges : uniquement ATTAQUE.
- * - rapportRiposte/tirageRiposte/degatsSubisBruts/degatsSubis : jamais pour FUITE.
+ * - rapportRiposte/tirageRiposte/degatsSubisBruts/degatsSubis : toutes les actions
+ *   (FUITE comprise, REGLE-03), sauf une ATTAQUE qui tue l'ennemi.
  * - tirageDefense/reductionPourcent/bonusHabiliteObtenu : uniquement DEFENSE.
  */
 export interface ResultatTourResponse {

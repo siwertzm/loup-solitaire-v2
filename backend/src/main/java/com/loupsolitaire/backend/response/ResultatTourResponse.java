@@ -5,7 +5,8 @@ package com.loupsolitaire.backend.response;
 //
 // Champs a null quand non pertinents pour l'action jouee :
 // - rapportAttaque/tirageAttaque/degatsInfliges : uniquement ATTAQUE.
-// - rapportRiposte/tirageRiposte/degatsSubisBruts/degatsSubis : jamais pour FUITE.
+// - rapportRiposte/tirageRiposte/degatsSubisBruts/degatsSubis : toutes les actions,
+//   sauf une ATTAQUE qui tue l'ennemi (FUITE comprise, REGLE-03).
 // - reductionPourcent/bonusHabiliteObtenu : uniquement DEFENSE.
 public record ResultatTourResponse(
         String action,
