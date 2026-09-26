@@ -22,6 +22,7 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProperties jwtProperties;
+    private final RevocationDesSessions revocationDesSessions;
 
     // Cree un nouveau refresh token pour l'utilisateur et renvoie la valeur BRUTE
     // (a transmettre au client). Seul le hash est persiste en base.
@@ -42,6 +43,8 @@ public class RefreshTokenService {
     // cree un nouveau) et renvoie l'utilisateur + le nouveau token brut.
     // Si un token DEJA REVOQUE est presente, c'est le signe d'un vol/rejeu :
     // toutes les sessions actives de l'utilisateur sont revoquees par securite.
+    // SEC-04 : cette revocation est validee dans sa propre transaction (voir
+    // RevocationDesSessions), sinon l'exception levee juste apres l'annulait.
     @Transactional
     public RotationResult validerEtPivoter(String rawToken) {
         String hash = Tokens.hacher(rawToken);
@@ -49,7 +52,7 @@ public class RefreshTokenService {
                 .orElseThrow(() -> new TokenInvalideException("Session invalide, merci de vous reconnecter"));
 
         if (existant.isRevoked()) {
-            revoquerToutesLesSessions(existant.getUtilisateur());
+            revocationDesSessions.revoquerToutesImmediatement(existant.getUtilisateur().getId());
             throw new TokenInvalideException(
                     "Reutilisation d'un token deja utilise detectee : toutes les sessions ont ete revoquees par securite"
             );

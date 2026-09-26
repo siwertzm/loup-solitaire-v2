@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -33,6 +34,8 @@ class RefreshTokenServiceTest {
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
+    @Mock
+    private RevocationDesSessions revocationDesSessions;
 
     private RefreshTokenService service;
 
@@ -41,7 +44,7 @@ class RefreshTokenServiceTest {
     @BeforeEach
     void setUp() {
         // Refresh token valable 30 jours.
-        service = new RefreshTokenService(refreshTokenRepository, ProprietesDeTest.jwt());
+        service = new RefreshTokenService(refreshTokenRepository, ProprietesDeTest.jwt(), revocationDesSessions);
 
         utilisateur = new Utilisateur();
         utilisateur.setId(UUID.randomUUID());
@@ -100,24 +103,17 @@ class RefreshTokenServiceTest {
         dejaUtilise.setRevoked(true);
         dejaUtilise.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
 
-        // Une AUTRE session, encore active sur un autre appareil : c'est
-        // precisement celle-la que la revocation en masse doit invalider.
-        // (le token deja revoque lui-meme ne prouve rien : il l'etait deja
-        // avant l'appel.)
-        RefreshToken autreSessionActive = creerToken(false, Instant.now().plus(1, ChronoUnit.DAYS));
-
         when(refreshTokenRepository.findByTokenHash(anyString())).thenReturn(Optional.of(dejaUtilise));
-        when(refreshTokenRepository.findAllByUtilisateurAndRevokedFalse(utilisateur))
-                .thenReturn(List.of(autreSessionActive));
 
         assertThatThrownBy(() -> service.validerEtPivoter("token-vole"))
                 .isInstanceOf(TokenInvalideException.class)
                 .hasMessageContaining("Reutilisation");
 
-        verify(refreshTokenRepository).findAllByUtilisateurAndRevokedFalse(utilisateur);
-        // La vraie preuve que la revocation en masse a fait son travail :
-        // cette session, active avant l'appel, est maintenant revoquee.
-        assertThat(autreSessionActive.isRevoked()).isTrue();
+        // SEC-04 : la revocation passe par RevocationDesSessions (transaction
+        // separee), pour survivre a l'exception. La preuve en base est dans
+        // RevocationApresReutilisationTest.
+        verify(revocationDesSessions).revoquerToutesImmediatement(utilisateur.getId());
+        verify(refreshTokenRepository, never()).save(any(RefreshToken.class));
     }
 
     @Test
@@ -134,6 +130,7 @@ class RefreshTokenServiceTest {
                 .hasMessageContaining("expire");
 
         verify(refreshTokenRepository, never()).findAllByUtilisateurAndRevokedFalse(any());
+        verifyNoInteractions(revocationDesSessions);
     }
 
     @Test
