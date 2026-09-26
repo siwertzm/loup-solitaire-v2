@@ -233,6 +233,22 @@ export class AuthService {
       );
   }
 
+  /*
+   * Renvoie le lien de vérification d'un compte
+   * non vérifié, à partir de ce que le joueur a
+   * tapé pour se connecter (pseudo ou email) :
+   * le backend retrouve l'email du compte.
+   */
+  resendVerification(
+    identifiant: string,
+  ): Observable<void> {
+
+    return this.http.post<void>(
+      `${this.baseUrl}/resend-verification`,
+      { identifiant },
+    );
+  }
+
   verifyResetCode(
     email: string,
     code: string,

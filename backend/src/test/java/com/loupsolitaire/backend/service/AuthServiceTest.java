@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.loupsolitaire.backend.config.JwtUtil;
+import com.loupsolitaire.backend.exception.TropDeRequetesException;
 import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
@@ -40,6 +42,8 @@ class AuthServiceTest {
     private JwtUtil jwtUtil;
     @Mock
     private RefreshTokenService refreshTokenService;
+    @Mock
+    private LimiteurDeDebit limiteurDeDebit;
 
     @InjectMocks
     private AuthService authService;
@@ -95,6 +99,39 @@ class AuthServiceTest {
                 .isInstanceOf(BadCredentialsException.class);
 
         verifyNoInteractions(utilisateurRepository, jwtUtil, refreshTokenService);
+    }
+
+    @Test
+    void connecterCompteChaqueEchecPourL_identifiant() {
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
+
+        assertThatThrownBy(() -> authService.connecter("marius", "mauvais"))
+                .isInstanceOf(BadCredentialsException.class);
+
+        verify(limiteurDeDebit).enregistrerEchec(LimiteurDeDebit.LOGIN_COMPTE, "marius");
+        verify(limiteurDeDebit, never()).reinitialiser(any(), any());
+    }
+
+    @Test
+    void connecterRemetLeCompteurAZeroApresUnSucces() {
+        Utilisateur utilisateur = utilisateur(true);
+        authentificationReussie();
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(utilisateur));
+
+        authService.connecter("marius", "motdepasse123");
+
+        verify(limiteurDeDebit).reinitialiser(LimiteurDeDebit.LOGIN_COMPTE, "marius");
+    }
+
+    @Test
+    void connecterRefuseEn429SansVerifierLeMotDePasseQuandLaLimiteEstAtteinte() {
+        doThrow(new TropDeRequetesException(600))
+                .when(limiteurDeDebit).verifier(LimiteurDeDebit.LOGIN_COMPTE, "marius");
+
+        assertThatThrownBy(() -> authService.connecter("marius", "motdepasse123"))
+                .isInstanceOf(TropDeRequetesException.class);
+
+        verifyNoInteractions(authenticationManager);
     }
 
     @Test

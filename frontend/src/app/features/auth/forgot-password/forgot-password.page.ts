@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   inject,
@@ -102,12 +103,12 @@ export class ForgotPasswordPage {
           );
         },
 
-        error: () => {
+        error: (err: HttpErrorResponse) => {
 
           this.enCours.set(false);
 
           this.erreur.set(
-            'AUTH.FORGOT_PASSWORD.ERREUR',
+            err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.FORGOT_PASSWORD.ERREUR',
           );
         },
       });

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,6 +68,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTokenInvalide(TokenInvalideException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), "Session invalide", ex.getMessage()));
+    }
+
+    // Limite de debit atteinte (SEC-02, voir LimiteurDeDebit).
+    @ExceptionHandler(TropDeRequetesException.class)
+    public ResponseEntity<ErrorResponse> handleTropDeRequetes(TropDeRequetesException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, Long.toString(ex.getSecondesAvantNouvelEssai()))
+                .body(ErrorResponse.of(HttpStatus.TOO_MANY_REQUESTS.value(), "Trop de requetes", ex.getMessage()));
     }
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})

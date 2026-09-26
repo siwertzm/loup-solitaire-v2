@@ -42,6 +42,8 @@ services:
       MAIL_FROM: ${MAIL_FROM:-no-reply@loup-solitaire.local}
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
       EMAIL_VERIFICATION_EXPIRATION_HOURS: ${EMAIL_VERIFICATION_EXPIRATION_HOURS:-24}
+      # En local, aucun proxy devant l'API : X-Forwarded-For est ignore (SEC-02).
+      RATE_LIMIT_TRUSTED_PROXIES: ${RATE_LIMIT_TRUSTED_PROXIES:-0}
     ports:
       - "8080:8080"
     healthcheck:

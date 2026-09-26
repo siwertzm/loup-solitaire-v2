@@ -2,6 +2,7 @@ package com.loupsolitaire.backend.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
+import com.loupsolitaire.backend.util.Emails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +46,7 @@ public class CompteService {
     private final PasswordResetService passwordResetService;
     private final RefreshTokenService refreshTokenService;
     private final AuthService authService;
+    private final LimiteurDeDebit limiteurDeDebit;
 
     @Transactional
     public UtilisateurResponse inscrire(RegisterRequest request) {
@@ -67,14 +70,38 @@ public class CompteService {
         return UtilisateurResponse.fromEntity(utilisateur);
     }
 
-    // Ne dit jamais si l'email existe ou s'il est deja verifie : le
+    // Ne dit jamais si le compte existe ou s'il est deja verifie : le
     // controleur repond toujours la meme chose, pour ne pas laisser deviner
-    // quels emails sont enregistres.
+    // quels comptes sont enregistres.
+    //
+    // identifiant : email ou pseudo (ecran de connexion). Le lien part
+    // toujours a l'email enregistre sur le compte, jamais a une adresse
+    // fournie par l'appelant.
     @Transactional
-    public void renvoyerVerification(String email) {
-        utilisateurRepository.findByEmail(email)
-                .filter(utilisateur -> !utilisateur.isEmailVerifie())
+    public void renvoyerVerification(String identifiant) {
+        Optional<Utilisateur> compte = trouverParIdentifiant(identifiant);
+
+        // SEC-02 : 3 renvois par heure et par compte. La cle est l'email du
+        // compte, pour que pseudo et email partagent le meme compteur ; pour
+        // un identifiant inconnu, c'est le texte saisi (pas d'enumeration).
+        String cle = compte.map(Utilisateur::getEmail).orElse(identifiant);
+        limiteurDeDebit.consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, cle);
+
+        compte.filter(utilisateur -> !utilisateur.isEmailVerifie())
                 .ifPresent(emailVerificationService::envoyerLienDeVerification);
+    }
+
+    // Meme resolution que la connexion (CustomUserDetailsService) : un
+    // identifiant avec @ est d'abord cherche comme email.
+    private Optional<Utilisateur> trouverParIdentifiant(String identifiant) {
+        if (identifiant == null || identifiant.isBlank()) {
+            return Optional.empty();
+        }
+        String saisi = identifiant.trim();
+        return saisi.contains("@")
+                ? utilisateurRepository.findByEmail(Emails.normaliser(saisi))
+                        .or(() -> utilisateurRepository.findByUsername(saisi))
+                : utilisateurRepository.findByUsername(saisi);
     }
 
     @Transactional(readOnly = true)

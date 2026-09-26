@@ -39,6 +39,13 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>jcache</artifactId>
 		</dependency>
+		<!-- Compteurs de la limitation de debit (SEC-02, LimiteurDeDebit).
+		     Deja present via jcache ; declare explicitement car utilise
+		     directement. Version geree par Spring Boot. -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>

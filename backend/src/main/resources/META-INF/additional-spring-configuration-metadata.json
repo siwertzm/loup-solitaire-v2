@@ -54,6 +54,119 @@
       "name": "app.mobile-login-url",
       "type": "java.lang.String",
       "description": "Deep link de l'application mobile vers lequel l'utilisateur est redirige apres validation de son adresse email."
+    },
+    {
+      "name": "app.limitation-debit.active",
+      "type": "java.lang.Boolean",
+      "description": "Active la limitation de debit (SEC-02). A false uniquement pour deboguer, jamais en production.",
+      "defaultValue": true
+    },
+    {
+      "name": "app.limitation-debit.entete-ip-client",
+      "type": "java.lang.String",
+      "description": "En-tete pose par l'hebergeur avec l'IP reelle du client (ex. True-Client-IP). Vide = lire X-Forwarded-For.",
+      "defaultValue": ""
+    },
+    {
+      "name": "app.limitation-debit.proxies-de-confiance",
+      "type": "java.lang.Integer",
+      "description": "Nombre de proxys de confiance devant l'API : l'IP du client est la N-ieme adresse de X-Forwarded-For en partant de la droite. 0 = ignorer X-Forwarded-For.",
+      "defaultValue": 1
+    },
+    {
+      "name": "app.limitation-debit.regles",
+      "type": "java.util.Map<java.lang.String,com.loupsolitaire.backend.config.LimitationDebitProperties$Regle>",
+      "description": "Regles de limitation de debit, par nom (voir LimiteurDeDebit.REGLES)."
+    },
+    {
+      "name": "app.limitation-debit.regles.auth-ip.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : toutes les routes /auth/**, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.auth-ip.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : toutes les routes /auth/**, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.login-ip.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : POST /auth/login, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.login-ip.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : POST /auth/login, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.inscription-ip.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : POST /auth/register, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.inscription-ip.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : POST /auth/register, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.email-ip.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : mot de passe oublie, verification du code et renvoi du lien, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.email-ip.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : mot de passe oublie, verification du code et renvoi du lien, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.refresh-ip.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : POST /auth/refresh, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.refresh-ip.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : POST /auth/refresh, par IP."
+    },
+    {
+      "name": "app.limitation-debit.regles.login-compte.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : mots de passe faux, par identifiant."
+    },
+    {
+      "name": "app.limitation-debit.regles.login-compte.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : mots de passe faux, par identifiant."
+    },
+    {
+      "name": "app.limitation-debit.regles.reset-demande-email.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : codes de reinitialisation demandes, par email."
+    },
+    {
+      "name": "app.limitation-debit.regles.reset-demande-email.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : codes de reinitialisation demandes, par email."
+    },
+    {
+      "name": "app.limitation-debit.regles.reset-code-email.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : codes de reinitialisation faux, par email."
+    },
+    {
+      "name": "app.limitation-debit.regles.reset-code-email.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : codes de reinitialisation faux, par email."
+    },
+    {
+      "name": "app.limitation-debit.regles.renvoi-verification-email.limite",
+      "type": "java.lang.Integer",
+      "description": "Nombre maximum d'evenements par fenetre : renvois du lien de verification, par email."
+    },
+    {
+      "name": "app.limitation-debit.regles.renvoi-verification-email.fenetre",
+      "type": "java.time.Duration",
+      "description": "Duree de la fenetre (ex. 1m, 15m, 1h, 24h) : renvois du lien de verification, par email."
     }
   ]
 }

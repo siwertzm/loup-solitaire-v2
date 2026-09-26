@@ -5,6 +5,7 @@
     "NON": "No"
   },
   "AUTH": {
+    "ERREUR_TROP_DE_TENTATIVES": "Too many attempts. Please wait a few minutes before trying again.",
     "LOGIN": {
       "TITRE": "Log in",
       "INTRODUCTION": "Resume your adventure right where you left it.",
@@ -17,7 +18,12 @@
       "SEPARATEUR_OU": "OR",
       "LIEN_INSCRIPTION": "No account yet? <strong>Sign up</strong>",
       "ERREUR_IDENTIFIANTS": "Invalid credentials, or account not verified.",
-      "MOT_DE_PASSE_OUBLIE": "Forgot password?"
+      "MOT_DE_PASSE_OUBLIE": "Forgot password?",
+      "COMPTE_NON_VERIFIE": "Your email address has not been verified yet.",
+      "RENVOYER_EMAIL": "Resend the email",
+      "RENVOI_EN_COURS": "Sending...",
+      "LIEN_RENVOYE": "Email sent. Remember to check your spam folder.",
+      "ERREUR_RENVOI": "Could not send the email. Please try again later."
     },
     "REGISTER": {
       "TITRE": "Sign up",

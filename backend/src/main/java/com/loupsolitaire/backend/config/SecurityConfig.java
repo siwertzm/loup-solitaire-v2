@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final LimitationDebitFilter limitationDebitFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final AppProperties appProperties;
 
@@ -42,6 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
+                // Limitation de debit d'abord (SEC-02) : une requete refusee ne
+                // coute ni verification de JWT, ni BCrypt, ni envoi d'email.
+                .addFilterBefore(limitationDebitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

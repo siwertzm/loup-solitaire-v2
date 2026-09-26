@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.loupsolitaire.backend.config.ProprietesDeTest;
+import com.loupsolitaire.backend.exception.TropDeRequetesException;
 import com.loupsolitaire.backend.model.PasswordResetToken;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PasswordResetTokenRepository;
@@ -63,8 +65,10 @@ class PasswordResetServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Vrai limiteur (regles de application.properties) : les tests SEC-02
+        // ci-dessous verifient le comportement de bout en bout.
         service = new PasswordResetService(utilisateurRepository, tokenRepository, passwordEncoder, emailService,
-                refreshTokenService, ProprietesDeTest.app());
+                refreshTokenService, ProprietesDeTest.app(), new LimiteurDeDebit(ProprietesDeTest.limitationDebit()));
 
         utilisateur = new Utilisateur();
         utilisateur.setId(UUID.randomUUID());
@@ -247,6 +251,44 @@ class PasswordResetServiceTest {
         assertThatThrownBy(() -> service.verifierCode(EMAIL, "123456"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(MESSAGE_CODE);
+    }
+
+    // =========================================================
+    // Limitation de debit (SEC-02)
+    // =========================================================
+
+    @Test
+    void auQuatriemeCodeDemandeEnUneHeureLaDemandeEstRefuseeEn429() {
+        when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+
+        for (int i = 0; i < 3; i++) {
+            service.demanderReinitialisation(EMAIL);
+        }
+
+        assertThatThrownBy(() -> service.demanderReinitialisation(EMAIL))
+                .isInstanceOf(TropDeRequetesException.class);
+        // Meme compteur quelle que soit l'ecriture de l'email.
+        assertThatThrownBy(() -> service.demanderReinitialisation(" Marius@Example.com "))
+                .isInstanceOf(TropDeRequetesException.class);
+    }
+
+    @Test
+    void apresDixCodesFauxLEmailEstBloqueMemeAvecUnNouveauCode() {
+        // Chaque essai porte sur un code neuf (0 tentative) : sans limite par
+        // email, le compteur du token ne bloquerait jamais.
+        when(utilisateurRepository.findByEmail(EMAIL)).thenReturn(Optional.of(utilisateur));
+        when(tokenRepository.findTopByUtilisateurAndUtiliseFalseOrderByCreatedAtDesc(utilisateur))
+                .thenAnswer(inv -> Optional.of(token(0, dansDixMinutes())));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        for (int i = 0; i < 10; i++) {
+            assertThatThrownBy(() -> service.verifierCode(EMAIL, "000000"))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        assertThatThrownBy(() -> service.verifierCode(EMAIL, "123456"))
+                .isInstanceOf(TropDeRequetesException.class);
+        verify(passwordEncoder, times(10)).matches(anyString(), anyString());
     }
 
     // =========================================================

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -36,6 +37,14 @@ export class LoginPage {
   readonly enCours = signal(false);
   readonly erreur = signal<string | null>(null);
 
+  // Compte trouvé et mot de passe correct, mais email pas encore vérifié
+  // (réponse 403 du backend) : on propose de renvoyer le lien.
+  readonly compteNonVerifie = signal(false);
+  readonly renvoiEnCours = signal(false);
+  readonly messageRenvoi = signal<string | null>(null);
+  readonly erreurRenvoi = signal<string | null>(null);
+  private identifiantNonVerifie = '';
+
   readonly form = this.fb.nonNullable.group({
     identifiant: ['', Validators.required],
     password: ['', Validators.required],
@@ -48,16 +57,49 @@ export class LoginPage {
 
     this.enCours.set(true);
     this.erreur.set(null);
+    this.reinitialiserRenvoi();
 
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.enCours.set(false);
         this.router.navigateByUrl('/accueil');
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.enCours.set(false);
-        this.erreur.set('AUTH.LOGIN.ERREUR_IDENTIFIANTS');
+        if (err.status === 403) {
+          this.identifiantNonVerifie = this.form.controls.identifiant.value.trim();
+          this.compteNonVerifie.set(true);
+          return;
+        }
+        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_IDENTIFIANTS');
       },
     });
+  }
+
+  renvoyerVerification(): void {
+    if (!this.identifiantNonVerifie || this.renvoiEnCours()) {
+      return;
+    }
+
+    this.renvoiEnCours.set(true);
+    this.messageRenvoi.set(null);
+    this.erreurRenvoi.set(null);
+
+    this.authService.resendVerification(this.identifiantNonVerifie).subscribe({
+      next: () => {
+        this.renvoiEnCours.set(false);
+        this.messageRenvoi.set('AUTH.LOGIN.LIEN_RENVOYE');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.renvoiEnCours.set(false);
+        this.erreurRenvoi.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_RENVOI');
+      },
+    });
+  }
+
+  private reinitialiserRenvoi(): void {
+    this.compteNonVerifie.set(false);
+    this.messageRenvoi.set(null);
+    this.erreurRenvoi.set(null);
   }
 }

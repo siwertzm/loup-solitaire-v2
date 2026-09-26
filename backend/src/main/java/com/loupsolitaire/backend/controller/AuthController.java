@@ -68,11 +68,13 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(appProperties.mobileLoginUrl())).build();
     }
 
-    // Reponse identique que l'email existe ou non, et qu'il soit deja verifie
-    // ou non : evite de laisser deviner quels emails sont enregistres.
+    // Reponse identique que le compte existe ou non, et qu'il soit deja
+    // verifie ou non : evite de laisser deviner quels comptes sont enregistres.
+    // Accepte {"email"} (Profil) ou {"identifiant"} (pseudo ou email, ecran de
+    // connexion).
     @PostMapping("/resend-verification")
     public ResponseEntity<Void> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
-        compteService.renvoyerVerification(request.getEmail());
+        compteService.renvoyerVerification(request.identifiantOuEmail());
         return ResponseEntity.accepted().build();
     }
 

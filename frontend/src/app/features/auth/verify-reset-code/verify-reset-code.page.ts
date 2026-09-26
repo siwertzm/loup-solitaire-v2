@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   inject,
@@ -135,12 +136,12 @@ export class VerifyResetCodePage implements OnInit {
           );
         },
 
-        error: () => {
+        error: (err: HttpErrorResponse) => {
 
           this.enCours.set(false);
 
           this.erreur.set(
-            'AUTH.VERIFY_RESET_CODE.ERREUR_CODE',
+            err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.VERIFY_RESET_CODE.ERREUR_CODE',
           );
         },
       });
@@ -177,12 +178,12 @@ export class VerifyResetCodePage implements OnInit {
           );
         },
 
-        error: () => {
+        error: (err: HttpErrorResponse) => {
 
           this.renvoiEnCours.set(false);
 
           this.erreur.set(
-            'AUTH.VERIFY_RESET_CODE.ERREUR_RENVOI',
+            err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.VERIFY_RESET_CODE.ERREUR_RENVOI',
           );
         },
       });
