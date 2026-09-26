@@ -1,5 +1,7 @@
 package com.loupsolitaire.backend.config;
 
+import java.util.Set;
+
 import javax.crypto.SecretKey;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,15 +24,26 @@ import jakarta.validation.constraints.Positive;
 @Validated
 @ConfigurationProperties(prefix = "jwt")
 public record JwtProperties(
-        @NotBlank String secret,
+        @NotBlank(message = "JWT_SECRET est obligatoire (generer avec : openssl rand -base64 32)") String secret,
         @Positive long expirationMs,
         @Positive long refreshExpirationDays) {
 
     private static final int OCTETS_MINIMUM = 32;
 
+    // SEC-03 : cles deja publiees dans le depot (anciennes valeurs par
+    // defaut de application.properties). N'importe qui peut forger un jeton
+    // avec : refusees meme si elles sont fournies explicitement.
+    private static final Set<String> CLES_PUBLIEES = Set.of(
+            "bG91cC1zb2xpdGFpcmUtREVWLU9OTFktc2VjcmV0LW5ldmVyLXVzZS1pbi1wcm9k");
+
     public JwtProperties {
         // Une valeur vide est signalee par @NotBlank ci-dessus.
         if (secret != null && !secret.isBlank()) {
+            if (CLES_PUBLIEES.contains(secret.trim())) {
+                throw new IllegalArgumentException(
+                        "jwt.secret (JWT_SECRET) est une cle publiee dans le depot : "
+                                + "en generer une nouvelle avec : openssl rand -base64 32");
+            }
             byte[] cle;
             try {
                 cle = Decoders.BASE64.decode(secret);
