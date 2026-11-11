@@ -4,7 +4,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 - **Source** : `source/` contient le cahier des charges d'origine (audit du 25/09/2026) et les trois listes de lots. Le détail des constats, les écarts VO/VF (section 5) et les décisions D-01 à D-10 (section 7) y restent.
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
-- **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété.
+- **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
 - Seules les tâches **à faire** ont un dossier. Quand une tâche est finie, passer son statut à « Fait » dans son `spec.md` et dans le tableau ci-dessous.
 
 ## Tâches à faire
@@ -49,6 +49,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | [QUAL-02](lot-2/QUAL-02-version-api/spec.md) | Moyenne | M | Version minimale de l'app, /api/v1, OpenAPI |
 | [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |
 | [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
+| [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
