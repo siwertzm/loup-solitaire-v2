@@ -1,6 +1,5 @@
 package com.loupsolitaire.backend.service;
 
-import java.util.List;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -23,12 +22,4 @@ public class TableDeHasardService {
         return random.nextInt(10);
     }
 
-    // Tirage uniforme parmi une liste d'options (ex. les 9 armes du
-    // catalogue pour la Discipline Kai de Maitrise des Armes).
-    public <T> T tirerParmi(List<T> options) {
-        if (options == null || options.isEmpty()) {
-            throw new IllegalArgumentException("Impossible de tirer dans une liste vide ou nulle");
-        }
-        return options.get(random.nextInt(options.size()));
-    }
 }

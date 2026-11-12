@@ -1,10 +1,8 @@
 package com.loupsolitaire.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -29,31 +27,6 @@ class TableDeHasardServiceTest {
         assertThat(service.tirerChiffre()).isEqualTo(7);
     }
 
-    @Test
-    void tirerParmiRenvoieLElementCorrespondantAuTirage() {
-        when(random.nextInt(9)).thenReturn(3);
 
-        TableDeHasardService service = new TableDeHasardService(random);
-        List<String> armes = List.of(
-                "poignard", "glaive", "lance", "epee", "marteau", "sabre", "masse", "hache", "baton"
-        );
 
-        assertThat(service.tirerParmi(armes)).isEqualTo("epee");
-    }
-
-    @Test
-    void tirerParmiRefuseUneListeVide() {
-        TableDeHasardService service = new TableDeHasardService(random);
-
-        assertThatThrownBy(() -> service.tirerParmi(List.of()))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void tirerParmiRefuseUneListeNulle() {
-        TableDeHasardService service = new TableDeHasardService(random);
-
-        assertThatThrownBy(() -> service.tirerParmi(null))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }
