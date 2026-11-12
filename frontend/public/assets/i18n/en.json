@@ -173,9 +173,13 @@
     "SUCCES_VERIFICATION": "Verification email resent.",
     "ERREUR_VERIFICATION": "Sending failed.",
     "SUCCES_PROFIL_MAJ": "Profile updated.",
-    "SUCCES_PROFIL_MAJ_EMAIL": "Profile updated. Please verify your new email address.",
     "ERREUR_MDP_ACTUEL": "Current password incorrect.",
-    "ERREUR_MDP_MODIFICATION": "The change failed."
+    "ERREUR_MDP_MODIFICATION": "The change failed.",
+    "CHAMP_MDP_EMAIL": "CURRENT PASSWORD (REQUIRED TO CHANGE E-MAIL)",
+    "EMAIL_EN_ATTENTE": "New address awaiting confirmation: {{email}}. Your current address stays active until then.",
+    "SUCCES_EMAIL_EN_ATTENTE": "A confirmation link was sent to your new address. Your current address stays active until you confirm.",
+    "ERREUR_MDP_REQUIS_EMAIL": "Enter your current password to change your e-mail.",
+    "ERREUR_DEJA_UTILISE": "This username or e-mail address is already in use."
   },
   "PRESENTATION_LIVRE": {
     "RETOUR": "‹ MENU",

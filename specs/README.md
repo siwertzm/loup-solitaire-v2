@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 7 | B | [SEC-06](lot-2/SEC-06-changement-email/spec.md) | Moyenne | M | Mot de passe exigé pour changer d'email ; ancien email actif jusqu'à confirmation |
 | 8 | B | [SEC-05](lot-2/SEC-05-anti-enumeration/spec.md) | Moyenne | S | Réponses identiques à l'inscription |
 | 9 | B | [OPS-05](lot-2/OPS-05-purge-tokens/spec.md) | Moyenne | S | Purge quotidienne des tokens expirés et des comptes non vérifiés |
 | 10 | B | [RGPD-03](lot-2/RGPD-03-conservation-et-logs/spec.md) | Moyenne | S | Conservation ; emails masqués dans les logs |

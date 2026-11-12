@@ -168,6 +168,17 @@ class CompteServiceTest {
     }
 
     @Test
+    void renvoyerVerificationRenvoieLeLienDUnNouvelEmailEnAttente() {
+        // SEC-06 : compte verifie, mais nouvel email pas encore confirme.
+        utilisateur.setEmailEnAttente("nouveau@example.com");
+        when(utilisateurRepository.findByEmail("marius@example.com")).thenReturn(Optional.of(utilisateur));
+
+        compteService.renvoyerVerification("marius@example.com");
+
+        verify(emailVerificationService).envoyerLienDeVerification(utilisateur);
+    }
+
+    @Test
     void renvoyerVerificationNeFaitRienSiL_emailEstInconnu() {
         when(utilisateurRepository.findByEmail("inconnu@example.com")).thenReturn(Optional.empty());
 
@@ -248,18 +259,52 @@ class CompteServiceTest {
                 .isInstanceOf(RessourceNonTrouveeException.class);
     }
 
-    @Test
-    void modifierProfilChangeL_emailEtRedemandeUneVerification() {
-        utilisateurConnecteExiste();
+    // SEC-06 : changement d'email avec le bon mot de passe.
+    private UpdateProfilRequest changementEmail(String email, String motDePasse) {
         UpdateProfilRequest request = new UpdateProfilRequest();
-        request.setEmail("nouveau@example.com");
+        request.setEmail(email);
+        request.setMotDePasseActuel(motDePasse);
+        return request;
+    }
 
-        UtilisateurResponse reponse = compteService.modifierProfil(connecte, request);
+    @Test
+    void modifierProfilMetLeNouvelEmailEnAttenteSansToucherAuCompte() {
+        utilisateurConnecteExiste();
+        when(passwordEncoder.matches("bon-mdp", "hash-actuel")).thenReturn(true);
 
-        assertThat(utilisateur.getEmail()).isEqualTo("nouveau@example.com");
-        assertThat(utilisateur.isEmailVerifie()).isFalse();
-        assertThat(reponse.emailVerifie()).isFalse();
-        verify(emailVerificationService).envoyerLienDeVerification(utilisateur);
+        UtilisateurResponse reponse = compteService.modifierProfil(connecte,
+                changementEmail("nouveau@example.com", "bon-mdp"));
+
+        // L'email du compte et sa verification ne changent pas : la
+        // connexion avec l'ancien email continue de fonctionner.
+        assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
+        assertThat(utilisateur.isEmailVerifie()).isTrue();
+        assertThat(reponse.emailVerifie()).isTrue();
+        verify(emailVerificationService).demanderChangementEmail(utilisateur, "nouveau@example.com");
+    }
+
+    @Test
+    void modifierProfilRefuseUnChangementDEmailSansMotDePasse() {
+        utilisateurConnecteExiste();
+
+        assertThatThrownBy(() -> compteService.modifierProfil(connecte,
+                changementEmail("nouveau@example.com", null)))
+                .isInstanceOf(BadCredentialsException.class);
+
+        verifyNoInteractions(emailVerificationService);
+    }
+
+    @Test
+    void modifierProfilRefuseUnChangementDEmailAvecUnMauvaisMotDePasse() {
+        utilisateurConnecteExiste();
+        when(passwordEncoder.matches("faux", "hash-actuel")).thenReturn(false);
+
+        assertThatThrownBy(() -> compteService.modifierProfil(connecte,
+                changementEmail("nouveau@example.com", "faux")))
+                .isInstanceOf(BadCredentialsException.class);
+
+        assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
+        verifyNoInteractions(emailVerificationService);
     }
 
     @Test
@@ -277,9 +322,9 @@ class CompteServiceTest {
     @Test
     void modifierProfilRefuseUnEmailDejaUtiliseParUnAutreCompte() {
         utilisateurConnecteExiste();
+        when(passwordEncoder.matches("bon-mdp", "hash-actuel")).thenReturn(true);
         when(utilisateurRepository.existsByEmail("prisparunautre@example.com")).thenReturn(true);
-        UpdateProfilRequest request = new UpdateProfilRequest();
-        request.setEmail("prisparunautre@example.com");
+        UpdateProfilRequest request = changementEmail("prisparunautre@example.com", "bon-mdp");
 
         assertThatThrownBy(() -> compteService.modifierProfil(connecte, request))
                 .isInstanceOf(ConflitException.class);

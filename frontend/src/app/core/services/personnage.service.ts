@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { UpdateProfilRequest } from '../models/auth.model';
 import { ChapitreParcouru, MoiResponse, PersonnageResume, TirageCreation } from '../models/personnage.model';
 
 @Injectable({ providedIn: 'root' })
@@ -133,7 +134,7 @@ export class PersonnageService {
   }
 
   /** PUT /auth/me — met à jour username/email (email → re-vérification nécessaire). */
-  majCompte(payload: { username: string; email: string }): Observable<MoiResponse> {
+  majCompte(payload: UpdateProfilRequest): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);
   }
  

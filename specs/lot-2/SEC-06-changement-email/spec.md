@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M | `feature-SEC-06` | À faire |
+| 2 | Moyenne | M | `feature-SEC-06` | Fait |
 
 Origine : Cahier des charges (SEC-06) + audit Claude Code du 11/11/2026
 
@@ -33,4 +33,4 @@ Origine : Cahier des charges (SEC-06) + audit Claude Code du 11/11/2026
 
 ## Fichiers concernés
 
-`backend/src/main/java/com/loupsolitaire/backend/service/CompteService.java`, `EmailVerificationService.java`, `request/UpdateProfilRequest.java`, `model/Utilisateur.java`, migration `015-email-en-attente`, pages profil du frontend
+`backend/src/main/java/com/loupsolitaire/backend/service/CompteService.java`, `EmailVerificationService.java`, `request/UpdateProfilRequest.java`, `model/Utilisateur.java`, migration `016-email-en-attente` (015 déjà prise par DATA-00), pages profil du frontend

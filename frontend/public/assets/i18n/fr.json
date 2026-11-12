@@ -156,7 +156,7 @@
     "AIDE_USERNAME": "Utilisez entre 3 et 30 caractères, sans @.",
     "CHAMP_EMAIL": "E-MAIL",
     "AIDE_EMAIL": "Adresse e-mail invalide.",
-    "RENVOYER_VERIFICATION": "E-mail non vérifié — renvoyer le lien",
+    "RENVOYER_VERIFICATION": "E-mail non confirmé — renvoyer le lien",
     "ENREGISTRER": "ENREGISTRER",
     "SECTION_MOT_DE_PASSE": "MOT DE PASSE",
     "CHAMP_MDP_ACTUEL": "MOT DE PASSE ACTUEL",
@@ -173,9 +173,13 @@
     "SUCCES_VERIFICATION": "E-mail de vérification renvoyé.",
     "ERREUR_VERIFICATION": "L'envoi a échoué.",
     "SUCCES_PROFIL_MAJ": "Profil mis à jour.",
-    "SUCCES_PROFIL_MAJ_EMAIL": "Profil mis à jour. Vérifiez votre nouvelle adresse e-mail.",
     "ERREUR_MDP_ACTUEL": "Mot de passe actuel incorrect.",
-    "ERREUR_MDP_MODIFICATION": "La modification a échoué."
+    "ERREUR_MDP_MODIFICATION": "La modification a échoué.",
+    "CHAMP_MDP_EMAIL": "MOT DE PASSE ACTUEL (EXIGÉ POUR CHANGER D'E-MAIL)",
+    "EMAIL_EN_ATTENTE": "Nouvelle adresse en attente de confirmation : {{email}}. Votre adresse actuelle reste active jusque-là.",
+    "SUCCES_EMAIL_EN_ATTENTE": "Un lien de confirmation a été envoyé à votre nouvelle adresse. Votre adresse actuelle reste active jusqu'à la confirmation.",
+    "ERREUR_MDP_REQUIS_EMAIL": "Saisissez votre mot de passe actuel pour changer d'e-mail.",
+    "ERREUR_DEJA_UTILISE": "Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé."
   },
   "PRESENTATION_LIVRE": {
     "RETOUR": "‹ MENU",

@@ -86,7 +86,9 @@ public class CompteService {
         String cle = compte.map(Utilisateur::getEmail).orElse(identifiant);
         limiteurDeDebit.consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, cle);
 
-        compte.filter(utilisateur -> !utilisateur.isEmailVerifie())
+        // SEC-06 : aussi pour un compte verifie qui attend la confirmation
+        // d'un nouvel email (le lien part alors a la nouvelle adresse).
+        compte.filter(utilisateur -> !utilisateur.isEmailVerifie() || utilisateur.getEmailEnAttente() != null)
                 .ifPresent(emailVerificationService::envoyerLienDeVerification);
     }
 
@@ -126,15 +128,19 @@ public class CompteService {
             utilisateur.setUsername(request.getUsername());
         }
 
+        // SEC-06 : changer d'email exige le mot de passe (un telephone
+        // deverrouille ou un access token vole ne suffit plus). Le nouvel
+        // email reste en attente : l'ancien sert a se connecter jusqu'a la
+        // confirmation (voir EmailVerificationService).
         if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(utilisateur.getEmail())) {
+            if (request.getMotDePasseActuel() == null
+                    || !passwordEncoder.matches(request.getMotDePasseActuel(), utilisateur.getPassword())) {
+                throw new BadCredentialsException("Mot de passe actuel incorrect");
+            }
             if (utilisateurRepository.existsByEmail(request.getEmail())) {
                 throw new ConflitException("Cet email est deja utilise");
             }
-            utilisateur.setEmail(request.getEmail());
-            // Changer d'email revoque la verification : il faut reconfirmer
-            // la nouvelle adresse.
-            utilisateur.setEmailVerifie(false);
-            emailVerificationService.envoyerLienDeVerification(utilisateur);
+            emailVerificationService.demanderChangementEmail(utilisateur, request.getEmail());
         }
 
         return UtilisateurResponse.fromEntity(utilisateur);

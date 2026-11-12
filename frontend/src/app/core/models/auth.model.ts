@@ -30,11 +30,15 @@ export interface UtilisateurResponse {
   username: string;
   email: string;
   emailVerifie: boolean;
+  emailEnAttente: string | null;
   personnages: unknown[]; // affiné quand le modèle Personnage sera défini
 }
 
 export interface UpdateProfilRequest {
+  username?: string;
   email?: string;
+  /** SEC-06 : exigé par le serveur seulement si l'e-mail change. */
+  motDePasseActuel?: string;
 }
 
 export interface ErrorResponse {

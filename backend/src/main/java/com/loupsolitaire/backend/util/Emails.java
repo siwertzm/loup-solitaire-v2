@@ -22,4 +22,16 @@ public final class Emails {
     public static String normaliser(String email) {
         return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
     }
+
+    // Adresse masquee pour un message lisible par un tiers : "j***@mail.fr".
+    public static String masquer(String email) {
+        if (email == null) {
+            return null;
+        }
+        int arobase = email.indexOf('@');
+        if (arobase <= 0) {
+            return "***";
+        }
+        return email.charAt(0) + "***" + email.substring(arobase);
+    }
 }

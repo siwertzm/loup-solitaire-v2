@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.loupsolitaire.backend.config.ProprietesDeTest;
+import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.model.EmailVerificationToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -82,6 +83,58 @@ class EmailVerificationServiceTest {
         assertThat(token.isUtilise()).isTrue();
         verify(utilisateurRepository).save(utilisateur);
         verify(tokenRepository).save(token);
+    }
+
+    // =========================================================
+    // SEC-06 : changement d'email
+    // =========================================================
+
+    @Test
+    void demanderChangementEmailMetEnAttenteAnnuleLesAnciensLiensEtPrevientLAncienneAdresse() {
+        utilisateur.setEmailVerifie(true);
+
+        service.demanderChangementEmail(utilisateur, "Nouveau@Example.com ");
+
+        assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
+        assertThat(utilisateur.getEmailEnAttente()).isEqualTo("nouveau@example.com");
+        assertThat(utilisateur.isEmailVerifie()).isTrue();
+        verify(tokenRepository).deleteByUtilisateur(utilisateur);
+        verify(emailService).envoyerConfirmationNouvelEmail(
+                eq("nouveau@example.com"), contains("/auth/verify-email?token="));
+        verify(emailService).envoyerAlerteChangementEmail("marius@example.com", "n***@example.com");
+        verify(emailService, never()).envoyerEmailVerification(anyString(), anyString());
+    }
+
+    @Test
+    void verifierRemplaceLEmailParCeluiEnAttente() {
+        utilisateur.setEmailVerifie(true);
+        utilisateur.setEmailEnAttente("nouveau@example.com");
+        EmailVerificationToken token = new EmailVerificationToken();
+        token.setUtilisateur(utilisateur);
+        token.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS));
+        when(tokenRepository.findByTokenHash(anyString())).thenReturn(Optional.of(token));
+
+        service.verifier("token-valide");
+
+        assertThat(utilisateur.getEmail()).isEqualTo("nouveau@example.com");
+        assertThat(utilisateur.getEmailEnAttente()).isNull();
+        assertThat(utilisateur.isEmailVerifie()).isTrue();
+    }
+
+    @Test
+    void verifierRefuseUneAdressePriseEntreTempsParUnAutreCompte() {
+        utilisateur.setEmailVerifie(true);
+        utilisateur.setEmailEnAttente("nouveau@example.com");
+        EmailVerificationToken token = new EmailVerificationToken();
+        token.setUtilisateur(utilisateur);
+        token.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS));
+        when(tokenRepository.findByTokenHash(anyString())).thenReturn(Optional.of(token));
+        when(utilisateurRepository.existsByEmail("nouveau@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> service.verifier("token-valide")).isInstanceOf(ConflitException.class);
+
+        assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
+        assertThat(token.isUtilise()).isFalse();
     }
 
     @Test

@@ -49,9 +49,53 @@ public class EmailService {
     /**
      * Email envoyé après la création du compte.
      */
-    public void envoyerEmailVerification(
+    public void envoyerEmailVerification(String destinataire, String lienConfirmation) {
+        envoyerLienConfirmation(
+                destinataire,
+                lienConfirmation,
+                "Confirme ton entrée dans l'aventure — Loup Solitaire",
+                "Ton aventure va commencer",
+                "Bienvenue dans l'aventure.\n\n"
+                        + "Il ne reste qu'une étape avant de pouvoir commencer ton périple : "
+                        + "confirmer ton adresse email.",
+                paragraphes(
+                        "Bienvenue, jeune aventurier.",
+                        "Avant de pouvoir parcourir les terres du Magnamund, nous devons vérifier ton adresse email.",
+                        "Utilise le sceau ci-dessous pour confirmer ton compte."),
+                "Si tu n'es pas à l'origine de cette inscription, ignore simplement cet email.",
+                "verification");
+    }
+
+    /**
+     * SEC-06 : email envoyé à la NOUVELLE adresse quand un joueur change
+     * d'email. L'ancienne adresse reste celle du compte tant que ce lien
+     * n'est pas utilisé.
+     */
+    public void envoyerConfirmationNouvelEmail(String destinataire, String lienConfirmation) {
+        envoyerLienConfirmation(
+                destinataire,
+                lienConfirmation,
+                "Confirme ta nouvelle adresse — Loup Solitaire",
+                "Ta nouvelle adresse",
+                "Tu as demandé à utiliser cette adresse pour ton compte Loup Solitaire.\n\n"
+                        + "Ton ancienne adresse reste active tant que tu n'as pas confirmé celle-ci.",
+                paragraphes(
+                        "Tu as demandé à utiliser cette adresse pour ton compte.",
+                        "Ton ancienne adresse reste active tant que tu n'as pas confirmé celle-ci.",
+                        "Utilise le sceau ci-dessous pour confirmer ta nouvelle adresse."),
+                "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email.",
+                "confirmation de nouvelle adresse");
+    }
+
+    private void envoyerLienConfirmation(
             String destinataire,
-            String lienConfirmation
+            String lienConfirmation,
+            String sujet,
+            String titre,
+            String introTexte,
+            String introHtml,
+            String pied,
+            String type
     ) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -61,55 +105,24 @@ public class EmailService {
 
             helper.setFrom(appProperties.mail().from());
             helper.setTo(destinataire);
-            helper.setSubject("Confirme ton entrée dans l'aventure — Loup Solitaire");
+            helper.setSubject(sujet);
 
             String lienSecurise = echapperHtml(lienConfirmation);
 
             String texteBrut =
                     "LOUP SOLITAIRE\n\n" +
-                    "Bienvenue dans l'aventure.\n\n" +
-                    "Il ne reste qu'une étape avant de pouvoir commencer ton périple : " +
-                    "confirmer ton adresse email.\n\n" +
+                    introTexte + "\n\n" +
                     "Lien de confirmation :\n" +
                     lienConfirmation + "\n\n" +
                     "Ce lien est valable pendant 24 heures.\n\n" +
-                    "Si tu n'es pas à l'origine de cette inscription, " +
-                    "tu peux simplement ignorer cet email.\n\n" +
+                    pied + "\n\n" +
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
                     "34px 34px 18px 34px",
-                    "Ton aventure va commencer",
+                    titre,
                     """
-                                            <p style="
-                                                margin:0 0 17px 0;
-                                                color:#ece2c8;
-                                                font-size:17px;
-                                                line-height:1.65;
-                                            ">
-                                                Bienvenue, jeune aventurier.
-                                            </p>
-
-                                            <p style="
-                                                margin:0 0 17px 0;
-                                                color:#c9c0a8;
-                                                font-size:16px;
-                                                line-height:1.65;
-                                            ">
-                                                Avant de pouvoir parcourir les terres
-                                                du Magnamund, nous devons vérifier
-                                                ton adresse email.
-                                            </p>
-
-                                            <p style="
-                                                margin:0 0 28px 0;
-                                                color:#c9c0a8;
-                                                font-size:16px;
-                                                line-height:1.65;
-                                            ">
-                                                Utilise le sceau ci-dessous pour
-                                                confirmer ton compte.
-                                            </p>
+                                            {{INTRO}}
 
                                             <!-- BOUTON -->
                                             <table
@@ -193,22 +206,86 @@ public class EmailService {
 
                                             </div>
                     """,
-                    "Si tu n'es pas à l'origine de cette inscription, ignore simplement cet email."
+                    pied
             )
+                    .replace("{{INTRO}}", introHtml)
                     .replace("{{LIEN}}", lienSecurise);
 
             helper.setText(texteBrut, html);
 
-            envoyerApresCommit(message, "verification", destinataire);
+            envoyerApresCommit(message, type, destinataire);
 
         } catch (Exception e) {
 
             log.error(
-                    "Echec de la preparation de l'email de verification a {} : {}",
+                    "Echec de la preparation de l'email de {} a {} : {}",
+                    type,
                     destinataire,
                     e.getMessage()
             );
         }
+    }
+
+    /**
+     * SEC-06 : prévient l'ANCIENNE adresse qu'un changement d'email a été
+     * demandé (téléphone volé, session détournée...). L'adresse demandée
+     * est masquée.
+     */
+    public void envoyerAlerteChangementEmail(String ancienneAdresse, String nouvelleAdresseMasquee) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(appProperties.mail().from());
+            helper.setTo(ancienneAdresse);
+            helper.setSubject("Changement d'adresse demandé — Loup Solitaire");
+
+            String demande = "Une demande de changement de l'adresse de ton compte vers "
+                    + nouvelleAdresseMasquee + " vient d'être faite.";
+            String conseil = "Si ce n'est pas toi, change ton mot de passe dès maintenant : "
+                    + "tant que la nouvelle adresse n'est pas confirmée, celle-ci reste celle de ton compte.";
+
+            String texteBrut =
+                    "LOUP SOLITAIRE\n\n" +
+                    demande + "\n\n" +
+                    conseil + "\n\n" +
+                    "Politique de confidentialité : " + lienConfidentialite();
+
+            String html = miseEnPage(
+                    "34px 34px 28px 34px",
+                    "Changement d'adresse demandé",
+                    paragraphes(demande, conseil),
+                    "Si c'est bien toi, tu n'as rien à faire."
+            );
+
+            helper.setText(texteBrut, html);
+
+            envoyerApresCommit(message, "alerte de changement d'adresse", ancienneAdresse);
+
+        } catch (Exception e) {
+            log.error(
+                    "Echec de la preparation de l'alerte de changement d'adresse a {} : {}",
+                    ancienneAdresse,
+                    e.getMessage()
+            );
+        }
+    }
+
+    // Paragraphes d'introduction : le premier mis en avant, les textes
+    // echappes (ils peuvent contenir une adresse).
+    private String paragraphes(String... textes) {
+        StringBuilder html = new StringBuilder();
+        for (int i = 0; i < textes.length; i++) {
+            boolean premier = i == 0;
+            boolean dernier = i == textes.length - 1;
+            html.append("<p style=\"margin:0 0 ").append(dernier ? "28px" : "17px").append(" 0;")
+                    .append("color:").append(premier ? "#ece2c8" : "#c9c0a8").append(';')
+                    .append("font-size:").append(premier ? "17px" : "16px").append(';')
+                    .append("line-height:1.65;\">")
+                    .append(echapperHtml(textes[i]))
+                    .append("</p>");
+        }
+        return html.toString();
     }
 
     /**
