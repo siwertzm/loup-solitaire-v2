@@ -765,6 +765,46 @@ class PersonnageServiceTest {
         assertThat(p.getEnduranceActuelle()).isEqualTo(20);
     }
 
+    private static Chapitre chapitreSansCombat(int id) {
+        Chapitre chapitre = new Chapitre();
+        chapitre.setId(id);
+        return chapitre;
+    }
+
+    @Test
+    void laGuerisonNeCompteQuUneFoisLeParagraphe21EtSesNouvellesTentatives() {
+        // REGLE-13 : 21 -> 2101 -> 2102 rejouent le meme paragraphe (tirage
+        // rate) : +1 au total. Puis 312, un vrai paragraphe : +1.
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(30);
+        p.setEnduranceActuelle(15);
+        Discipline guerison = new Discipline();
+        guerison.setId(IdDiscipline.GUERISON);
+        p.setDisciplines(List.of(guerison));
+
+        Chapitre c21 = chapitreSansCombat(21);
+        Chapitre c2101 = chapitreSansCombat(2101);
+        Chapitre c2102 = chapitreSansCombat(2102);
+        Chapitre c312 = chapitreSansCombat(312);
+        chapitre0.setLiens(List.of(creerLien(c21)));
+        c21.setLiens(List.of(creerLien(c2101)));
+        c2101.setLiens(List.of(creerLien(c2102)));
+        c2102.setLiens(List.of(creerLien(c312)));
+        for (Chapitre c : List.of(chapitre0, c21, c2101, c2102)) {
+            when(chapitreRepository.findById(c.getId())).thenReturn(Optional.of(c));
+        }
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 21);
+        personnageService.avancerVersChapitre(p, 2101);
+        personnageService.avancerVersChapitre(p, 2102);
+        assertThat(p.getEnduranceActuelle()).isEqualTo(16);
+
+        personnageService.avancerVersChapitre(p, 312);
+        assertThat(p.getEnduranceActuelle()).isEqualTo(17);
+    }
+
     @Test
     void laGuerisonNeSAppliquePasSurUnChapitreDeCombat() {
         Personnage p = new Personnage();

@@ -52,6 +52,10 @@ public class PersonnageService {
 
     private static final int NB_DISCIPLINES_A_CHOISIR = 5;
     private static final int CHAPITRE_DEPART_ID = 0;
+    // REGLE-13 : le livre compte 350 paragraphes. Au-dela, ce sont des
+    // sous-sections techniques (2101 et 2102 : nouvelles tentatives du
+    // tirage au 21), pas de nouveaux paragraphes traverses.
+    static final int DERNIER_PARAGRAPHE_DU_LIVRE = 350;
 
     // Piece Premium : permet de revenir en arriere apres une defaite ou de
     // ressusciter (voir verifierPossedeCoin).
@@ -456,8 +460,11 @@ public class PersonnageService {
     // si le combat n'est pas encore engage (l'idee du livre est "un
     // paragraphe traverse sans avoir a se battre", pas juste "pas encore
     // combattu").
+    //
+    // REGLE-13 : rien sur les sous-sections (2101, 2102) : elles rejouent le
+    // meme paragraphe 21, deja compte a l'arrivee.
     private void appliquerGuerison(Personnage personnage, Chapitre nouveauChapitre) {
-        if (nouveauChapitre.isCombat()) {
+        if (nouveauChapitre.isCombat() || nouveauChapitre.getId() > DERNIER_PARAGRAPHE_DU_LIVRE) {
             return;
         }
 

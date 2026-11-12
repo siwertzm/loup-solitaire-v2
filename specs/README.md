@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 14 | C | [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
 | 15 | C | [REGLE-07](lot-2/REGLE-07-table-maitrise-armes/spec.md) | Moyenne | S | Table 0-9 de la Maîtrise des Armes |
 | 16 | C | [REGLE-14](lot-2/REGLE-14-choix-sinon-exclusifs/spec.md) | Basse | S | Choix « Sinon » exclusifs |
 | 17 | C | [REGLE-11](lot-2/REGLE-11-mains-nues-260/spec.md) + [DATA-13](lot-2/DATA-13-marqueur-sans-arme-260/spec.md) | Moyenne | S | 260 : mains nues sans cumul |
