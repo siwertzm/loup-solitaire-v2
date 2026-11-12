@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import {
   Observable,
+  finalize,
+  shareReplay,
   tap,
 } from 'rxjs';
 
@@ -61,6 +63,14 @@ export class AuthService {
       () => this._utilisateur() !== null,
     );
 
+  /*
+   * Refresh en cours, partage entre les requetes
+   * qui recoivent un 401 en meme temps : un second
+   * refresh avec le meme jeton serait vu comme un vol
+   * par le serveur et revoquerait toutes les sessions.
+   */
+  private refreshEnCours$?: Observable<AuthResponse>;
+
   register(
     payload: RegisterRequest,
   ): Observable<UtilisateurResponse> {
@@ -92,6 +102,10 @@ export class AuthService {
 
   refresh(): Observable<AuthResponse> {
 
+    if (this.refreshEnCours$) {
+      return this.refreshEnCours$;
+    }
+
     const refreshToken =
       this.tokenStorage.getRefreshToken();
 
@@ -99,7 +113,7 @@ export class AuthService {
       refreshToken: refreshToken ?? '',
     };
 
-    return this.http
+    this.refreshEnCours$ = this.http
       .post<AuthResponse>(
         `${this.baseUrl}/refresh`,
         payload,
@@ -111,7 +125,13 @@ export class AuthService {
             res.refreshToken,
           ),
         ),
+        finalize(() => {
+          this.refreshEnCours$ = undefined;
+        }),
+        shareReplay(1),
       );
+
+    return this.refreshEnCours$;
   }
 
   chargerUtilisateurCourant():
