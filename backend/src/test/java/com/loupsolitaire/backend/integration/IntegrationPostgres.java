@@ -21,7 +21,7 @@ import jakarta.mail.internet.MimeMessage;
  * lancees par "mvn verify" ; Docker doit tourner).
  *
  * Contrairement aux tests @SpringBootTest sur H2 :
- * - le schema est cree par les VRAIES migrations Liquibase (001 a 014),
+ * - le schema est cree par les VRAIES migrations Liquibase (001 a 015),
  *   comme sur Render ;
  * - Hibernate verifie au demarrage que les entites correspondent a ce
  *   schema (ddl-auto=validate, comme en production) ;

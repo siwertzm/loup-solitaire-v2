@@ -80,9 +80,27 @@ docker run --name loup-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=loup -p 5
 ```
 
 Au premier démarrage (Option A ou B), `GameDataLoader` charge
-automatiquement en base les disciplines, ennemis, objets et les 350
-chapitres depuis `src/main/resources/data/*.json`. Ce chargement est
-idempotent : il est ignoré si les données sont déjà présentes.
+automatiquement en base les disciplines, ennemis, objets et les 353
+chapitres depuis `src/main/resources/data/*.json`.
+
+**Les JSON font foi (DATA-00).** Leur empreinte SHA-256 est gardée dans la
+table `catalogue_empreinte`. À chaque démarrage :
+
+- empreinte identique → rien n'est rechargé (« Catalogue du livre a jour ») ;
+- empreinte différente ou absente → tout le catalogue est remis à l'identique
+  des JSON, dans une seule transaction : mise à jour par identifiant, liens,
+  conditions, effets, objets et ennemis des chapitres recréés. Les données
+  des joueurs ne référencent que des identifiants stables (chapitre, objet,
+  ennemi, discipline) et ne sont pas touchées.
+
+Corriger le livre = modifier le JSON puis redéployer, **sans migration de
+données**. Une entrée retirée d'un JSON reste en base (un joueur peut
+l'avoir dans son inventaire) et est signalée dans les logs.
+
+Avant d'enregistrer l'empreinte, chaque chapitre doit avoir au moins un lien
+(sauf le 350, fin du tome) ; sinon la transaction est annulée et le
+démarrage échoue (OPS-03). Pour forcer un rechargement :
+`update catalogue_empreinte set empreinte = 'a-recharger';` puis redémarrer.
 
 ## Variables d'environnement
 
