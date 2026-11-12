@@ -146,3 +146,32 @@ describe('ChapitrePage — échange non fait', () => {
     expect(page.ongletActif()).toBe('effets');
   });
 });
+
+// REGLE-14 : le bouton d'un lien « Sinon » (condition -1) affiche le numéro.
+describe('ChapitrePage — choix « Sinon »', () => {
+  it('reconnaît un lien « Sinon » à sa condition de valeur -1', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
+        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: ChapitreService, useValue: {} },
+        { provide: CombatService, useValue: {} },
+        { provide: PersonnageService, useValue: {} },
+        { provide: DisciplineService, useValue: {} },
+        { provide: ObjetService, useValue: {} },
+        { provide: InventaireSheetService, useValue: { personnageMisAJour: signal(null) } },
+        { provide: TranslateService, useValue: { instant: (cle: string) => cle } },
+      ],
+    });
+    const page = TestBed.runInInjectionContext(() => new ChapitrePage());
+    const lien = (valeur: string | null): LienResponse => ({
+      chapitreCibleId: 292,
+      disponible: true,
+      conditions: valeur === null ? [] : [{ type: 'OBJET', targetId: 'pierre_de_vordak', valeur }],
+    });
+
+    expect(page.estChoixSinon(lien('-1'))).toBe(true);
+    expect(page.estChoixSinon(lien('1'))).toBe(false);
+    expect(page.estChoixSinon(lien(null))).toBe(false);
+  });
+});

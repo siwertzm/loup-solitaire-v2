@@ -195,7 +195,7 @@
       },
       {
         "page": "292",
-        "cond": null
+        "cond": [{ "type": "objet", "targetId": "pierre_de_vordak", "valeur": "-1" }]
       }
     ],
     "id": 9,
@@ -1183,7 +1183,7 @@
       },
       {
         "page": "250",
-        "cond": null
+        "cond": [{ "type": "discipline", "targetId": "communication_animale", "valeur": "-1" }]
       }
     ],
     "id": 52,
@@ -2035,7 +2035,7 @@
         "page": "298",
         "cond": [{ "type": "discipline", "targetId": "communication_animale", "valeur": "1" }]
       },
-      { "page": "335", "cond": null }
+      { "page": "335", "cond": [{ "type": "discipline", "targetId": "communication_animale", "valeur": "-1" }] }
     ],
     "id": 105
   },
@@ -2338,7 +2338,7 @@
         "page": "297",
         "cond": [{ "type": "discipline", "targetId": "chasse", "valeur": "1" }]
       },
-      { "page": "336", "cond": null }
+      { "page": "336", "cond": [{ "type": "discipline", "targetId": "chasse", "valeur": "-1" }] }
     ],
     "id": 128
   },
@@ -2786,7 +2786,7 @@
         "page": "258",
         "cond": [{ "type": "discipline", "targetId": "maitrise_matiere", "valeur": "1" }]
       },
-      { "page": "127", "cond": null }
+      { "page": "127", "cond": [{ "type": "discipline", "targetId": "maitrise_matiere", "valeur": "-1" }] }
     ],
     "id": 162,
     "objet": []
@@ -2947,7 +2947,7 @@
         "page": "158",
         "cond": [{ "type": "objet", "targetId": "cle_argent", "valeur": "1" }]
       },
-      { "page": "259", "cond": null }
+      { "page": "259", "cond": [{ "type": "objet", "targetId": "cle_argent", "valeur": "-1" }] }
     ],
     "id": 173,
     "objet": []
@@ -3862,7 +3862,7 @@
     "ennemi": null,
     "lien": [
       { "page": "166", "cond": [{ "type": "discipline", "targetId": "bouclier_psychique", "valeur": "1" }] },
-      { "page": "9", "cond": null }
+      { "page": "9", "cond": [{ "type": "discipline", "targetId": "bouclier_psychique", "valeur": "-1" }] }
     ],
     "id": 242
   },
@@ -4241,7 +4241,7 @@
         "page": "134",
         "cond": [{ "type": "discipline", "targetId": "orientation", "valeur": "1" }]
       },
-      { "page": "305", "cond": null }
+      { "page": "305", "cond": [{ "type": "discipline", "targetId": "orientation", "valeur": "-1" }] }
     ],
     "id": 272
   },
@@ -4644,7 +4644,7 @@
     "ennemi": null,
     "lien": [
       { "page": "237", "cond": [{ "type": "discipline", "targetId": "camouflage", "valeur": "1" }] },
-      { "page": "72", "cond": null }
+      { "page": "72", "cond": [{ "type": "discipline", "targetId": "camouflage", "valeur": "-1" }] }
     ],
     "id": 303
   },

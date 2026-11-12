@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-REGLE-14` | À faire |
+| 2 | Basse | S | `fix-REGLE-14` | Fait |
 
 Origine : Cahier des charges (REGLE-14)
 
@@ -12,7 +12,7 @@ Sur un lien, la valeur −1 (« si vous ne possédez pas ») est ignorée par `C
 
 ## À faire
 
-- Interpréter `valeur = -1` comme « ne possède pas » ; ajouter ces conditions dans `chapitre.json` + migration.
+- Interpréter `valeur = -1` comme « ne possède pas » ; ajouter ces conditions dans `chapitre.json` (sans migration depuis DATA-00 : le catalogue se recharge au démarrage).
 
 ## Critères d'acceptation
 

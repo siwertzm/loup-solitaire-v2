@@ -60,8 +60,11 @@ public class ConditionService {
 
     public boolean estDisponible(Cond cond, Personnage personnage, ContexteConditions contexte) {
         return switch (cond.getType()) {
-            case DISCIPLINE -> possedeDiscipline(cond, personnage);
-            case OBJET, ARME, BOURSE -> possedeQuantiteObjet(cond, contexte);
+            case DISCIPLINE -> possedeDiscipline(cond, personnage) != nePossedePas(cond);
+            case OBJET, ARME -> nePossedePas(cond)
+                    ? contexte.quantitePossedee(cond.getTargetId()) == 0
+                    : possedeQuantiteObjet(cond, contexte);
+            case BOURSE -> possedeQuantiteObjet(cond, contexte);
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
             case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
@@ -133,6 +136,13 @@ public class ConditionService {
         Combat c = combat.get();
         return c.getStatut() == StatutCombat.FUITE
                 || (c.getStatut() == StatutCombat.EN_COURS && c.getAssautsLivres() == 0);
+    }
+
+    // REGLE-14 : valeur -1 = "si vous ne possedez pas" (lien "Sinon" du
+    // livre). Le choix devient exclusif : avec la Pierre de Vordak, le
+    // lien vers 292 (au 9) n'est plus disponible.
+    private static boolean nePossedePas(Cond cond) {
+        return cond.getValeur() != null && cond.getValeur().trim().equals("-1");
     }
 
     private boolean possedeDiscipline(Cond cond, Personnage personnage) {

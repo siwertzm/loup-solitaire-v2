@@ -106,9 +106,47 @@ class ConditionServiceTest {
         assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
     }
 
+    // REGLE-14 : valeur -1 = "si vous ne possedez pas" (lien "Sinon").
+    @Test
+    void uneDisciplineAvecValeurMoinsUnEstDisponibleSeulementSansLaDiscipline() {
+        Discipline chasse = new Discipline();
+        chasse.setId(IdDiscipline.CHASSE);
+        Cond sansChasse = creerCond(TypeCondition.DISCIPLINE, "chasse", "-1");
+
+        personnage.setDisciplines(List.of());
+        assertThat(conditionService.estDisponible(sansChasse, personnage)).isTrue();
+
+        personnage.setDisciplines(List.of(chasse));
+        assertThat(conditionService.estDisponible(sansChasse, personnage)).isFalse();
+    }
+
     // =========================================================
     // OBJET / ARME / BOURSE (meme logique : quantite possedee)
     // =========================================================
+
+    @Test
+    void unObjetAvecValeurMoinsUnEstDisponibleSeulementSansLObjet() {
+        Cond sansPierre = creerCond(TypeCondition.OBJET, "pierre_de_vordak", "-1");
+
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of());
+        assertThat(conditionService.estDisponible(sansPierre, personnage)).isTrue();
+
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(creerLigne("pierre_de_vordak", 1)));
+        assertThat(conditionService.estDisponible(sansPierre, personnage)).isFalse();
+    }
+
+    @Test
+    void auChapitre9AvecLaPierreDeVordakSeulLeLienVers236EstDisponible() {
+        // Critere de REGLE-14 : le choix "Sinon" (292, une mort) est exclusif.
+        Lien vers236 = new Lien();
+        vers236.setConditions(List.of(creerCond(TypeCondition.OBJET, "pierre_de_vordak", "1")));
+        Lien vers292 = new Lien();
+        vers292.setConditions(List.of(creerCond(TypeCondition.OBJET, "pierre_de_vordak", "-1")));
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(creerLigne("pierre_de_vordak", 1)));
+
+        assertThat(conditionService.estLienDisponible(vers236, personnage)).isTrue();
+        assertThat(conditionService.estLienDisponible(vers292, personnage)).isFalse();
+    }
 
     @Test
     void disponibleSiLObjetEstPossedeEnQuantiteSuffisante() {
