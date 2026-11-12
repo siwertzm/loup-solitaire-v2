@@ -51,6 +51,9 @@ export interface CombatResponse {
   bonusHabiliteEnAttente: number;
   statut: StatutCombat;
   fuitePossible: boolean;
+  /** REGLE-11 : malus du combat à mains nues (-4 au 260), qui remplace
+   * l'ajustement d'arme ; null pour les autres combats. */
+  malusMainsNues: number | null;
   /** Null sur GET/POST /combat ; rempli uniquement par POST /combat/tour. */
   dernierTour: ResultatTourResponse | null;
 }

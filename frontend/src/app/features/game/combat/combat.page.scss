@@ -348,6 +348,24 @@ $beige: #e0d3b4;
 
 .bonus-temp { border-color: rgba(217, 169, 74, 0.8); }
 .bonus-arme { border-color: rgba(78, 95, 49, 0.7); }
+
+// REGLE-11 : combat à mains nues, l'épée est barrée d'un trait rouge.
+.bonus-mains-nues {
+  border-color: rgba(162, 42, 42, 0.75);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 50%;
+    height: 2px;
+    background: #a22a2a;
+    // Perpendiculaire à l'épée de l'icône (qui monte vers la droite).
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+}
 .bonus-psychique { border-color: rgba(117, 83, 139, 0.65); }
 
 // Résistances de l'ennemi : même picto que les bonus du joueur, posé

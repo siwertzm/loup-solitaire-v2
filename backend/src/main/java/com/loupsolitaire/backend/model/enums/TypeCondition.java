@@ -5,7 +5,12 @@ public enum TypeCondition {
     // Marqueur, pas une vraie condition d'acces : indique qu'un Effet
     // modifie une stat de base du joueur de facon definitive plutot que
     // temporairement. Voir EffetService (a venir) pour son traitement special.
-    PERMANENT;
+    PERMANENT,
+    // REGLE-11 : marqueur d'un effet HABILITE qui remplace l'ajustement
+    // d'arme pendant le combat du chapitre (combat a mains nues, 260) :
+    // HABILITE de base + valeur, quelles que soient les armes possedees.
+    // Applique par CombatService, jamais a l'arrivee sur le chapitre.
+    SANS_ARME;
  
     public static TypeCondition fromJson(String valeur) {
         if (valeur == null) {
@@ -25,6 +30,7 @@ public enum TypeCondition {
             case "assaut_echec" -> ASSAUT_ECHEC;
             case "victoire" -> VICTOIRE;
             case "permanent" -> PERMANENT;
+            case "sans_arme" -> SANS_ARME;
             default -> throw new IllegalArgumentException("Type de condition inconnu : " + valeur);
         };
     }

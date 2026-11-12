@@ -47,3 +47,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changes/016-email-en-attente.yaml
+
+  - include:
+      file: db/changelog/changes/017-cond-sans-arme.yaml

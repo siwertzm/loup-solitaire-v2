@@ -3,8 +3,8 @@ package com.loupsolitaire.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -374,6 +374,56 @@ class CombatServiceTest {
         TourJoue tourJoue = combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
 
         assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(5);
+    }
+
+    // REGLE-11 : chapitre 260, combat a mains nues (effet HABILITE -4
+    // marque SANS_ARME). HABILITE de base 15, ennemi a 10 : le joueur doit
+    // toujours combattre a 15 - 4 = 11, quelles que soient ses armes.
+    private Effet creerEffetMainsNues() {
+        Cond cond = new Cond();
+        cond.setType(TypeCondition.SANS_ARME);
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.HABILITE);
+        effet.setValeur(-4);
+        effet.setConditions(List.of(cond));
+        return effet;
+    }
+
+    private int rapportAttaqueAvec(int habiliteAvecArmes, boolean mainsNues) {
+        Ennemi glok = creerEnnemi("glok_premier_260", 10, 20);
+        Chapitre chapitre = creerChapitreCombat(260, List.of(glok), null);
+        chapitre.setEffets(mainsNues ? List.of(creerEffetMainsNues()) : List.of());
+        Personnage personnage = creerPersonnage(habiliteAvecArmes, 20, chapitre);
+        personnage.setHabiliteBase(15);
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(glok, 0, 20)));
+        stuberCombatExistant(personnage, chapitre, combat);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(5, 5);
+        when(tableCombatService.degatsInfliges(anyInt(), anyInt()))
+                .thenReturn(-1);
+        when(tableCombatService.degatsSubis(anyInt(), anyInt()))
+                .thenReturn(-1);
+
+        TourJoue tour = combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null);
+
+        assertThat(tour.resultat().rapportRiposte()).isEqualTo(tour.resultat().rapportAttaque());
+        return tour.resultat().rapportAttaque();
+    }
+
+    @Test
+    void aMainsNuesSansArmeLeMalusNeSeCumulePas() {
+        // Sans arme, l'HABILITE vaut deja 15 - 4 = 11 : pas -4 de plus (7).
+        assertThat(rapportAttaqueAvec(11, true)).isEqualTo(11 - 10);
+    }
+
+    @Test
+    void aMainsNuesLArmeMaitriseeNeDonnePasSonBonus() {
+        // Arme maitrisee : 15 + 2 = 17 hors de ce combat, 11 a mains nues.
+        assertThat(rapportAttaqueAvec(17, true)).isEqualTo(11 - 10);
+    }
+
+    @Test
+    void horsDuCombatAMainsNuesLAjustementDArmeResteApplique() {
+        assertThat(rapportAttaqueAvec(17, false)).isEqualTo(17 - 10);
     }
 
     // Chapitre 283 : "+2 HABILITE lors du premier assaut seulement"

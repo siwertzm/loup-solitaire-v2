@@ -423,6 +423,8 @@ class GameDataLoaderTest {
     @Test
     void accepteLesConditionsBienFormees() {
         GameDataLoader.validerCondition(cond(TypeCondition.HASARD, null, "[0, 4]"), OBJETS_CONNUS);
+        // REGLE-11 : marqueur sans cible ni valeur (combat a mains nues).
+        GameDataLoader.validerCondition(cond(TypeCondition.SANS_ARME, null, null), OBJETS_CONNUS);
         GameDataLoader.validerCondition(cond(TypeCondition.DISCIPLINE, "bouclier_psychique", "-1"), OBJETS_CONNUS);
         GameDataLoader.validerCondition(cond(TypeCondition.OBJET, "torche", "-1"), OBJETS_CONNUS);
         GameDataLoader.validerCondition(cond(TypeCondition.BOURSE, "or", "10"), OBJETS_CONNUS);

@@ -427,7 +427,8 @@
     "ERREUR_VOL": "Erreur lors de la résolution du vol :",
     "ERREUR_ECHANGE": "Erreur lors de l'échange d'objet :",
     "PERTE_TITRE": "PERTE",
-    "CASSE_TITRE": "CASSE"
+    "CASSE_TITRE": "CASSE",
+    "HABILITE_MAINS_NUES": "Combat à mains nues, sans vos armes"
   },
   "CHAPITRE_OBJETS": {
     "ALT_ARMES": "Armes",
@@ -581,7 +582,10 @@
     "MSG_PERD_ENDURANCE_GARDE": "Vous perdez {{degats}} points d'ENDURANCE (garde : −{{pourcent}} %).",
     "MSG_PERD_ENDURANCE": "Vous perdez {{degats}} points d'ENDURANCE.",
     "MSG_OUVERTURE": "Vous saisissez une ouverture :\n +{{bonus}} HABILETÉ pour votre prochaine attaque.",
-    "MSG_INTERROMPU": "Le combat est interrompu ; le récit continue."
+    "MSG_INTERROMPU": "Le combat est interrompu ; le récit continue.",
+    "TITLE_MAINS_NUES": "Combat à mains nues : {{malus}} HABILETÉ",
+    "POPUP_MAINS_NUES_TITRE": "Combat à mains nues",
+    "POPUP_MAINS_NUES_TEXTE": "Vous combattez sans arme : votre HABILETÉ de base est réduite de <strong>{{malus}}</strong>, quelles que soient les armes de votre sac. La Maîtrise des Armes ne donne pas son bonus pendant ce combat."
   },
   "PERSONNAGE": {
     "SOUS_TITRE": "Novice de l'Ordre Kaï · Chapitre {{chapitre}}",

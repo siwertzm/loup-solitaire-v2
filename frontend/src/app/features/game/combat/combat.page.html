@@ -104,6 +104,13 @@
                   <small>+{{ bonusHabiliteTemp() }}</small>
                 </button>
               }
+              @if (malusMainsNues(); as malus) {
+                <!-- REGLE-11 : combat à mains nues (épée barrée). -->
+                <button type="button" class="bonus-picto bonus-mains-nues" [attr.title]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }" [attr.aria-label]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }" (click)="ouvrirExplicationBonus('mains-nues')">
+                  <img src="/assets/icon/epee.png" alt="" />
+                  <small>{{ malus }}</small>
+                </button>
+              }
               @if (bonusArmeMaitrisee(); as arme) {
                 <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
                   <img src="/assets/icon/epee.png" alt="" />
@@ -155,6 +162,10 @@
                 @case ('arme') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_ARME_TITRE' | translate }}</h2>
                   <p [innerHTML]="'COMBAT_PAGE.POPUP_ARME_TEXTE' | translate: { arme: bonusArmeMaitrisee() }"></p>
+                }
+                @case ('mains-nues') {
+                  <h2>{{ 'COMBAT_PAGE.POPUP_MAINS_NUES_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_MAINS_NUES_TEXTE' | translate: { malus: malusMainsNues() }"></p>
                 }
                 @case ('puissance') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_PUISSANCE_TITRE' | translate }}</h2>

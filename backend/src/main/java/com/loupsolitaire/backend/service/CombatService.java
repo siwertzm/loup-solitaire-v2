@@ -348,12 +348,29 @@ public class CombatService {
     // un combat a plusieurs ennemis (resistance differente par ennemi) et
     // pour un bonus qui ne s'applique que sur certains assauts.
     private int habiliteEffective(Personnage personnage, Ennemi ennemi, Chapitre chapitre, Combat combat) {
-        int base = personnage.getHabilite() + personnage.getHabiliteTemp();
+        // REGLE-11 : combat a mains nues (260) : HABILITE de base + malus,
+        // a la place de l'ajustement d'arme (ni -4 de plus sans arme, ni +2
+        // avec l'arme maitrisee : le joueur n'a pas ses armes en main).
+        int habiliteArmes = malusMainsNues(chapitre)
+                .map(malus -> personnage.getHabiliteBase() + malus)
+                .orElse(personnage.getHabilite());
+        int base = habiliteArmes + personnage.getHabiliteTemp();
         if (possedePuissancePsychique(personnage) && !resisteAPuissancePsychique(ennemi)) {
             base += 2;
         }
         base += bonusHabiliteAssautMax(chapitre, combat);
         return base;
+    }
+
+    // REGLE-11 : valeur de l'effet HABILITE marque SANS_ARME du chapitre
+    // (-4 au 260), vide si le combat n'est pas a mains nues.
+    public Optional<Integer> malusMainsNues(Chapitre chapitre) {
+        return chapitre.getEffets().stream()
+                .filter(effet -> effet.getType() == TypeEffet.HABILITE)
+                .filter(effet -> effet.getConditions().stream()
+                        .anyMatch(c -> c.getType() == TypeCondition.SANS_ARME))
+                .map(Effet::getValeur)
+                .findFirst();
     }
 
     // Cas particulier des effets HABILITE dont l'UNIQUE condition est

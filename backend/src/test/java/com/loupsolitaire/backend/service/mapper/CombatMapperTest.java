@@ -101,6 +101,18 @@ class CombatMapperTest {
         assertThat(reponse.fuitePossible()).isFalse();
         // Aucun tour vient d'etre joue (GET/POST /combat).
         assertThat(reponse.dernierTour()).isNull();
+        // Combat ordinaire : pas de malus de mains nues.
+        assertThat(reponse.malusMainsNues()).isNull();
+    }
+
+    @Test
+    void indiqueLeMalusDuCombatAMainsNues() {
+        // REGLE-11 : l'ecran de combat s'en sert pour afficher base - 4.
+        Combat combat = combat(StatutCombat.EN_COURS, List.of(ennemi("glok_premier_260", 10)), 0);
+        when(chapitreRepository.findById(CHAPITRE_ID)).thenReturn(Optional.of(chapitre));
+        when(combatService.malusMainsNues(chapitre)).thenReturn(Optional.of(-4));
+
+        assertThat(combatMapper.versReponse(combat).malusMainsNues()).isEqualTo(-4);
     }
 
     @Test

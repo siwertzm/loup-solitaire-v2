@@ -1,0 +1,24 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 017-cond-sans-arme
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 017-cond-sans-arme.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+      rollback:
+        - sql:
+            sql: DELETE FROM public.cond WHERE type = 'SANS_ARME';
+        - sql:
+            sql: ALTER TABLE public.cond DROP CONSTRAINT cond_type_check;
+        - sql:
+            sql: >
+              ALTER TABLE public.cond ADD CONSTRAINT cond_type_check CHECK ((type)::text = ANY (ARRAY[
+              'DISCIPLINE', 'OBJET', 'BOURSE', 'HASARD', 'FUITE', 'ARME', 'ENDURANCE',
+              'ENDURANCE_PERDUE', 'ENDURANCE_INF', 'ASSAUT_MAX', 'ASSAUT_ECHEC',
+              'VICTOIRE', 'PERMANENT']::text[]));

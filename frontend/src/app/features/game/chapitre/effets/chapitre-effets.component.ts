@@ -196,6 +196,14 @@ export class ChapitreEffetsComponent {
    * Exemple chapitre 283 :
    * bonus limité au premier assaut.
    */
+  /**
+   * REGLE-11 : effet HABILITE du combat à mains nues (condition SANS_ARME,
+   * 260) : il remplace l'ajustement d'arme pendant ce combat.
+   */
+  estMainsNues(effet: EffetResponse): boolean {
+    return effet.conditions.some((c) => c.type === 'SANS_ARME');
+  }
+
   conditionAssautMax(effet: EffetResponse): CondResponse | null {
     if (effet.conditions.length !== 1) {
       return null;

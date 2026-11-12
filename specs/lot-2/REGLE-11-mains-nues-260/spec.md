@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-REGLE-11` | À faire |
+| 2 | Moyenne | S | `fix-REGLE-11` | Fait |
 
 Origine : Cahier des charges (REGLE-11), à faire avec DATA-13
 

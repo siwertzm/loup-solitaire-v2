@@ -462,7 +462,7 @@ public class GameDataLoader implements ApplicationRunner {
             // "[min, max]" entre 0 et 9.
             case HASARD -> cond.plageHasard();
             // Marqueur sans valeur ; la valeur de VICTOIRE n'est pas lue.
-            case PERMANENT, VICTOIRE -> {
+            case PERMANENT, VICTOIRE, SANS_ARME -> {
             }
             // 1 = possede, -1 = ne possede PAS (voir EffetChapitreService).
             case DISCIPLINE -> {

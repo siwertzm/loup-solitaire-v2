@@ -91,6 +91,8 @@ public class EffetChapitreService {
     // - PERMANENT : applique a habiliteBase (definitif), puis recalcule
     //   l'HABILITE effective (qui depend aussi des armes possedees).
     // - Le reste (ASSAUT_MAX, etc.) : combat non construit, ignore.
+    //   Dont SANS_ARME (REGLE-11, 260) : rien a l'arrivee, CombatService
+    //   l'applique pendant le combat a la place de l'ajustement d'arme.
     @Transactional
     public void appliquerEffetHabilite(Personnage personnage, Effet effet) {
         List<Cond> conditions = effet.getConditions();

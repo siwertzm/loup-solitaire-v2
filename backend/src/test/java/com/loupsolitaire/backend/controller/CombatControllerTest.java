@@ -82,7 +82,7 @@ class CombatControllerTest {
     }
 
     private CombatResponse reponse(String statut) {
-        return new CombatResponse(UUID.randomUUID(), 17, List.of(), 0, false, 0, statut, false, null);
+        return new CombatResponse(UUID.randomUUID(), 17, List.of(), 0, false, 0, statut, false, null, null);
     }
 
     private JouerTourCombatRequest tour(String action, String objetId) {

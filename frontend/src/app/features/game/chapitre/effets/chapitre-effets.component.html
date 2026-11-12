@@ -57,9 +57,13 @@
           }
         </div>
       </div>
-    } @else if (effet.type.toUpperCase() === 'HABILITE' && effet.conditions.length === 0) {
+    } @else if (
+      effet.type.toUpperCase() === 'HABILITE' &&
+      (effet.conditions.length === 0 || estMainsNues(effet))
+    ) {
       <!-- Modificateur d'HABILITE sans condition : toujours temporaire
-           (habiliteTemp côté backend), le temps du combat qui suit. -->
+           (habiliteTemp côté backend), le temps du combat qui suit. Même
+           affichage pour le combat à mains nues (REGLE-11, 260). -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
@@ -71,7 +75,10 @@
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
             <span class="effet-description">{{
-              'CHAPITRE_EFFETS.HABILITE_PENDANT_COMBAT' | translate
+              (estMainsNues(effet)
+                ? 'CHAPITRE_EFFETS.HABILITE_MAINS_NUES'
+                : 'CHAPITRE_EFFETS.HABILITE_PENDANT_COMBAT'
+              ) | translate
             }}</span>
           </div>
         </div>
