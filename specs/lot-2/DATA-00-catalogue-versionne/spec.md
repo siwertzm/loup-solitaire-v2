@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M | `feature-DATA-00` | À faire |
+| 2 | Moyenne | M | `feature-DATA-00` | Fait |
 
 Origine : Cahier des charges (DATA-00)
 

@@ -1,12 +1,19 @@
 package com.loupsolitaire.backend.config;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Collection;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -14,6 +21,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -29,6 +37,7 @@ import com.loupsolitaire.backend.dto.ObjetJson;
 import com.loupsolitaire.backend.dto.RefJson;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
+import com.loupsolitaire.backend.model.CatalogueEmpreinte;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Cond;
 import com.loupsolitaire.backend.model.Discipline;
@@ -40,6 +49,7 @@ import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChap;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
+import com.loupsolitaire.backend.repository.CatalogueEmpreinteRepository;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.EnnemiRepository;
@@ -49,8 +59,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // Charge le contenu du livre (disciplines, objets, ennemis, chapitres) au
-// demarrage. Idempotent : si les disciplines sont deja en base (cas d'un
-// redemarrage avec ddl-auto=update), on ne recharge rien.
+// demarrage.
+//
+// DATA-00 : les JSON font foi. Leur empreinte SHA-256 est gardee en base
+// (catalogue_empreinte) ; tant qu'elle ne change pas, rien n'est recharge.
+// Si elle change (ou sur une base neuve), tout le catalogue est remis a
+// l'identique des JSON : mise a jour par identifiant, et enfants (liens,
+// conditions, effets, objets et ennemis des chapitres, resistances)
+// supprimes puis recrees. Possible car les donnees des joueurs ne
+// referencent que des identifiants stables (chapitre, objet, ennemi,
+// discipline). Corriger le livre = modifier le JSON, sans migration.
+//
+// OPS-03 : tout se fait dans UNE transaction, verifiee avant la fin
+// (verifierIntegrite) ; un echec annule tout et l'empreinte n'est pas
+// enregistree : le chargement complet reprend au demarrage suivant.
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -62,10 +84,18 @@ public class GameDataLoader implements ApplicationRunner {
     // a un veritable chapitre a atteindre (voir analyse menee avec l'utilisateur).
     private static final Set<String> PAGES_FIN_DE_JEU = Set.of("0", "351", "352");
 
+    // Seul chapitre sans aucun lien jouable : la fin victorieuse du tome.
+    static final int CHAPITRE_FIN_DU_TOME = 350;
+
+    // Ordre fixe : il entre dans le calcul de l'empreinte.
+    private static final List<String> FICHIERS_DU_LIVRE = List.of(
+            "data/discipline.json", "data/ennemi.json", "data/objet.json", "data/chapitre.json");
+
     private final DisciplineRepository disciplineRepository;
     private final EnnemiRepository ennemiRepository;
     private final ObjetRepository objetRepository;
     private final ChapitreRepository chapitreRepository;
+    private final CatalogueEmpreinteRepository catalogueEmpreinteRepository;
     // Jackson 3 a change deux valeurs par defaut par rapport a Jackson 2.
     // On garde explicitement l'ancien comportement pour les fichiers de donnees :
     // - un champ inconnu dans un JSON fait echouer le chargement (detecte les fautes de frappe) ;
@@ -76,66 +106,113 @@ public class GameDataLoader implements ApplicationRunner {
             .build();
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args) throws Exception {
+        String empreinte = calculerEmpreinte();
+        Optional<CatalogueEmpreinte> enBase = catalogueEmpreinteRepository.findById(CatalogueEmpreinte.ID_UNIQUE);
+
+        if (enBase.map(CatalogueEmpreinte::getEmpreinte).filter(empreinte::equals).isPresent()) {
+            log.info("Catalogue du livre a jour (empreinte {}), aucun rechargement.", empreinte.substring(0, 12));
+            return;
+        }
+
+        log.info("Catalogue du livre absent ou modifie (empreinte {}) : rechargement depuis les JSON.",
+                empreinte.substring(0, 12));
         chargerDisciplines();
         chargerEnnemis();
         chargerObjets();
         chargerChapitres();
+
+        CatalogueEmpreinte ligne = enBase.orElseGet(CatalogueEmpreinte::new);
+        ligne.setEmpreinte(empreinte);
+        ligne.setChargeLe(Instant.now());
+        catalogueEmpreinteRepository.save(ligne);
+    }
+
+    // SHA-256 des quatre fichiers, dans un ordre fixe.
+    static String calculerEmpreinte() throws IOException {
+        MessageDigest sha256;
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            // SHA-256 est obligatoire dans toute JVM : ne peut pas arriver.
+            throw new IllegalStateException(e);
+        }
+        for (String fichier : FICHIERS_DU_LIVRE) {
+            try (InputStream is = new ClassPathResource(fichier).getInputStream()) {
+                sha256.update(is.readAllBytes());
+            }
+            // Separateur : deplacer du texte d'un fichier a l'autre change l'empreinte.
+            sha256.update((byte) 0);
+        }
+        return HexFormat.of().formatHex(sha256.digest());
+    }
+
+    private static <K, E> Map<K, E> parId(List<E> entites, Function<E, K> id) {
+        return entites.stream().collect(Collectors.toMap(id, e -> e));
+    }
+
+    // Une entree retiree des JSON n'est jamais supprimee : un joueur peut
+    // encore l'avoir dans son inventaire, son combat ou son parcours.
+    private static <K> void signalerRetires(String type, Set<K> enBase, Set<K> dansLesJson) {
+        Set<String> retires = new TreeSet<>();
+        enBase.stream().filter(id -> !dansLesJson.contains(id)).forEach(id -> retires.add(String.valueOf(id)));
+        if (!retires.isEmpty()) {
+            log.warn("{} absents des JSON, gardes en base : {}", type, retires);
+        }
     }
 
     private void chargerDisciplines() throws Exception {
-        if (disciplineRepository.count() > 0) {
-            log.info("Disciplines deja chargees, etape ignoree.");
-            return;
-        }
-
         List<DisciplineJson> donnees = lireJson("data/discipline.json", DisciplineJson.class);
+        Map<IdDiscipline, Discipline> existantes = parId(disciplineRepository.findAll(), Discipline::getId);
 
         List<Discipline> disciplines = donnees.stream()
-                .map(this::versEntite)
+                .map(json -> {
+                    IdDiscipline id = IdDiscipline.fromJson(json.getId());
+                    Discipline discipline = existantes.getOrDefault(id, new Discipline());
+                    discipline.setId(id);
+                    discipline.setNom(json.getNom());
+                    discipline.setDescription(json.getDescription());
+                    return discipline;
+                })
                 .toList();
 
         disciplineRepository.saveAll(disciplines);
+        signalerRetires("Disciplines", existantes.keySet(),
+                disciplines.stream().map(Discipline::getId).collect(Collectors.toSet()));
         log.info("✅ {} disciplines chargees", disciplines.size());
     }
 
-    private Discipline versEntite(DisciplineJson json) {
-        Discipline discipline = new Discipline();
-        discipline.setId(IdDiscipline.fromJson(json.getId()));
-        discipline.setNom(json.getNom());
-        discipline.setDescription(json.getDescription());
-        return discipline;
-    }
-
     private void chargerEnnemis() throws Exception {
-        if (ennemiRepository.count() > 0) {
-            log.info("Ennemis deja charges, etape ignoree.");
-            return;
-        }
-
         List<EnnemiJson> donnees = lireJson("data/ennemi.json", EnnemiJson.class);
+        Map<String, Ennemi> existants = parId(ennemiRepository.findAll(), Ennemi::getId);
 
         List<Ennemi> ennemis = donnees.stream()
-                .map(this::versEntite)
+                .map(json -> versEntite(json, existants.getOrDefault(json.getId(), new Ennemi())))
                 .toList();
 
         ennemiRepository.saveAll(ennemis);
+        signalerRetires("Ennemis", existants.keySet(),
+                ennemis.stream().map(Ennemi::getId).collect(Collectors.toSet()));
         log.info("✅ {} ennemis charges", ennemis.size());
     }
 
-    private Ennemi versEntite(EnnemiJson json) {
-        Ennemi ennemi = new Ennemi();
+    private Ennemi versEntite(EnnemiJson json, Ennemi ennemi) {
         ennemi.setId(json.getId());
         ennemi.setNom(json.getNom());
         ennemi.setDescription(json.getDescription());
         ennemi.setHabilite(json.getHabilite());
         ennemi.setEndurance(json.getEndurance());
 
+        // Collections videes puis remplies (jamais remplacees : Hibernate
+        // suit l'instance qu'il a chargee).
+        ennemi.getResistances().clear();
         if (json.getResistance() != null) {
-            ennemi.setResistances(new LinkedHashSet<>(disciplinesEnnemi(json.getId(), json.getResistance())));
+            ennemi.getResistances().addAll(disciplinesEnnemi(json.getId(), json.getResistance()));
         }
+        ennemi.getDisciplines().clear();
         if (json.getDisciplines() != null) {
-            ennemi.setDisciplines(new HashSet<>(disciplinesEnnemi(json.getId(), json.getDisciplines())));
+            ennemi.getDisciplines().addAll(disciplinesEnnemi(json.getId(), json.getDisciplines()));
         }
 
         return ennemi;
@@ -158,27 +235,27 @@ public class GameDataLoader implements ApplicationRunner {
     }
 
     private void chargerObjets() throws Exception {
-        if (objetRepository.count() > 0) {
-            log.info("Objets deja charges, etape ignoree.");
-            return;
-        }
-
         List<ObjetJson> donnees = lireJson("data/objet.json", ObjetJson.class);
+        Map<String, Objet> existants = parId(objetRepository.findAll(), Objet::getId);
+
+        // Anciens effets supprimes en base AVANT de creer les nouveaux.
+        existants.values().forEach(objet -> objet.getEffets().clear());
+        objetRepository.flush();
 
         // Les objets ne sont pas encore en base : les conditions de leurs
         // effets sont verifiees par rapport au contenu du fichier lui-meme.
         Set<String> idsObjets = donnees.stream().map(ObjetJson::getId).collect(Collectors.toSet());
 
         List<Objet> objets = donnees.stream()
-                .map(json -> versEntite(json, idsObjets::contains))
+                .map(json -> versEntite(json, existants.getOrDefault(json.getId(), new Objet()), idsObjets::contains))
                 .toList();
 
         objetRepository.saveAll(objets);
+        signalerRetires("Objets", existants.keySet(), idsObjets);
         log.info("✅ {} objets charges", objets.size());
     }
 
-    private Objet versEntite(ObjetJson json, Predicate<String> objetExiste) {
-        Objet objet = new Objet();
+    private Objet versEntite(ObjetJson json, Objet objet, Predicate<String> objetExiste) {
         objet.setId(json.getId());
         objet.setNom(json.getNom());
         objet.setDescription(json.getDescription());
@@ -188,7 +265,7 @@ public class GameDataLoader implements ApplicationRunner {
             List<Effet> effets = json.getEffet().stream()
                     .map(effetJson -> versEntite(effetJson, objet, objetExiste))
                     .toList();
-            objet.setEffets(effets);
+            objet.getEffets().addAll(effets);
         }
 
         return objet;
@@ -220,26 +297,29 @@ public class GameDataLoader implements ApplicationRunner {
 
 
     private void chargerChapitres() throws Exception {
-        if (chapitreRepository.count() > 0) {
-            log.info("Chapitres deja charges, etape ignoree.");
-            return;
-        }
-
         List<ChapitreJson> donnees = lireJson("data/chapitre.json", ChapitreJson.class);
+        Map<Integer, Chapitre> existants = parId(chapitreRepository.findAll(), Chapitre::getId);
 
-        // --- PASSE 1 : creer tous les chapitres "nus" (id + texte + combat) ---
+        // --- PASSE 1 : tous les chapitres "nus" (id + texte + combat) ---
         // Necessaire avant la passe 2 car un Lien.chapitreCible doit toujours
-        // pointer vers un Chapitre deja existant en base.
+        // pointer vers un Chapitre deja existant en base. Les enfants des
+        // chapitres existants sont supprimes ici, en base, avant d'etre
+        // recrees en passe 2.
         List<Chapitre> chapitresNus = donnees.stream()
                 .map(json -> {
-                    Chapitre chapitre = new Chapitre();
+                    Chapitre chapitre = existants.getOrDefault(json.getId(), new Chapitre());
                     chapitre.setId(json.getId());
                     chapitre.setText(json.getText());
                     chapitre.setCombat(json.isCombat());
+                    chapitre.getEnnemis().clear();
+                    chapitre.getEffets().clear();
+                    chapitre.getLiens().clear();
+                    chapitre.getObjets().clear();
                     return chapitre;
                 })
                 .toList();
         chapitreRepository.saveAll(chapitresNus);
+        chapitreRepository.flush();
 
         Map<Integer, Chapitre> chapitresParId = chapitresNus.stream()
                 .collect(Collectors.toMap(Chapitre::getId, c -> c));
@@ -255,14 +335,14 @@ public class GameDataLoader implements ApplicationRunner {
                                 .orElseThrow(() -> new RessourceNonTrouveeException(
                                         "Ennemi introuvable pour le chapitre " + json.getId() + " : " + ref.getId())))
                         .toList();
-                chapitre.setEnnemis(ennemis);
+                chapitre.getEnnemis().addAll(ennemis);
             }
 
             if (json.getEffet() != null) {
                 List<Effet> effets = json.getEffet().stream()
                         .map(effetJson -> versEntite(effetJson, chapitre))
                         .toList();
-                chapitre.setEffets(effets);
+                chapitre.getEffets().addAll(effets);
             }
 
             if (json.getLien() != null) {
@@ -274,20 +354,35 @@ public class GameDataLoader implements ApplicationRunner {
                     }
                     liens.add(versEntite(lienJson, chapitre, chapitresParId, json.getId()));
                 }
-                chapitre.setLiens(liens);
+                chapitre.getLiens().addAll(liens);
             }
 
             if (json.getObjet() != null) {
                 List<ObjetChap> objets = json.getObjet().stream()
                         .map(objetChapJson -> versEntite(objetChapJson, chapitre, json.getId()))
                         .toList();
-                chapitre.setObjets(objets);
+                chapitre.getObjets().addAll(objets);
             }
         }
 
+        verifierIntegrite(chapitresParId.values());
         chapitreRepository.saveAll(chapitresParId.values());
+        signalerRetires("Chapitres", existants.keySet(), chapitresParId.keySet());
         log.info("✅ {} chapitres charges ({} liens de fin de partie/tome ignores)",
                 chapitresParId.size(), liensIgnores);
+    }
+
+    // OPS-03 : un chapitre sans issue bloquerait le joueur. Seule la fin du
+    // tome n'a aucun lien jouable (ses sorties vers 351 sont ignorees).
+    static void verifierIntegrite(Collection<Chapitre> chapitres) {
+        List<Integer> sansLien = chapitres.stream()
+                .filter(c -> c.getId() != CHAPITRE_FIN_DU_TOME && c.getLiens().isEmpty())
+                .map(Chapitre::getId)
+                .sorted()
+                .toList();
+        if (!sansLien.isEmpty()) {
+            throw new IllegalStateException("Catalogue incoherent, chapitres sans lien : " + sansLien);
+        }
     }
 
     // objet et chapitre sont mutuellement exclusifs : un seul est non-null

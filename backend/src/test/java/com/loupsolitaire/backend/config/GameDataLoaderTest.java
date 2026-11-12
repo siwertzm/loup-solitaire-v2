@@ -1,10 +1,13 @@
 package com.loupsolitaire.backend.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
+import com.loupsolitaire.backend.model.CatalogueEmpreinte;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Cond;
@@ -31,6 +36,7 @@ import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.enums.TypeCondition;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
+import com.loupsolitaire.backend.repository.CatalogueEmpreinteRepository;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.EnnemiRepository;
@@ -51,13 +57,40 @@ class GameDataLoaderTest {
     @Mock
     private ChapitreRepository chapitreRepository;
 
+    @Mock
+    private CatalogueEmpreinteRepository catalogueEmpreinteRepository;
+
     private GameDataLoader creerLoader() {
         return new GameDataLoader(
                 disciplineRepository,
                 ennemiRepository,
                 objetRepository,
-                chapitreRepository
+                chapitreRepository,
+                catalogueEmpreinteRepository
         );
+    }
+
+    // La base est vide par defaut et aucune empreinte n'est enregistree.
+    // Les references entre fichiers (disciplines des ennemis, ennemis et
+    // objets des chapitres) sont toujours trouvees, pour que chaque test
+    // verifie une etape sans dependre des autres.
+    @BeforeEach
+    void catalogueSimule() {
+        lenient().when(disciplineRepository.findById(any())).thenAnswer(inv -> {
+            Discipline d = new Discipline();
+            d.setId(inv.getArgument(0));
+            return Optional.of(d);
+        });
+        lenient().when(ennemiRepository.findById(anyString())).thenAnswer(inv -> {
+            Ennemi e = new Ennemi();
+            e.setId(inv.getArgument(0));
+            return Optional.of(e);
+        });
+        lenient().when(objetRepository.findById(anyString())).thenAnswer(inv -> {
+            Objet o = new Objet();
+            o.setId(inv.getArgument(0));
+            return Optional.of(o);
+        });
     }
 
     // =========================================================
@@ -66,10 +99,6 @@ class GameDataLoaderTest {
 
     @Test
     void chargeLesDixDisciplinesDepuisLeFichierJson() throws Exception {
-        when(disciplineRepository.count()).thenReturn(0L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(1L);
 
         creerLoader().run(null);
 
@@ -89,17 +118,6 @@ class GameDataLoaderTest {
                 );
     }
 
-    @Test
-    void neRechargeRienSiLesDisciplinesSontDejaPresentes() throws Exception {
-        when(disciplineRepository.count()).thenReturn(10L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(1L);
-
-        creerLoader().run(null);
-
-        verify(disciplineRepository, never()).saveAll(anyList());
-    }
 
     // =========================================================
     // Ennemis
@@ -107,22 +125,7 @@ class GameDataLoaderTest {
 
     @Test
     void chargeLesTrenteDeuxEnnemisEtResoutLeursResistances() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(0L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(1L);
 
-        Discipline puissancePsychique = new Discipline();
-        puissancePsychique.setId(IdDiscipline.PUISSANCE_PSYCHIQUE);
-
-        Discipline communicationAnimale = new Discipline();
-        communicationAnimale.setId(IdDiscipline.COMMUNICATION_ANIMALE);
-
-        when(disciplineRepository.findById(IdDiscipline.PUISSANCE_PSYCHIQUE))
-                .thenReturn(Optional.of(puissancePsychique));
-
-        when(disciplineRepository.findById(IdDiscipline.COMMUNICATION_ANIMALE))
-                .thenReturn(Optional.of(communicationAnimale));
 
         creerLoader().run(null);
 
@@ -146,23 +149,9 @@ class GameDataLoaderTest {
                 );
     }
 
-    @Test
-    void neRechargeRienSiLesEnnemisSontDejaPresents() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(32L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(1L);
-
-        creerLoader().run(null);
-
-        verify(ennemiRepository, never()).saveAll(anyList());
-    }
 
     @Test
     void echoueSiUneResistanceReferenceUneDisciplineInconnueEnBase() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(0L);
-
         when(disciplineRepository.findById(IdDiscipline.PUISSANCE_PSYCHIQUE))
                 .thenReturn(Optional.empty());
 
@@ -176,10 +165,6 @@ class GameDataLoaderTest {
 
     @Test
     void chargeLesVingtHuitObjetsAvecLeursEffets() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(0L);
-        when(chapitreRepository.count()).thenReturn(1L);
 
         creerLoader().run(null);
 
@@ -218,17 +203,6 @@ class GameDataLoaderTest {
         assertThat(poignard.getEffets()).isEmpty();
     }
 
-    @Test
-    void neRechargeRienSiLesObjetsSontDejaPresents() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(28L);
-        when(chapitreRepository.count()).thenReturn(1L);
-
-        creerLoader().run(null);
-
-        verify(objetRepository, never()).saveAll(anyList());
-    }
 
     // =========================================================
     // Chapitres
@@ -236,25 +210,7 @@ class GameDataLoaderTest {
 
     @Test
     void chargeLesTroisCentCinquanteTroisChapitresEtResoutLeursReferences() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(0L);
 
-        // Le catalogue reel (28 objets, 32 ennemis) n'est pas charge dans ce
-        // test isole : on simule des lookups toujours reussis pour n'importe
-        // quel id demande, plutot que de mocker toutes les entrees une par une.
-        when(ennemiRepository.findById(anyString())).thenAnswer(inv -> {
-            Ennemi e = new Ennemi();
-            e.setId(inv.getArgument(0));
-            return Optional.of(e);
-        });
-
-        when(objetRepository.findById(anyString())).thenAnswer(inv -> {
-            Objet o = new Objet();
-            o.setId(inv.getArgument(0));
-            return Optional.of(o);
-        });
 
         // Capture manuelle via thenAnswer plutot que verify(times(2)) +
         // ArgumentCaptor : plus robuste ici, saveAll etant une methode a
@@ -344,16 +300,108 @@ class GameDataLoaderTest {
         assertThat(chapitre20.getObjets()).hasSize(2);
     }
 
+
+    // =========================================================
+    // DATA-00 : empreinte des JSON
+    // =========================================================
+
+    private static CatalogueEmpreinte empreinte(String valeur) {
+        CatalogueEmpreinte ligne = new CatalogueEmpreinte();
+        ligne.setEmpreinte(valeur);
+        return ligne;
+    }
+
     @Test
-    void neRechargeRienSiLesChapitresSontDejaPresents() throws Exception {
-        when(disciplineRepository.count()).thenReturn(1L);
-        when(ennemiRepository.count()).thenReturn(1L);
-        when(objetRepository.count()).thenReturn(1L);
-        when(chapitreRepository.count()).thenReturn(353L);
+    void neRechargeRienSiLEmpreinteDesJsonNAPasChange() throws Exception {
+        when(catalogueEmpreinteRepository.findById(CatalogueEmpreinte.ID_UNIQUE))
+                .thenReturn(Optional.of(empreinte(GameDataLoader.calculerEmpreinte())));
 
         creerLoader().run(null);
 
-        verify(chapitreRepository, never()).saveAll(anyList());
+        verify(disciplineRepository, never()).findAll();
+        verify(chapitreRepository, never()).saveAll(any());
+        verify(catalogueEmpreinteRepository, never()).save(any());
+    }
+
+    @Test
+    void rechargeToutEtEnregistreLaNouvelleEmpreinteSiElleAChange() throws Exception {
+        CatalogueEmpreinte ancienne = empreinte("ancienne");
+        when(catalogueEmpreinteRepository.findById(CatalogueEmpreinte.ID_UNIQUE))
+                .thenReturn(Optional.of(ancienne));
+
+        creerLoader().run(null);
+
+        verify(disciplineRepository).saveAll(any());
+        verify(chapitreRepository, times(2)).saveAll(any());
+        verify(catalogueEmpreinteRepository).save(ancienne);
+        assertThat(ancienne.getEmpreinte())
+                .isEqualTo(GameDataLoader.calculerEmpreinte())
+                .hasSize(64);
+        assertThat(ancienne.getChargeLe()).isNotNull();
+    }
+
+    @Test
+    void metAJourUnObjetDejaEnBaseSansLeRecreer() throws Exception {
+        // Objet en base avec des donnees perimees : meme instance mise a
+        // jour (Hibernate suit l'instance chargee), effets remplaces.
+        Objet casqueEnBase = new Objet();
+        casqueEnBase.setId("casque");
+        casqueEnBase.setNom("Ancien nom");
+        Effet perime = new Effet();
+        perime.setType(TypeEffet.HABILITE);
+        perime.setValeur(99);
+        casqueEnBase.getEffets().add(perime);
+        List<Effet> collectionSuivieParHibernate = casqueEnBase.getEffets();
+        when(objetRepository.findAll()).thenReturn(List.of(casqueEnBase));
+
+        creerLoader().run(null);
+
+        ArgumentCaptor<List<Objet>> captor = ArgumentCaptor.captor();
+        verify(objetRepository).saveAll(captor.capture());
+        Objet casque = captor.getValue().stream()
+                .filter(o -> o.getId().equals("casque"))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(casque).isSameAs(casqueEnBase);
+        assertThat(casque.getNom()).isNotEqualTo("Ancien nom");
+        assertThat(casque.getEffets()).isSameAs(collectionSuivieParHibernate);
+        assertThat(casque.getEffets()).singleElement()
+                .satisfies(effet -> {
+                    assertThat(effet.getType()).isEqualTo(TypeEffet.ENDURANCE);
+                    assertThat(effet.getValeur()).isEqualTo(2);
+                });
+        // Les anciens effets sont supprimes en base avant les nouveaux.
+        verify(objetRepository).flush();
+    }
+
+    // =========================================================
+    // OPS-03 : controle d'integrite
+    // =========================================================
+
+    private static Chapitre chapitre(int id, int nombreDeLiens) {
+        Chapitre chapitre = new Chapitre();
+        chapitre.setId(id);
+        for (int i = 0; i < nombreDeLiens; i++) {
+            chapitre.getLiens().add(new com.loupsolitaire.backend.model.Lien());
+        }
+        return chapitre;
+    }
+
+    @Test
+    void laFinDuTomeEstLeSeulChapitreAutoriseSansLien() {
+        List<Chapitre> chapitres = List.of(chapitre(1, 2), chapitre(GameDataLoader.CHAPITRE_FIN_DU_TOME, 0));
+
+        assertThatCode(() -> GameDataLoader.verifierIntegrite(chapitres)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void refuseUnChapitreSansLien() {
+        List<Chapitre> chapitres = List.of(chapitre(1, 2), chapitre(42, 0), chapitre(7, 0));
+
+        assertThatThrownBy(() -> GameDataLoader.verifierIntegrite(chapitres))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("[7, 42]");
     }
 
     // =========================================================

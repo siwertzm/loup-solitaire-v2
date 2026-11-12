@@ -2,9 +2,11 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-OPS-03` | À faire |
+| 2 | Moyenne | S | `fix-OPS-03` | Fait |
 
 Origine : Cahier des charges (OPS-03)
+
+Fait avec DATA-00 (même PR) : chargement dans une transaction, contrôle des chapitres sans lien (`GameDataLoader.verifierIntegrite`). Un échec annule tout et l'empreinte n'est pas enregistrée : le chargement complet reprend au démarrage suivant.
 
 ## Problème
 
