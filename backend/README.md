@@ -317,7 +317,11 @@ Toutes les erreurs suivent le même format JSON (`ErrorResponse`) :
 | 401 | Authentification échouée (mauvais identifiants) ou refresh token invalide/expiré |
 | 403 | Accès refusé (personnage n'appartenant pas à l'utilisateur) ou compte email non vérifié |
 | 404 | Ressource introuvable (personnage, objet, chapitre, utilisateur...) |
-| 409 | Conflit (username/email déjà utilisé) ou inventaire plein |
+| 409 | Conflit (username/email déjà utilisé, y compris deux inscriptions simultanées refusées par la base), inventaire plein ou action simultanée sur un personnage |
+| 500 | Erreur interne : `"message": "Une erreur est survenue (reference xxxx)"`, sans aucun détail interne. La référence est l'identifiant de l'événement Sentry (ou un identifiant aléatoire si Sentry est désactivé) et figure dans les logs (`Erreur interne, reference xxxx`) avec la pile d'appels (SEC-08) |
+
+Les erreurs de Spring MVC (route inconnue 404, méthode non autorisée 405,
+JSON illisible 400) gardent leur code et suivent ce même format.
 
 ## Tests
 

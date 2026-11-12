@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-SEC-08` | À faire |
+| 2 | Basse | S | `fix-SEC-08` | Fait |
 
 Origine : Cahier des charges (SEC-08)
 

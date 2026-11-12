@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 4 | A | [SEC-08](lot-2/SEC-08-erreurs-409-500/spec.md) | Basse | S | 409 sur violation d'unicité, 500 journalisé |
 | 5 | A | [OPS-01](lot-2/OPS-01-memoire-jvm/spec.md) | Moyenne | S | Réglage mémoire de la JVM et sondes |
 | 6 | A | [SEC-07](lot-2/SEC-07-h2-et-cve/spec.md) | Basse | S | H2 hors du jar ; contrôle des CVE |
 | 7 | B | [SEC-06](lot-2/SEC-06-changement-email/spec.md) | Moyenne | M | Mot de passe exigé pour changer d'email ; ancien email actif jusqu'à confirmation |
