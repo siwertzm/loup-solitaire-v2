@@ -17,35 +17,37 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ### Lot 2 — premier mois
 
-| ID | Sévérité | Effort | Tâche |
-| --- | --- | --- | --- |
-| [SEC-06](lot-2/SEC-06-changement-email/spec.md) | Moyenne | M | Mot de passe exigé pour changer d'email ; ancien email actif jusqu'à confirmation |
-| [OPS-05](lot-2/OPS-05-purge-tokens/spec.md) | Moyenne | S | Purge quotidienne des tokens expirés et des comptes non vérifiés |
-| [DATA-00](lot-2/DATA-00-catalogue-versionne/spec.md) | Moyenne | M | Catalogue versionné (à faire avant les autres DATA) |
-| [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
-| [OPS-01](lot-2/OPS-01-memoire-jvm/spec.md) | Moyenne | S | Réglage mémoire de la JVM et sondes |
-| [OPS-03](lot-2/OPS-03-chargement-livre-transactionnel/spec.md) | Moyenne | S | Chargement du livre transactionnel + contrôle d'intégrité |
-| [SEC-05](lot-2/SEC-05-anti-enumeration/spec.md) | Moyenne | S | Réponses identiques à l'inscription |
-| [SEC-07](lot-2/SEC-07-h2-et-cve/spec.md) | Basse | S | H2 hors du jar ; contrôle des CVE |
-| [SEC-08](lot-2/SEC-08-erreurs-409-500/spec.md) | Basse | S | 409 sur violation d'unicité, 500 journalisé |
-| [RGPD-02](lot-2/RGPD-02-export-donnees/spec.md) | Moyenne | S | Export des données en JSON |
-| [RGPD-03](lot-2/RGPD-03-conservation-et-logs/spec.md) | Moyenne | S | Conservation ; emails masqués dans les logs |
-| [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
-| [REGLE-06](lot-2/REGLE-06-pas-de-jet-en-combat/spec.md) | Moyenne | S | Pas de jet d'objet en combat |
-| [REGLE-07](lot-2/REGLE-07-table-maitrise-armes/spec.md) | Moyenne | S | Table 0-9 de la Maîtrise des Armes |
-| [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
-| [REGLE-11](lot-2/REGLE-11-mains-nues-260/spec.md) + [DATA-13](lot-2/DATA-13-marqueur-sans-arme-260/spec.md) | Moyenne | S | 260 : mains nues sans cumul |
-| [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M | Modéliser le Sac à Dos |
-| [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
-| [REGLE-14](lot-2/REGLE-14-choix-sinon-exclusifs/spec.md) | Basse | S | Choix « Sinon » exclusifs |
-| [REGLE-15](lot-2/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté (met `CLAUDE.md` à jour) |
-| [DATA-06](lot-2/DATA-06-perte-equipement-205/spec.md) + [DATA-07](lot-2/DATA-07-pas-de-vol-181/spec.md) | Moyenne | S | Perte d'équipement au 205, pas au 181 |
-| [DATA-14](lot-2/DATA-14-pierres-137/spec.md) | Moyenne | S | 137 : Pierres = 1 objet de Sac |
-| [QUAL-02](lot-2/QUAL-02-version-api/spec.md) | Moyenne | M | Version minimale de l'app, /api/v1, OpenAPI |
-| [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |
-| [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
-| [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
-| [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
+Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoie à la section « Ordre conseillé » plus bas.
+
+| # | Étape | ID | Sévérité | Effort | Tâche |
+| --- | --- | --- | --- | --- | --- |
+| 1 | A | [QUAL-02](lot-2/QUAL-02-version-api/spec.md) | Moyenne | M | Version minimale de l'app, /api/v1, OpenAPI |
+| 2 | A | [DATA-00](lot-2/DATA-00-catalogue-versionne/spec.md) | Moyenne | M | Catalogue versionné (à faire avant les autres DATA) |
+| 3 | A | [OPS-03](lot-2/OPS-03-chargement-livre-transactionnel/spec.md) | Moyenne | S | Chargement du livre transactionnel + contrôle d'intégrité |
+| 4 | A | [SEC-08](lot-2/SEC-08-erreurs-409-500/spec.md) | Basse | S | 409 sur violation d'unicité, 500 journalisé |
+| 5 | A | [OPS-01](lot-2/OPS-01-memoire-jvm/spec.md) | Moyenne | S | Réglage mémoire de la JVM et sondes |
+| 6 | A | [SEC-07](lot-2/SEC-07-h2-et-cve/spec.md) | Basse | S | H2 hors du jar ; contrôle des CVE |
+| 7 | B | [SEC-06](lot-2/SEC-06-changement-email/spec.md) | Moyenne | M | Mot de passe exigé pour changer d'email ; ancien email actif jusqu'à confirmation |
+| 8 | B | [SEC-05](lot-2/SEC-05-anti-enumeration/spec.md) | Moyenne | S | Réponses identiques à l'inscription |
+| 9 | B | [OPS-05](lot-2/OPS-05-purge-tokens/spec.md) | Moyenne | S | Purge quotidienne des tokens expirés et des comptes non vérifiés |
+| 10 | B | [RGPD-03](lot-2/RGPD-03-conservation-et-logs/spec.md) | Moyenne | S | Conservation ; emails masqués dans les logs |
+| 11 | B | [RGPD-02](lot-2/RGPD-02-export-donnees/spec.md) | Moyenne | S | Export des données en JSON |
+| 12 | C | [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
+| 13 | C | [REGLE-06](lot-2/REGLE-06-pas-de-jet-en-combat/spec.md) | Moyenne | S | Pas de jet d'objet en combat |
+| 14 | C | [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
+| 15 | C | [REGLE-07](lot-2/REGLE-07-table-maitrise-armes/spec.md) | Moyenne | S | Table 0-9 de la Maîtrise des Armes |
+| 16 | C | [REGLE-14](lot-2/REGLE-14-choix-sinon-exclusifs/spec.md) | Basse | S | Choix « Sinon » exclusifs |
+| 17 | C | [REGLE-11](lot-2/REGLE-11-mains-nues-260/spec.md) + [DATA-13](lot-2/DATA-13-marqueur-sans-arme-260/spec.md) | Moyenne | S | 260 : mains nues sans cumul |
+| 18 | C | [DATA-06](lot-2/DATA-06-perte-equipement-205/spec.md) + [DATA-07](lot-2/DATA-07-pas-de-vol-181/spec.md) | Moyenne | S | Perte d'équipement au 205, pas au 181 |
+| 19 | C | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
+| 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M | Modéliser le Sac à Dos |
+| 21 | C | [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
+| 22 | C | [DATA-14](lot-2/DATA-14-pierres-137/spec.md) | Moyenne | S | 137 : Pierres = 1 objet de Sac |
+| 23 | C | [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
+| 24 | D | [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |
+| 25 | D | [REGLE-15](lot-2/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté (met `CLAUDE.md` à jour) |
+| 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
+| 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
@@ -77,4 +79,8 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 1. **SEC-09** tout de suite : c'est le seul problème que les testeurs TestFlight vont voir. **SEC-10** dans la foulée (même symptôme côté Profil après 15 minutes).
 2. **OPS-08** dans la même petite PR que le `.gitignore` (graphify-out, Zone.Identifier).
 3. **OPS-06** avant d'ouvrir l'app au public.
-4. Lot 2 : **DATA-00** d'abord (les corrections DATA suivantes n'auront plus besoin de migration), puis SEC-06, OPS-05 et QUAL-06.
+4. Lot 2, dans l'ordre du tableau :
+   - **A. Socle avant les changements de contrat et de données.** QUAL-02 d'abord (au moins `/version`) : les apps installées ne se mettent pas à jour seules, et SEC-06, QUAL-08, REGLE-12 et REGLE-15 changent le contrat API ; il faut pouvoir forcer la mise à jour avant. Puis DATA-00, qui évite une migration SQL à chaque correction DATA/REGLE suivante ; OPS-03 juste après (DATA-00 peut le remplacer : à trancher au récap de DATA-00). SEC-08, OPS-01 et SEC-07 sont courts et rendent la prod plus sûre (409 au lieu de 500, mémoire JVM, H2 hors du jar).
+   - **B. Comptes et RGPD.** SEC-06 en premier : une faute de frappe dans l'e-mail bloque le compte, c'est le seul risque de perte de compte restant. SEC-05 après SEC-08 (même zone : inscription et 409). OPS-05 avant RGPD-03, qui s'appuie sur la purge pour ses durées de conservation.
+   - **C. Règles du jeu.** D'abord les deux trous côté serveur, où l'API accepte une action interdite (REGLE-16 : échange répétable ; REGLE-06 : objet jeté en combat), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, DATA-16), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
+   - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant).
