@@ -1,9 +1,11 @@
 package com.loupsolitaire.backend.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -110,6 +113,22 @@ class SecurityConfigTest {
         mockMvc.perform(get("/objets").header(HttpHeaders.AUTHORIZATION, bearer()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(28));
+    }
+
+    @Test
+    void lesRoutesDuCompteSansJetonRepondent401() throws Exception {
+        // SEC-10 : /auth/me est sous /auth/** mais exige un jeton ; sans
+        // jeton, 401 (renouvellement par l'app) et non 500.
+        String corps = "{}";
+        for (var requete : new RequestBuilder[] {
+                get("/auth/me"),
+                put("/auth/me").contentType(MediaType.APPLICATION_JSON).content(corps),
+                put("/auth/me/password").contentType(MediaType.APPLICATION_JSON).content(corps),
+                delete("/auth/me").contentType(MediaType.APPLICATION_JSON).content(corps)}) {
+            mockMvc.perform(requete)
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.status").value(401));
+        }
     }
 
     // =========================================================
