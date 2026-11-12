@@ -2,9 +2,11 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `feature-RGPD-02` | À faire |
+| 3 | Basse | S | `feature-RGPD-02` | À faire |
 
 Origine : Cahier des charges (RGPD-02)
+
+Reportée du lot 2 à la fin du lot 3 (décision du 12/11/2026) : le RGPD impose de répondre à une demande d'accès sous un mois, pas d'avoir un export automatique. Tant que les demandes sont rares (phase de test), elles sont traitées à la main. Le récapitulatif préparé alors (contenu de l'export, données exclues, bouton avec partage natif `@capacitor/filesystem` + `@capacitor/share` ou envoi par e-mail) reste valable.
 
 ## Problème
 
