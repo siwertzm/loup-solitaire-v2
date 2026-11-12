@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,4 +30,10 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID
     // contrainte de cle etrangere utilisateur_id bloque la suppression du
     // compte (voir AuthController.deleteAccount).
     void deleteByUtilisateur(Utilisateur utilisateur);
+
+    // OPS-05 : sessions expirees avant cette date (les revoquees non
+    // expirees restent : elles servent a detecter la reutilisation, SEC-04).
+    @Modifying
+    @Query("delete from RefreshToken t where t.expiresAt < :limite")
+    int supprimerExpiresAvant(@Param("limite") Instant limite);
 }

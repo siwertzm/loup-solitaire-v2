@@ -8,7 +8,7 @@ Origine : Cahier des charges (RGPD-03)
 
 ## Problème
 
-`EmailService` journalise l'adresse email complète dans les erreurs (ex. « Echec de l'envoi … a marius@example.com »). Comptes non vérifiés gardés indéfiniment (traité par OPS-05).
+`EmailService` journalise l'adresse email complète dans les erreurs (ex. « Echec de l'envoi … a marius@example.com »). Comptes non vérifiés gardés indéfiniment : décision du 12/11/2026 (OPS-05), ils ne sont pas supprimés ; à écrire dans la politique de confidentialité.
 
 ## À faire
 

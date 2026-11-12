@@ -127,6 +127,22 @@ La limite est le CPU, pas la mémoire. Pour relancer la mesure, voir l'en-tête
 de `scripts/charge.py` (base de test, limitation de débit et e-mails
 désactivés côté serveur ; jamais contre la production).
 
+## Purge des jetons (OPS-05)
+
+`PurgeService` tourne chaque jour à 4 h, heure de Paris (`PURGE_CRON`,
+format cron Spring) et supprime :
+
+- les sessions (`refresh_token`) expirées depuis plus de 7 jours ; les
+  sessions révoquées mais pas encore expirées sont gardées (détection de
+  réutilisation, SEC-04) ;
+- les liens de vérification d'e-mail expirés ;
+- les demandes « mot de passe oublié » dont le code et l'étape de
+  réinitialisation ont expiré.
+
+Les **comptes ne sont jamais supprimés**, même non vérifiés (décision du
+12/11/2026) : leur lien expiré disparaît, « Renvoyer le lien » en recrée
+un. Le nombre de lignes supprimées est écrit dans les logs (`Purge : …`).
+
 ## Failles connues des dépendances (SEC-07)
 
 La CI (`sonar.yml`) bloque une PR quand une dépendance livrée a une faille

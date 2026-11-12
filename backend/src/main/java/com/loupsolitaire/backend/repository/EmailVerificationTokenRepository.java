@@ -1,9 +1,13 @@
 package com.loupsolitaire.backend.repository;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.loupsolitaire.backend.model.EmailVerificationToken;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -16,4 +20,9 @@ public interface EmailVerificationTokenRepository extends JpaRepository<EmailVer
     // contrainte de cle etrangere utilisateur_id bloque la suppression du
     // compte (voir AuthController.deleteAccount).
     void deleteByUtilisateur(Utilisateur utilisateur);
+
+    // OPS-05 : liens de verification expires.
+    @Modifying
+    @Query("delete from EmailVerificationToken t where t.expiresAt < :maintenant")
+    int supprimerExpires(@Param("maintenant") Instant maintenant);
 }
