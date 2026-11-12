@@ -498,10 +498,12 @@
     "ERREUR_AVANCER_RESURRECTION": "Unable to move on after reviving.",
     "ERREUR_RESURRECTION": "Error while reviving:",
     "ERREUR_RESSUSCITER_INSTANT": "Unable to revive right now.",
-    "POPUP_OBJETS_NON_PRIS_TITRE": "ITEMS LEFT BEHIND",
-    "POPUP_OBJETS_NON_PRIS_TEXTE": "There are still items to take in this chapter. If you continue, you won't be able to get them back.",
+    "POPUP_OBJETS_NON_PRIS_TITRE": "BEFORE YOU LEAVE",
+    "POPUP_OBJETS_NON_PRIS_TEXTE": "There are still things to do in this section. If you continue, you won't be able to come back to them.",
     "POPUP_OBJETS_NON_PRIS_VOIR": "SEE ITEMS",
-    "POPUP_OBJETS_NON_PRIS_CONTINUER": "CONTINUE ANYWAY"
+    "POPUP_OBJETS_NON_PRIS_CONTINUER": "CONTINUE ANYWAY",
+    "POPUP_ECHANGE_PROPOSE": "Trade offered: {{objet}}",
+    "POPUP_VOIR_ECHANGE": "SEE THE TRADE"
   },
   "COMBAT_PAGE": {
     "ARIA_REGLES": "Combat rules",

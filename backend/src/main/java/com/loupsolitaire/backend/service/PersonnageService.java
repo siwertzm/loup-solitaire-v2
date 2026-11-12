@@ -15,6 +15,7 @@ import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Lien;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChap;
@@ -592,7 +593,20 @@ public class PersonnageService {
                     "Aucun echange pour " + objetAAjouter.getId() + " n'est propose sur ce chapitre");
         }
 
-        boolean possede = inventaireService.listerInventaire(personnage).stream()
+        List<InventaireItem> inventaire = inventaireService.listerInventaire(personnage);
+
+        // REGLE-16 : l'echange n'a lieu qu'une fois. Meme regle que l'app
+        // (echangeDejaFait) : deja fait si l'objet propose est dans
+        // l'inventaire. Sans ce controle, un appel direct a l'API donnait un
+        // second Marteau au 307.
+        boolean dejaEchange = inventaire.stream()
+                .anyMatch(item -> item.getObjet().getId().equals(objetAAjouter.getId()) && item.getQuantite() > 0);
+        if (dejaEchange) {
+            throw new IllegalArgumentException(
+                    "Vous possedez deja " + objetAAjouter.getId() + " : l'echange a deja ete fait");
+        }
+
+        boolean possede = inventaire.stream()
                 .anyMatch(item -> item.getObjet().getId().equals(objetARetirer.getId()) && item.getQuantite() > 0);
         if (!possede) {
             throw new IllegalArgumentException(

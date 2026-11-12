@@ -1057,6 +1057,32 @@ class PersonnageServiceTest {
     }
 
     @Test
+    void echangeRefuseSiObjetDejaPossede() {
+        // REGLE-16 : second appel a l'API au 307, le Marteau est deja la.
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+
+        Objet hache = creerObjetArme("hache");
+        Objet marteau = creerObjetArme("marteau");
+        chapitre0.setEffets(List.of(creerEffetEchange("marteau")));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        InventaireItem ligneHache = new InventaireItem();
+        ligneHache.setObjet(hache);
+        ligneHache.setQuantite(1);
+        InventaireItem ligneMarteau = new InventaireItem();
+        ligneMarteau.setObjet(marteau);
+        ligneMarteau.setQuantite(1);
+        when(inventaireService.listerInventaire(p)).thenReturn(List.of(ligneHache, ligneMarteau));
+
+        assertThatThrownBy(() -> personnageService.echangerObjet(p, hache, marteau))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("deja");
+
+        verify(inventaireService, never()).remplacerObjet(any(), any(), anyInt(), any(), anyInt());
+    }
+
+    @Test
     void refuseLEchangeSiLeChapitreActuelNeLeProposePas() {
         Personnage p = new Personnage();
         p.setChapitreActuel(chapitre0);
