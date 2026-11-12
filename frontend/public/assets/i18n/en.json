@@ -111,7 +111,7 @@
     "CHOISIR": "CHOOSE THIS CHARACTER",
     "NOUVEAU_PERSONNAGE": "NEW CHARACTER",
     "REGLES_DU_JEU": "RULES OF THE GAME",
-    "PIED": "Progress saved on this device",
+    "PIED": "Progress saved to your account",
     "ERREUR_CHARGEMENT": "Unable to load your characters.",
     "TOME_TERMINE_ARIA": "Book completed",
     "RESSUSCITER": "REVIVE",
@@ -475,9 +475,7 @@
     "LIEN_FUITE": "FLEE",
     "LIEN_HASARD": "CHANCE",
     "LIEN_VICTOIRE": "VICTORY",
-    "LIEN_BOURSE_DISPONIBLE": "{{valeur}} {{objet}}s",
     "LIEN_BOURSE_INDISPONIBLE": "{{valeur}} {{objet}}",
-    "LIEN_ENDURANCE_REQUISE": "{{valeur}} ENDURANCE required",
     "LIEN_CONDITION_REQUISE": "Requirement needed",
     "DISCIPLINE_REQUISE": "Discipline needed",
     "OBJET_REQUIS": "Item needed",
@@ -573,7 +571,7 @@
     "MSG_RIPOSTE": "{{nom}} counter-attacks!",
     "MSG_COUP_FATAL_JOUEUR": "A fatal blow strikes you down!",
     "MSG_ESQUIVE": "You dodge the blow.",
-    "MSG_PERD_ENDURANCE_GARDE": "You lose {{degats}} ENDURANCE points \n(Guard reduced it by {{pourcent}}%).",
+    "MSG_PERD_ENDURANCE_GARDE": "You lose {{degats}} ENDURANCE points (guard: −{{pourcent}}%).",
     "MSG_PERD_ENDURANCE": "You lose {{degats}} ENDURANCE points.",
     "MSG_OUVERTURE": "You seize an opening:\n +{{bonus}} COMBAT SKILL for your next attack.",
     "MSG_INTERROMPU": "The combat is interrupted; the story continues."
@@ -648,6 +646,7 @@
     "INTRODUCTION": "Introduction",
     "VIDE": "No chapters visited yet.",
     "ERREUR_ID_MANQUANT": "Character ID missing.",
-    "ERREUR_CHARGEMENT": "Unable to load the journal."
+    "ERREUR_CHARGEMENT": "Unable to load the journal.",
+    "ALT_COMBAT": "Combat"
   }
 }

@@ -14,7 +14,6 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
 | [OPS-06](lot-1/OPS-06-sauvegardes-restauration/spec.md) | Haute | M | Sauvegardes, restauration et retour arrière |
-| [QUAL-07](lot-1/QUAL-07-textes-francais/spec.md) | Moyenne | S | fr.json : vouvoiement, HABILETÉ, fautes et cohérence |
 
 ### Lot 2 — premier mois
 

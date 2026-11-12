@@ -1,6 +1,6 @@
 # Loup Solitaire v2 — règles du projet
 
-Adaptation numérique du livre-jeu *Loup Solitaire, Tome 1 : Le Seigneur des Ténèbres*.
+Adaptation numérique du livre-jeu *Loup Solitaire, Tome 1 : Les Maîtres des Ténèbres*.
 Monorepo : `backend/` (API Spring Boot) + `frontend/` (Ionic/Angular + Capacitor).
 Détails complets : `backend/README.md` et `frontend/README.md`.
 
