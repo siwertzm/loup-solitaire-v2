@@ -100,7 +100,9 @@ class InscriptionSimultaneeIT extends IntegrationPostgres {
     }
 
     // L'INSERT de la seconde inscription attend le verrou de l'index unique.
-    private void attendreQueLaSecondeSoitBloquee() throws InterruptedException {
+    // Chaque tour est une requete a PostgreSQL, qui suffit a espacer les
+    // verifications (en pratique quelques millisecondes).
+    private void attendreQueLaSecondeSoitBloquee() {
         Instant limite = Instant.now().plus(Duration.ofSeconds(20));
         while (Instant.now().isBefore(limite)) {
             Long bloquees = jdbc.queryForObject("""
@@ -110,7 +112,6 @@ class InscriptionSimultaneeIT extends IntegrationPostgres {
             if (bloquees != null && bloquees > 0) {
                 return;
             }
-            TimeUnit.MILLISECONDS.sleep(50);
         }
         throw new AssertionError("La seconde inscription n'a jamais attendu le verrou");
     }
