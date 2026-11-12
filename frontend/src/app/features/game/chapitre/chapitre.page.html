@@ -252,7 +252,10 @@
                 [disabled]="!lien.disponible || chargement()"
                 (click)="choisirLien(lien)"
               >
-                @if (lien.disponible) {
+                @if (estChoixSinon(lien)) {
+                  <!-- REGLE-14 : « Sinon, rendez-vous au … » : le numéro, pas le nom de ce qu'il ne faut pas posséder. -->
+                  {{ lien.chapitreCibleId }}
+                } @else if (lien.disponible) {
                   @if (lien.conditions.length === 0) {
                     {{ lien.chapitreCibleId }}
                   } @else if (lien.conditions[0].type === 'DISCIPLINE') {

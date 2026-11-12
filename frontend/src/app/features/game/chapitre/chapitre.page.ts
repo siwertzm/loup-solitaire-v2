@@ -788,6 +788,15 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     });
   }
 
+  /**
+   * REGLE-14 : lien « Sinon » du livre (condition de valeur -1, « si vous ne
+   * possédez pas ») : son bouton affiche le numéro du paragraphe, pas le nom
+   * de la discipline ou de l'objet (qui est celui de l'autre choix).
+   */
+  estChoixSinon(lien: LienResponse): boolean {
+    return lien.conditions[0]?.valeur?.trim() === '-1';
+  }
+
   /** Popup "objets non pris" : le joueur confirme, on avance quand même. */
   confirmerChangementChapitre(): void {
     const lien = this.lienEnAttenteConfirmation();
