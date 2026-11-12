@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 13 | C | [REGLE-06](lot-2/REGLE-06-pas-de-jet-en-combat/spec.md) | Moyenne | S | Pas de jet d'objet en combat |
 | 14 | C | [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
 | 15 | C | [REGLE-07](lot-2/REGLE-07-table-maitrise-armes/spec.md) | Moyenne | S | Table 0-9 de la Maîtrise des Armes |
 | 16 | C | [REGLE-14](lot-2/REGLE-14-choix-sinon-exclusifs/spec.md) | Basse | S | Choix « Sinon » exclusifs |
@@ -62,6 +61,9 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 - **DATA-11** : le lien 339 → 7 est toujours `fuite = 1`, le cahier demande `fuite = 0`. Même question.
 - **REGLE-01 / REGLE-02** : le combat utilise toujours sa table maison et deux tirages par assaut. C'est cohérent avec `CLAUDE.md` (« système maison, volontairement différent du livre ») : à écrire comme décision D-11, pour que le cahier ne dise plus « Critique ».
 
+**Abandonné :**
+- **REGLE-06** (interdire de jeter un objet pendant un combat), décision du 12/11/2026 : jeter un objet en plein combat ne peut que désavantager le joueur (ex. sa seule arme : −4 HABILETÉ), sans effet sur le déroulé de l'aventure. `DELETE /personnages/{id}/objets/{objetId}` reste permis en combat ; seule la consommation y est bloquée (REGLE-05).
+
 **Vérifié « Fait » :** SEC-01 à SEC-04, OPS-02, OPS-04, REGLE-03, REGLE-05 (consommation bloquée pendant un combat en cours), REGLE-08, DATA-01 à DATA-04, DATA-08 à DATA-10, RGPD-01, RGPD-04, QUAL-01 (`./mvnw verify` vert avec Testcontainers, 600 tests).
 
 ## Ordre conseillé
@@ -72,5 +74,5 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 4. Lot 2, dans l'ordre du tableau :
    - **A. Socle avant les changements de contrat et de données.** QUAL-02 d'abord (au moins `/version`) : les apps installées ne se mettent pas à jour seules, et SEC-06, QUAL-08, REGLE-12 et REGLE-15 changent le contrat API ; il faut pouvoir forcer la mise à jour avant. Puis DATA-00, qui évite une migration SQL à chaque correction DATA/REGLE suivante ; OPS-03 juste après (DATA-00 peut le remplacer : à trancher au récap de DATA-00). SEC-08, OPS-01 et SEC-07 sont courts et rendent la prod plus sûre (409 au lieu de 500, mémoire JVM, H2 hors du jar).
    - **B. Comptes et RGPD.** SEC-06 en premier : une faute de frappe dans l'e-mail bloque le compte, c'est le seul risque de perte de compte restant. SEC-05 après SEC-08 (même zone : inscription et 409). OPS-05 avant RGPD-03, qui s'appuie sur la purge pour ses durées de conservation.
-   - **C. Règles du jeu.** D'abord les deux trous côté serveur, où l'API accepte une action interdite (REGLE-16 : échange répétable ; REGLE-06 : objet jeté en combat), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, DATA-16), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
+   - **C. Règles du jeu.** D'abord le trou côté serveur où l'API acceptait une action interdite (REGLE-16 : échange répétable ; REGLE-06 abandonnée, voir plus haut), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, DATA-16), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
    - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant).
