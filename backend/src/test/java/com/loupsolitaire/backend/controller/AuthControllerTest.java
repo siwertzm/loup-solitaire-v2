@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -118,18 +119,18 @@ class AuthControllerTest {
     // =========================================================
 
     @Test
-    void registerRenvoie201AvecLeCompteCree() throws Exception {
+    void registerRenvoie202SansContenu() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("marius");
         request.setEmail("marius@example.com");
         request.setPassword("motdepasse123");
-        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
+        // SEC-05 : aucun detail du compte dans la reponse (rien qui distingue
+        // un email nouveau d'un email deja inscrit).
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("marius"))
-                // RGPD-01 : la date de naissance n'est plus renvoyee.
-                .andExpect(jsonPath("$.dateNaissance").doesNotExist());
+                .andExpect(status().isAccepted())
+                .andExpect(content().string(""));
+        verify(compteService).inscrire(any());
     }
 
     @Test
@@ -144,11 +145,9 @@ class AuthControllerTest {
                   "dateNaissance": "1997-05-12"
                 }
                 """;
-        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.dateNaissance").doesNotExist());
+                .andExpect(status().isAccepted());
     }
 
     @Test
@@ -162,10 +161,9 @@ class AuthControllerTest {
                   "password": "motdepasse123"
                 }
                 """;
-        when(compteService.inscrire(any())).thenReturn(profil("marius", "marius@example.com"));
 
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isCreated());
+                .andExpect(status().isAccepted());
 
         ArgumentCaptor<RegisterRequest> requete = ArgumentCaptor.forClass(RegisterRequest.class);
         verify(compteService).inscrire(requete.capture());
@@ -173,16 +171,16 @@ class AuthControllerTest {
     }
 
     @Test
-    void registerRenvoie409EnCasDeConflit() throws Exception {
+    void registerRenvoie409SiLeNomDUtilisateurEstPris() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("marius");
         request.setEmail("marius@example.com");
         request.setPassword("motdepasse123");
-        when(compteService.inscrire(any())).thenThrow(new ConflitException("Cet email est deja utilise"));
+        doThrow(new ConflitException("Nom d'utilisateur deja utilise")).when(compteService).inscrire(any());
 
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(json(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Cet email est deja utilise"));
+                .andExpect(jsonPath("$.message").value("Nom d'utilisateur deja utilise"));
     }
 
     @Test

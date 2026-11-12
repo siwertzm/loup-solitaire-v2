@@ -85,7 +85,7 @@ class EmailAsynchroneIT extends IntegrationPostgres {
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(corps))
-                .andExpect(status().isCreated());
+                .andExpect(status().isAccepted());
         Duration duree = Duration.ofNanos(System.nanoTime() - debut);
 
         // L'email est bien parti vers le SMTP, qui est encore bloque...

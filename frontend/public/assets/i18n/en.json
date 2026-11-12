@@ -40,10 +40,10 @@
       "BOUTON_CREATION_EN_COURS": "Creating...",
       "SEPARATEUR_OU": "OR",
       "LIEN_CONNEXION": "Already have an account? <strong>Log in</strong>",
-      "ERREUR_INSCRIPTION": "Sign-up failed: username or email already in use.",
+      "ERREUR_INSCRIPTION": "Sign-up is not possible right now. Please try again later.",
       "SUCCES_SYMBOLE": "✓",
-      "SUCCES_TITRE": "Account created",
-      "SUCCES_TEXTE": "A verification email has been sent. Click the link it contains before logging in.",
+      "SUCCES_TITRE": "Check your inbox",
+      "SUCCES_TEXTE": "If this address has no account yet, a verification link was just sent to it: click it before logging in. If it already has one, an email reminds you.",
       "BOUTON_ALLER_LOGIN": "Go to log in",
       "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirm password",
       "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Enter your password again",
@@ -52,7 +52,8 @@
       "MENTION_LEGALE_CGU": "terms of use",
       "MENTION_LEGALE_2": "and acknowledge the",
       "MENTION_LEGALE_CONFIDENTIALITE": "privacy policy",
-      "MENTION_LEGALE_FIN": "."
+      "MENTION_LEGALE_FIN": ".",
+      "ERREUR_NOM_PRIS": "This username is already taken. Please choose another one."
     },
     "FORGOT_PASSWORD": {
       "TITRE": "Forgot password",

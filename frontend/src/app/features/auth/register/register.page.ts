@@ -92,7 +92,14 @@ export class RegisterPage {
       },
       error: (err: HttpErrorResponse) => {
         this.enCours.set(false);
-        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.REGISTER.ERREUR_INSCRIPTION');
+        // SEC-05 : seul un nom d'utilisateur pris donne 409 (un e-mail déjà inscrit n'est jamais signalé).
+        this.erreur.set(
+          err.status === 429
+            ? 'AUTH.ERREUR_TROP_DE_TENTATIVES'
+            : err.status === 409
+              ? 'AUTH.REGISTER.ERREUR_NOM_PRIS'
+              : 'AUTH.REGISTER.ERREUR_INSCRIPTION',
+        );
       },
     });
   }

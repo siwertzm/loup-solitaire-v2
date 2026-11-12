@@ -216,4 +216,22 @@ class EmailServiceTest {
 
         return "";
     }
+
+    // SEC-05 : rappel envoye quand une inscription reutilise l'adresse d'un
+    // compte existant. Le nom d'utilisateur vient de la base : il est echappe
+    // dans le HTML.
+    @Test
+    void envoyerRappelCompteExistantRappelleLeNomEtLEchappe() throws Exception {
+        emailService.envoyerRappelCompteExistant("marius@example.com", "<b>marius</b>");
+
+        verify(mailSender).send(mimeMessage);
+        mimeMessage.saveChanges();
+        java.io.ByteArrayOutputStream contenu = new java.io.ByteArrayOutputStream();
+        mimeMessage.writeTo(contenu);
+        String brut = contenu.toString(java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(mimeMessage.getAllRecipients()[0].toString()).isEqualTo("marius@example.com");
+        assertThat(mimeMessage.getSubject()).contains("déjà un compte");
+        assertThat(brut).contains("&lt;b&gt;marius&lt;/b&gt;").doesNotContain("<b>marius</b></p>");
+    }
 }

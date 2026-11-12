@@ -63,6 +63,8 @@ class CompteServiceTest {
     private AuthService authService;
     @Mock
     private LimiteurDeDebit limiteurDeDebit;
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private CompteService compteService;
@@ -100,15 +102,15 @@ class CompteServiceTest {
     void inscrireCreeUnCompteAvecUnMotDePasseHacheEtEnvoieLeLienDeVerification() {
         when(passwordEncoder.encode("motdepasse123")).thenReturn("hash");
 
-        UtilisateurResponse reponse = compteService.inscrire(inscription());
+        compteService.inscrire(inscription());
 
         ArgumentCaptor<Utilisateur> cree = ArgumentCaptor.forClass(Utilisateur.class);
         verify(utilisateurRepository).save(cree.capture());
+        assertThat(cree.getValue().getUsername()).isEqualTo("marius");
         assertThat(cree.getValue().getPassword()).isEqualTo("hash");
         assertThat(cree.getValue().isEmailVerifie()).isFalse();
         assertThat(cree.getValue().getDateCreation()).isNotNull();
         verify(emailVerificationService).envoyerLienDeVerification(cree.getValue());
-        assertThat(reponse.username()).isEqualTo("marius");
     }
 
     @Test
@@ -123,16 +125,58 @@ class CompteServiceTest {
         verifyNoInteractions(emailVerificationService);
     }
 
-    @Test
-    void inscrireRefuseUnEmailDejaPris() {
-        when(utilisateurRepository.existsByEmail("marius@example.com")).thenReturn(true);
+    // SEC-05 : un email deja inscrit ne leve pas d'erreur (meme reponse
+    // qu'une inscription normale) et ne cree pas de compte.
+    private Utilisateur compteExistant(boolean verifie) {
+        Utilisateur existant = new Utilisateur();
+        existant.setUsername("ancien-pseudo");
+        existant.setEmail("marius@example.com");
+        existant.setEmailVerifie(verifie);
+        when(utilisateurRepository.findByEmail("marius@example.com")).thenReturn(Optional.of(existant));
+        return existant;
+    }
 
-        assertThatThrownBy(() -> compteService.inscrire(inscription()))
-                .isInstanceOf(ConflitException.class)
-                .hasMessage("Cet email est deja utilise");
+    @Test
+    void inscrireAvecUnEmailDejaVerifieEnvoieUnRappelSansCreerDeCompte() {
+        compteExistant(true);
+
+        compteService.inscrire(inscription());
 
         verify(utilisateurRepository, never()).save(any());
+        verify(emailService).envoyerRappelCompteExistant("marius@example.com", "ancien-pseudo");
         verifyNoInteractions(emailVerificationService);
+    }
+
+    @Test
+    void inscrireAvecUnEmailPasEncoreVerifieRenvoieLeLienDeVerification() {
+        Utilisateur existant = compteExistant(false);
+
+        compteService.inscrire(inscription());
+
+        verify(utilisateurRepository, never()).save(any());
+        verify(emailVerificationService).envoyerLienDeVerification(existant);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void inscrireHacheLeMotDePasseMemeSiLEmailExiste() {
+        // Meme duree de reponse : bcrypt est appele dans les deux cas.
+        compteExistant(true);
+
+        compteService.inscrire(inscription());
+
+        verify(passwordEncoder).encode("motdepasse123");
+    }
+
+    @Test
+    void inscrireAvecUnEmailExistantNEnvoieRienAuDelaDeLaLimiteSansErreur() {
+        compteExistant(true);
+        doThrow(new TropDeRequetesException(60))
+                .when(limiteurDeDebit).consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, "marius@example.com");
+
+        compteService.inscrire(inscription());
+
+        verifyNoInteractions(emailService, emailVerificationService);
     }
 
     // =========================================================

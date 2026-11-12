@@ -278,7 +278,7 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/auth/register` | 🔓 | Crée un compte (`username`, `email`, `password`). Envoie un email de vérification. `409` si username/email déjà pris. |
+| POST | `/auth/register` | 🔓 | Crée un compte (`username`, `email`, `password`) et envoie un email de vérification. Répond toujours `202` sans contenu, que l'email ait déjà un compte ou non (SEC-05) : dans ce cas aucun compte n'est créé et un email part à cette adresse (rappel « tu as déjà un compte », ou nouveau lien si le compte n'est pas vérifié ; 3 par heure au plus). `409` seulement si le **nom d'utilisateur** est pris. |
 | GET | `/auth/verify-email?token=...` | 🔓 | Active le compte depuis le lien reçu par email, ou remplace l'email du compte par l'email en attente (SEC-06). Redirige vers l'app. `409` si l'adresse en attente a été prise entre-temps par un autre compte. |
 | POST | `/auth/resend-verification` | 🔓 | Renvoie l'email de vérification (`email`). Réponse identique que l'email existe ou non, pour ne pas divulguer les comptes enregistrés. |
 | POST | `/auth/login` | 🔓 | Connexion (`identifiant` = username ou email, `password`). `403` si l'email n'est pas encore vérifié. Retourne `{ accessToken, refreshToken, tokenType }`. |
