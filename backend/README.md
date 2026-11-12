@@ -127,6 +127,29 @@ La limite est le CPU, pas la mémoire. Pour relancer la mesure, voir l'en-tête
 de `scripts/charge.py` (base de test, limitation de débit et e-mails
 désactivés côté serveur ; jamais contre la production).
 
+## Failles connues des dépendances (SEC-07)
+
+La CI (`sonar.yml`) bloque une PR quand une dépendance livrée a une faille
+connue (CVE) de gravité haute ou critique **déjà corrigée** par une version :
+
+- frontend : `npm audit --omit=dev --audit-level=high` (les outils de
+  développement ne sont pas livrés et ne sont pas contrôlés) ;
+- backend : [Trivy](https://trivy.dev) scanne le jar de production
+  (`docker run aquasec/trivy:0.58.1 rootfs ... target/`).
+
+Une PR peut donc échouer parce qu'une faille vient d'être publiée, même sans
+rapport avec la PR : la correction est presque toujours une montée de
+version (Spring Boot, Angular…). Dependabot (`.github/dependabot.yml`)
+ouvre chaque semaine une PR de mise à jour par écosystème (Maven, npm,
+GitHub Actions). Pour vérifier en local :
+
+```bash
+./mvnw package -DskipTests
+docker run --rm -v "$PWD/target":/scan aquasec/trivy:0.58.1 rootfs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed /scan
+```
+
+H2 n'est utilisé que par les tests (scope `test`) : il n'est pas dans le jar.
+
 ## Variables d'environnement
 
 **`JWT_SECRET` et `DB_PASSWORD` sont obligatoires, en local comme en

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.1</version>
+		<version>4.1.2</version>
 		<relativePath/>
 	</parent>
 	<groupId>com.loupsolitaire</groupId>
@@ -121,7 +121,8 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
+			<!-- SEC-07 : base des tests uniquement, absente du jar de production -->
+			<scope>test</scope>
 		</dependency>
 		<!-- Spring Boot 4 : un starter de test par technologie.
 		     webmvc-test inclut spring-boot-starter-test (JUnit, Mockito, AssertJ). -->
