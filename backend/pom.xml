@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>io.sentry</groupId>
 			<artifactId>sentry-spring-boot-4</artifactId>
-			<version>8.58.0</version>
+			<version>8.63.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -185,7 +185,7 @@
 			<plugin>
     			<groupId>org.jacoco</groupId>
     			<artifactId>jacoco-maven-plugin</artifactId>
-    			<version>0.8.12</version>
+    			<version>0.8.16</version>
     			<executions>
         			<execution>
             			<!-- Instrumente le code avant l'execution des tests -->
