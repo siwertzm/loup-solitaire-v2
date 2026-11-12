@@ -1,11 +1,13 @@
 package com.loupsolitaire.backend.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,10 +70,10 @@ class GameDataLoaderTest {
         );
     }
 
-    // Base vide (findAll et findById de l'empreinte : vides par defaut) ;
-    // les references entre fichiers (disciplines des ennemis, ennemis et
-    // objets des chapitres) sont toujours trouvees : chaque test verifie
-    // une etape sans dependre des autres.
+    // La base est vide par defaut et aucune empreinte n'est enregistree.
+    // Les references entre fichiers (disciplines des ennemis, ennemis et
+    // objets des chapitres) sont toujours trouvees, pour que chaque test
+    // verifie une etape sans dependre des autres.
     @BeforeEach
     void catalogueSimule() {
         lenient().when(disciplineRepository.findById(any())).thenAnswer(inv -> {
@@ -330,7 +332,7 @@ class GameDataLoaderTest {
         creerLoader().run(null);
 
         verify(disciplineRepository).saveAll(any());
-        verify(chapitreRepository, org.mockito.Mockito.times(2)).saveAll(any());
+        verify(chapitreRepository, times(2)).saveAll(any());
         verify(catalogueEmpreinteRepository).save(ancienne);
         assertThat(ancienne.getEmpreinte())
                 .isEqualTo(GameDataLoader.calculerEmpreinte())
@@ -388,13 +390,16 @@ class GameDataLoaderTest {
 
     @Test
     void laFinDuTomeEstLeSeulChapitreAutoriseSansLien() {
-        GameDataLoader.verifierIntegrite(List.of(chapitre(1, 2), chapitre(GameDataLoader.CHAPITRE_FIN_DU_TOME, 0)));
+        List<Chapitre> chapitres = List.of(chapitre(1, 2), chapitre(GameDataLoader.CHAPITRE_FIN_DU_TOME, 0));
+
+        assertThatCode(() -> GameDataLoader.verifierIntegrite(chapitres)).doesNotThrowAnyException();
     }
 
     @Test
     void refuseUnChapitreSansLien() {
-        assertThatThrownBy(() -> GameDataLoader.verifierIntegrite(
-                List.of(chapitre(1, 2), chapitre(42, 0), chapitre(7, 0))))
+        List<Chapitre> chapitres = List.of(chapitre(1, 2), chapitre(42, 0), chapitre(7, 0));
+
+        assertThatThrownBy(() -> GameDataLoader.verifierIntegrite(chapitres))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("[7, 42]");
     }

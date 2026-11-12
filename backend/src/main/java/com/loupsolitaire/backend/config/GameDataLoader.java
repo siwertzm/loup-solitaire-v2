@@ -1,7 +1,9 @@
 package com.loupsolitaire.backend.config;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,8 +130,14 @@ public class GameDataLoader implements ApplicationRunner {
     }
 
     // SHA-256 des quatre fichiers, dans un ordre fixe.
-    static String calculerEmpreinte() throws Exception {
-        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+    static String calculerEmpreinte() throws IOException {
+        MessageDigest sha256;
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            // SHA-256 est obligatoire dans toute JVM : ne peut pas arriver.
+            throw new IllegalStateException(e);
+        }
         for (String fichier : FICHIERS_DU_LIVRE) {
             try (InputStream is = new ClassPathResource(fichier).getInputStream()) {
                 sha256.update(is.readAllBytes());
