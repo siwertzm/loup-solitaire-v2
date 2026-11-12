@@ -119,6 +119,8 @@ Les autres variables ont une valeur par défaut adaptée au dev.
 | `SENTRY_DSN` | *(vide = désactivé)* | Clé du projet Sentry backend : chaque erreur 500 y est envoyée (OPS-04) |
 | `SENTRY_ENVIRONMENT` | `local` | Environnement affiché dans Sentry (`production` sur Render) |
 | `LOGGING_STRUCTURED_FORMAT_CONSOLE` | *(vide = texte)* | `ecs` sur Render : logs au format JSON, faciles à filtrer (OPS-04) |
+| `APP_VERSION_MINIMALE` | `1.0` | Version minimale de l'app mobile (`GET /version`, QUAL-02). L'augmenter sur Render force la mise à jour des apps plus anciennes, sans redéployer |
+| `SPRINGDOC_ENABLED` | `false` | `true` = description OpenAPI sur `/v3/api-docs` et Swagger UI sur `/swagger-ui.html` (à laisser à `false` en production) |
 | `DIAGNOSTIC_ERREUR_TEST` | `false` | `true` le temps d'un test : `GET /diagnostic/erreur-test` renvoie une 500 volontaire pour vérifier l'alerte Sentry |
 
 En dev, utiliser [Mailtrap](https://mailtrap.io) (sandbox gratuite) pour
@@ -197,6 +199,14 @@ curl -X POST http://localhost:8080/auth/logout \
 ## Endpoints de l'API
 
 Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
+
+**Préfixe `/api/v1` (QUAL-02)** : toutes les routes répondent aussi sous `/api/v1` (ex. `/api/v1/auth/login`), que l'app utilise. Les chemins sans préfixe restent servis pour les apps déjà installées ; `PrefixeApiFilter` retire le préfixe avant la sécurité, les règles sont donc les mêmes.
+
+### Version (`/version`)
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| GET | `/version` | 🔓 | `{ versionMinimale }` (QUAL-02). Au démarrage et à chaque retour au premier plan, l'app compare sa version (`versionName` Android, `MARKETING_VERSION` iOS) : plus ancienne → écran « Mise à jour requise ». Pour forcer une mise à jour : publier la nouvelle version dans les stores, puis augmenter `APP_VERSION_MINIMALE` sur Render. |
 
 ### Auth (`/auth`)
 

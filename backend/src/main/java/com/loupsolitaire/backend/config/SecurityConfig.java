@@ -46,6 +46,10 @@ public class SecurityConfig {
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
                         // le conteneur doit pouvoir interroger ce endpoint sans jeton.
                         .requestMatchers("/actuator/health").permitAll()
+                        // QUAL-02 : l'app lit la version minimale avant toute
+                        // connexion. OpenAPI : 404 tant que SPRINGDOC_ENABLED=false.
+                        .requestMatchers("/version").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // RGPD-04 : politique de confidentialite et CGU, pages
                         // statiques publiques (liens depuis l'app, les emails et
                         // les stores).

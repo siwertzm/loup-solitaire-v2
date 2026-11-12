@@ -648,5 +648,9 @@
     "ERREUR_ID_MANQUANT": "Character ID missing.",
     "ERREUR_CHARGEMENT": "Unable to load the journal.",
     "ALT_COMBAT": "Combat"
+  },
+  "MISE_A_JOUR": {
+    "TITRE": "Update required",
+    "TEXTE": "A new version of the app is available. Update it from the App Store or Google Play to continue your adventure."
   }
 }

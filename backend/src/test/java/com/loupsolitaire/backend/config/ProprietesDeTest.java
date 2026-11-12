@@ -23,7 +23,8 @@ public final class ProprietesDeTest {
                 new AppProperties.Cors(List.of("http://localhost:4200")),
                 new AppProperties.Mail("no-reply@loup-solitaire.local"),
                 new AppProperties.EmailVerification(24),
-                new AppProperties.PasswordReset(15, 5));
+                new AppProperties.PasswordReset(15, 5),
+                "1.0");
     }
 
     // Memes regles que application.properties (SEC-02).

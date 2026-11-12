@@ -20,7 +20,8 @@ import jakarta.validation.constraints.Positive;
  * Correspondance avec application.properties (noms en kebab-case) :
  * app.base-url, app.mobile-login-url, app.cors.allowed-origins,
  * app.mail.from, app.email-verification.expiration-hours,
- * app.password-reset.expiration-minutes, app.password-reset.max-attempts.
+ * app.password-reset.expiration-minutes, app.password-reset.max-attempts,
+ * app.version-minimale.
  */
 @Validated
 @ConfigurationProperties(prefix = "app")
@@ -32,7 +33,10 @@ public record AppProperties(
         @NotNull @Valid Cors cors,
         @NotNull @Valid Mail mail,
         @NotNull @Valid EmailVerification emailVerification,
-        @Valid @DefaultValue PasswordReset passwordReset) {
+        @Valid @DefaultValue PasswordReset passwordReset,
+        // QUAL-02 : version minimale de l'app mobile ; une app plus ancienne
+        // affiche l'ecran "mise a jour requise".
+        @DefaultValue("1.0") @NotBlank String versionMinimale) {
 
     // Origines autorisees a appeler l'API (CORS_ALLOWED_ORIGINS, separees
     // par des virgules).
