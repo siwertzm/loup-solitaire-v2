@@ -26,6 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+// Sur la classe, pas seulement sur purger() : la tache planifiee appelle
+// purger() de l'interieur, et Spring n'applique @Transactional qu'aux appels
+// venant de l'exterieur (les DELETE echoueraient alors sans transaction).
+@Transactional
 public class PurgeService {
 
     // Sessions expirees gardees encore 7 jours (traces recentes en cas
@@ -42,7 +46,6 @@ public class PurgeService {
         purger(Instant.now());
     }
 
-    @Transactional
     public Resultat purger(Instant maintenant) {
         Resultat resultat = new Resultat(
                 refreshTokenRepository.supprimerExpiresAvant(maintenant.minus(CONSERVATION_SESSIONS_EXPIREES)),

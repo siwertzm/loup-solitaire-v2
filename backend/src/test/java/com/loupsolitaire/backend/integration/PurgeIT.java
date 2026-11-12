@@ -127,6 +127,17 @@ class PurgeIT extends IntegrationPostgres {
     }
 
     @Test
+    void laTachePlanifieeTourneDansUneTransaction() {
+        // Meme chemin que la tache de 4 h : sans transaction, les DELETE
+        // levent TransactionRequiredException.
+        UUID expireeIlYALongtemps = session(Timestamp.from(Instant.now().minus(Duration.ofDays(30))), false);
+
+        purgeService.purgeQuotidienne();
+
+        assertThat(existe("refresh_token", expireeIlYALongtemps)).isFalse();
+    }
+
+    @Test
     void neSupprimeJamaisDeCompteMemeNonVerifieEtAncien() {
         lienDeVerification(il_y_a(Duration.ofDays(29)));
 
