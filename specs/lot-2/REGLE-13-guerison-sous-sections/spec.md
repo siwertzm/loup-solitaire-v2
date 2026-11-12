@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-REGLE-13` | À faire |
+| 2 | Basse | S | `fix-REGLE-13` | Fait |
 
 Origine : Cahier des charges (REGLE-13)
 
