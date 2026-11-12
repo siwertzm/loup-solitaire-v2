@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 1 | Basse | S | `fix-OPS-08` | À faire |
+| 1 | Basse | S | `fix-OPS-08` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau)
 

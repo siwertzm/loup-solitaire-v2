@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 1 | Critique | S | `fix-SEC-09` | À faire |
+| 1 | Critique | S | `fix-SEC-09` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau)
 
