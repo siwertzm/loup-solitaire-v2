@@ -157,8 +157,24 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       .filter((o) => o.restant > 0),
   );
 
-  // Lien choisi par le joueur alors que des objets restaient à prendre :
-  // non null = popup de confirmation affiché, en attente de sa réponse.
+  // REGLE-16 : échanges proposés (effet ECHANGE, ex. Marteau du 307) que le
+  // joueur peut encore faire : il n'a pas l'objet proposé (même règle que
+  // le serveur) et il a de quoi donner en échange (même catégorie). Non
+  // vide = confirmation demandée avant de quitter le chapitre.
+  readonly echangesNonFaits = computed(() => {
+    const inventaire = (this.personnage()?.inventaire ?? []).filter((i) => i.quantite > 0);
+    return this.effets()
+      .filter((effet) => effet.type === 'ECHANGE' && effet.conditions.length === 1)
+      .map((effet) => effet.conditions[0].targetId?.toLowerCase())
+      .map((id) => this.tousObjets().find((objet) => objet.id.toLowerCase() === id))
+      .filter((objet): objet is ObjetResume => objet !== undefined)
+      .filter((objet) => !inventaire.some((i) => i.objetId.toLowerCase() === objet.id.toLowerCase()))
+      .filter((objet) => inventaire.some((i) => i.categorie === objet.categorie));
+  });
+
+  // Lien choisi par le joueur alors que des objets restaient à prendre ou
+  // qu'un échange restait possible : non null = popup de confirmation
+  // affiché, en attente de sa réponse.
   readonly lienEnAttenteConfirmation = signal<LienResponse | null>(null);
 
   // Jeton repere dans le champ "text" (voir chapitre.json) : indique
@@ -752,7 +768,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     const id = this.personnageId();
     if (!id || !lien.disponible || this.mort() || this.chargement()) return;
 
-    if (!sansConfirmation && this.objetsNonPris().length > 0) {
+    if (!sansConfirmation && (this.objetsNonPris().length > 0 || this.echangesNonFaits().length > 0)) {
       this.lienEnAttenteConfirmation.set(lien);
       return;
     }
@@ -791,6 +807,12 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     this.ongletActif.set('objets');
     this.ongletLeve.set('objets');
     setTimeout(() => this.ongletLeve.set(null), 300);
+  }
+
+  /** Popup "avant de partir" : le joueur renonce et va voir l'échange (onglet Effets). */
+  voirEchange(): void {
+    this.lienEnAttenteConfirmation.set(null);
+    this.allerChoisirVol();
   }
 
   /** Popup "objets non pris" : fermé sans rien faire (clic sur le voile). */

@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-REGLE-16` | À faire |
+| 2 | Basse | S | `fix-REGLE-16` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau)
 
@@ -28,3 +28,8 @@ La règle « le serveur fait autorité » (`CLAUDE.md`) n'est donc pas tenue sur
 ## Fichiers concernés
 
 `backend/src/main/java/com/loupsolitaire/backend/service/PersonnageService.java`, `backend/src/test/java/com/loupsolitaire/backend/service/PersonnageServiceTest.java`
+
+## Ajout (12/11/2026) : alerte avant de quitter le chapitre
+
+L'échange étant un effet (onglet Effets), le joueur pouvait changer de chapitre sans l'avoir vu. L'alerte qui existait pour les objets non ramassés couvre aussi un échange encore possible : effet `ECHANGE` sur le chapitre, objet proposé pas encore possédé, et au moins un objet de la même catégorie à donner (`ChapitrePage.echangesNonFaits`). Popup « AVANT DE PARTIR » avec « VOIR L'ÉCHANGE » (onglet Effets). Tests : `chapitre.page.spec.ts`.
+

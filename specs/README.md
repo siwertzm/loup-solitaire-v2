@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 12 | C | [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
 | 13 | C | [REGLE-06](lot-2/REGLE-06-pas-de-jet-en-combat/spec.md) | Moyenne | S | Pas de jet d'objet en combat |
 | 14 | C | [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
 | 15 | C | [REGLE-07](lot-2/REGLE-07-table-maitrise-armes/spec.md) | Moyenne | S | Table 0-9 de la Maîtrise des Armes |
