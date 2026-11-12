@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 11 | B | [RGPD-02](lot-2/RGPD-02-export-donnees/spec.md) | Moyenne | S | Export des données en JSON |
 | 12 | C | [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
 | 13 | C | [REGLE-06](lot-2/REGLE-06-pas-de-jet-en-combat/spec.md) | Moyenne | S | Pas de jet d'objet en combat |
 | 14 | C | [REGLE-13](lot-2/REGLE-13-guerison-sous-sections/spec.md) | Basse | S | Pas de Guérison sur 2101/2102 |
@@ -50,6 +49,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | [QUAL-05](lot-3/QUAL-05-multi-tomes/spec.md) | Moyenne (MVP2) | L | Modèle multi-tomes |
 | [QUAL-09](lot-3/QUAL-09-choix-langue/spec.md) | Moyenne | M | Choix de la langue ; en.json corrigé |
 | [QUAL-11](lot-3/QUAL-11-angular-22/spec.md) | Basse | M | Migration vers Angular 22 et Vitest 5 (`ng update`) |
+| [RGPD-02](lot-3/RGPD-02-export-donnees/spec.md) | Basse | S | Export des données en JSON (reporté du lot 2 : demandes traitées à la main en attendant) |
 
 ## Statuts vérifiés le 11/11/2026
 
