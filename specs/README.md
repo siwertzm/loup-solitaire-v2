@@ -13,10 +13,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
-| [SEC-09](lot-1/SEC-09-refresh-concurrent/spec.md) | Critique | S | Déconnexion forcée quand plusieurs requêtes renouvellent la session en même temps |
 | [OPS-06](lot-1/OPS-06-sauvegardes-restauration/spec.md) | Haute | M | Sauvegardes, restauration et retour arrière |
-| [OPS-08](lot-1/OPS-08-mvnw-executable/spec.md) | Basse | S | `backend/mvnw` sans droit d'exécution dans git |
-| [SEC-10](lot-1/SEC-10-routes-auth-me/spec.md) | Haute | S | `/auth/me` répond 500 au lieu de 401 quand le jeton a expiré |
 | [QUAL-07](lot-1/QUAL-07-textes-francais/spec.md) | Moyenne | S | fr.json : vouvoiement, HABILETÉ, fautes et cohérence |
 
 ### Lot 2 — premier mois
