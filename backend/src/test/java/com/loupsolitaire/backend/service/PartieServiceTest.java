@@ -364,7 +364,7 @@ class PartieServiceTest {
     void jouerTourSansObjetNeChercheAucunObjet() {
         Combat combat = new Combat();
         CombatResponse reponseCombat = new CombatResponse(UUID.randomUUID(), 17, List.of(), 1, false, 0,
-                "EN_COURS", false, null);
+                "EN_COURS", false, null, null);
         when(personnageRepository.findByIdPourModification(personnageId)).thenReturn(Optional.of(personnage));
         when(combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null)).thenReturn(new TourJoue(combat, null));
         when(combatMapper.versReponse(combat, null)).thenReturn(reponseCombat);

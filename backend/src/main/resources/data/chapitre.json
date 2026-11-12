@@ -4079,7 +4079,7 @@
     "combat": true,
     "objet": [],
     "effet": [
-      { "type": "habilite", "valeur": -4, "cond": null }
+      { "type": "habilite", "valeur": -4, "cond": [{ "type": "sans_arme" }] }
     ],
     "ennemi": [
       { "id": "glok_premier_260" },

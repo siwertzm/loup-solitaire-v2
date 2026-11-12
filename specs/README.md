@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 17 | C | [REGLE-11](lot-2/REGLE-11-mains-nues-260/spec.md) + [DATA-13](lot-2/DATA-13-marqueur-sans-arme-260/spec.md) | Moyenne | S | 260 : mains nues sans cumul |
 | 18 | C | [DATA-06](lot-2/DATA-06-perte-equipement-205/spec.md) + [DATA-07](lot-2/DATA-07-pas-de-vol-181/spec.md) | Moyenne | S | Perte d'équipement au 205, pas au 181 |
 | 19 | C | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
 | 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M | Modéliser le Sac à Dos |

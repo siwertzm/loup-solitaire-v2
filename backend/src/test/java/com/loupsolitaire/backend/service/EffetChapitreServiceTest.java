@@ -186,6 +186,17 @@ class EffetChapitreServiceTest {
     }
 
     @Test
+    void unEffetDeCombatAMainsNuesNeTouchePasLHabiliteTemporaire() {
+        // REGLE-11 (260) : le -4 est applique par CombatService pendant le
+        // combat, a la place de l'ajustement d'arme ; rien a l'arrivee.
+        Effet effet = creerEffetHabilite(-4, TypeCondition.SANS_ARME, null);
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isZero();
+    }
+
+    @Test
     void appliqueLeMalusSiLaDisciplineRequiseEstAbsente() {
         Effet effet = creerEffetHabilite(
                 -2,

@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-DATA-13` | À faire |
+| 2 | Moyenne | S | `fix-DATA-13` | Fait |
 
 Origine : Cahier des charges (DATA-13), dépend de REGLE-11
 
@@ -12,7 +12,7 @@ Origine : Cahier des charges (DATA-13), dépend de REGLE-11
 
 ## À faire
 
-- Remplacer par le marqueur défini dans REGLE-11 ; JSON + migration dans le même commit.
+- Remplacer par le marqueur défini dans REGLE-11 (`sans_arme`) ; JSON sans migration de données depuis DATA-00. Une migration de schéma reste nécessaire : `017-cond-sans-arme` recrée la contrainte CHECK de `cond.type` avec `SANS_ARME` (sans elle, PostgreSQL refuse le catalogue).
 
 ## Critères d'acceptation
 

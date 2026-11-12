@@ -427,7 +427,8 @@
     "ERREUR_VOL": "Error while resolving the theft:",
     "ERREUR_ECHANGE": "Error while trading the item:",
     "PERTE_TITRE": "LOSS",
-    "CASSE_TITRE": "BREAKAGE"
+    "CASSE_TITRE": "BREAKAGE",
+    "HABILITE_MAINS_NUES": "Bare-handed fight, without your weapons"
   },
   "CHAPITRE_OBJETS": {
     "ALT_ARMES": "Weapons",
@@ -581,7 +582,10 @@
     "MSG_PERD_ENDURANCE_GARDE": "You lose {{degats}} ENDURANCE points (guard: −{{pourcent}}%).",
     "MSG_PERD_ENDURANCE": "You lose {{degats}} ENDURANCE points.",
     "MSG_OUVERTURE": "You seize an opening:\n +{{bonus}} COMBAT SKILL for your next attack.",
-    "MSG_INTERROMPU": "The combat is interrupted; the story continues."
+    "MSG_INTERROMPU": "The combat is interrupted; the story continues.",
+    "TITLE_MAINS_NUES": "Bare-handed fight: {{malus}} COMBAT SKILL",
+    "POPUP_MAINS_NUES_TITRE": "Bare-handed fight",
+    "POPUP_MAINS_NUES_TEXTE": "You fight without a weapon: your base COMBAT SKILL is reduced by <strong>{{malus}}</strong>, whatever weapons are in your backpack. Weaponskill gives no bonus during this fight."
   },
   "PERSONNAGE": {
     "SOUS_TITRE": "Kai Novice · Chapter {{chapitre}}",

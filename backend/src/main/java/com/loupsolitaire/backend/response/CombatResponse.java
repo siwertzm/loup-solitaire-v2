@@ -19,5 +19,8 @@ public record CombatResponse(
         int bonusHabiliteEnAttente,
         String statut,
         boolean fuitePossible,
+        // REGLE-11 : malus d'HABILETE du combat a mains nues (-4 au 260),
+        // qui remplace l'ajustement d'arme ; null pour les autres combats.
+        Integer malusMainsNues,
         ResultatTourResponse dernierTour) {
 }

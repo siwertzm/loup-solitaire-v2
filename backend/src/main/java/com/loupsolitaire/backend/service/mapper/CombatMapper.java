@@ -40,7 +40,12 @@ public class CombatMapper {
                 .map(ce -> versReponseEnnemi(ce, combat))
                 .toList();
 
-        boolean fuitePossible = combat.getStatut() == StatutCombat.EN_COURS && peutFuir(combat);
+        // Le chapitre n'est relu que pour un combat en cours : fuite et malus
+        // de mains nues (REGLE-11) ne comptent plus une fois le combat fini.
+        boolean enCours = combat.getStatut() == StatutCombat.EN_COURS;
+        Chapitre chapitre = enCours ? recupererChapitre(combat) : null;
+        boolean fuitePossible = enCours && combatService.peutFuir(chapitre, combat);
+        Integer malusMainsNues = enCours ? combatService.malusMainsNues(chapitre).orElse(null) : null;
 
         return new CombatResponse(
                 combat.getId(),
@@ -51,7 +56,13 @@ public class CombatMapper {
                 combat.getBonusHabiliteEnAttente(),
                 combat.getStatut().name(),
                 fuitePossible,
+                malusMainsNues,
                 versReponseResultat(resultat));
+    }
+
+    private Chapitre recupererChapitre(Combat combat) {
+        return chapitreRepository.findById(combat.getChapitreId())
+                .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + combat.getChapitreId()));
     }
 
     private ResultatTourResponse versReponseResultat(ResultatTour resultat) {
@@ -72,11 +83,6 @@ public class CombatMapper {
                 resultat.bonusHabiliteObtenu());
     }
 
-    private boolean peutFuir(Combat combat) {
-        Chapitre chapitre = chapitreRepository.findById(combat.getChapitreId())
-                .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + combat.getChapitreId()));
-        return combatService.peutFuir(chapitre, combat);
-    }
 
     private CombatEnnemiResponse versReponseEnnemi(CombatEnnemi ce, Combat combat) {
         boolean vaincu = ce.getEnduranceActuelle() <= 0;

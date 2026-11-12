@@ -11,7 +11,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'mains-nues' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -201,6 +201,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
    * maîtrisée possédée, 0 sinon) sans avoir à la dupliquer côté front.
    */
   readonly bonusArmeAffiche = computed(() => {
+    // REGLE-11 : combat à mains nues (260) : le malus remplace l'ajustement
+    // d'arme, comme dans CombatService.habiliteEffective.
+    const malusMainsNues = this.combat()?.malusMainsNues;
+    if (malusMainsNues !== null && malusMainsNues !== undefined) return malusMainsNues;
     const p = this.personnage();
     if (!p) return 0;
     return p.habilite - p.habiliteBase;
@@ -242,9 +246,14 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   );
   readonly enduranceMaxJoueur = computed(() => this.personnage()?.enduranceMax ?? 1);
   readonly bonusHabiliteTemp = computed(() => this.bonusTempAffiche());
+  /** REGLE-11 : malus du combat à mains nues (-4 au 260), null sinon. */
+  readonly malusMainsNues = computed(() => this.combat()?.malusMainsNues ?? null);
+
   readonly bonusArmeMaitrisee = computed(() => {
     const personnage = this.personnage();
     if (!personnage?.armeMaitrisee) return null;
+    // REGLE-11 : à mains nues, l'arme maîtrisée ne donne pas son bonus.
+    if (this.malusMainsNues() !== null) return null;
 
     // Comparaison par NOM, comme l'inventaire et le chapitre : le backend
     // (PersonnageMapper) envoie armeMaitrisee sous forme de nom ("Masse
