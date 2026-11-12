@@ -230,7 +230,7 @@ class EmailServiceTest {
         mimeMessage.writeTo(contenu);
         String brut = contenu.toString(java.nio.charset.StandardCharsets.UTF_8);
 
-        assertThat(mimeMessage.getAllRecipients()[0].toString()).isEqualTo("marius@example.com");
+        assertThat(mimeMessage.getAllRecipients()[0]).hasToString("marius@example.com");
         assertThat(mimeMessage.getSubject()).contains("déjà un compte");
         assertThat(brut).contains("&lt;b&gt;marius&lt;/b&gt;").doesNotContain("<b>marius</b></p>");
     }

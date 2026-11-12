@@ -32,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailService {
 
+    // En-tete de la version texte brut de chaque email.
+    private static final String EN_TETE_TEXTE = "LOUP SOLITAIRE\n\n";
+
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
     private final Executor envoiEmails;
@@ -110,7 +113,7 @@ public class EmailService {
             String lienSecurise = echapperHtml(lienConfirmation);
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     introTexte + "\n\n" +
                     "Lien de confirmation :\n" +
                     lienConfirmation + "\n\n" +
@@ -246,7 +249,7 @@ public class EmailService {
                     + "tant que la nouvelle adresse n'est pas confirmée, celle-ci reste celle de ton compte.";
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     demande + "\n\n" +
                     conseil + "\n\n" +
                     "Politique de confidentialité : " + lienConfidentialite();
@@ -291,7 +294,7 @@ public class EmailService {
                     + "Mot de passe perdu ? Utilise « Mot de passe oublié » sur l'écran de connexion.";
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     rappel + "\n\n" +
                     conseil + "\n\n" +
                     "Politique de confidentialité : " + lienConfidentialite();
@@ -355,7 +358,7 @@ public class EmailService {
             String codeSecurise = echapperHtml(code);
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     "Une demande de réinitialisation de ton mot de passe " +
                     "a été effectuée.\n\n" +
                     "Ton code de vérification :\n\n" +
