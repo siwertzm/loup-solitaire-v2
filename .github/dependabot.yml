@@ -1,12 +1,19 @@
 # SEC-07 : une PR par semaine et par ecosysteme pour mettre les dependances a
 # jour (versions corrigeant des failles comprises). Mises a jour mineures et
 # correctives regroupees pour limiter le nombre de PR.
+#
+# Pas de version majeure pour Maven et npm : elles demandent une vraie
+# migration (ex. Angular 22 : `ng update`, spec QUAL-11), a faire comme une
+# tache. Les majeures des GitHub Actions restent proposees (simples).
 version: 2
 updates:
   - package-ecosystem: maven
     directory: /backend
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       backend:
         update-types: [minor, patch]
@@ -15,7 +22,13 @@ updates:
     directory: /frontend
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
+      # Les paquets Angular doivent toujours changer ensemble.
+      angular:
+        patterns: ["@angular/*", "@angular-devkit/*", "@schematics/angular"]
       frontend:
         update-types: [minor, patch]
 
