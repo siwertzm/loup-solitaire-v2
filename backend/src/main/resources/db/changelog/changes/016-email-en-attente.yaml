@@ -1,0 +1,16 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 016-email-en-attente
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 016-email-en-attente.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+      rollback:
+        - sql:
+            sql: ALTER TABLE public.utilisateur DROP COLUMN IF EXISTS email_en_attente;

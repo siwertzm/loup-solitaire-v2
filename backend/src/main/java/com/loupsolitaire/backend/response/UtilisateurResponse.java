@@ -15,6 +15,8 @@ public record UtilisateurResponse(
         String username,
         String email,
         boolean emailVerifie,
+        // SEC-06 : nouvel email en attente de confirmation (null sinon).
+        String emailEnAttente,
         // "Membre depuis" cote profil. Null pour les comptes crees avant
         // l'ajout de ce champ (voir Utilisateur.dateCreation) : le
         // frontend affiche alors une valeur de repli plutot que de planter.
@@ -33,6 +35,7 @@ public record UtilisateurResponse(
                 utilisateur.getUsername(),
                 utilisateur.getEmail(),
                 utilisateur.isEmailVerifie(),
+                utilisateur.getEmailEnAttente(),
                 utilisateur.getDateCreation(),
                 personnages
         );

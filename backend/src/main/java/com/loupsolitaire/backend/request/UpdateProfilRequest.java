@@ -29,6 +29,9 @@ public class UpdateProfilRequest {
     @Email(message = "Format d'email invalide")
     private String email;
 
+    // SEC-06 : exige seulement si l'email change (verifie dans CompteService).
+    private String motDePasseActuel;
+
     // Email normalise des la lecture du JSON (espaces retires, minuscules) :
     // toutes les recherches en base se font ensuite sur cette forme unique.
     public void setEmail(String email) {

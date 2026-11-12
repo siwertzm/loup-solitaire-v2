@@ -7,6 +7,7 @@ import { eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslatePipe } from '@ngx-translate/core';
 
+import { MoiResponse } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -30,6 +31,10 @@ export class ProfilEditionPage {
   readonly message = signal<string | null>(null);
   readonly erreur = signal<string | null>(null);
   readonly emailVerifie = signal(false);
+  /** E-mail du compte (celui qui sert à se connecter). */
+  readonly emailCompte = signal('');
+  /** SEC-06 : nouvel e-mail en attente de confirmation. */
+  readonly emailEnAttente = signal<string | null>(null);
 
   /** Champs mot de passe actuellement affichés en clair. */
   private readonly mdpAffiches = signal<ReadonlySet<string>>(new Set());
@@ -53,7 +58,21 @@ export class ProfilEditionPage {
   readonly compteForm = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[^@]*$/)]],
     email: ['', [Validators.required, Validators.email]],
+    // SEC-06 : exigé seulement si l'e-mail change (voir emailModifie).
+    motDePasseActuel: [''],
   });
+
+  /** L'e-mail saisi diffère de celui du compte : le mot de passe est alors exigé. */
+  emailModifie(): boolean {
+    return this.compteForm.controls.email.value.trim().toLowerCase() !== this.emailCompte();
+  }
+
+  private appliquerCompte(c: MoiResponse): void {
+    this.emailVerifie.set(c.emailVerifie);
+    this.emailCompte.set(c.email);
+    this.emailEnAttente.set(c.emailEnAttente);
+    this.compteForm.patchValue({ username: c.username, email: c.email, motDePasseActuel: '' });
+  }
 
   readonly motDePasseForm = this.fb.nonNullable.group({
     actuel: ['', Validators.required],
@@ -64,8 +83,7 @@ export class ProfilEditionPage {
   ngOnInit(): void {
     this.personnages$.moi().subscribe({
       next: (c) => {
-        this.compteForm.patchValue({ username: c.username, email: c.email });
-        this.emailVerifie.set(c.emailVerifie);
+        this.appliquerCompte(c);
         this.chargement.set(false);
       },
       error: () => {
@@ -81,22 +99,36 @@ export class ProfilEditionPage {
 
   enregistrerCompte(): void {
     if (this.compteForm.invalid || this.envoi()) return;
+    const { username, email, motDePasseActuel } = this.compteForm.getRawValue();
+    const changementEmail = this.emailModifie();
+    if (changementEmail && !motDePasseActuel) {
+      this.erreur.set('PROFIL_EDITION.ERREUR_MDP_REQUIS_EMAIL');
+      return;
+    }
     this.envoi.set(true);
     this.erreur.set(null);
-    this.personnages$.majCompte(this.compteForm.getRawValue()).subscribe({
-      next: (c) => {
-        this.envoi.set(false);
-        this.emailVerifie.set(c.emailVerifie);
-        this.compteForm.patchValue({ username: c.username, email: c.email });
-        this.message.set(
-          c.emailVerifie ? 'PROFIL_EDITION.SUCCES_PROFIL_MAJ' : 'PROFIL_EDITION.SUCCES_PROFIL_MAJ_EMAIL',
-        );
-      },
-      error: () => {
-        this.envoi.set(false);
-        this.erreur.set('PROFIL_EDITION.ERREUR_MAJ');
-      },
-    });
+    this.message.set(null);
+    this.personnages$
+      .majCompte(changementEmail ? { username, email, motDePasseActuel } : { username })
+      .subscribe({
+        next: (c) => {
+          this.envoi.set(false);
+          this.appliquerCompte(c);
+          this.message.set(
+            changementEmail ? 'PROFIL_EDITION.SUCCES_EMAIL_EN_ATTENTE' : 'PROFIL_EDITION.SUCCES_PROFIL_MAJ',
+          );
+        },
+        error: (err: HttpErrorResponse) => {
+          this.envoi.set(false);
+          this.erreur.set(
+            err.status === 401
+              ? 'PROFIL_EDITION.ERREUR_MDP_ACTUEL'
+              : err.status === 409
+                ? 'PROFIL_EDITION.ERREUR_DEJA_UTILISE'
+                : 'PROFIL_EDITION.ERREUR_MAJ',
+          );
+        },
+      });
   }
 
   changerMotDePasse(): void {
@@ -124,8 +156,8 @@ export class ProfilEditionPage {
   }
 
   renvoyerVerification(): void {
-    const email = this.compteForm.controls.email.value;
-    this.personnages$.renvoyerVerification(email).subscribe({
+    // Toujours l'e-mail du compte : le serveur envoie le lien à l'adresse en attente s'il y en a une.
+    this.personnages$.renvoyerVerification(this.emailCompte()).subscribe({
       next: () => this.message.set('PROFIL_EDITION.SUCCES_VERIFICATION'),
       error: (err: HttpErrorResponse) =>
         this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'PROFIL_EDITION.ERREUR_VERIFICATION'),

@@ -40,4 +40,12 @@ class EmailsTest {
 
         assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");
     }
+
+    @Test
+    void masquerNeGardeQueLaPremiereLettreEtLeDomaine() {
+        // SEC-06 : adresse demandee, montree dans l'alerte a l'ancienne adresse.
+        assertThat(Emails.masquer("nouveau@example.com")).isEqualTo("n***@example.com");
+        assertThat(Emails.masquer("pas-une-adresse")).isEqualTo("***");
+        assertThat(Emails.masquer(null)).isNull();
+    }
 }

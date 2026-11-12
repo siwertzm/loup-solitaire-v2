@@ -32,7 +32,32 @@
           }
         </label>
 
-        @if (!emailVerifie()) {
+        @if (emailModifie()) {
+          <label class="champ">
+            <span class="cle">{{ 'PROFIL_EDITION.CHAMP_MDP_EMAIL' | translate }}</span>
+            <span class="saisie-mdp">
+              <input
+                [type]="mdpVisible('email') ? 'text' : 'password'"
+                formControlName="motDePasseActuel"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="oeil"
+                (click)="basculerMdp('email')"
+                [attr.aria-label]="(mdpVisible('email') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+              >
+                <ion-icon [name]="mdpVisible('email') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </span>
+          </label>
+        }
+
+        @if (emailEnAttente(); as enAttente) {
+          <p class="aide">{{ 'PROFIL_EDITION.EMAIL_EN_ATTENTE' | translate: { email: enAttente } }}</p>
+        }
+
+        @if (!emailVerifie() || emailEnAttente()) {
           <button type="button" class="lien" (click)="renvoyerVerification()">
             {{ 'PROFIL_EDITION.RENVOYER_VERIFICATION' | translate }}
           </button>

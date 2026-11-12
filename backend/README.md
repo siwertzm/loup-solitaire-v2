@@ -279,13 +279,13 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
 | POST | `/auth/register` | 🔓 | Crée un compte (`username`, `email`, `password`). Envoie un email de vérification. `409` si username/email déjà pris. |
-| GET | `/auth/verify-email?token=...` | 🔓 | Active le compte depuis le lien reçu par email. Retourne une page HTML simple. |
+| GET | `/auth/verify-email?token=...` | 🔓 | Active le compte depuis le lien reçu par email, ou remplace l'email du compte par l'email en attente (SEC-06). Redirige vers l'app. `409` si l'adresse en attente a été prise entre-temps par un autre compte. |
 | POST | `/auth/resend-verification` | 🔓 | Renvoie l'email de vérification (`email`). Réponse identique que l'email existe ou non, pour ne pas divulguer les comptes enregistrés. |
 | POST | `/auth/login` | 🔓 | Connexion (`identifiant` = username ou email, `password`). `403` si l'email n'est pas encore vérifié. Retourne `{ accessToken, refreshToken, tokenType }`. |
 | POST | `/auth/refresh` | 🔓 | Échange un refresh token valide contre un nouveau couple access/refresh (rotation ; l'ancien refresh token est révoqué). |
 | POST | `/auth/logout` | 🔓 | Révoque un refresh token (`refreshToken`). `204 No Content`. |
 | GET | `/auth/me` | 🔒 | Profil de l'utilisateur connecté + liste de ses personnages. |
-| PUT | `/auth/me` | 🔒 | Met à jour `username` et/ou `email` (champs optionnels). Changer d'email repasse `emailVerifie` à `false` et renvoie un email de confirmation. |
+| PUT | `/auth/me` | 🔒 | Met à jour `username` et/ou `email` (champs optionnels). Changer d'email exige `motDePasseActuel` (`401` sinon) et ne change pas l'email du compte : le nouveau est gardé dans `emailEnAttente`, un lien de confirmation part à la nouvelle adresse et une alerte à l'ancienne. L'ancien email sert à se connecter jusqu'au clic sur le lien (SEC-06). |
 
 ### Personnages (`/personnages`)
 

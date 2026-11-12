@@ -78,6 +78,9 @@ export interface MoiResponse {
   username: string;
   email: string;
   emailVerifie: boolean;
+  /** SEC-06 : nouvel e-mail en attente de confirmation (null sinon). L'e-mail
+   * ci-dessus reste celui du compte tant que le lien n'est pas cliqué. */
+  emailEnAttente: string | null;
   /** ISO 8601 (Instant backend). Null pour les comptes créés avant
    * l'ajout de ce champ (voir Utilisateur.dateCreation côté backend). */
   dateCreation: string | null;

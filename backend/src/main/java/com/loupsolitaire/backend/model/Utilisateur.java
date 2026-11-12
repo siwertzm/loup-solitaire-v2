@@ -56,6 +56,16 @@ public class Utilisateur {
     @Column(nullable = false)
     private boolean emailVerifie = false;
 
+    // SEC-06 : nouvel email demande depuis le profil, pas encore confirme.
+    // L'email ci-dessus reste celui du compte (connexion, mot de passe
+    // oublie) jusqu'au clic sur le lien envoye a cette adresse.
+    @Column(name = "email_en_attente")
+    private String emailEnAttente;
+
+    public void setEmailEnAttente(String emailEnAttente) {
+        this.emailEnAttente = Emails.normaliser(emailEnAttente);
+    }
+
     // "Membre depuis" cote profil frontend. Fixee a la creation (voir
     // AuthController.register), jamais modifiee ensuite. Volontairement
     // PAS nullable=false : les comptes crees avant l'ajout de ce champ

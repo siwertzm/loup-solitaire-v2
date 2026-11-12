@@ -105,7 +105,7 @@ class AuthControllerTest {
     }
 
     private UtilisateurResponse profil(String username, String email) {
-        return new UtilisateurResponse(marius.id(), username, email, true,
+        return new UtilisateurResponse(marius.id(), username, email, true, null,
                 Instant.parse("2026-09-01T10:00:00Z"), List.of());
     }
 
