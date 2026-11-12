@@ -55,9 +55,12 @@ public class AuthController {
     // Inscription et verification de l'email
     // =========================================================
 
+    // SEC-05 : toujours 202 sans contenu, que l'email ait deja un compte ou
+    // non (voir CompteService.inscrire). 409 seulement pour un nom pris.
     @PostMapping("/register")
-    public ResponseEntity<UtilisateurResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(compteService.inscrire(request));
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
+        compteService.inscrire(request);
+        return ResponseEntity.accepted().build();
     }
 
     // Lien recu par email : valide le compte puis redirige vers l'application

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.exception.ConflitException;
+import com.loupsolitaire.backend.exception.TropDeRequetesException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
@@ -47,26 +48,55 @@ public class CompteService {
     private final RefreshTokenService refreshTokenService;
     private final AuthService authService;
     private final LimiteurDeDebit limiteurDeDebit;
+    private final EmailService emailService;
 
+    // SEC-05 : la reponse ne dit jamais si l'email a deja un compte (le
+    // controleur repond toujours 202 sans contenu). Si c'est le cas, le
+    // compte n'est pas cree et un email part a cette adresse. Le nom
+    // d'utilisateur pris reste un 409 : le joueur doit en choisir un autre,
+    // et ce nom ne revele pas l'email.
     @Transactional
-    public UtilisateurResponse inscrire(RegisterRequest request) {
+    public void inscrire(RegisterRequest request) {
         if (utilisateurRepository.existsByUsername(request.getUsername())) {
             throw new ConflitException("Nom d'utilisateur deja utilise");
         }
-        if (utilisateurRepository.existsByEmail(request.getEmail())) {
-            throw new ConflitException("Cet email est deja utilise");
+
+        // Hache dans tous les cas : sans ca, la duree de la reponse (bcrypt,
+        // environ 100 ms) suffirait a savoir si l'email existe.
+        String motDePasseHache = passwordEncoder.encode(request.getPassword());
+
+        Optional<Utilisateur> existant = utilisateurRepository.findByEmail(request.getEmail());
+        if (existant.isPresent()) {
+            prevenirCompteExistant(existant.get());
+            return;
         }
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setUsername(request.getUsername());
         utilisateur.setEmail(request.getEmail());
-        utilisateur.setPassword(passwordEncoder.encode(request.getPassword()));
+        utilisateur.setPassword(motDePasseHache);
         utilisateur.setDateCreation(Instant.now());
         utilisateurRepository.save(utilisateur);
 
         emailVerificationService.envoyerLienDeVerification(utilisateur);
+    }
 
-        return UtilisateurResponse.fromEntity(utilisateur);
+    // SEC-05 : quelqu'un s'inscrit avec un email deja enregistre. Compte non
+    // verifie : le lien est renvoye ; sinon, rappel "tu as deja un compte".
+    // Au plus 3 par heure et par adresse (meme compteur que le renvoi du
+    // lien) ; au-dela, rien ne part, sans erreur : la reponse doit rester
+    // identique a celle d'une inscription normale.
+    private void prevenirCompteExistant(Utilisateur utilisateur) {
+        try {
+            limiteurDeDebit.consommer(LimiteurDeDebit.RENVOI_VERIFICATION_EMAIL, utilisateur.getEmail());
+        } catch (TropDeRequetesException e) {
+            return;
+        }
+        if (utilisateur.isEmailVerifie()) {
+            emailService.envoyerRappelCompteExistant(utilisateur.getEmail(), utilisateur.getUsername());
+        } else {
+            emailVerificationService.envoyerLienDeVerification(utilisateur);
+        }
     }
 
     // Ne dit jamais si le compte existe ou s'il est deja verifie : le

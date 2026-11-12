@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-SEC-05` | À faire |
+| 2 | Moyenne | S | `fix-SEC-05` | Fait |
 
 Origine : Cahier des charges (SEC-05)
 
@@ -27,3 +27,11 @@ Origine : Cahier des charges (SEC-05)
 ## Fichiers concernés
 
 `backend/src/main/java/com/loupsolitaire/backend/service/CompteService.java`, `EmailService.java`, page register
+
+## Décisions (12/11/2026)
+
+- `POST /auth/register` : `202` sans contenu dans tous les cas ; mot de passe haché même si l'email existe (même durée de réponse).
+- Email déjà inscrit : rappel « tu as déjà un compte » (compte vérifié) ou nouveau lien de vérification (compte non vérifié), au plus 3 par heure et par adresse ; au-delà, rien ne part et la réponse reste `202`.
+- Nom d'utilisateur pris : `409` gardé (le joueur doit en choisir un autre ; le nom ne révèle pas l'email).
+- Hors périmètre : deux inscriptions simultanées avec le même email (la seconde reçoit le `409` de la base, SEC-08) ; changement d'email dans le profil (`409`, nécessite d'être connecté et le mot de passe).
+

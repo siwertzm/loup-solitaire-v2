@@ -71,11 +71,14 @@ export class AuthService {
    */
   private refreshEnCours$?: Observable<AuthResponse>;
 
+  /*
+   * SEC-05 : 202 sans contenu, que l'e-mail ait déjà un compte ou non.
+   */
   register(
     payload: RegisterRequest,
-  ): Observable<UtilisateurResponse> {
+  ): Observable<void> {
 
-    return this.http.post<UtilisateurResponse>(
+    return this.http.post<void>(
       `${this.baseUrl}/register`,
       payload,
     );

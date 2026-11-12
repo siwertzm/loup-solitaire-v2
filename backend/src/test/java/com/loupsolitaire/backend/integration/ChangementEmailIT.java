@@ -58,7 +58,7 @@ class ChangementEmailIT extends IntegrationPostgres {
         mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content("""
                         {"username": "sec06-%s", "email": "%s", "password": "%s"}
                         """.formatted(suffixe, ancien, MOT_DE_PASSE)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isAccepted());
         jdbc.update("update utilisateur set email_verifie = true where email = ?", ancien);
     }
 

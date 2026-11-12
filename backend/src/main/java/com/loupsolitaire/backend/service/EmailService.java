@@ -32,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailService {
 
+    // En-tete de la version texte brut de chaque email.
+    private static final String EN_TETE_TEXTE = "LOUP SOLITAIRE\n\n";
+
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
     private final Executor envoiEmails;
@@ -110,7 +113,7 @@ public class EmailService {
             String lienSecurise = echapperHtml(lienConfirmation);
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     introTexte + "\n\n" +
                     "Lien de confirmation :\n" +
                     lienConfirmation + "\n\n" +
@@ -246,7 +249,7 @@ public class EmailService {
                     + "tant que la nouvelle adresse n'est pas confirmée, celle-ci reste celle de ton compte.";
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     demande + "\n\n" +
                     conseil + "\n\n" +
                     "Politique de confidentialité : " + lienConfidentialite();
@@ -266,6 +269,51 @@ public class EmailService {
             log.error(
                     "Echec de la preparation de l'alerte de changement d'adresse a {} : {}",
                     ancienneAdresse,
+                    e.getMessage()
+            );
+        }
+    }
+
+    /**
+     * SEC-05 : quelqu'un a tenté de créer un compte avec cette adresse, qui
+     * en a déjà un (vérifié). Rappel du nom d'utilisateur, sans rien changer
+     * au compte.
+     */
+    public void envoyerRappelCompteExistant(String destinataire, String nomUtilisateur) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(appProperties.mail().from());
+            helper.setTo(destinataire);
+            helper.setSubject("Tu as déjà un compte — Loup Solitaire");
+
+            String rappel = "Une inscription vient d'être demandée avec cette adresse, "
+                    + "mais elle est déjà liée à ton compte « " + nomUtilisateur + " ».";
+            String conseil = "Connecte-toi avec ce nom d'utilisateur ou cette adresse. "
+                    + "Mot de passe perdu ? Utilise « Mot de passe oublié » sur l'écran de connexion.";
+
+            String texteBrut =
+                    EN_TETE_TEXTE +
+                    rappel + "\n\n" +
+                    conseil + "\n\n" +
+                    "Politique de confidentialité : " + lienConfidentialite();
+
+            String html = miseEnPage(
+                    "34px 34px 28px 34px",
+                    "Tu as déjà un compte",
+                    paragraphes(rappel, conseil),
+                    "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email : rien n'a changé."
+            );
+
+            helper.setText(texteBrut, html);
+
+            envoyerApresCommit(message, "rappel de compte existant", destinataire);
+
+        } catch (Exception e) {
+            log.error(
+                    "Echec de la preparation du rappel de compte existant a {} : {}",
+                    destinataire,
                     e.getMessage()
             );
         }
@@ -310,7 +358,7 @@ public class EmailService {
             String codeSecurise = echapperHtml(code);
 
             String texteBrut =
-                    "LOUP SOLITAIRE\n\n" +
+                    EN_TETE_TEXTE +
                     "Une demande de réinitialisation de ton mot de passe " +
                     "a été effectuée.\n\n" +
                     "Ton code de vérification :\n\n" +

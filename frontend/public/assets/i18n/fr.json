@@ -40,10 +40,10 @@
       "BOUTON_CREATION_EN_COURS": "Création…",
       "SEPARATEUR_OU": "OU",
       "LIEN_CONNEXION": "Déjà un compte ? <strong>Se connecter</strong>",
-      "ERREUR_INSCRIPTION": "Inscription impossible : nom d'utilisateur ou e-mail déjà utilisé.",
+      "ERREUR_INSCRIPTION": "Inscription impossible pour le moment. Réessayez plus tard.",
       "SUCCES_SYMBOLE": "✓",
-      "SUCCES_TITRE": "Compte créé",
-      "SUCCES_TEXTE": "Un e-mail de vérification a été envoyé. Cliquez sur le lien qu'il contient avant de vous connecter.",
+      "SUCCES_TITRE": "Vérifiez votre boîte mail",
+      "SUCCES_TEXTE": "Si cette adresse n'a pas encore de compte, un lien de vérification vient d'y être envoyé : cliquez dessus avant de vous connecter. Si elle en a déjà un, un e-mail vous le rappelle.",
       "BOUTON_ALLER_LOGIN": "Aller à la connexion",
       "CHAMP_PASSWORD_CONFIRMATION_LABEL": "Confirmer le mot de passe",
       "CHAMP_PASSWORD_CONFIRMATION_PLACEHOLDER": "Retapez votre mot de passe",
@@ -52,7 +52,8 @@
       "MENTION_LEGALE_CGU": "conditions d'utilisation",
       "MENTION_LEGALE_2": "et reconnaissez avoir lu la",
       "MENTION_LEGALE_CONFIDENTIALITE": "politique de confidentialité",
-      "MENTION_LEGALE_FIN": "."
+      "MENTION_LEGALE_FIN": ".",
+      "ERREUR_NOM_PRIS": "Ce nom d'utilisateur est déjà pris. Choisissez-en un autre."
     },
     "FORGOT_PASSWORD": {
       "TITRE": "Mot de passe oublié",

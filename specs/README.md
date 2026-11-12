@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 8 | B | [SEC-05](lot-2/SEC-05-anti-enumeration/spec.md) | Moyenne | S | Réponses identiques à l'inscription |
 | 9 | B | [OPS-05](lot-2/OPS-05-purge-tokens/spec.md) | Moyenne | S | Purge quotidienne des tokens expirés et des comptes non vérifiés |
 | 10 | B | [RGPD-03](lot-2/RGPD-03-conservation-et-logs/spec.md) | Moyenne | S | Conservation ; emails masqués dans les logs |
 | 11 | B | [RGPD-02](lot-2/RGPD-02-export-donnees/spec.md) | Moyenne | S | Export des données en JSON |
