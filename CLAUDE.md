@@ -53,6 +53,7 @@ npm run build && npx cap sync    # après un changement web, pour Android/iOS
 - **Aucune chaîne en dur** : tous les textes dans `public/assets/i18n/fr.json`, un namespace par page/composant, interpolation `translate:{ param }`.
 - Appels API uniquement via les services de `core/services/` ; modèles TS de `core/models/` alignés sur les `request`/`response` Java → modifier les deux ensemble.
 - Tokens stockés via `@capacitor/preferences` (`TokenStorageService`), refresh automatique dans `auth.interceptor.ts`.
+- Toute nouvelle logique frontend non triviale (service, intercepteur, guard) vient avec son test Vitest (`*.spec.ts` à côté du fichier) ; la CI lance `npm test`.
 
 ## Workflow Git
 - Jamais de commit direct sur `main` : une branche par ticket puis une PR. Nommage `feature-<CODE>` / `fix-<CODE>` avec les codes de ticket existants (`SEC-xx`, `OPS-xx`, `RGPD-xx`, `REGLE-xx`, `QUAL-xx`).

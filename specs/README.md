@@ -21,7 +21,6 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | --- | --- | --- | --- |
 | [SEC-06](lot-2/SEC-06-changement-email/spec.md) | Moyenne | M | Mot de passe exigé pour changer d'email ; ancien email actif jusqu'à confirmation |
 | [OPS-05](lot-2/OPS-05-purge-tokens/spec.md) | Moyenne | S | Purge quotidienne des tokens expirés et des comptes non vérifiés |
-| [QUAL-06](lot-2/QUAL-06-tests-frontend-ci/spec.md) | Moyenne | S | Tests frontend et lancement dans la CI |
 | [DATA-00](lot-2/DATA-00-catalogue-versionne/spec.md) | Moyenne | M | Catalogue versionné (à faire avant les autres DATA) |
 | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
 | [OPS-01](lot-2/OPS-01-memoire-jvm/spec.md) | Moyenne | S | Réglage mémoire de la JVM et sondes |
