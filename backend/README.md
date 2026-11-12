@@ -102,6 +102,31 @@ Avant d'enregistrer l'empreinte, chaque chapitre doit avoir au moins un lien
 démarrage échoue (OPS-03). Pour forcer un rechargement :
 `update catalogue_empreinte set empreinte = 'a-recharger';` puis redémarrer.
 
+## Mémoire et charge (OPS-01)
+
+Render : runtime Docker (`backend/Dockerfile`), instance 1 CPU / 2 Go,
+health check `/actuator/health`.
+
+- La JVM est lancée avec `-XX:MaxRAMPercentage=75` (tas limité à 1,5 Go sur
+  2 Go, le reste pour la JVM elle-même) et `-XX:+ExitOnOutOfMemoryError` :
+  plus de mémoire → arrêt net, Render redémarre le service.
+- Sondes publiques : `/actuator/health/liveness` (l'application tourne) et
+  `/actuator/health/readiness` (elle accepte du trafic), en plus de
+  `/actuator/health`.
+
+Mesure du 12/11/2026, image Docker lancée avec les limites de Render
+(`--cpus=1 -m 2g`), joueurs simulés par `scripts/charge.py` (compte,
+personnage, chapitres, combats, résurrections) :
+
+| Charge | Requêtes/s | Médiane / p95 | Mémoire max | Résultat |
+|---|---|---|---|---|
+| 50 joueurs, 3 min, ~1 s de réflexion | 165 | 4 ms / 39 ms | 455 Mo / 2 Go | aucune erreur 5xx, pas d'arrêt |
+| 50 joueurs, 1 min, ~0,2 s de réflexion | 525 (CPU à 100 %) | 25 ms / 83 ms | 451 Mo / 2 Go | aucune erreur 5xx, pas d'arrêt |
+
+La limite est le CPU, pas la mémoire. Pour relancer la mesure, voir l'en-tête
+de `scripts/charge.py` (base de test, limitation de débit et e-mails
+désactivés côté serveur ; jamais contre la production).
+
 ## Variables d'environnement
 
 **`JWT_SECRET` et `DB_PASSWORD` sont obligatoires, en local comme en

@@ -44,8 +44,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/me", "/auth/me/**").authenticated()
                         .requestMatchers("/auth/**").permitAll()
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
-                        // le conteneur doit pouvoir interroger ce endpoint sans jeton.
-                        .requestMatchers("/actuator/health").permitAll()
+                        // le conteneur doit pouvoir interroger ce endpoint sans jeton. Idem
+                        // pour les sondes liveness et readiness (OPS-01).
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         // QUAL-02 : l'app lit la version minimale avant toute
                         // connexion. OpenAPI : 404 tant que SPRINGDOC_ENABLED=false.
                         .requestMatchers("/version").permitAll()
