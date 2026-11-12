@@ -137,8 +137,8 @@ $env:JWT_SECRET = "<valeur générée par openssl rand -base64 32>"
 
 ## Authentification
 
-Toutes les routes sont protégées par un jeton JWT **sauf** `/auth/**` et
-`/actuator/health`. Le jeton d'accès s'envoie dans l'en-tête :
+Toutes les routes sont protégées par un jeton JWT **sauf** `/auth/**` (hors
+`/auth/me` et `/auth/me/**`, qui exigent le jeton) et `/actuator/health`. Le jeton d'accès s'envoie dans l'en-tête :
 
 ```
 Authorization: Bearer <accessToken>

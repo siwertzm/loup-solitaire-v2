@@ -39,6 +39,9 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+                        // SEC-10 : routes du compte sous /auth, a declarer avant
+                        // /auth/** (la premiere regle qui correspond s'applique).
+                        .requestMatchers("/auth/me", "/auth/me/**").authenticated()
                         .requestMatchers("/auth/**").permitAll()
                         // Necessaire pour le healthcheck Docker (voir docker-compose.yml) :
                         // le conteneur doit pouvoir interroger ce endpoint sans jeton.
