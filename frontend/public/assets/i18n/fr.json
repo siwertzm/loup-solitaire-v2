@@ -648,5 +648,9 @@
     "ERREUR_ID_MANQUANT": "Identifiant de personnage manquant.",
     "ERREUR_CHARGEMENT": "Impossible de charger le journal.",
     "ALT_COMBAT": "Combat"
+  },
+  "MISE_A_JOUR": {
+    "TITRE": "Mise à jour requise",
+    "TEXTE": "Une nouvelle version de l'application est disponible. Mettez-la à jour depuis l'App Store ou Google Play pour continuer votre aventure."
   }
 }

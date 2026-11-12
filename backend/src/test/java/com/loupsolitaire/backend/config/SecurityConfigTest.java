@@ -57,12 +57,17 @@ class SecurityConfigTest {
     private JwtUtil jwtUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PrefixeApiFilter prefixeApiFilter;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
+        // Meme ordre qu'en production : le prefixe /api/v1 est retire avant
+        // Spring Security (PrefixeApiFilter, HIGHEST_PRECEDENCE).
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilters(prefixeApiFilter)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
@@ -160,6 +165,44 @@ class SecurityConfigTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
         mockMvc.perform(get("/legal/legal.css"))
                 .andExpect(status().isOk());
+    }
+
+    // =========================================================
+    // QUAL-02 : version minimale et prefixe /api/v1
+    // =========================================================
+
+    @Test
+    void laVersionMinimaleEstPublique() throws Exception {
+        mockMvc.perform(get("/version"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.versionMinimale").value("1.0"));
+    }
+
+    @Test
+    void lApiRepondAussiSousLePrefixeApiV1() throws Exception {
+        mockMvc.perform(get("/api/v1/version"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.versionMinimale").value("1.0"));
+        mockMvc.perform(get("/api/v1/disciplines").header(HttpHeaders.AUTHORIZATION, bearer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10));
+    }
+
+    @Test
+    void lesRoutesSousApiV1GardentLeursReglesDeSecurite() throws Exception {
+        mockMvc.perform(get("/api/v1/personnages"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401));
+        mockMvc.perform(get("/api/v1/auth/me"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void openApiEstDesactiveParDefaut() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isNotFound());
     }
 
     // =========================================================

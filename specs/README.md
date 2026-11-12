@@ -21,7 +21,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 1 | A | [QUAL-02](lot-2/QUAL-02-version-api/spec.md) | Moyenne | M | Version minimale de l'app, /api/v1, OpenAPI |
 | 2 | A | [DATA-00](lot-2/DATA-00-catalogue-versionne/spec.md) | Moyenne | M | Catalogue versionné (à faire avant les autres DATA) |
 | 3 | A | [OPS-03](lot-2/OPS-03-chargement-livre-transactionnel/spec.md) | Moyenne | S | Chargement du livre transactionnel + contrôle d'intégrité |
 | 4 | A | [SEC-08](lot-2/SEC-08-erreurs-409-500/spec.md) | Basse | S | 409 sur violation d'unicité, 500 journalisé |

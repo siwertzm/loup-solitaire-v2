@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M | `feature-QUAL-02` | À faire |
+| 2 | Moyenne | M | `feature-QUAL-02` | Fait |
 
 Origine : Cahier des charges (QUAL-02)
 
