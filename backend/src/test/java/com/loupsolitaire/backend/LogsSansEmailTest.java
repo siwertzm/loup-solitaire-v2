@@ -28,8 +28,8 @@ class LogsSansEmailTest {
     // Un appel de log, sur une ou plusieurs lignes, jusqu'au ");" final.
     private static final Pattern APPEL_DE_LOG = Pattern.compile("log\\.(trace|debug|info|warn|error)\\((.*?)\\);",
             Pattern.DOTALL);
-    private static final Pattern TEXTE_ENTRE_GUILLEMETS = Pattern.compile("\"(?:\\\\.|[^\"\\\\])*\"");
-    private static final Pattern ARGUMENT_MASQUE = Pattern.compile("Emails\\.masquer(DansTexte)?\\([^()]*(\\([^()]*\\))?[^()]*\\)");
+    private static final Pattern TEXTE_ENTRE_GUILLEMETS = Pattern.compile("\"(?:\\\\.|[^\"\\\\])*+\"");
+    private static final Pattern ARGUMENT_MASQUE = Pattern.compile("Emails\\.masquer(DansTexte)?\\([^()]*+(\\([^()]*+\\))?+[^()]*+\\)");
     // Noms qui portent une adresse dans ce projet.
     private static final Pattern ADRESSE_EN_CLAIR = Pattern.compile(
             "\\b(destinataire|email|ancienneAdresse|nouvelEmail|adresse|identifiant)\\b|getEmail\\w*\\(\\)");
