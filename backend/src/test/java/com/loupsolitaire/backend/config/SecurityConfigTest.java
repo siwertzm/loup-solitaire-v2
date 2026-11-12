@@ -155,6 +155,17 @@ class SecurityConfigTest {
     }
 
     @Test
+    void lesSondesDeSanteSontPubliques() throws Exception {
+        // OPS-01 : liveness et readiness, sans jeton.
+        mockMvc.perform(get("/actuator/health/liveness"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+        mockMvc.perform(get("/actuator/health/readiness"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+
+    @Test
     void lesPagesLegalesSontPubliques() throws Exception {
         // RGPD-04 : liens depuis l'app et les emails, sans connexion.
         mockMvc.perform(get("/legal/confidentialite.html"))

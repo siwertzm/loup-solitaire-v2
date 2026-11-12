@@ -27,4 +27,10 @@ USER spring:spring
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# OPS-01 : sans reglage, la JVM ne donne au tas (les donnees de l'appli) que
+# 25 % de la memoire du conteneur. 75 % laisse le reste a la JVM elle-meme
+# (classes, threads, code compile). Plus de memoire -> arret net (Render
+# redemarre le service) au lieu d'un service a moitie bloque.
+# Mesure (instance Render 1 CPU / 2 Go) : voir backend/README.md, section
+# Memoire et charge.
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/app.jar"]
