@@ -84,7 +84,7 @@ jobs:
           ./gradlew bundleRelease --no-daemon
 
       - name: Save AAB as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: loup-solitaire-aab
           path: frontend/android/app/build/outputs/bundle/release/app-release.aab
