@@ -45,6 +45,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |
 | [REGLE-16](lot-2/REGLE-16-echange-unique/spec.md) | Basse | S | Échange du 307 répétable via l'API |
 | [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
+| [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
