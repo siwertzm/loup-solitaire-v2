@@ -22,7 +22,6 @@ import com.loupsolitaire.backend.model.ObjetChap;
 import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
-import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
@@ -74,6 +73,21 @@ public class PersonnageService {
             Map.entry(7, new ObjetDepart("baton", 1)),
             Map.entry(8, new ObjetDepart("lance", 1)),
             Map.entry(9, new ObjetDepart("or", 12))
+    );
+
+    // REGLE-07 : table de la Maitrise des Armes du livre (chiffre 0-9). L'Epee
+    // y figure deux fois (5 et 7) : 20 % de chances, 10 % pour les autres.
+    static final Map<Integer, String> TABLE_MAITRISE_ARMES = Map.ofEntries(
+            Map.entry(0, "poignard"),
+            Map.entry(1, "lance"),
+            Map.entry(2, "masse"),
+            Map.entry(3, "sabre"),
+            Map.entry(4, "marteau"),
+            Map.entry(5, "epee"),
+            Map.entry(6, "hache"),
+            Map.entry(7, "epee"),
+            Map.entry(8, "baton"),
+            Map.entry(9, "glaive")
     );
 
     private final PersonnageRepository personnageRepository;
@@ -169,10 +183,11 @@ public class PersonnageService {
                         "Chapitre de depart introuvable : " + CHAPITRE_DEPART_ID));
     }
 
-    // Tirage uniforme parmi toutes les armes du catalogue.
+    // REGLE-07 : chiffre de la Table de Hasard, puis arme de la table du livre.
     private Objet tirerArmeMaitrisee() {
-        List<Objet> armes = objetRepository.findByCategorie(CategorieObjet.ARME);
-        return tableDeHasardService.tirerParmi(armes);
+        String armeId = TABLE_MAITRISE_ARMES.get(tableDeHasardService.tirerChiffre());
+        return objetRepository.findById(armeId)
+                .orElseThrow(() -> new RessourceNonTrouveeException("Arme introuvable : " + armeId));
     }
 
     private void equiperMateriel(Personnage personnage) {

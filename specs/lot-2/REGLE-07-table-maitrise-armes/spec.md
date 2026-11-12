@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-REGLE-07` | À faire |
+| 2 | Moyenne | S | `fix-REGLE-07` | Fait |
 
 Origine : Cahier des charges (REGLE-07)
 

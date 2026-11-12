@@ -7,22 +7,30 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
@@ -111,7 +119,8 @@ class PersonnageServiceTest {
         lenient().when(conditionService.estLienDisponible(any(), any())).thenReturn(true);
 
         for (String id : List.of("hache", "repas", "carte", "or", "glaive", "epee", "casque",
-                "cotte_de_mailles", "masse", "potion_de_soin", "baton", "lance", "coin")) {
+                "cotte_de_mailles", "masse", "potion_de_soin", "baton", "lance", "coin",
+                "poignard", "sabre", "marteau")) {
             Objet objet = new Objet();
             objet.setId(id);
             objetsParId.put(id, objet);
@@ -233,21 +242,42 @@ class PersonnageServiceTest {
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("repas")), eq(2));
     }
 
-    @Test
-    void tireUneArmeMaitriseeSiLaDisciplineEstChoisie() {
+    // REGLE-07 : table 0-9 du livre. Ordre des tirages a la creation :
+    // chapitre de depart, arme maitrisee, Couronnes, objet de depart.
+    @ParameterizedTest(name = "chiffre {0} -> {1}")
+    @CsvSource({
+            "0, poignard", "1, lance", "2, masse", "3, sabre", "4, marteau",
+            "5, epee", "6, hache", "7, epee", "8, baton", "9, glaive"
+    })
+    void tireLArmeMaitriseeDansLaTableDuLivre(int chiffre, String armeAttendue) {
         List<IdDiscipline> avecMaitrise = List.of(
                 IdDiscipline.CAMOUFLAGE, IdDiscipline.CHASSE, IdDiscipline.SIXIEME_SENS,
                 IdDiscipline.ORIENTATION, IdDiscipline.MAITRISE_ARMES
         );
-        List<Objet> armes = List.of(objetsParId.get("hache"), objetsParId.get("glaive"));
-        when(objetRepository.findByCategorie(CategorieObjet.ARME)).thenReturn(armes);
-        when(tableDeHasardService.tirerParmi(armes)).thenReturn(armes.get(1));
-        when(tableDeHasardService.tirerChiffre()).thenReturn(0, 0, 0);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0, chiffre, 0);
 
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, "Loup Solitaire", avecMaitrise, 0, 0);
 
-        assertThat(personnage.getArmeMaitrisee()).isEqualTo(armes.get(1));
+        assertThat(personnage.getArmeMaitrisee().getId()).isEqualTo(armeAttendue);
+    }
+
+    @Test
+    void laTableDeMaitriseDesArmesNeContientQueDesArmesDuCatalogue() throws Exception {
+        // REGLE-07 : chaque entree de la table existe dans objet.json et est
+        // bien une arme (une faute de frappe ferait echouer la creation).
+        Set<String> armesDuCatalogue = new HashSet<>();
+        try (InputStream json = getClass().getResourceAsStream("/data/objet.json")) {
+            for (JsonNode objet : JsonMapper.builder().build().readTree(json)) {
+                if ("arme".equalsIgnoreCase(objet.get("categorie").asString())) {
+                    armesDuCatalogue.add(objet.get("id").asString());
+                }
+            }
+        }
+
+        assertThat(PersonnageService.TABLE_MAITRISE_ARMES).hasSize(10).containsOnlyKeys(
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        assertThat(armesDuCatalogue).containsAll(PersonnageService.TABLE_MAITRISE_ARMES.values());
     }
 
     @Test
@@ -258,7 +288,8 @@ class PersonnageServiceTest {
                 utilisateur, "Loup Solitaire", CINQ_DISCIPLINES_SANS_MAITRISE, 0, 0);
 
         assertThat(personnage.getArmeMaitrisee()).isNull();
-        verify(objetRepository, never()).findByCategorie(any());
+        // Pas de tirage d'arme : chapitre de depart, Couronnes, objet de depart.
+        verify(tableDeHasardService, times(3)).tirerChiffre();
     }
 
     @Test
