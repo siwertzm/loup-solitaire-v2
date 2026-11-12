@@ -1,9 +1,11 @@
 package com.loupsolitaire.backend.util;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Normalisation des adresses email.
+ * Normalisation et masquage des adresses email.
  *
  * Une adresse email est stockee et recherchee TOUJOURS sous la meme forme :
  * sans espaces autour et en minuscules. Sans ca, "Bob@Mail.fr" et
@@ -21,6 +23,18 @@ public final class Emails {
 
     public static String normaliser(String email) {
         return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    // Une adresse email dans un texte libre (message d'erreur, etc.).
+    private static final Pattern ADRESSE = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+
+    // RGPD-03 : masque toutes les adresses d'un texte qu'on ne maitrise pas
+    // (message d'une exception du serveur d'email...) avant de le journaliser.
+    public static String masquerDansTexte(String texte) {
+        if (texte == null) {
+            return null;
+        }
+        return ADRESSE.matcher(texte).replaceAll(adresse -> Matcher.quoteReplacement(masquer(adresse.group())));
     }
 
     // Adresse masquee pour un message lisible par un tiers : "j***@mail.fr".

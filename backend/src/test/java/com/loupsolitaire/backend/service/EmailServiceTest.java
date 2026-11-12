@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.loupsolitaire.backend.config.ProprietesDeTest;
+import com.loupsolitaire.backend.support.LogsCaptures;
 
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
@@ -233,5 +235,22 @@ class EmailServiceTest {
         assertThat(mimeMessage.getAllRecipients()[0]).hasToString("marius@example.com");
         assertThat(mimeMessage.getSubject()).contains("déjà un compte");
         assertThat(brut).contains("&lt;b&gt;marius&lt;/b&gt;").doesNotContain("<b>marius</b></p>");
+    }
+
+    // RGPD-03 : un envoi qui echoue est journalise sans l'adresse complete,
+    // meme quand le message d'erreur du serveur d'email la contient.
+    @Test
+    void unEchecDEnvoiEstJournaliseAvecDesAdressesMasquees() {
+        doThrow(new MailSendException("550 <marius@example.com> : destinataire refuse"))
+                .when(mailSender).send(mimeMessage);
+
+        try (LogsCaptures logs = new LogsCaptures(EmailService.class)) {
+            emailService.envoyerEmailVerification("marius@example.com", "http://localhost:8080/lien");
+
+            assertThat(logs.messages()).isNotEmpty()
+                    .allSatisfy(message -> assertThat(message)
+                            .doesNotContain("marius@example.com")
+                            .contains("m***@example.com"));
+        }
     }
 }

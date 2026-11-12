@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -112,7 +113,9 @@ public class GlobalExceptionHandler {
     // contraintes) n'est jamais renvoye.
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleViolationUnicite(DataIntegrityViolationException ex) {
-        log.warn("Violation de contrainte en base : {}", ex.getMostSpecificCause().getMessage());
+        // RGPD-03 : seulement le nom de la contrainte. Le message de
+        // PostgreSQL contient la valeur en double ("Key (email)=(...)").
+        log.warn("Violation de contrainte en base : {}", nomDeContrainte(ex));
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(HttpStatus.CONFLICT.value(), "Conflit",
                         "Cette donnee existe deja (nom d'utilisateur ou email)"));
@@ -154,5 +157,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Erreur interne",
                         "Une erreur est survenue (reference " + reference + ")"));
+    }
+
+    private static String nomDeContrainte(Throwable erreur) {
+        for (Throwable cause = erreur; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException violation && violation.getConstraintName() != null) {
+                return violation.getConstraintName();
+            }
+        }
+        return "inconnue";
     }
 }
