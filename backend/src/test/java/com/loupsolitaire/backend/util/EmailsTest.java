@@ -48,4 +48,14 @@ class EmailsTest {
         assertThat(Emails.masquer("pas-une-adresse")).isEqualTo("***");
         assertThat(Emails.masquer(null)).isNull();
     }
+
+    @Test
+    void masquerDansTexteMasqueToutesLesAdresses() {
+        // RGPD-03 : messages d'erreur journalises (serveur d'email, etc.).
+        assertThat(Emails.masquerDansTexte("550 <marius@example.com> refuse, copie a bob.l@mail.fr"))
+                .isEqualTo("550 <m***@example.com> refuse, copie a b***@mail.fr");
+        assertThat(Emails.masquerDansTexte("Connexion refusee")).isEqualTo("Connexion refusee");
+        assertThat(Emails.masquerDansTexte("")).isEmpty();
+        assertThat(Emails.masquerDansTexte(null)).isNull();
+    }
 }

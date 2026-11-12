@@ -4,19 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Properties;
+import java.util.concurrent.RejectedExecutionException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import com.loupsolitaire.backend.config.ProprietesDeTest;
+import com.loupsolitaire.backend.support.LogsCaptures;
 
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
@@ -49,7 +53,8 @@ class EmailServiceTest {
                 )
         );
 
-        when(mailSender.createMimeMessage())
+        // lenient : certains tests remplacent ce comportement (echec).
+        lenient().when(mailSender.createMimeMessage())
                 .thenReturn(mimeMessage);
     }
 
@@ -233,5 +238,59 @@ class EmailServiceTest {
         assertThat(mimeMessage.getAllRecipients()[0]).hasToString("marius@example.com");
         assertThat(mimeMessage.getSubject()).contains("déjà un compte");
         assertThat(brut).contains("&lt;b&gt;marius&lt;/b&gt;").doesNotContain("<b>marius</b></p>");
+    }
+
+    // RGPD-03 : un envoi qui echoue est journalise sans l'adresse complete,
+    // meme quand le message d'erreur du serveur d'email la contient.
+    @Test
+    void unEchecDEnvoiEstJournaliseAvecDesAdressesMasquees() {
+        doThrow(new MailSendException("550 <marius@example.com> : destinataire refuse"))
+                .when(mailSender).send(mimeMessage);
+
+        try (LogsCaptures logs = new LogsCaptures(EmailService.class)) {
+            emailService.envoyerEmailVerification("marius@example.com", "http://localhost:8080/lien");
+
+            assertThat(logs.messages()).isNotEmpty()
+                    .allSatisfy(message -> assertThat(message)
+                            .doesNotContain("marius@example.com")
+                            .contains("m***@example.com"));
+        }
+    }
+
+    // RGPD-03 : un email qui ne peut pas etre prepare est journalise sans
+    // l'adresse complete, quel que soit le type d'email.
+    @Test
+    void uneErreurDePreparationEstJournaliseeAvecDesAdressesMasquees() {
+        when(mailSender.createMimeMessage())
+                .thenThrow(new IllegalStateException("adresse marius@example.com refusee"));
+
+        try (LogsCaptures logs = new LogsCaptures(EmailService.class)) {
+            emailService.envoyerEmailVerification("marius@example.com", "http://localhost:8080/lien");
+            emailService.envoyerAlerteChangementEmail("marius@example.com", "n***@example.com");
+            emailService.envoyerRappelCompteExistant("marius@example.com", "marius");
+            emailService.envoyerCodeReinitialisationMotDePasse("marius@example.com", "123456", 15);
+
+            assertThat(logs.messages()).hasSize(4)
+                    .allSatisfy(message -> assertThat(message)
+                            .doesNotContain("marius@example.com")
+                            .contains("m***@example.com"));
+        }
+    }
+
+    // RGPD-03 : file d'envoi pleine, l'email est abandonne ; l'adresse est
+    // masquee dans le log.
+    @Test
+    void uneFilePleineEstJournaliseeAvecLAdresseMasquee() {
+        EmailService fileToujoursPleine = new EmailService(mailSender, ProprietesDeTest.app(), envoi -> {
+            throw new RejectedExecutionException("file pleine");
+        });
+
+        try (LogsCaptures logs = new LogsCaptures(EmailService.class)) {
+            fileToujoursPleine.envoyerEmailVerification("marius@example.com", "http://localhost:8080/lien");
+
+            assertThat(logs.messages()).singleElement().satisfies(message -> assertThat(message)
+                    .contains("abandonne", "m***@example.com")
+                    .doesNotContain("marius@example.com"));
+        }
     }
 }

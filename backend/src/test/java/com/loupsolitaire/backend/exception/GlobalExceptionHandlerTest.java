@@ -1,3 +1,4 @@
+
 package com.loupsolitaire.backend.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -5,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Map;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.beans.TypeMismatchException;
@@ -21,6 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import com.loupsolitaire.backend.support.LogsCaptures;
 
 class GlobalExceptionHandlerTest {
 
@@ -177,5 +181,23 @@ class GlobalExceptionHandlerTest {
         AccessDeniedException refus = new AccessDeniedException("refuse");
 
         assertThatThrownBy(() -> handler.handleErreurInattendue(refus)).isSameAs(refus);
+    }
+
+    // RGPD-03 : le message de PostgreSQL contient la valeur en double ; le
+    // log ne garde que le nom de la contrainte.
+    @Test
+    void uneViolationDUniciteEstJournaliseeSansLaValeur() {
+        ConstraintViolationException cause = new ConstraintViolationException(
+                "duplicate key : Key (email)=(marius@example.com) already exists",
+                new java.sql.SQLException("Key (email)=(marius@example.com) already exists"),
+                "uk_utilisateur_email");
+
+        try (LogsCaptures logs = new LogsCaptures(GlobalExceptionHandler.class)) {
+            handler.handleViolationUnicite(new DataIntegrityViolationException("doublon", cause));
+
+            assertThat(logs.messages()).singleElement().satisfies(message -> assertThat(message)
+                    .contains("uk_utilisateur_email")
+                    .doesNotContain("marius"));
+        }
     }
 }

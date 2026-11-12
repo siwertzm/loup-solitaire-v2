@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.loupsolitaire.backend.config.AppProperties;
 import com.loupsolitaire.backend.config.EnvoiEmailsConfig;
+import com.loupsolitaire.backend.util.Emails;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -223,8 +224,8 @@ public class EmailService {
             log.error(
                     "Echec de la preparation de l'email de {} a {} : {}",
                     type,
-                    destinataire,
-                    e.getMessage()
+                    Emails.masquer(destinataire),
+                    Emails.masquerDansTexte(e.getMessage())
             );
         }
     }
@@ -268,8 +269,8 @@ public class EmailService {
         } catch (Exception e) {
             log.error(
                     "Echec de la preparation de l'alerte de changement d'adresse a {} : {}",
-                    ancienneAdresse,
-                    e.getMessage()
+                    Emails.masquer(ancienneAdresse),
+                    Emails.masquerDansTexte(e.getMessage())
             );
         }
     }
@@ -313,8 +314,8 @@ public class EmailService {
         } catch (Exception e) {
             log.error(
                     "Echec de la preparation du rappel de compte existant a {} : {}",
-                    destinataire,
-                    e.getMessage()
+                    Emails.masquer(destinataire),
+                    Emails.masquerDansTexte(e.getMessage())
             );
         }
     }
@@ -470,8 +471,8 @@ public class EmailService {
 
             log.error(
                     "Echec de la preparation de l'email de reinitialisation a {} : {}",
-                    destinataire,
-                    e.getMessage()
+                    Emails.masquer(destinataire),
+                    Emails.masquerDansTexte(e.getMessage())
             );
         }
     }
@@ -489,8 +490,8 @@ public class EmailService {
                 log.error(
                         "Echec de l'envoi de l'email de {} a {} : {}",
                         type,
-                        destinataire,
-                        e.getMessage()
+                        Emails.masquer(destinataire),
+                        Emails.masquerDansTexte(e.getMessage())
                 );
             }
         };
@@ -514,7 +515,7 @@ public class EmailService {
             // File pleine ou application en cours d'arret : l'email est
             // perdu, mais la requete du joueur ne doit pas echouer (il peut
             // redemander un lien ou un code).
-            log.error("File d'envoi pleine : email de {} a {} abandonne", type, destinataire);
+            log.error("File d'envoi pleine : email de {} a {} abandonne", type, Emails.masquer(destinataire));
         }
     }
 
