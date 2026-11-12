@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `feature-QUAL-06` | À faire |
+| 2 | Moyenne | S | `feature-QUAL-06` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau)
 
