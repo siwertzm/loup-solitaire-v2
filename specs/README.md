@@ -5,6 +5,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Source** : `source/` contient le cahier des charges d'origine (audit du 25/09/2026) et les trois listes de lots. Le détail des constats, les écarts VO/VF (section 5) et les décisions D-01 à D-10 (section 7) y restent.
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
 - **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
+- **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Seules les tâches **à faire** ont un dossier. Quand une tâche est finie, passer son statut à « Fait » dans son `spec.md` et dans le tableau ci-dessous.
 
 ## Tâches à faire
@@ -31,6 +32,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | 25 | D | [REGLE-15](lot-2/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté (met `CLAUDE.md` à jour) |
 | 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
 | 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
+| 28 | D | [QUAL-12](lot-2/QUAL-12-bonus-objets-speciaux/spec.md) | Basse | S/M | Bonus des Objets Spéciaux (Casque, Cotte de mailles) dans le Sac et la fiche personnage — retour bêta |
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
@@ -44,6 +46,9 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | [QUAL-09](lot-3/QUAL-09-choix-langue/spec.md) | Moyenne | M | Choix de la langue ; en.json corrigé |
 | [QUAL-11](lot-3/QUAL-11-angular-22/spec.md) | Basse | M | Migration vers Angular 22 et Vitest 5 (`ng update`) |
 | [RGPD-02](lot-3/RGPD-02-export-donnees/spec.md) | Basse | S | Export des données en JSON (reporté du lot 2 : demandes traitées à la main en attendant) |
+| [QUAL-13](lot-3/QUAL-13-bande-originale/spec.md) | Basse | M | Bande originale : socle de musique de fond — retour bêta |
+| [QUAL-14](lot-3/QUAL-14-id-hors-url/spec.md) | Basse | M | Retirer l'id du personnage des URL du jeu |
+| [QUAL-15](lot-3/QUAL-15-page-options/spec.md) | Basse | M | Page Options : son, taille du texte, autres paramètres à définir |
 
 ## Statuts vérifiés le 11/11/2026
 
