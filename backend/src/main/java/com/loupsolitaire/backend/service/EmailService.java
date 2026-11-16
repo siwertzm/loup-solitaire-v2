@@ -36,6 +36,8 @@ public class EmailService {
 
     // En-tete de la version texte brut de chaque email.
     private static final String EN_TETE_TEXTE = "LOUP SOLITAIRE\n\n";
+    // Marge des emails a simple message (alerte, rappel, export).
+    private static final String MARGE_MESSAGE = "34px 34px 28px 34px";
 
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
@@ -257,7 +259,7 @@ public class EmailService {
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
-                    "34px 34px 28px 34px",
+                    MARGE_MESSAGE,
                     "Changement d'adresse demandé",
                     paragraphes(demande, conseil),
                     "Si c'est bien toi, tu n'as rien à faire."
@@ -302,7 +304,7 @@ public class EmailService {
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
-                    "34px 34px 28px 34px",
+                    MARGE_MESSAGE,
                     "Tu as déjà un compte",
                     paragraphes(rappel, conseil),
                     "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email : rien n'a changé."
@@ -345,7 +347,7 @@ public class EmailService {
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
-                    "34px 34px 28px 34px",
+                    MARGE_MESSAGE,
                     "Tes données",
                     paragraphes(contenu, conseil),
                     "Si tu n'es pas à l'origine de cette demande, change ton mot de passe."
