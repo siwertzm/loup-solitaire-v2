@@ -26,6 +26,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection; 
 import jakarta.persistence.OrderColumn;       
 
+import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.PorteeVol;
 
 import lombok.Getter;
@@ -202,5 +203,21 @@ public class Personnage {
         if (derniereArrivee >= 0) {
             etapesMortelles.add(derniereArrivee);
         }
+    }
+
+    // Garde de toute action de jeu (avancer, ramasser, consommer, combattre,
+    // resoudre un vol...) : un personnage mort doit d'abord sortir de cet
+    // etat, par ressusciter (mort hors combat) ou revenir-apres-defaite
+    // (mort en combat, voir PersonnageService).
+    public void verifierVivant() {
+        if (mort) {
+            throw new IllegalArgumentException(
+                    "Ce personnage est mort : ressuscitez-le (POST /personnages/{id}/ressusciter), ou apres une "
+                            + "defaite en combat revenez en arriere (POST /personnages/{id}/chapitre/revenir-apres-defaite)");
+        }
+    }
+
+    public boolean possedeDiscipline(IdDiscipline discipline) {
+        return disciplines.stream().anyMatch(d -> d.getId() == discipline);
     }
 }

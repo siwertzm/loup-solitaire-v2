@@ -155,14 +155,12 @@ class EffetChapitreServiceTest {
         assertThat(personnage.getHabiliteTemp()).isZero();
     }
 
+    // Possession des protections : voir ConditionServiceTest
+    // (protectionsToutesPossedees).
     @Test
-    void appliqueLeMalusSiLaDisciplineRequiseEstAbsente() {
-        Effet effet = creerEffetHabilite(
-                -2,
-                TypeCondition.DISCIPLINE,
-                "bouclier_psychique");
-
-        personnage.setDisciplines(List.of());
+    void appliqueLeMalusSiUneProtectionManque() {
+        Effet effet = creerEffetHabilite(-2, TypeCondition.DISCIPLINE, "bouclier_psychique");
+        when(conditionService.protectionsToutesPossedees(personnage, effet.getConditions())).thenReturn(false);
 
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
@@ -170,57 +168,13 @@ class EffetChapitreServiceTest {
     }
 
     @Test
-    void nAppliqueRienSiLaDisciplineRequiseEstPossedee() {
-        Effet effet = creerEffetHabilite(
-                -2,
-                TypeCondition.DISCIPLINE,
-                "bouclier_psychique");
-
-        Discipline bouclier = new Discipline();
-        bouclier.setId(IdDiscipline.BOUCLIER_PSYCHIQUE);
-
-        personnage.setDisciplines(List.of(bouclier));
+    void nAppliqueRienSiToutesLesProtectionsSontPossedees() {
+        Effet effet = creerEffetHabilite(-3, TypeCondition.OBJET, "torche");
+        when(conditionService.protectionsToutesPossedees(personnage, effet.getConditions())).thenReturn(true);
 
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
-    }
-
-    @Test
-    void appliqueLeMalusSiLObjetRequisEstAbsent() {
-        Effet effet = creerEffetHabilite(
-                -3,
-                TypeCondition.OBJET,
-                "torche");
-
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of());
-
-        effetChapitreService.appliquerEffetHabilite(personnage, effet);
-
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(-3);
-    }
-
-    @Test
-    void nAppliqueRienSiLObjetRequisEstPossede() {
-        Effet effet = creerEffetHabilite(
-                -3,
-                TypeCondition.OBJET,
-                "torche");
-
-        Objet torche = new Objet();
-        torche.setId("torche");
-
-        InventaireItem ligne = new InventaireItem();
-        ligne.setObjet(torche);
-        ligne.setQuantite(1);
-
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of(ligne));
-
-        effetChapitreService.appliquerEffetHabilite(personnage, effet);
-
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+        assertThat(personnage.getHabiliteTemp()).isZero();
     }
 
     @Test

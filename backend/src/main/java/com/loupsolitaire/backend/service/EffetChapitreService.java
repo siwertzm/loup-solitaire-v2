@@ -63,9 +63,7 @@ public class EffetChapitreService {
     // -3 ENDURANCE.
     @Transactional
     public void appliquerEffetRepas(Personnage personnage) {
-        boolean possedeChasse = personnage.getDisciplines().stream()
-                .anyMatch(d -> d.getId() == IdDiscipline.CHASSE);
-        if (possedeChasse) {
+        if (personnage.possedeDiscipline(IdDiscipline.CHASSE)) {
             personnage.setDernierStatutRepas(StatutRepas.CHASSE);
             return;
         }
@@ -120,50 +118,12 @@ public class EffetChapitreService {
             return;
         }
 
-        /*
-         * Conditions de protection.
-         *
-         * Toutes les conditions doivent etre de type OBJET ou DISCIPLINE.
-         * Si c'est le cas, le joueur doit posseder TOUTES les protections
-         * pour eviter le malus.
-         */
-        boolean uniquementConditionsProtection =
-                conditions.stream()
-                        .allMatch(condition ->
-                                condition.getType() == TypeCondition.OBJET
-                                        || condition.getType()
-                                                == TypeCondition.DISCIPLINE
-                        );
-
-        if (uniquementConditionsProtection) {
-
-            boolean toutesProtectionsPossedees =
-                    conditions.stream()
-                            .allMatch(condition ->
-                                    switch (condition.getType()) {
-                                        case OBJET -> possedeObjet(
-                                                personnage,
-                                                condition.getTargetId()
-                                        );
-                                        case DISCIPLINE -> possedeDiscipline(
-                                                personnage,
-                                                condition.getTargetId()
-                                        );
-                                        default -> false;
-                                    });
-
-            /*
-             * Au moins une protection manque :
-             * on applique le malus UNE seule fois.
-             */
-            if (!toutesProtectionsPossedees) {
-
-                appliquerHabiliteTemp(
-                        personnage,
-                        effet.getValeur()
-                );
+        // Uniquement des protections OBJET/DISCIPLINE : le malus s'applique
+        // (une seule fois) s'il en manque au moins une.
+        if (conditions.stream().allMatch(ConditionService::estProtection)) {
+            if (!conditionService.protectionsToutesPossedees(personnage, conditions)) {
+                appliquerHabiliteTemp(personnage, effet.getValeur());
             }
-
             return;
         }
         /*
@@ -276,11 +236,7 @@ public class EffetChapitreService {
     // avant de retirer l'objet et de lever l'attente.
     @Transactional
     public void resoudreVolEnAttente(Personnage personnage, Objet objet) {
-        if (personnage.isMort()) {
-            throw new IllegalArgumentException(
-                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
-                            + "POST /personnages/{id}/ressusciter avant de continuer");
-        }
+        personnage.verifierVivant();
         PorteeVol portee = personnage.getVolEnAttente();
         if (portee == null) {
             // 400 et non 500 : declenchable par le joueur (POST /vol/{objetId}
@@ -329,16 +285,6 @@ public class EffetChapitreService {
         for (InventaireItem item : items) {
             inventaireService.retirerObjet(personnage, item.getObjet(), item.getQuantite());
         }
-    }
-
-    private boolean possedeDiscipline(Personnage personnage, String targetId) {
-        IdDiscipline recherchee = IdDiscipline.fromJson(targetId);
-        return personnage.getDisciplines().stream().anyMatch(d -> d.getId() == recherchee);
-    }
-
-    private boolean possedeObjet(Personnage personnage, String objetId) {
-        return inventaireService.listerInventaire(personnage).stream()
-                .anyMatch(item -> item.getObjet().getId().equals(objetId) && item.getQuantite() > 0);
     }
 
     private void appliquerHabiliteTemp(Personnage personnage, int valeur) {

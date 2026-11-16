@@ -58,6 +58,8 @@ class CombatServiceTest {
     private InventaireService inventaireService;
     @Mock
     private ObjetService objetService;
+    @Mock
+    private ConditionService conditionService;
 
     @InjectMocks
     private CombatService combatService;
@@ -501,11 +503,11 @@ class CombatServiceTest {
         Chapitre chapitre = creerChapitreCombat(283, List.of(ennemi), null);
         chapitre.setEffets(effetsDuVordak());
         Personnage personnage = creerPersonnage(10, 20, chapitre);
-        if (bouclier) {
-            Discipline bouclierPsychique = new Discipline();
-            bouclierPsychique.setId(IdDiscipline.BOUCLIER_PSYCHIQUE);
-            personnage.setDisciplines(List.of(bouclierPsychique));
-        }
+        // Malus du Bouclier Psychique (2e effet) : la possession elle-meme est
+        // testee dans ConditionServiceTest. lenient : au 1er assaut, le
+        // malus est ecarte par ASSAUT_MIN avant de regarder la protection.
+        lenient().when(conditionService.protectionsToutesPossedees(personnage,
+                chapitre.getEffets().get(1).getConditions())).thenReturn(bouclier);
         Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
         combat.setAssautsLivres(assautsLivres);
         stuberCombatExistant(personnage, chapitre, combat);
