@@ -218,6 +218,9 @@
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.ECHANGE_TITRE' | translate }}</span>
+            @if (armeProposeeMaitrisee(condition.targetId!)) {
+              <span class="popup-plein-maitrisee">{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}</span>
+            }
           </div>
         </div>
 
@@ -316,6 +319,9 @@
             'CHAPITRE_EFFETS.POPUP_ECHANGE_TITRE'
               | translate: { nom: nomObjet(condition.targetId!) }
           }}
+          @if (armeProposeeMaitrisee(condition.targetId!)) {
+            <span class="popup-plein-maitrisee">{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}</span>
+          }
         </div>
         <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TEXTE' | translate }}</p>
 

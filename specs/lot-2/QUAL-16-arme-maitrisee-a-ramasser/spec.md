@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `feature-QUAL-16` | À faire |
+| 2 | Basse | S | `feature-QUAL-16` | Fait |
 
 Origine : retour bêta-testeur (16/11/2026)
 
@@ -22,6 +22,12 @@ Constat dans le code :
 - **Emplacement** : à côté de la quantité (`x1`), comme le `x40` de l'or ; la quantité reste affichée.
 - **Arme déjà possédée** : aucune différence, l'indication s'affiche quand même.
 - **Échanges** : oui, même indication sur l'arme proposée par un effet ÉCHANGE (ex. Marteau de l'ermite, onglet Effets).
+
+## Mise en œuvre (16/11/2026)
+
+- `chapitre-objets` : `estMaitrisee(objet)`, tag « MAÎTRISÉE » en vert, avant la quantité (« MAÎTRISÉE x1 »).
+- `chapitre-effets` : `armeProposeeMaitrisee(targetId)`, tag sur la ligne ÉCHANGE et dans le titre de la popup (la popup marquait déjà les armes du joueur).
+- Tests Vitest dans les deux specs de composant.
 
 ## À faire
 

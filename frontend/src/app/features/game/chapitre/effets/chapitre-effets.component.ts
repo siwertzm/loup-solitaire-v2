@@ -351,6 +351,13 @@ export class ChapitreEffetsComponent {
     return objet?.nom ?? targetId;
   }
 
+  /** QUAL-16 : l'arme proposée en échange est celle de la Maîtrise des Armes. */
+  armeProposeeMaitrisee(targetId: string): boolean {
+    const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+    const objet = this.tousObjets().find((o) => o.id.toLowerCase() === targetId.toLowerCase());
+    return maitriseeNom !== null && objet?.categorie === 'ARME' && objet.nom === maitriseeNom;
+  }
+
   // ============================================================
   // VOL
   // ============================================================

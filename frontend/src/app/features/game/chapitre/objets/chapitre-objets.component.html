@@ -38,6 +38,9 @@
       </div>
 
       <div class="objet-quantite">
+        @if (estMaitrisee(objet)) {
+          <span class="objet-maitrisee">{{ 'CHAPITRE_OBJETS.TAG_MAITRISEE' | translate }}</span>
+        }
         @if (restant(objet.objetId) > 0) {
           x{{ restant(objet.objetId) }}
         }

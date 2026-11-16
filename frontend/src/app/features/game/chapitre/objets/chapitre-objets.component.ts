@@ -120,6 +120,16 @@ export class ChapitreObjetsComponent implements OnDestroy {
   // comparaison par NOM (PersonnageMapper envoie armeMaitrisee comme nom, pas objetId).
   readonly bonusArmeMaitrisee = 2;
 
+  /** QUAL-16 : arme proposée par le chapitre = arme de la Maîtrise des Armes. */
+  estMaitrisee(objet: ObjetChapResponse): boolean {
+    const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
+    return (
+      maitriseeNom !== null &&
+      this.categorieObjet(objet.objetId) === 'ARME' &&
+      objet.nom === maitriseeNom
+    );
+  }
+
   // Quantité restante à ramasser/compléter par objet du chapitre (objetId ->
   // valeur). GET /chapitre renvoie déjà ce "restant" calculé côté serveur
   // (déclaré - déjà pris/appliqué), optionnel ou non : on la décrémente
