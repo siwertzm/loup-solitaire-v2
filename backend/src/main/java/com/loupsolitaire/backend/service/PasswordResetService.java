@@ -2,6 +2,7 @@ package com.loupsolitaire.backend.service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,11 @@ public class PasswordResetService {
     private final AppProperties appProperties;
     private final LimiteurDeDebit limiteurDeDebit;
 
+    // SEC-11 : hachage d'un code au hasard, compare quand il n'y a pas de
+    // vrai code (voir verifierCodeSansLimite). Calcule au premier besoin ;
+    // deux calculs simultanes donnent deux valeurs aussi valables.
+    private volatile String hashFactice;
+
     /*
      * ETAPE 1
      *
@@ -48,7 +54,14 @@ public class PasswordResetService {
         /*
          * Ne jamais révéler si l'adresse existe ou non.
          */
-        utilisateurRepository.findByEmail(email).ifPresent(utilisateur -> {
+        Optional<Utilisateur> compte = utilisateurRepository.findByEmail(email);
+        if (compte.isEmpty()) {
+            // SEC-11 : meme hachage bcrypt que pour un vrai compte, pour que
+            // la duree de la reponse ne dise pas si l'email existe.
+            passwordEncoder.encode(Tokens.genererCodeASixChiffres());
+            return;
+        }
+        compte.ifPresent(utilisateur -> {
 
             /*
              * Un nouveau code invalide tous les précédents.
@@ -117,78 +130,42 @@ public class PasswordResetService {
             String code
     ) {
 
-        Utilisateur utilisateur = utilisateurRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                "Code invalide ou expire"
-                        )
-                );
-
-        PasswordResetToken token = tokenRepository
-                .findTopByUtilisateurAndUtiliseFalseOrderByCreatedAtDesc(
-                        utilisateur
-                )
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                "Code invalide ou expire"
-                        )
-                );
+        PasswordResetToken token = utilisateurRepository.findByEmail(email)
+                .flatMap(tokenRepository::findTopByUtilisateurAndUtiliseFalseOrderByCreatedAtDesc)
+                .orElse(null);
 
         /*
-         * Le code a déjà été validé.
-         *
-         * resetTokenHash != null signifie que l'étape 2
-         * a déjà été franchie.
+         * SEC-11 : une seule comparaison bcrypt, faite dans TOUS les cas
+         * (email inconnu, pas de code en cours, code deja valide, expire,
+         * trop d'essais) : sans ca, la duree de la reponse disait si l'email
+         * a un compte.
          */
-        if (token.getResetTokenHash() != null) {
-            throw new IllegalArgumentException(
-                    "Code invalide ou expire"
-            );
+        boolean codeCorrect = passwordEncoder.matches(
+                code,
+                token != null ? token.getCodeHash() : hashFactice()
+        );
+
+        if (token == null || token.getResetTokenHash() != null) {
+            throw new IllegalArgumentException("Code invalide ou expire");
         }
 
-        if (token.isExpired()) {
-
+        if (token.isExpired() || token.getTentatives() >= maxAttempts()) {
             token.setUtilise(true);
             tokenRepository.save(token);
-
-            throw new IllegalArgumentException(
-                    "Code invalide ou expire"
-            );
-        }
-
-        if (token.getTentatives() >= maxAttempts()) {
-
-            token.setUtilise(true);
-            tokenRepository.save(token);
-
-            throw new IllegalArgumentException(
-                    "Code invalide ou expire"
-            );
+            throw new IllegalArgumentException("Code invalide ou expire");
         }
 
         /*
          * Mauvais code.
          */
-        if (!passwordEncoder.matches(
-                code,
-                token.getCodeHash()
-        )) {
-
-            int nouvellesTentatives =
-                    token.getTentatives() + 1;
-
+        if (!codeCorrect) {
+            int nouvellesTentatives = token.getTentatives() + 1;
             token.setTentatives(nouvellesTentatives);
-
             if (nouvellesTentatives >= maxAttempts()) {
                 token.setUtilise(true);
             }
-
             tokenRepository.save(token);
-
-            throw new IllegalArgumentException(
-                    "Code invalide ou expire"
-            );
+            throw new IllegalArgumentException("Code invalide ou expire");
         }
 
         /*
@@ -289,6 +266,13 @@ public class PasswordResetService {
          */
         refreshTokenService
                 .revoquerToutesLesSessions(utilisateur);
+    }
+
+    private String hashFactice() {
+        if (hashFactice == null) {
+            hashFactice = passwordEncoder.encode(Tokens.genererCodeASixChiffres());
+        }
+        return hashFactice;
     }
 
     private long expirationMinutes() {

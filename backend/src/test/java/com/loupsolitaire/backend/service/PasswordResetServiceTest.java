@@ -141,7 +141,9 @@ class PasswordResetServiceTest {
         // Pas d'erreur : l'appelant ne doit pas pouvoir deviner si l'email existe.
         service.demanderReinitialisation(EMAIL);
 
-        verifyNoInteractions(tokenRepository, emailService, passwordEncoder);
+        verifyNoInteractions(tokenRepository, emailService);
+        // SEC-11 : meme hachage que pour un vrai compte (duree de reponse identique).
+        verify(passwordEncoder).encode(any());
     }
 
     // =========================================================
@@ -193,16 +195,16 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    void unCodeDontLesEssaisSontEpuisesEstRefuseSansLeComparer() {
+    void unCodeDontLesEssaisSontEpuisesEstRefuseMemeBon() {
         PasswordResetToken token = token(5, dansDixMinutes());
         stuberDernierCode(token);
+        when(passwordEncoder.matches("123456", "hash-du-code")).thenReturn(true);
 
+        // Meme le bon code ne passe plus.
         assertThatThrownBy(() -> service.verifierCode(EMAIL, "123456"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(MESSAGE_CODE);
 
-        // Meme le bon code ne passe plus : pas de comparaison du tout.
-        verify(passwordEncoder, never()).matches(any(), any());
         assertThat(token.isUtilise()).isTrue();
     }
 
@@ -215,7 +217,6 @@ class PasswordResetServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(MESSAGE_CODE);
 
-        verify(passwordEncoder, never()).matches(any(), any());
         assertThat(token.isUtilise()).isTrue();
     }
 
@@ -224,12 +225,11 @@ class PasswordResetServiceTest {
         PasswordResetToken token = token(0, dansDixMinutes());
         token.setResetTokenHash("deja-valide");
         stuberDernierCode(token);
+        when(passwordEncoder.matches("123456", "hash-du-code")).thenReturn(true);
 
         assertThatThrownBy(() -> service.verifierCode(EMAIL, "123456"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(MESSAGE_CODE);
-
-        verify(passwordEncoder, never()).matches(any(), any());
     }
 
     @Test
@@ -240,6 +240,10 @@ class PasswordResetServiceTest {
         assertThatThrownBy(() -> service.verifierCode(EMAIL, "123456"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(MESSAGE_CODE);
+
+        // SEC-11 : une comparaison bcrypt quand meme (hash factice), pour que
+        // la duree de la reponse soit la meme qu'avec un compte.
+        verify(passwordEncoder).matches(eq("123456"), any());
     }
 
     @Test
