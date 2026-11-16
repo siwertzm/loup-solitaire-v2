@@ -475,6 +475,59 @@ class EffetChapitreServiceTest {
                 .retirerObjet(personnage, or.getObjet(), 20);
     }
 
+    // REGLE-12 : 11 = le Sac a Dos lui-meme + les armes (174, 258, 294, 162).
+    // Le contenu part avec le Sac (InventaireService.retirerObjet).
+    @Test
+    void vol11RetireLeSacADosEtLesArmesPasLOr() {
+        Effet effet = creerEffetVol(11, null, null);
+        InventaireItem sac = creerLigne("sac_a_dos", CategorieObjet.OBJETS_SPECIAUX, 1);
+        InventaireItem hache = creerLigne("hache", CategorieObjet.ARME, 1);
+        InventaireItem or = creerLigne("or", CategorieObjet.BOURSE, 20);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(sac, hache, or));
+
+        effetChapitreService.appliquerEffetVol(personnage, effet);
+
+        verify(inventaireService).retirerObjet(personnage, sac.getObjet(), 1);
+        verify(inventaireService).retirerObjet(personnage, hache.getObjet(), 1);
+        verify(inventaireService, never()).retirerObjet(personnage, or.getObjet(), 20);
+    }
+
+    // REGLE-12 : 9 = le Sac a Dos seul (188, tirage 0-6), les armes restent.
+    @Test
+    void vol9RetireLeSacADosPasLesArmes() {
+        Effet effet = creerEffetVol(9, null, null);
+        InventaireItem sac = creerLigne("sac_a_dos", CategorieObjet.OBJETS_SPECIAUX, 1);
+        InventaireItem hache = creerLigne("hache", CategorieObjet.ARME, 1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(sac, hache));
+
+        effetChapitreService.appliquerEffetVol(personnage, effet);
+
+        verify(inventaireService).retirerObjet(personnage, sac.getObjet(), 1);
+        verify(inventaireService, never()).retirerObjet(personnage, hache.getObjet(), 1);
+    }
+
+    // REGLE-12 : 10 (205) vide le Sac mais le Sac a Dos reste.
+    @Test
+    void vol10GardeLeSacADos() {
+        Effet effet = creerEffetVol(10, null, null);
+        InventaireItem sac = creerLigne("sac_a_dos", CategorieObjet.OBJETS_SPECIAUX, 1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(sac));
+
+        effetChapitreService.appliquerEffetVol(personnage, effet);
+
+        verify(inventaireService, never()).retirerObjet(personnage, sac.getObjet(), 1);
+    }
+
+    @Test
+    void vol9SansSacADosNeRetireRien() {
+        Effet effet = creerEffetVol(9, null, null);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of());
+
+        effetChapitreService.appliquerEffetVol(personnage, effet);
+
+        verify(inventaireService, never()).retirerObjet(any(), any(), anyInt());
+    }
+
     @Test
     void vol8RetireSeulementLeSacPasLesArmes() {
         Effet effet = creerEffetVol(8, null, null);

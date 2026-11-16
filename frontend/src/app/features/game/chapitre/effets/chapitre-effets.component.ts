@@ -358,8 +358,10 @@ export class ChapitreEffetsComponent {
   /**
    * La valeur code une PORTÉE de perte :
    *
-   * 10 -> tout
-   * 8  -> tout le sac
+   * 11 -> le Sac à Dos lui-même (et son contenu) + les armes
+   * 10 -> contenu du Sac + armes, le Sac à Dos reste
+   * 9  -> le Sac à Dos lui-même (et son contenu)
+   * 8  -> contenu du Sac
    * 2 + condition ARME -> toutes les armes
    * 1 + condition ARME -> une arme au choix
    * 1 sans condition -> un objet/repas/arme au choix
@@ -400,6 +402,14 @@ export class ChapitreEffetsComponent {
       return this.volPorteeArme(effet)
         ? this.translate.instant('CHAPITRE_EFFETS.VOL_CHOIX_ARME')
         : this.translate.instant('CHAPITRE_EFFETS.VOL_CHOIX_OBJET');
+    }
+
+    if (effet.valeur === 11) {
+      return this.translate.instant('CHAPITRE_EFFETS.VOL_PERTE_SAC_ET_ARMES');
+    }
+
+    if (effet.valeur === 9) {
+      return this.translate.instant('CHAPITRE_EFFETS.VOL_PERTE_SAC');
     }
 
     if (effet.valeur === 10) {

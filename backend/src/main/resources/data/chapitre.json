@@ -444,6 +444,7 @@
     ],
     "id": 20,
     "objet": [
+      { "id": "sac_a_dos", "valeur": 1, "optionnel": true },
       {
         "id": "repas",
         "valeur": 2,
@@ -1371,6 +1372,7 @@
     "id": 62,
     "objet": [
       { "id": "or", "valeur": 28, "optionnel": false },
+      { "id": "sac_a_dos", "valeur": 1, "optionnel": true },
       { "id": "repas", "valeur": 3, "optionnel": true },
       { "id": "epee", "valeur": 1, "optionnel": true }
     ]
@@ -2780,7 +2782,9 @@
     "text": "Vous vous approchez de ces hommes et vous les appelez. Mais lorsqu'ils se tournent vers vous, votre sang se glace et vous sentez votre cœur battre à tout rompre, car ce sont des Drakkarims déguisés. En vous voyant, ils se précipitent sur vous, vous ligotent pieds et poignets et vous traînent derrière eux le long d'un sentier.\n\nIls vous prennent votre sac à dos et vos Armes, mais ils ne fouillent pas les poches de votre cape et ne trouvent pas vos Pièces d'Or.\n\nVous les entendez jacasser d'un air menaçant tandis qu'ils vous emportent ainsi vers leur repaire : de toute évidence, ils sont en train de décider du sort qu'ils vous réservent, et vos perspectives d'avenir ne semblent pas des plus réjouissantes.\n\nSi vous possédez la Discipline Kaï de la <strong>Maîtrise Psychique de la Matière</strong>, rendez-vous au <strong>258</strong>.\nSinon, rendez-vous au <strong>127</strong>.",
     "combat": false,
     "ennemi": null,
-    "effet": null,
+    "effet": [
+      { "type": "vol", "nom": "perte", "valeur": 11, "cond": null }
+    ],
     "lien": [
       {
         "page": "258",
@@ -2957,7 +2961,7 @@
     "combat": false,
     "ennemi": null,
     "effet": [
-      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 11, "cond": null }
     ],
     "lien": [
       { "page": "190", "cond": null }
@@ -3147,7 +3151,7 @@
     "effet": [
       {
         "type": "vol",
-        "valeur": 8,
+        "valeur": 9,
         "nom": "perte",
         "cond": [{ "type": "hasard", "valeur": "[0, 6]", "targetId": null }]
       },
@@ -4050,7 +4054,7 @@
     "combat": false,
     "objet": [],
     "effet": [
-      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 11, "cond": null }
     ],
     "ennemi": null,
     "lien": [
@@ -4532,7 +4536,7 @@
     "combat": false,
     "objet": [],
     "effet": [
-      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
+      { "type": "vol", "nom": "perte", "valeur": 11, "cond": null }
     ],
     "ennemi": null,
     "lien": [

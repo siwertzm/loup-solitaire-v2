@@ -164,7 +164,7 @@ class GameDataLoaderTest {
     // =========================================================
 
     @Test
-    void chargeLesVingtHuitObjetsAvecLeursEffets() throws Exception {
+    void chargeLesVingtNeufObjetsAvecLeursEffets() throws Exception {
 
         creerLoader().run(null);
 
@@ -175,7 +175,7 @@ class GameDataLoaderTest {
 
         // objet.json contient desormais 28 objets (ajout de "coin",
         // utilise notamment par la condition du chapitre 53).
-        assertThat(objets).hasSize(28);
+        assertThat(objets).hasSize(29);
 
         Objet casque = objets.stream()
                 .filter(o -> o.getId().equals("casque"))
@@ -297,7 +297,7 @@ class GameDataLoaderTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(chapitre20.getObjets()).hasSize(2);
+        assertThat(chapitre20.getObjets()).hasSize(3);
     }
 
 

@@ -49,6 +49,17 @@ export interface ObjetResume {
 // PLATE (objetId/nom/categorie/quantite), pas d'objet imbriqué.
 export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'BOURSE';
 
+/**
+ * REGLE-12 : le Sac à Dos (Objet Spécial) porte les objets et repas.
+ * Aligné sur InventaireService.OBJET_SAC_A_DOS (backend).
+ */
+export const OBJET_SAC_A_DOS = 'sac_a_dos';
+
+/** Sans Sac à Dos, aucun objet ni repas ne peut être porté. */
+export function possedeSacADos(inventaire: { objetId: string }[]): boolean {
+  return inventaire.some((i) => i.objetId === OBJET_SAC_A_DOS);
+}
+
 export type CategorieEffet = 'ENDURANCE' | 'HABILITE' | 'ECHANGE' | 'REPAS' | 'VOL';
 
 export interface InventaireItem {

@@ -17,6 +17,7 @@ import {
   InventaireItem,
   ObjetResume,
   PersonnageResume,
+  possedeSacADos,
 } from '../../../../core/models/personnage.model';
 import { ChapitreService } from '../../../../core/services/chapitre.service';
 import { PersonnageService } from '../../../../core/services/personnage.service';
@@ -100,6 +101,14 @@ export class ChapitreObjetsComponent implements OnDestroy {
   readonly objetsEtRepasCount = computed(
     () => this.objetsCount() + this.repasCount(),
   );
+
+  readonly possedeSac = computed(() => possedeSacADos(this.inventaire()));
+
+  /** REGLE-12 : objet ou repas proposé alors que le joueur n'a plus de Sac à Dos. */
+  sansSac(objetId: string): boolean {
+    const categorie = this.categorieObjet(objetId);
+    return (categorie === 'OBJET' || categorie === 'REPAS') && !this.possedeSac();
+  }
 
   readonly bourseCount = computed(() =>
     this.inventaire()

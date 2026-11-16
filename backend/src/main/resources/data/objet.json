@@ -212,6 +212,13 @@
     "effet": null
   },
   {
+    "id": "sac_a_dos",
+    "nom": "Sac à Dos",
+    "description": "Contient vos objets et vos repas. Sans Sac à Dos, vous ne pouvez pas en porter.",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
     "id": "carte",
     "nom": "Carte géographique",
     "description": "Une carte géographique qui vous permet de vous orienter.",
