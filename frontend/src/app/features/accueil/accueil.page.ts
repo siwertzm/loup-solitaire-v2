@@ -10,13 +10,13 @@ import {
   ViewWillEnter,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personCircleOutline } from 'ionicons/icons';
+import { personCircleOutline, settingsOutline } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PersonnageResume } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
 
-addIcons({ 'person-circle-outline': personCircleOutline });
+addIcons({ 'person-circle-outline': personCircleOutline, 'settings-outline': settingsOutline });
 
 @Component({
   selector: 'app-accueil',
@@ -166,5 +166,9 @@ export class AccueilPage implements ViewWillEnter {
 
   profil(): void {
     this.router.navigate(['/profil']);
+  }
+
+  options(): void {
+    this.router.navigate(['/options']);
   }
 }

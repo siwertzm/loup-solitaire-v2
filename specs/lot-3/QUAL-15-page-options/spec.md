@@ -36,6 +36,7 @@ Constat dans le code :
 - Décisions : taille du texte seulement (langue avec QUAL-09, son avec QUAL-13) ; page `/options` réservée aux joueurs connectés, ouverte depuis le Profil ; trois tailles (petite 0,9 / normale 1 / grande 1,15) ; réglage du téléphone non suivi ; stockage sur l'appareil (`Preferences`).
 - Technique **A** : les 325 `font-size` passés en `rem` ; base `:root { font-size: calc(16px * var(--echelle-texte)) }` (prend le pas sur la police dynamique d'Ionic sur iOS) ; le terme en `vw` des `clamp` est multiplié par `--echelle-texte`. Rendu identique en taille normale.
 - `OptionsService` (appliqué au démarrage via `provideAppInitializer`), attribut `data-taille-texte` sur `html` pour les ajustements propres à une taille.
+- Accès ajouté ensuite : bouton engrenage en haut à gauche de l'accueil, en face du bouton profil ; « Retour » de la page Options revient à la page d'origine (accueil ou profil).
 - Retouches en grande taille : bouton « Signaler un bug ou donner un avis » sur une ligne, texte d'accueil sans personnage rééquilibré, titres alignés dans l'inventaire de départ (subgrid).
 
 ## Critères d'acceptation

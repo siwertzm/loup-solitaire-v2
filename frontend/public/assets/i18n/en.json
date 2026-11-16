@@ -98,6 +98,7 @@
     }
   },
   "ACCUEIL": {
+    "OPTIONS_ARIA": "Settings",
     "PROFIL_ARIA": "My profile",
     "SUR_TITRE": "Book One",
     "TITRE_LIGNE1": "The",

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -13,7 +13,7 @@ import { OptionsService, TailleTexte } from '../../core/services/options.service
   imports: [IonContent, TranslatePipe],
 })
 export class OptionsPage {
-  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   readonly options = inject(OptionsService);
 
   readonly tailles: TailleTexte[] = ['PETITE', 'NORMALE', 'GRANDE'];
@@ -22,7 +22,8 @@ export class OptionsPage {
     void this.options.definirTailleTexte(taille);
   }
 
+  /** Retour à la page d'où l'on vient : accueil ou profil. */
   retour(): void {
-    this.router.navigate(['/profil']);
+    this.location.back();
   }
 }
