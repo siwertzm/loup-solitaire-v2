@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-DATA-06` | À faire |
+| 2 | Moyenne | S | `fix-DATA-06` | Fait |
 
 Origine : Cahier des charges (DATA-06, décision D-03), avec DATA-07
 
