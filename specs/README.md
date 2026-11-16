@@ -18,6 +18,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
+- Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie).
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
@@ -45,7 +46,6 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 | [RGPD-02](lot-3/RGPD-02-export-donnees/spec.md) | Basse | S | Export des données en JSON (reporté du lot 2 : demandes traitées à la main en attendant) |
 | [REGLE-18](lot-3/REGLE-18-guerison-sans-effort/spec.md) | Moyenne | M | Guérison : pas de +1 sur un chapitre de combat, d'effort violent ou de stress intense (VF édition augmentée) |
 | [REGLE-19](lot-3/REGLE-19-mode-expert/spec.md) | Basse | M/L | Mode expert : Guérison limitée à 10 points au total |
-| [QUAL-17](lot-3/QUAL-17-dialogue-combat-ecrase/spec.md) | Moyenne | S | Boîte de dialogue du combat trop écrasée quand un dé s'affiche |
 | [QUAL-13](lot-3/QUAL-13-bande-originale/spec.md) | Basse | M | Bande originale : socle de musique de fond — retour bêta |
 | [QUAL-15](lot-3/QUAL-15-page-options/spec.md) | Basse | M | Page Options : son, taille du texte, autres paramètres à définir |
 

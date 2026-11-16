@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Moyenne | S | `fix-QUAL-17` | À faire |
+| 3 | Moyenne | S | `fix-QUAL-17` | Fait |
 
 Origine : test du porteur du projet (16/11/2026)
 
@@ -22,6 +22,10 @@ Pendant un combat, quand la boîte de dialogue affiche un jet de dé (attaque, r
 - **A.** Disposition en ligne pour le dé : texte à gauche, dé (et son libellé) à droite. Tient dans la hauteur actuelle, change peu le rendu.
 - **B.** Agrandir la boîte de dialogue quand un dé est affiché (hauteur minimale plus grande), au risque de réduire l'arène du combat au-dessus.
 - **C.** Réduire le dé et le texte sur les petits écrans (requête `@media (max-height: …)`).
+
+## Décision (16/11/2026)
+
+Piste **B** retenue par le porteur du projet, sur capture d'un iPhone 428 × 926 (CSS) : le bug apparaît aussi sur grand écran, où la boîte plafonnait à 160 px pour environ 165 px de contenu. Hauteur de `.dialogue` passée de `clamp(110px, 21.6vh, 160px)` à `clamp(150px, 26vh, 200px)` ; l'arène perd environ 40 px.
 
 ## À demander avant de commencer
 
