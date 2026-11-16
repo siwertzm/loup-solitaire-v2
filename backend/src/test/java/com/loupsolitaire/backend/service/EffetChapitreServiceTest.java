@@ -669,8 +669,9 @@ class EffetChapitreServiceTest {
         InventaireItem hache = creerLigne("hache", CategorieObjet.ARME, 1);
         InventaireItem repas = creerLigne("repas", CategorieObjet.REPAS, 1);
         when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(hache, repas));
+        Objet arme = hache.getObjet();
 
-        assertThatThrownBy(() -> effetChapitreService.resoudreVolEnAttente(personnage, hache.getObjet()))
+        assertThatThrownBy(() -> effetChapitreService.resoudreVolEnAttente(personnage, arme))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Sac a Dos");
 
