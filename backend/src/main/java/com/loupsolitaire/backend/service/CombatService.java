@@ -55,13 +55,14 @@ public class CombatService {
     private final TableCombatService tableCombatService;
     private final InventaireService inventaireService;
     private final ObjetService objetService;
+    private final ConditionService conditionService;
 
     // Cree le combat du Chapitre courant du personnage, ou renvoie le
     // dernier existant (EN_COURS ou deja resolu) si l'ecran est
     // rafraichi/rouvert (idempotent).
     @Transactional
     public Combat initierCombat(Personnage personnage) {
-        verifierPasMort(personnage);
+        personnage.verifierVivant();
         return combatEnCoursOuNouveau(personnage);
     }
 
@@ -129,7 +130,7 @@ public class CombatService {
     // une LazyInitializationException plus tard dans CombatMapper.
     @Transactional
     public TourJoue jouerTour(Personnage personnage, ActionCombat action, Objet objet) {
-        verifierPasMort(personnage);
+        personnage.verifierVivant();
         Combat combat = combatEnCoursOuNouveau(personnage);
 
         if (combat.getStatut() != StatutCombat.EN_COURS) {
@@ -357,7 +358,7 @@ public class CombatService {
                 .map(malus -> personnage.getHabiliteBase() + malus)
                 .orElse(personnage.getHabilite());
         int base = habiliteArmes + personnage.getHabiliteTemp();
-        if (possedePuissancePsychique(personnage) && !resisteAPuissancePsychique(ennemi)) {
+        if (personnage.possedeDiscipline(IdDiscipline.PUISSANCE_PSYCHIQUE) && !resisteAPuissancePsychique(ennemi)) {
             base += 2;
         }
         base += bonusHabiliteAssaut(personnage, chapitre, combat);
@@ -397,30 +398,13 @@ public class CombatService {
                             case ASSAUT_MIN -> assautEnCours >= c.valeurEntiere();
                             default -> true;
                         }))
-                .filter(effet -> !protectionsToutesPossedees(personnage, effet))
+                .filter(effet -> !conditionService.protectionsToutesPossedees(personnage, effet.getConditions()))
                 .mapToInt(Effet::getValeur)
                 .sum();
     }
 
     private static boolean estConditionAssaut(Cond cond) {
         return cond.getType() == TypeCondition.ASSAUT_MAX || cond.getType() == TypeCondition.ASSAUT_MIN;
-    }
-
-    // Faux si l'effet n'a aucune protection DISCIPLINE/OBJET.
-    private boolean protectionsToutesPossedees(Personnage personnage, Effet effet) {
-        List<Cond> protections = effet.getConditions().stream()
-                .filter(c -> c.getType() == TypeCondition.DISCIPLINE || c.getType() == TypeCondition.OBJET)
-                .toList();
-        return !protections.isEmpty() && protections.stream().allMatch(c -> c.getType() == TypeCondition.DISCIPLINE
-                ? personnage.getDisciplines().stream()
-                        .anyMatch(d -> d.getId() == IdDiscipline.fromJson(c.getTargetId()))
-                : inventaireService.listerInventaire(personnage).stream()
-                        .anyMatch(item -> item.getObjet().getId().equals(c.getTargetId()) && item.getQuantite() > 0));
-    }
-
-    private boolean possedePuissancePsychique(Personnage personnage) {
-        return personnage.getDisciplines().stream()
-                .anyMatch(discipline -> discipline.getId() == IdDiscipline.PUISSANCE_PSYCHIQUE);
     }
 
     private boolean resisteAPuissancePsychique(Ennemi ennemi) {
@@ -439,17 +423,4 @@ public class CombatService {
     private Chapitre recupererChapitre(Integer chapitreId) {
         return chapitreRepository.findById(chapitreId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreId));
-    }
-
-    // Un personnage mort HORS combat (Personnage.mort, voir
-    // EffetChapitreService) ne peut plus initier ni jouer de combat tant
-    // qu'il n'a pas ete ressuscite (PersonnageService.ressusciter). Ne
-    // concerne pas la mort EN COMBAT (Combat.statut=DEFAITE), geree a part.
-    private void verifierPasMort(Personnage personnage) {
-        if (personnage.isMort()) {
-            throw new IllegalArgumentException(
-                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
-                            + "POST /personnages/{id}/ressusciter avant de continuer");
-        }
-    }
-}
+    }}

@@ -84,6 +84,44 @@ class ConditionServiceTest {
     }
 
     // =========================================================
+    // Protections d'un effet (QUAL-18 : regle commune a l'arrivee et au combat)
+    // =========================================================
+
+    @Test
+    void protectionsPossedeesSiLaDisciplineEtL_objetSontTousLaPossedes() {
+        Discipline bouclier = new Discipline();
+        bouclier.setId(IdDiscipline.BOUCLIER_PSYCHIQUE);
+        personnage.setDisciplines(List.of(bouclier));
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(creerLigne("torche", 1)));
+
+        List<Cond> conditions = List.of(
+                creerCond(TypeCondition.DISCIPLINE, "bouclier_psychique", "-1"),
+                creerCond(TypeCondition.OBJET, "torche", "-1"));
+
+        assertThat(conditionService.protectionsToutesPossedees(personnage, conditions)).isTrue();
+    }
+
+    @Test
+    void protectionsNonPossedeesSiUneSeuleManque() {
+        personnage.setDisciplines(List.of());
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(creerLigne("torche", 1)));
+
+        List<Cond> conditions = List.of(
+                creerCond(TypeCondition.OBJET, "torche", "-1"),
+                creerCond(TypeCondition.DISCIPLINE, "bouclier_psychique", "-1"));
+
+        assertThat(conditionService.protectionsToutesPossedees(personnage, conditions)).isFalse();
+    }
+
+    @Test
+    void aucuneProtectionSiL_effetN_aQueDesConditionsD_assaut() {
+        List<Cond> conditions = List.of(creerCond(TypeCondition.ASSAUT_MAX, null, "1"));
+
+        assertThat(conditionService.protectionsToutesPossedees(personnage, conditions)).isFalse();
+        verifyNoInteractions(inventaireService);
+    }
+
+    // =========================================================
     // DISCIPLINE
     // =========================================================
 

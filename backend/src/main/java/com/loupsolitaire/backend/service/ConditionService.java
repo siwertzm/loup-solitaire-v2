@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +62,8 @@ public class ConditionService {
 
     public boolean estDisponible(Cond cond, Personnage personnage, ContexteConditions contexte) {
         return switch (cond.getType()) {
-            case DISCIPLINE -> possedeDiscipline(cond, personnage) != nePossedePas(cond);
+            case DISCIPLINE -> personnage.possedeDiscipline(IdDiscipline.fromJson(cond.getTargetId()))
+                    != nePossedePas(cond);
             case OBJET, ARME -> nePossedePas(cond)
                     ? contexte.quantitePossedee(cond.getTargetId()) == 0
                     : possedeQuantiteObjet(cond, contexte);
@@ -155,10 +157,24 @@ public class ConditionService {
         return cond.getValeur() != null && cond.getValeur().trim().equals("-1");
     }
 
-    private boolean possedeDiscipline(Cond cond, Personnage personnage) {
-        IdDiscipline recherchee = IdDiscipline.fromJson(cond.getTargetId());
-        return personnage.getDisciplines().stream()
-                .anyMatch(d -> d.getId() == recherchee);
+    // Effets d'un chapitre "sauf si vous possedez" (ex. -2 HABILETE au 29 sans
+    // Bouclier Psychique) : vrai si l'effet a au moins une protection
+    // DISCIPLINE/OBJET et que le joueur les possede TOUTES. Regle commune a
+    // l'arrivee sur le chapitre (EffetChapitreService) et a chaque assaut
+    // (CombatService).
+    public boolean protectionsToutesPossedees(Personnage personnage, List<Cond> conditions) {
+        List<Cond> protections = conditions.stream().filter(ConditionService::estProtection).toList();
+        if (protections.isEmpty()) {
+            return false;
+        }
+        ContexteConditions contexte = nouveauContexte(personnage);
+        return protections.stream().allMatch(c -> c.getType() == TypeCondition.DISCIPLINE
+                ? personnage.possedeDiscipline(IdDiscipline.fromJson(c.getTargetId()))
+                : contexte.quantitePossedee(c.getTargetId()) > 0);
+    }
+
+    public static boolean estProtection(Cond cond) {
+        return cond.getType() == TypeCondition.DISCIPLINE || cond.getType() == TypeCondition.OBJET;
     }
 
     private boolean enduranceInferieure(Cond cond, Personnage personnage) {

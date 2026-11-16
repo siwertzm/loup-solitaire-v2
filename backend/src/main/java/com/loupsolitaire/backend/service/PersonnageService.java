@@ -239,7 +239,7 @@ public class PersonnageService {
     // (etape suivante).
     @Transactional
     public void avancerVersChapitre(Personnage personnage, Integer chapitreCibleId) {
-        verifierPasMort(personnage);
+        personnage.verifierVivant();
         if (personnage.getVolEnAttente() != null) {
             throw new IllegalArgumentException(
                     "Un vol est en attente de resolution (POST /vol/{objetId}) avant de pouvoir avancer");
@@ -425,18 +425,6 @@ public class PersonnageService {
         }
     }
 
-    // Garde reutilisee par toute action mutant l'etat du personnage : un
-    // personnage mort (perte d'endurance HORS combat, voir Personnage.mort)
-    // ne peut plus rien faire tant qu'il n'a pas ete ressuscite. La mort EN
-    // COMBAT n'est PAS concernee ici (voir revenirApresDefaite) : ce n'est
-    // pas ce champ qui bloque alors, mais Combat.statut lui-meme.
-    private void verifierPasMort(Personnage personnage) {
-        if (personnage.isMort()) {
-            throw new IllegalArgumentException(
-                    "Ce personnage est mort (perte d'endurance) : ressuscitez-le via "
-                            + "POST /personnages/{id}/ressusciter avant de continuer");
-        }
-    }
 
     // MVP1 : seule action possible pour un personnage mort (perte
     // d'endurance HORS combat) - paye 1 coin (non retire, illimite comme
@@ -491,9 +479,7 @@ public class PersonnageService {
             return;
         }
 
-        boolean possedeGuerison = personnage.getDisciplines().stream()
-                .anyMatch(discipline -> discipline.getId() == IdDiscipline.GUERISON);
-        if (!possedeGuerison) {
+        if (!personnage.possedeDiscipline(IdDiscipline.GUERISON)) {
             return;
         }
 
@@ -558,7 +544,7 @@ public class PersonnageService {
     // bien propose par le chapitre ACTUEL.
     @Transactional
     public void ramasserObjetDuChapitre(Personnage personnage, Objet objet) {
-        verifierPasMort(personnage);
+        personnage.verifierVivant();
         Integer chapitreActuelId = personnage.getChapitreActuel().getId();
         Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreActuelId));
@@ -616,7 +602,7 @@ public class PersonnageService {
     // d'echanger n'importe quelle arme a n'importe quel chapitre.
     @Transactional
     public void echangerObjet(Personnage personnage, Objet objetARetirer, Objet objetAAjouter) {
-        verifierPasMort(personnage);
+        personnage.verifierVivant();
         if (objetARetirer.getCategorie() != objetAAjouter.getCategorie()) {
             throw new IllegalArgumentException(
                     "Impossible d'echanger des objets de categories differentes ("
