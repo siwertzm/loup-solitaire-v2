@@ -2,9 +2,13 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | M | `feature-QUAL-14` | À faire |
+| 3 | Basse | M | — | Abandonné |
 
 Origine : retour du porteur du projet (16/11/2026)
+
+## Abandon (16/11/2026)
+
+Abandonnée par le porteur du projet : les URL du jeu gardent l'id du personnage. Aucun changement.
 
 ## Problème
 
