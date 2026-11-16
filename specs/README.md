@@ -10,10 +10,10 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Lot 2 terminé.** Prochaine tâche : **OPS-06** (lot 1, sauvegardes et restauration), à faire avant d'ouvrir l'app au public ; puis le lot 3.
+**Lots 1 et 2 terminés.** Reste pour OPS-06 : un test de restauration chez Render (voir `backend/README.md`). Prochaines tâches : lot 3.
 
-**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #76) :
-- Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
+**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #77) :
+- Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07, OPS-06 (test chez Render à faire).
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
@@ -24,9 +24,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ### Lot 1 — avant d'élargir le test TestFlight
 
-| ID | Sévérité | Effort | Tâche |
-| --- | --- | --- | --- |
-| [OPS-06](lot-1/OPS-06-sauvegardes-restauration/spec.md) | Haute | M | Sauvegardes, restauration et retour arrière |
+Toutes les tâches du lot 1 sont faites. OPS-06 : le test de restauration chez Render reste à faire (porteur du projet).
 
 ### Lot 2 — premier mois
 
@@ -68,7 +66,7 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 
 ## Ordre conseillé
 
-Les étapes 1, 2 et 4 (lot 2) sont faites ; il reste l'étape 3 (OPS-06) (voir « Avancement »).
+Toutes les étapes sont faites (OPS-06 : test chez Render à faire) (voir « Avancement »).
 
 1. **SEC-09** tout de suite : c'est le seul problème que les testeurs TestFlight vont voir. **SEC-10** dans la foulée (même symptôme côté Profil après 15 minutes).
 2. **OPS-08** dans la même petite PR que le `.gitignore` (graphify-out, Zone.Identifier).
