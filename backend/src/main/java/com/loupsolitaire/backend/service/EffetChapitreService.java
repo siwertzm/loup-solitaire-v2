@@ -70,12 +70,7 @@ public class EffetChapitreService {
             return;
         }
 
-        Optional<InventaireItem> repas = inventaireService.listerInventaire(personnage).stream()
-                .filter(item -> item.getObjet().getId().equals(OBJET_ID_REPAS) && item.getQuantite() > 0)
-                .findFirst();
-
-        if (repas.isPresent()) {
-            inventaireService.retirerObjet(personnage, repas.get().getObjet(), 1);
+        if (inventaireService.retirerUnSiPossede(personnage, OBJET_ID_REPAS)) {
             personnage.setDernierStatutRepas(StatutRepas.REPAS_CONSOMME);
         } else {
             int nouvelleEndurance = Math.max(0, personnage.getEnduranceActuelle() + MALUS_SANS_REPAS);

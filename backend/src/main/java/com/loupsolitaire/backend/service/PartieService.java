@@ -107,12 +107,11 @@ public class PartieService {
     @Transactional(readOnly = true)
     public List<PersonnageResponse> listerPersonnages(UtilisateurConnecte connecte) {
         Utilisateur utilisateur = recupererUtilisateur(connecte);
-        return personnageRepository.findByUtilisateur(utilisateur).stream()
+        return personnageMapper.versReponses(personnageRepository.findByUtilisateur(utilisateur).stream()
                 .sorted(Comparator.<Personnage, Instant>comparing(
                         p -> p.getDerniereActivite() != null ? p.getDerniereActivite() : Instant.MIN)
                         .reversed())
-                .map(personnageMapper::versReponse)
-                .toList();
+                .toList());
     }
 
     @Transactional(readOnly = true)

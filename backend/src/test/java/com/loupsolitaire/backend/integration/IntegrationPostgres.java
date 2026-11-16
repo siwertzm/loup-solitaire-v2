@@ -41,7 +41,9 @@ import jakarta.mail.internet.MimeMessage;
         "spring.jpa.hibernate.ddl-auto=validate",
         // Les limites (SEC-02) sont testees a part ; ici, plusieurs tests
         // appellent /auth depuis la meme adresse.
-        "app.limitation-debit.active=false"
+        "app.limitation-debit.active=false",
+        // OPS-07 : compte les requetes SQL (RequetesParActionIT).
+        "spring.jpa.properties.hibernate.generate_statistics=true"
 })
 public abstract class IntegrationPostgres {
 

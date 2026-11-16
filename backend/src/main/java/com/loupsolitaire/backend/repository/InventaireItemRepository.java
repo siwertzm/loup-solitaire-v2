@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,11 @@ public interface InventaireItemRepository extends JpaRepository<InventaireItem, 
     // cette resolution d'identite cote Hibernate.
     @Query("SELECT i FROM InventaireItem i JOIN FETCH i.objet WHERE i.personnage.id = :personnageId")
     List<InventaireItem> findByPersonnageId(@Param("personnageId") UUID personnageId);
+
+    // OPS-07 : inventaires de plusieurs personnages en une requete (liste des
+    // personnages), au lieu d'une requete par personnage.
+    @Query("SELECT i FROM InventaireItem i JOIN FETCH i.objet WHERE i.personnage.id IN :personnageIds")
+    List<InventaireItem> findByPersonnageIdIn(@Param("personnageIds") Collection<UUID> personnageIds);
 
     Optional<InventaireItem> findByPersonnageIdAndObjetId(UUID personnageId, String objetId);
 

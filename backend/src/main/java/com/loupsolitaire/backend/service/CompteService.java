@@ -142,9 +142,8 @@ public class CompteService {
     public UtilisateurResponse profil(UtilisateurConnecte connecte) {
         Utilisateur utilisateur = recupererUtilisateur(connecte);
 
-        List<PersonnageResponse> personnages = personnageRepository.findByUtilisateur(utilisateur).stream()
-                .map(personnageMapper::versReponse)
-                .toList();
+        List<PersonnageResponse> personnages =
+                personnageMapper.versReponses(personnageRepository.findByUtilisateur(utilisateur));
 
         return UtilisateurResponse.fromEntity(utilisateur, personnages);
     }

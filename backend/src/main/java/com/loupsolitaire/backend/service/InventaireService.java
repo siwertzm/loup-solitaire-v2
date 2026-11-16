@@ -1,6 +1,10 @@
 package com.loupsolitaire.backend.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.UUID;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -57,6 +61,16 @@ public class InventaireService {
     // Pour la fiche personnage : consultation en lecture seule.
     public List<InventaireItem> listerInventaire(Personnage personnage) {
         return inventaireItemRepository.findByPersonnageId(personnage.getId());
+    }
+
+    // OPS-07 : inventaires de plusieurs personnages, par personnage, en une requete.
+    public Map<UUID, List<InventaireItem>> listerInventaires(List<Personnage> personnages) {
+        if (personnages.isEmpty()) {
+            return Map.of();
+        }
+        return inventaireItemRepository.findByPersonnageIdIn(personnages.stream().map(Personnage::getId).toList())
+                .stream()
+                .collect(Collectors.groupingBy(item -> item.getPersonnage().getId()));
     }
 
     @Transactional
@@ -144,7 +158,21 @@ public class InventaireService {
                 .findByPersonnageIdAndObjetId(personnage.getId(), objet.getId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Le personnage ne possede pas " + objet.getId() + ", impossible d'en retirer"));
+        retirerDeLaLigne(personnage, item, quantite);
+    }
 
+    // OPS-07 : retire 1 exemplaire s'il y en a, en une seule requete (effet
+    // Repas). Faux si le personnage n'en possede pas.
+    @Transactional
+    public boolean retirerUnSiPossede(Personnage personnage, String objetId) {
+        Optional<InventaireItem> item = inventaireItemRepository
+                .findByPersonnageIdAndObjetId(personnage.getId(), objetId);
+        item.ifPresent(ligne -> retirerDeLaLigne(personnage, ligne, 1));
+        return item.isPresent();
+    }
+
+    private void retirerDeLaLigne(Personnage personnage, InventaireItem item, int quantite) {
+        Objet objet = item.getObjet();
         if (item.getQuantite() < quantite) {
             throw new IllegalArgumentException(
                     "Quantite insuffisante de " + objet.getId() + " (possede " + item.getQuantite()

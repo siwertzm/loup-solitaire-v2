@@ -296,7 +296,7 @@ class CompteServiceTest {
                 15, 15, 0, 20, 20, List.of(), null, 17, null, false, List.of());
         utilisateurConnecteExiste();
         when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(List.of(personnage));
-        when(personnageMapper.versReponse(personnage)).thenReturn(reponsePersonnage);
+        when(personnageMapper.versReponses(List.of(personnage))).thenReturn(List.of(reponsePersonnage));
 
         UtilisateurResponse reponse = compteService.profil(connecte);
 

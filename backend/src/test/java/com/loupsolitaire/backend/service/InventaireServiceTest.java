@@ -254,6 +254,29 @@ class InventaireServiceTest {
         verify(inventaireItemRepository, never()).save(any());
     }
 
+    // OPS-07 : effet Repas, une seule requete.
+    @Test
+    void retirerUnSiPossedeRetireUnExemplaire() {
+        Objet repas = creerObjet("repas", CategorieObjet.REPAS);
+        InventaireItem ligne = creerLigne(repas, 3);
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas"))
+                .thenReturn(Optional.of(ligne));
+
+        assertThat(inventaireService.retirerUnSiPossede(personnage, "repas")).isTrue();
+
+        assertThat(ligne.getQuantite()).isEqualTo(2);
+    }
+
+    @Test
+    void retirerUnSiPossedeNeFaitRienSansLObjet() {
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas"))
+                .thenReturn(Optional.empty());
+
+        assertThat(inventaireService.retirerUnSiPossede(personnage, "repas")).isFalse();
+
+        verify(inventaireItemRepository, never()).delete(any());
+    }
+
     @Test
     void supprimeLaLigneQuandLaQuantiteTombeAZeroEtRetireLeBonus() {
         Objet casque = creerObjet("casque", CategorieObjet.OBJETS_SPECIAUX);

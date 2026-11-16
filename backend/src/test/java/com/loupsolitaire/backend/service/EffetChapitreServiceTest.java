@@ -55,29 +55,14 @@ class EffetChapitreServiceTest {
     // REPAS
     // =========================================================
 
-    private InventaireItem creerLigneRepas(int quantite) {
-        Objet repas = new Objet();
-        repas.setId("repas");
-        repas.setCategorie(CategorieObjet.REPAS);
-
-        InventaireItem item = new InventaireItem();
-        item.setObjet(repas);
-        item.setQuantite(quantite);
-
-        return item;
-    }
 
     @Test
     void consommeUnRepasSiLePersonnageEnPossedeSansToucherALEndurance() {
-        InventaireItem ligneRepas = creerLigneRepas(2);
-
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of(ligneRepas));
+        when(inventaireService.retirerUnSiPossede(personnage, "repas")).thenReturn(true);
 
         effetChapitreService.appliquerEffetRepas(personnage);
 
-        verify(inventaireService)
-                .retirerObjet(personnage, ligneRepas.getObjet(), 1);
+        verify(inventaireService).retirerUnSiPossede(personnage, "repas");
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(15);
         assertThat(personnage.getDernierStatutRepas())
@@ -86,25 +71,16 @@ class EffetChapitreServiceTest {
 
     @Test
     void appliqueMoins3EnduranceSiAucunRepasDisponible() {
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of());
-
         effetChapitreService.appliquerEffetRepas(personnage);
 
         assertThat(personnage.getEnduranceActuelle()).isEqualTo(12);
         assertThat(personnage.getDernierStatutRepas())
                 .isEqualTo(StatutRepas.MALUS_ENDURANCE);
-
-        verify(inventaireService, never())
-                .retirerObjet(any(), any(), eq(1));
     }
 
     @Test
     void neDescendJamaisEnDessousDeZero() {
         personnage.setEnduranceActuelle(1);
-
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of());
 
         effetChapitreService.appliquerEffetRepas(personnage);
 
@@ -127,26 +103,9 @@ class EffetChapitreServiceTest {
         assertThat(personnage.getDernierStatutRepas())
                 .isEqualTo(StatutRepas.CHASSE);
 
-        verify(inventaireService, never()).listerInventaire(any());
-        verify(inventaireService, never())
-                .retirerObjet(any(), any(), anyInt());
+        verify(inventaireService, never()).retirerUnSiPossede(any(), any());
     }
 
-    @Test
-    void neConsommeQuUnSeulRepasMemeSiPlusieursPossedes() {
-        InventaireItem ligneRepas = creerLigneRepas(5);
-
-        when(inventaireService.listerInventaire(personnage))
-                .thenReturn(List.of(ligneRepas));
-
-        effetChapitreService.appliquerEffetRepas(personnage);
-
-        verify(inventaireService)
-                .retirerObjet(personnage, ligneRepas.getObjet(), 1);
-
-        assertThat(personnage.getDernierStatutRepas())
-                .isEqualTo(StatutRepas.REPAS_CONSOMME);
-    }
 
     // =========================================================
     // HABILITE
@@ -840,7 +799,6 @@ class EffetChapitreServiceTest {
     void laMortParManqueDeRepasMarqueLArriveeCouranteDuJournal() {
         personnage.getChapitresParcourus().addAll(List.of(0, 37));
         personnage.setEnduranceActuelle(1);
-        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of());
 
         effetChapitreService.appliquerEffetRepas(personnage);
 
