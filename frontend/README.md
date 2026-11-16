@@ -178,10 +178,14 @@ src/app/
   pleine" pour libérer de la place.
 - Onglet **Effets** : effets REPAS / ENDURANCE / HABILETÉ / VOL / ÉCHANGE, avec popups
   de résolution pour les choix du joueur (vol interactif, échange).
+- Chapitre de combat : bouton **COMBAT**, et à côté un bouton pour partir sans combattre
+  quand le livre le permet (lien `EVITEMENT`, 112 et 180). Après une victoire au 112, le
+  248 reste proposé avec son numéro.
 - Bouton **VICTOIRE** en fin de tome (chapitre sans lien restant).
 
 ### Combat
-- Tour par tour (ATTAQUER / DÉFENSE / SAC / FUITE), boîte de dialogue façon JRPG avec
+- Tour par tour (ATTAQUER / DÉFENSE / SAC / FUITE ; FUITE active selon le seuil d'assauts
+  du chapitre, dès la 1re action aux 112, 180, 191, 220 et 339), boîte de dialogue façon JRPG avec
   effet machine à écrire et jets de dés animés.
 - Bonus actifs affichés en pictos avec popup d'explication (arme maîtrisée, puissance
   psychique, bouclier psychique, garde, habileté temporaire).
