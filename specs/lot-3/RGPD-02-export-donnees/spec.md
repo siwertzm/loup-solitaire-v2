@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | S | `feature-RGPD-02` | À faire |
+| 3 | Basse | S | `feature-RGPD-02` | Fait |
 
 Origine : Cahier des charges (RGPD-02)
 
@@ -16,6 +16,12 @@ Pas d'export des données ; `GET /auth/me` ne couvre ni l'inventaire ni le journ
 
 - `GET /auth/me/export` : profil, personnages, inventaires, journaux, en JSON (DTO `response/`, jamais d'entité).
 - Bouton dans la page profil.
+
+## Réalisé (16/11/2026)
+
+- Décision : envoi **par email** (piste B), en pièce jointe JSON, à l'adresse **vérifiée** du compte : pas de plugin natif (`filesystem` / `share`). Route `POST /auth/me/export` (202 ; 400 si email non vérifié ; 429 au-delà de 3 exports / 24 h / compte), au lieu de `GET`.
+- Contenu : compte, tirage de création en cours, personnages (stats, disciplines, arme, chapitres, journal, inventaire, objets ramassés, combats). Exclus : mot de passe, jetons, champs techniques ; logs serveur et Sentry fournis sur demande écrite.
+- Bouton « Exporter mes données » sur le Profil ; politique de confidentialité mise à jour (droits, emails envoyés, réglages sur l'appareil).
 
 ## Critères d'acceptation
 

@@ -129,6 +129,7 @@ class SecurityConfigTest {
                 get("/auth/me"),
                 put("/auth/me").contentType(MediaType.APPLICATION_JSON).content(corps),
                 put("/auth/me/password").contentType(MediaType.APPLICATION_JSON).content(corps),
+                post("/auth/me/export"),
                 delete("/auth/me").contentType(MediaType.APPLICATION_JSON).content(corps)}) {
             mockMvc.perform(requete)
                     .andExpect(status().isUnauthorized())

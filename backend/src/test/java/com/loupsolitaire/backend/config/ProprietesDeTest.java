@@ -38,7 +38,8 @@ public final class ProprietesDeTest {
                 "login-compte", regle(10, Duration.ofMinutes(15)),
                 "reset-demande-email", regle(3, Duration.ofHours(1)),
                 "reset-code-email", regle(10, Duration.ofHours(24)),
-                "renvoi-verification-email", regle(3, Duration.ofHours(1))));
+                "renvoi-verification-email", regle(3, Duration.ofHours(1)),
+                "export-donnees-compte", regle(3, Duration.ofHours(24))));
     }
 
     private static LimitationDebitProperties.Regle regle(int limite, Duration fenetre) {

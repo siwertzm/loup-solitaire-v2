@@ -72,6 +72,14 @@ describe('AuthService', () => {
     expect(stockage.clear).toHaveBeenCalled();
   });
 
+  it("exporterDonnees demande l'envoi par email (RGPD-02)", () => {
+    service.exporterDonnees().subscribe();
+
+    const req = backend.expectOne(`${base}/me/export`);
+    expect(req.request.method).toBe('POST');
+    req.flush(null, { status: 202, statusText: 'Accepted' });
+  });
+
   describe('mot de passe oublié', () => {
     it("une nouvelle demande garde l'e-mail et efface l'ancien resetToken", () => {
       sessionStorage.setItem('loup_password_reset_token', 'ancien');

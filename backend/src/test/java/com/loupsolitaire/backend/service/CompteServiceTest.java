@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -21,6 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,8 +39,11 @@ import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ModificationProfilRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
+import com.loupsolitaire.backend.response.ExportDonneesResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
+
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class CompteServiceTest {
@@ -65,6 +70,10 @@ class CompteServiceTest {
     private LimiteurDeDebit limiteurDeDebit;
     @Mock
     private EmailService emailService;
+    @Mock
+    private ExportDonneesService exportDonneesService;
+    @Spy
+    private JsonMapper jsonMapper = JsonMapper.builder().build();
 
     @InjectMocks
     private CompteService compteService;
@@ -468,5 +477,37 @@ class CompteServiceTest {
 
         verifyNoInteractions(personnageService, refreshTokenService, passwordResetService, emailVerificationService);
         verify(utilisateurRepository, never()).delete(any());
+    }
+
+    // =========================================================
+    // RGPD-02 : export des donnees
+    // =========================================================
+
+    @Test
+    void envoyerExportDonneesEnvoieLeJsonALAdresseVerifieeDuCompte() {
+        utilisateurConnecteExiste();
+        ExportDonneesResponse.Compte compte = new ExportDonneesResponse.Compte(
+                "marius", "marius@example.com", true, null, null);
+        when(exportDonneesService.construire(utilisateur))
+                .thenReturn(new ExportDonneesResponse(null, compte, null, List.of()));
+
+        compteService.envoyerExportDonnees(connecte);
+
+        verify(limiteurDeDebit).consommer(LimiteurDeDebit.EXPORT_DONNEES_COMPTE, connecte.id().toString());
+        ArgumentCaptor<byte[]> json = ArgumentCaptor.forClass(byte[].class);
+        verify(emailService).envoyerExportDonnees(eq("marius@example.com"), json.capture());
+        assertThat(new String(json.getValue(), java.nio.charset.StandardCharsets.UTF_8))
+                .contains("\"nomUtilisateur\" : \"marius\"");
+    }
+
+    @Test
+    void envoyerExportDonneesRefuseUnEmailNonVerifie() {
+        utilisateur.setEmailVerifie(false);
+        utilisateurConnecteExiste();
+
+        assertThatThrownBy(() -> compteService.envoyerExportDonnees(connecte))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(emailService, exportDonneesService);
     }
 }

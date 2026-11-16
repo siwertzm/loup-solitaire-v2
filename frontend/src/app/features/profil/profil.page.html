@@ -27,6 +27,10 @@
       <div class="actions">
         <button type="button" class="secondaire" (click)="modifierEmail()">{{ 'PROFIL.MODIFIER' | translate }}</button>
         <button type="button" class="secondaire" (click)="ouvrirOptions()">{{ 'PROFIL.OPTIONS' | translate }}</button>
+        <button type="button" class="secondaire" [disabled]="exportEnvoi()" (click)="exporterDonnees()">{{ 'PROFIL.EXPORTER' | translate }}</button>
+        @if (resultatExport(); as resultat) {
+          <div class="bandeau" [class.succes]="resultat.succes" [class.erreur]="!resultat.succes" role="status">{{ resultat.cle | translate }}</div>
+        }
         <button type="button" class="secondaire" (click)="ouvrirFormulaireAvis()">{{ 'PROFIL.FEEDBACK' | translate }}</button>
         <button type="button" class="danger-contour" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
 

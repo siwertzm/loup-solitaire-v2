@@ -149,6 +149,13 @@ public class AuthController {
         return compteService.changerMotDePasse(connecte, request.getCurrentPassword(), request.getNewPassword());
     }
 
+    // RGPD-02 : export des donnees du compte, envoye par email (202).
+    @PostMapping("/me/export")
+    public ResponseEntity<Void> exporterDonnees(@AuthenticationPrincipal UtilisateurConnecte connecte) {
+        compteService.envoyerExportDonnees(connecte);
+        return ResponseEntity.accepted().build();
+    }
+
     // Suppression definitive et irreversible, apres verification du mot de passe.
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)

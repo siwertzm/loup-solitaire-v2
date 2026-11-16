@@ -25,6 +25,7 @@ import com.loupsolitaire.backend.service.mapper.PersonnageMapper;
 import com.loupsolitaire.backend.util.Emails;
 
 import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Compte utilisateur : inscription, verification de l'email, profil, mot de
@@ -49,6 +50,8 @@ public class CompteService {
     private final AuthService authService;
     private final LimiteurDeDebit limiteurDeDebit;
     private final EmailService emailService;
+    private final ExportDonneesService exportDonneesService;
+    private final JsonMapper jsonMapper;
 
     // SEC-05 : la reponse ne dit jamais si l'email a deja un compte (le
     // controleur repond toujours 202 sans contenu). Si c'est le cas, le
@@ -214,6 +217,22 @@ public class CompteService {
         emailVerificationService.supprimerTokens(utilisateur);
 
         utilisateurRepository.delete(utilisateur);
+    }
+
+    // RGPD-02 : export de toutes les donnees du compte, envoye en piece
+    // jointe a l'adresse VERIFIEE du compte (jamais a une adresse fournie
+    // par l'appelant). 3 exports par 24 h et par compte.
+    @Transactional(readOnly = true)
+    public void envoyerExportDonnees(UtilisateurConnecte connecte) {
+        Utilisateur utilisateur = recupererUtilisateur(connecte);
+        if (!utilisateur.isEmailVerifie()) {
+            throw new IllegalArgumentException("Verifiez votre adresse email avant d'exporter vos donnees");
+        }
+        limiteurDeDebit.consommer(LimiteurDeDebit.EXPORT_DONNEES_COMPTE, utilisateur.getId().toString());
+
+        byte[] json = jsonMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsBytes(exportDonneesService.construire(utilisateur));
+        emailService.envoyerExportDonnees(utilisateur.getEmail(), json);
     }
 
     private Utilisateur recupererUtilisateur(UtilisateurConnecte connecte) {
