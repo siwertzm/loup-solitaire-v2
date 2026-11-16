@@ -5,10 +5,11 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Source** : `source/` contient le cahier des charges d'origine (audit du 25/09/2026) et les trois listes de lots. Le détail des constats, les écarts VO/VF (section 5) et les décisions D-01 à D-10 (section 7) y restent.
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
 - **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
+- **Audits Claude Code du 16 et 17/11/2026** (repo entier) : SEC-12, QUAL-18 et QUAL-19 faits le 17/11 (PR #95 à #97) ; QUAL-20, QUAL-21 et SEC-13 ajoutés au lot 3.
 - **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Ajouts du porteur du projet pour le lot 3 : REGLE-18 et REGLE-19 (Guérison, édition augmentée), QUAL-17 (dialogue du combat). Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Chaque tâche garde son dossier une fois finie. Quand une tâche est finie : passer son statut à « Fait » dans son `spec.md`, la retirer du tableau « Tâches à faire » et l'ajouter dans « Avancement ».
 
-## Avancement (16/11/2026)
+## Avancement (17/11/2026)
 
 **Lots 1 et 2 terminés.** Reste pour OPS-06 : un test de restauration chez Render (voir `backend/README.md`). Prochaines tâches : lot 3.
 
@@ -18,7 +19,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
-- Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie), REGLE-10 + DATA-12 (malus du Vordak à partir du 2e assaut, affiché sur la carte), QUAL-03 (convention de nommage), REGLE-18 (pas de Guérison sur un chapitre à perte d'ENDURANCE ; on reste sur la VO), QUAL-15 (page Options : taille du texte), RGPD-02 (export des données par email), [SEC-11](lot-3/SEC-11-audit-securite/spec.md) (audit du 16/11 : compte deviné au temps de réponse, rafraîchissements simultanés), OPS-07 (requêtes SQL mesurées, N+1 de la liste des personnages supprimé), DATA-11 (décision D-11 : FUITE dès la première action aux 191, 220 et 339 ; type `evitement` pour partir sans combattre aux 112 et 180), [DATA-18](lot-3/DATA-18-112-apres-victoire/spec.md) (112 : le 248 aussi proposé après une victoire, `evitement=1`).
+- Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie), REGLE-10 + DATA-12 (malus du Vordak à partir du 2e assaut, affiché sur la carte), QUAL-03 (convention de nommage), REGLE-18 (pas de Guérison sur un chapitre à perte d'ENDURANCE ; on reste sur la VO), QUAL-15 (page Options : taille du texte), RGPD-02 (export des données par email), [SEC-11](lot-3/SEC-11-audit-securite/spec.md) (audit du 16/11 : compte deviné au temps de réponse, rafraîchissements simultanés), OPS-07 (requêtes SQL mesurées, N+1 de la liste des personnages supprimé), DATA-11 (décision D-11 : FUITE dès la première action aux 191, 220 et 339 ; type `evitement` pour partir sans combattre aux 112 et 180), [DATA-18](lot-3/DATA-18-112-apres-victoire/spec.md) (112 : le 248 aussi proposé après une victoire, `evitement=1`), [SEC-12](lot-3/SEC-12-plafond-personnages/spec.md) (au plus 20 personnages par compte), [QUAL-18](lot-3/QUAL-18-regles-en-double/spec.md) (gardes « mort » et protections écrites une seule fois), [QUAL-19](lot-3/QUAL-19-commentaires-et-readme/spec.md) (commentaires et README alignés : Pièce Premium non consommée).
 - Abandonné : REGLE-01 + REGLE-02 (16/11/2026, décision D-12 : combat maison gardé), DATA-05 (16/11/2026, décision D-11 : le 112 → 248 reste un départ sans combat), REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
@@ -35,6 +36,9 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
+| [QUAL-20](lot-3/QUAL-20-derniere-activite/spec.md) | Basse | XS | « Dernière activité » mise à jour par toutes les actions (accueil : bon personnage à reprendre) |
+| [QUAL-21](lot-3/QUAL-21-tables-combat-synchronisees/spec.md) | Basse | S | Test qui compare les tables de combat de la page des règles à celles du serveur |
+| [SEC-13](lot-3/SEC-13-blocage-connexion-par-compte/spec.md) | Basse | S | Blocage après mots de passe faux compté par compte (pas par pseudo/email saisi) |
 | [QUAL-04](lot-3/QUAL-04-portefeuille-coins/spec.md) | Haute (MVP2) | L | Portefeuille de coins |
 | [REGLE-15](lot-3/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté à chaque retour ou résurrection (reporté du lot 2, à faire avec QUAL-04 ; met `CLAUDE.md` à jour) |
 | [QUAL-05](lot-3/QUAL-05-multi-tomes/spec.md) | Moyenne (MVP2) | L | Modèle multi-tomes |
@@ -51,7 +55,7 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 4. **REGLE-18 puis REGLE-19** (Guérison, mode expert) : même code ; questions ouvertes à trancher d'abord.
 5. **QUAL-15** (page Options) : questions ouvertes.
 6. **RGPD-02** (export des données) : après la page Options (décision du 16/11/2026) ; en attendant, demandes traitées à la main.
-7. **OPS-07** (requêtes SQL), **QUAL-11** (Angular 22) : sans urgence.
+7. **OPS-07** (requêtes SQL), **QUAL-11** (Angular 22) : sans urgence. **QUAL-20, QUAL-21, SEC-13** (second audit du 17/11/2026) : petits, à glisser quand on veut ; QUAL-20 d'abord (visible sur l'accueil).
 8. **QUAL-09** (choix de la langue, `en.json` corrigé) : juste avant la musique (décision du 16/11/2026).
 9. **QUAL-13** (bande originale) : avant-dernière (décision du 16/11/2026) ; questions ouvertes (licence de la musique…).
 10. **QUAL-04 + REGLE-15** (coins), **QUAL-05** (multi-tomes) : MVP2.
