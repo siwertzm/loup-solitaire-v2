@@ -68,3 +68,48 @@ describe('InventaireSheetComponent — retrait du Sac à Dos', () => {
     expect(retirerObjet).toHaveBeenCalledWith('p1', 'carte', 1);
   });
 });
+
+// QUAL-12 : le bonus passif des Objets Spéciaux s'affiche comme l'effet des potions.
+describe('InventaireSheetComponent — bonus des Objets Spéciaux', () => {
+  it('affiche +2 ENDURANCE sur le Casque, rien sur la Carte', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: PersonnageService, useValue: {} },
+        { provide: ObjetService, useValue: {} },
+        {
+          provide: InventaireSheetService,
+          useValue: { personnageId: signal(null), utiliserEnCombat: signal(null) },
+        },
+        {
+          provide: TranslateService,
+          useValue: {
+            instant: (cle: string, p?: { valeur: number; libelle: string }) =>
+              cle === 'INVENTAIRE_SHEET.EFFET_LABEL' ? `+${p?.valeur} ${p?.libelle}` : cle,
+          },
+        },
+      ],
+    });
+    const composant = TestBed.runInInjectionContext(() => new InventaireSheetComponent());
+    composant.tousObjets.set([
+      {
+        id: 'casque',
+        nom: 'Casque',
+        description: null,
+        categorie: 'OBJETS_SPECIAUX',
+        effets: [{ type: 'ENDURANCE', valeur: 2 }],
+      },
+      { id: 'carte', nom: 'Carte', description: null, categorie: 'OBJETS_SPECIAUX', effets: [] },
+    ]);
+    composant.personnage.set({
+      inventaire: [
+        { objetId: 'casque', nom: 'Casque', categorie: 'OBJETS_SPECIAUX', quantite: 1 },
+        { objetId: 'carte', nom: 'Carte', categorie: 'OBJETS_SPECIAUX', quantite: 1 },
+      ],
+    } as unknown as PersonnageResume);
+
+    expect(composant.objetsSpeciauxDetail().map((s) => s.effetLabel)).toEqual([
+      '+2 INVENTAIRE_SHEET.EFFET_ENDURANCE',
+      null,
+    ]);
+  });
+});

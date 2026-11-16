@@ -584,6 +584,7 @@
     "DETAIL_BASE": "{{valeur}} Base",
     "LABEL_ENDURANCE": "ENDURANCE",
     "DETAIL_MAX": "{{valeur}} Max",
+    "DETAIL_MAX_BONUS": "{{base}} + {{bonus}} Max",
     "LABEL_PIECES_PREMIUM": "PIÈCES PREMIUM",
     "DETAIL_ACHETER_PIECES": "Achetez des pièces",
     "TITRE_DISCIPLINES": "DISCIPLINES KAÏ",

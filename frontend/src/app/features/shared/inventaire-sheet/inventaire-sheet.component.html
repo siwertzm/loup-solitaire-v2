@@ -133,7 +133,12 @@
                 >
                   <div class="sac-ligne">
                     <span class="sac-nom">{{ s.nom }}</span>
-                    <span class="sac-tag">×{{ s.quantite }}</span>
+                    <span class="sac-tag">
+                      @if (s.effetLabel) {
+                        <span class="sac-bonus">{{ s.effetLabel }}</span>
+                      }
+                      ×{{ s.quantite }}
+                    </span>
                   </div>
                 </ion-item>
                 <ion-item-options side="end">

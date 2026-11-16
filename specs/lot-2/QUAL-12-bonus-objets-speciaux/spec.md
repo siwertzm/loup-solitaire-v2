@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S/M | `feature-QUAL-12` | À faire |
+| 2 | Basse | S/M | `feature-QUAL-12` | Fait |
 
 Origine : retour bêta-testeur (16/11/2026)
 
@@ -29,7 +29,14 @@ Constat dans le code :
 - Page du personnage : oui, détail `X + bonus` dans l'encart ENDURANCE (voir À faire).
 - Pas d'autres objets concernés : seuls le Casque et la Cotte de mailles ont un effet.
 
-## À demander avant de commencer
+## Décisions de mise en œuvre (16/11/2026)
+
+- Fiche personnage : la valeur d'ENDURANCE reste le total, **sans détail** ; seul le maximum montre le bonus : « 24 + 4 Max » (`PERSONNAGE.DETAIL_MAX_BONUS`). Sans armure : « 28 Max » inchangé.
+- Casque + Cotte : un seul total (« 22 + 6 Max »).
+- Bonus calculé côté front (`bonusEnduranceObjetsSpeciaux`, `personnage.model.ts`) à partir de l'inventaire et du catalogue `GET /objets` ; aucun changement d'API.
+- Sac : « +2 ENDURANCE » / « +4 ENDURANCE » sur les lignes du Casque et de la Cotte, comme les potions.
+
+## Questions posées au départ
 
 - `enduranceActuelle` et `enduranceMax` renvoyées par l'API incluent déjà le bonus (`ObjetService`). Si l'ENDURANCE actuelle tombe sous le bonus (ex. 3 avec la Cotte de mailles), que faut-il afficher : `-1 + 4`, `0 + 3`, ou seulement `3` ?
 - Casque + Cotte de mailles ensemble : un seul total (`X + 6`) ou le détail (`X + 2 + 4`) ?

@@ -18,7 +18,13 @@
       <div class="bloc stat-card endurance-card" [class.grise]="mort()">
         <span class="cle">{{ 'PERSONNAGE.LABEL_ENDURANCE' | translate }}</span>
         <span class="stat-value">{{ endurance() }}</span>
-        <span class="stat-detail">{{ 'PERSONNAGE.DETAIL_MAX' | translate: { valeur: enduranceMax() } }}</span>
+        @if (bonusEndurance() > 0) {
+          <span class="stat-detail">{{
+            'PERSONNAGE.DETAIL_MAX_BONUS' | translate: { base: enduranceMaxBase(), bonus: bonusEndurance() }
+          }}</span>
+        } @else {
+          <span class="stat-detail">{{ 'PERSONNAGE.DETAIL_MAX' | translate: { valeur: enduranceMax() } }}</span>
+        }
       </div>
 
       <!-- Jamais grisé, même mort : le joueur doit pouvoir voir (et
