@@ -126,6 +126,12 @@ public class InventaireService {
     // ne doit pas dependre silencieusement d'une verification faite ailleurs.
     @Transactional
     public void retirerObjet(Personnage personnage, Objet objet, int quantite) {
+        retirer(personnage, objet, quantite);
+    }
+
+    // Corps de retirerObjet, appele aussi par viderSacADos : pas d'appel a une
+    // methode @Transactional via this (deja dans la transaction de l'appelant).
+    private void retirer(Personnage personnage, Objet objet, int quantite) {
         if (quantite <= 0) {
             throw new IllegalArgumentException("La quantite a retirer doit etre strictement positive");
         }
@@ -175,7 +181,7 @@ public class InventaireService {
     private void viderSacADos(Personnage personnage) {
         listerInventaire(personnage).stream()
                 .filter(item -> GROUPE_OBJETS_ET_REPAS.contains(item.getObjet().getCategorie()))
-                .forEach(item -> retirerObjet(personnage, item.getObjet(), item.getQuantite()));
+                .forEach(item -> retirer(personnage, item.getObjet(), item.getQuantite()));
     }
 
     // Recalcule et persiste l'HABILITE effective apres un changement

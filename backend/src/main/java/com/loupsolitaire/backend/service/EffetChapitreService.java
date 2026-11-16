@@ -257,17 +257,21 @@ public class EffetChapitreService {
         } else if (effet.getValeur() == VOL_TOUTES_ARMES && gateArme) {
             retirerTout(personnage, Set.of(CategorieObjet.ARME));
         } else if (effet.getValeur() == VOL_UN_AU_CHOIX) {
-            Set<CategorieObjet> categoriesEligibles = gateArme ? Set.of(CategorieObjet.ARME) : CATEGORIES_TOUT;
-            boolean aQuelqueChoseAPerdre = inventaireService.listerInventaire(personnage).stream()
-                    .anyMatch(item -> categoriesEligibles.contains(item.getObjet().getCategorie()));
-
-            if (aQuelqueChoseAPerdre) {
-                personnage.setVolEnAttente(gateArme ? PorteeVol.ARME : PorteeVol.TOUT);
-            }
-            // Sinon : rien a voler, on ne bloque pas la partie pour un vol
-            // impossible a resoudre.
+            mettreVolAuChoixEnAttente(personnage, gateArme);
         }
         // Toute autre valeur : non rencontree dans ce tome, on ignore.
+    }
+
+    private void mettreVolAuChoixEnAttente(Personnage personnage, boolean gateArme) {
+        Set<CategorieObjet> categoriesEligibles = gateArme ? Set.of(CategorieObjet.ARME) : CATEGORIES_TOUT;
+        boolean aQuelqueChoseAPerdre = inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> categoriesEligibles.contains(item.getObjet().getCategorie()));
+
+        if (aQuelqueChoseAPerdre) {
+            personnage.setVolEnAttente(gateArme ? PorteeVol.ARME : PorteeVol.TOUT);
+        }
+        // Sinon : rien a voler, on ne bloque pas la partie pour un vol
+        // impossible a resoudre.
     }
 
     // Resout un vol en attente (Effet VOL, valeur=1) : le joueur a choisi
