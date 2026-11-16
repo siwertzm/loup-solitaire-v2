@@ -710,6 +710,67 @@ class CombatServiceTest {
         assertThat(combat.getStatut()).isEqualTo(StatutCombat.INTERROMPU);
     }
 
+    // REGLE-04 : DEFENSE et OBJET comptent comme un assaut (seuils des 231 et 339).
+    @Test
+    void defenseCompteCommeAssaut() {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Lien lienEchec = creerLienAvecCondition(TypeCondition.ASSAUT_ECHEC, "4");
+        Chapitre chapitre = creerChapitreCombat(231, List.of(ennemi), List.of(lienEchec));
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        combat.setAssautsLivres(3);
+        stuberCombatExistant(personnage, chapitre, combat);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.reductionDefense(6)).thenReturn(50);
+        when(tableCombatService.bonusHabilite(6)).thenReturn(0);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-2);
+
+        combatService.jouerTour(personnage, ActionCombat.DEFENSE, null);
+
+        assertThat(combat.getAssautsLivres()).isEqualTo(4);
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.INTERROMPU);
+    }
+
+    @Test
+    void objetCompteCommeAssaut() {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Lien lienEchec = creerLienAvecCondition(TypeCondition.ASSAUT_ECHEC, "4");
+        Chapitre chapitre = creerChapitreCombat(339, List.of(ennemi), List.of(lienEchec));
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        combat.setAssautsLivres(3);
+        stuberCombatExistant(personnage, chapitre, combat);
+        Objet potion = new Objet();
+        potion.setId("potion_de_soin");
+        potion.setCategorie(CategorieObjet.OBJET);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(4);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-2);
+
+        combatService.jouerTour(personnage, ActionCombat.OBJET, potion);
+
+        assertThat(combat.getAssautsLivres()).isEqualTo(4);
+        assertThat(combat.getStatut()).isEqualTo(StatutCombat.INTERROMPU);
+    }
+
+    @Test
+    void uneDefenseDebloqueLaFuiteDu339() {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Lien lienFuite = creerLienAvecCondition(TypeCondition.FUITE, "1");
+        Chapitre chapitre = creerChapitreCombat(339, List.of(ennemi), List.of(lienFuite));
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        stuberCombatExistant(personnage, chapitre, combat);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.reductionDefense(6)).thenReturn(50);
+        when(tableCombatService.bonusHabilite(6)).thenReturn(0);
+        when(tableCombatService.degatsSubis(5, 4)).thenReturn(-2);
+        assertThat(combatService.peutFuir(chapitre, combat)).isFalse();
+
+        combatService.jouerTour(personnage, ActionCombat.DEFENSE, null);
+
+        assertThat(combatService.peutFuir(chapitre, combat)).isTrue();
+    }
+
     // =========================================================
     // peutFuir (methode publique, utilisee aussi par CombatMapper)
     // =========================================================

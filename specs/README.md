@@ -10,14 +10,14 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #26, REGLE-04** (lot 2, étape D), branche `feature-REGLE-04`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #27, QUAL-10** (lot 2, étape D), branche `feature-QUAL-10`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
-- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15).
+- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04.
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
@@ -34,7 +34,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
 | 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
 | 28 | D | [QUAL-12](lot-2/QUAL-12-bonus-objets-speciaux/spec.md) | Basse | S/M | Bonus des Objets Spéciaux (Casque, Cotte de mailles) dans le Sac et la fiche personnage — retour bêta |
 | 29 | D | [QUAL-16](lot-2/QUAL-16-arme-maitrisee-a-ramasser/spec.md) | Basse | S | Arme maîtrisée signalée parmi les objets à ramasser du chapitre — retour bêta |
