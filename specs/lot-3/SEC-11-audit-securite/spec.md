@@ -24,4 +24,4 @@ Origine : audit Claude Code du 16/11/2026 (points 1 et 2)
 
 ## Hors périmètre
 
-Points 3 à 5 de l'audit (protections en double dans `CombatService` / `EffetChapitreService`, échafaudage répété de `EmailService`, démarrage bloqué si `Preferences` échoue) : à noter dans une tâche QUAL séparée.
+Points 3 à 5 de l'audit (protections en double dans `CombatService` / `EffetChapitreService`, échafaudage répété de `EmailService`, démarrage bloqué si `Preferences` échoue) : à noter dans une tâche QUAL séparée. Protections en double : fait dans [QUAL-18](../QUAL-18-regles-en-double/spec.md) (17/11/2026).
