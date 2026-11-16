@@ -25,4 +25,7 @@ public interface PersonnageRepository extends JpaRepository<Personnage, UUID>, P
 
     @EntityGraph(attributePaths = {"disciplines", "armeMaitrisee", "chapitreActuel"})
     List<Personnage> findByUtilisateur(Utilisateur utilisateur);
+
+    // SEC-12 : plafond de personnages par compte (voir PartieService).
+    long countByUtilisateur(Utilisateur utilisateur);
 }

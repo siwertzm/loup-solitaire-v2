@@ -444,6 +444,8 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 - **Création de personnage** : HABILITE = 10 + tirage(0-9), ENDURANCE = 20 +
   tirage(0-9), exactement 5 disciplines parmi les 10 disciplines Kaï.
+  Au plus 20 personnages par compte (SEC-12) : au-delà, tirage et création
+  répondent `400`.
 - **Discipline Maîtrise des Armes** : l'arme est tirée sur la table 0-9 du
   livre (l'Épée y figure deux fois, REGLE-07) ; +2 HABILITE tant qu'elle est
   équipée.
