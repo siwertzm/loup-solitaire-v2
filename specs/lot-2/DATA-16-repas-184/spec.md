@@ -2,9 +2,15 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-DATA-16` | À faire |
+| 2 | Basse | S | — | Abandonné |
 
 Origine : Cahier des charges (DATA-16, décision D-10). **Statut corrigé : marqué « Fait », mais non fait.**
+
+## Abandon (16/11/2026)
+
+Décision du porteur du projet : **on garde les 4 Repas obligatoires**, ajoutés automatiquement à l'arrivée au 184 puis 1 consommé par l'effet REPAS. Un joueur qui ne veut pas des Repas restants les retire de son inventaire (swipe dans le Sac) pour libérer de la place. Aucun changement de code ni de données.
+
+L'approche prévue (deux lignes `repas` au 184) aurait de toute façon cassé `ChapitreMapper` (`toMap` par objet → clé en double, erreur 500), le suivi `objet_chapitre_ramasse` (unique par personnage, chapitre, objet) et l'affichage du frontend (liste suivie par `objetId`).
 
 ## Problème
 

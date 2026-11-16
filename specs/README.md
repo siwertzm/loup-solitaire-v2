@@ -10,14 +10,14 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #19, DATA-16** (lot 2, étape C), branche `fix-DATA-16`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #20, REGLE-12** (lot 2, étape C), branche `feature-REGLE-12`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07.
-- Abandonné : REGLE-06. Reporté au lot 3 : RGPD-02.
+- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02.
 
 ## Tâches à faire
 
@@ -33,7 +33,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 19 | C | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
 | 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M/L | Le Sac à Dos devient un Objet Spécial qu'on peut perdre (162, 174, 188, 258, 294) et retrouver (20, 62) |
 | 21 | C | [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
 | 22 | C | [DATA-14](lot-2/DATA-14-pierres-137/spec.md) | Moyenne | S | 137 : Pierres = 1 objet de Sac |
@@ -66,7 +65,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 Les statuts des listes de `source/` ont été contrôlés contre le code et `chapitre.json`.
 
 **Corrigé :**
-- **DATA-16** était marqué « Fait » : le 184 a toujours `repas` × 4 obligatoires et aucune migration ne le change. Remis à faire.
+- **DATA-16** était marqué « Fait » : le 184 a toujours `repas` × 4 obligatoires et aucune migration ne le change. Remis à faire, puis abandonné le 16/11/2026 (voir « Avancement »).
 
 **À confirmer (marqués « Déjà OK », mais les données ne suivent pas le cahier) :**
 - **DATA-05** : le lien 112 → 248 est toujours `fuite = 0`. Le code le traite exprès comme « combat évitable » (`PersonnageService.avancerVersChapitre`, chapitres 112 et 180). Si c'est un choix, l'écrire comme décision D-11 ; sinon, créer la spec.
@@ -88,6 +87,6 @@ Les étapes 1, 2, 4.A et 4.B sont faites, 4.C est en cours (voir « Avancement �
 4. Lot 2, dans l'ordre du tableau :
    - **A. Socle avant les changements de contrat et de données.** QUAL-02 d'abord (au moins `/version`) : les apps installées ne se mettent pas à jour seules, et SEC-06, QUAL-08, REGLE-12 et REGLE-15 changent le contrat API ; il faut pouvoir forcer la mise à jour avant. Puis DATA-00, qui évite une migration SQL à chaque correction DATA/REGLE suivante ; OPS-03 juste après (DATA-00 peut le remplacer : à trancher au récap de DATA-00). SEC-08, OPS-01 et SEC-07 sont courts et rendent la prod plus sûre (409 au lieu de 500, mémoire JVM, H2 hors du jar).
    - **B. Comptes et RGPD.** SEC-06 en premier : une faute de frappe dans l'e-mail bloque le compte, c'est le seul risque de perte de compte restant. SEC-05 après SEC-08 (même zone : inscription et 409). OPS-05 avant RGPD-03, qui s'appuie sur la purge pour ses durées de conservation.
-   - **C. Règles du jeu.** D'abord le trou côté serveur où l'API acceptait une action interdite (REGLE-16 : échange répétable ; REGLE-06 abandonnée, voir plus haut), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, DATA-16), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
+   - **C. Règles du jeu.** D'abord le trou côté serveur où l'API acceptait une action interdite (REGLE-16 : échange répétable ; REGLE-06 abandonnée, voir plus haut), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07 ; DATA-16 abandonnée), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
    - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant). QUAL-12 et QUAL-16 (retours bêta, petits) peuvent se glisser à tout moment de l'étape D.
 5. **Lot 3** : pas d'ordre imposé. QUAL-15 (page Options) avant ou avec QUAL-13 (bande originale), dont les réglages y vont. Plusieurs specs du lot 3 attendent des réponses (section « À demander avant de commencer »).
