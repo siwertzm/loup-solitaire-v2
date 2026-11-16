@@ -5,8 +5,14 @@ import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { DisciplineResume, PersonnageResume } from '../../core/models/personnage.model';
+import {
+  bonusEnduranceObjetsSpeciaux,
+  DisciplineResume,
+  ObjetResume,
+  PersonnageResume,
+} from '../../core/models/personnage.model';
 import { DisciplineService } from '../../core/services/discipline.service';
+import { ObjetService } from '../../core/services/objet.service';
 import { PersonnageService } from '../../core/services/personnage.service';
 import { NavBarComponent } from '../shared/nav-bar/nav-bar.component';
 
@@ -30,6 +36,7 @@ export class PersonnagePage implements ViewWillEnter {
   private readonly router = inject(Router);
   private readonly personnageService = inject(PersonnageService);
   private readonly disciplineService = inject(DisciplineService);
+  private readonly objetService = inject(ObjetService);
   private readonly translate = inject(TranslateService);
 
   readonly personnageId = signal<string | null>(this.route.snapshot.paramMap.get('id'));
@@ -48,6 +55,14 @@ export class PersonnagePage implements ViewWillEnter {
   readonly habiliteMax = computed(() => this.personnage()?.habiliteBase ?? 0);
   readonly endurance = computed(() => this.personnage()?.enduranceActuelle ?? 0);
   readonly enduranceMax = computed(() => this.personnage()?.enduranceMax ?? 0);
+
+  /** QUAL-12 : catalogue d'objets, pour le bonus d'ENDURANCE du Casque / de la Cotte. */
+  readonly tousObjets = signal<ObjetResume[]>([]);
+  readonly bonusEndurance = computed(() =>
+    bonusEnduranceObjetsSpeciaux(this.personnage()?.inventaire ?? [], this.tousObjets()),
+  );
+  /** Maximum sans le bonus des Objets Spéciaux (affiché « 24 + 4 Max »). */
+  readonly enduranceMaxBase = computed(() => this.enduranceMax() - this.bonusEndurance());
   readonly armeMaitrisee = computed(() => this.personnage()?.armeMaitrisee ?? null);
   // Mort HORS combat (chapitre narratif ou perte d'endurance — voir
   // Personnage.mort). Grise toute la fiche et ne laisse que Supprimer /
@@ -101,6 +116,11 @@ export class PersonnagePage implements ViewWillEnter {
 
     this.chargement.set(true);
     this.erreur.set(null);
+    // Sans catalogue, le bonus vaut 0 : « 28 Max » s'affiche simplement.
+    this.objetService.lister().subscribe({
+      next: (objets) => this.tousObjets.set(objets),
+      error: (err) => console.error('chargement du catalogue des objets', err),
+    });
     this.personnageService.recuperer(id).subscribe({
       next: (personnage) => {
         this.personnage.set(personnage);

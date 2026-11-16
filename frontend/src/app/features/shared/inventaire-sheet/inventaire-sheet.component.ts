@@ -144,8 +144,15 @@ export class InventaireSheetComponent {
     return this.translate.instant('INVENTAIRE_SHEET.EFFET_LABEL', { valeur: effet.valeur, libelle });
   }
 
+  // QUAL-12 : bonus passif (Casque +2, Cotte de mailles +4 ENDURANCE) affiché
+  // comme l'effet des potions.
   readonly objetsSpeciauxDetail = computed(() =>
-    this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX'),
+    this.inventaire()
+      .filter((i) => i.categorie === 'OBJETS_SPECIAUX')
+      .map((i) => {
+        const effet = this.tousObjets().find((o) => o.id === i.objetId)?.effets[0];
+        return { ...i, effetLabel: effet ? this.libelleEffet(effet) : null };
+      }),
   );
 
   // Carte géographique (objetId "carte") : simple visionneuse plein écran,

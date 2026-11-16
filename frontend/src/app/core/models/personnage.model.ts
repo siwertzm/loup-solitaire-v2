@@ -55,6 +55,22 @@ export type CategorieObjet = 'ARME' | 'OBJET' | 'OBJETS_SPECIAUX' | 'REPAS' | 'B
  */
 export const OBJET_SAC_A_DOS = 'sac_a_dos';
 
+/**
+ * QUAL-12 : bonus d'ENDURANCE des Objets Spéciaux possédés (Casque +2, Cotte
+ * de mailles +4). Effet passif, déjà inclus par le serveur dans enduranceMax
+ * et enduranceActuelle (voir ObjetService côté backend).
+ */
+export function bonusEnduranceObjetsSpeciaux(
+  inventaire: { objetId: string; categorie: CategorieObjet; quantite: number }[],
+  catalogue: ObjetResume[],
+): number {
+  return inventaire
+    .filter((i) => i.categorie === 'OBJETS_SPECIAUX' && i.quantite > 0)
+    .flatMap((i) => catalogue.find((o) => o.id === i.objetId)?.effets ?? [])
+    .filter((e) => e.type === 'ENDURANCE')
+    .reduce((total, e) => total + e.valeur, 0);
+}
+
 /** Sans Sac à Dos, aucun objet ni repas ne peut être porté. */
 export function possedeSacADos(inventaire: { objetId: string }[]): boolean {
   return inventaire.some((i) => i.objetId === OBJET_SAC_A_DOS);
