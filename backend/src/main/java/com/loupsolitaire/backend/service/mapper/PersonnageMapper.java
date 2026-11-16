@@ -1,6 +1,8 @@
 package com.loupsolitaire.backend.service.mapper;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,19 @@ public class PersonnageMapper {
     private final InventaireService inventaireService;
 
     public PersonnageResponse versReponse(Personnage personnage) {
-        List<InventaireItemResponse> inventaire = inventaireService.listerInventaire(personnage).stream()
+        return versReponse(personnage, inventaireService.listerInventaire(personnage));
+    }
+
+    // OPS-07 : liste de personnages, inventaires lus en une seule requete.
+    public List<PersonnageResponse> versReponses(List<Personnage> personnages) {
+        Map<UUID, List<InventaireItem>> inventaires = inventaireService.listerInventaires(personnages);
+        return personnages.stream()
+                .map(p -> versReponse(p, inventaires.getOrDefault(p.getId(), List.of())))
+                .toList();
+    }
+
+    private PersonnageResponse versReponse(Personnage personnage, List<InventaireItem> items) {
+        List<InventaireItemResponse> inventaire = items.stream()
                 .map(this::versReponseInventaire)
                 .toList();
 

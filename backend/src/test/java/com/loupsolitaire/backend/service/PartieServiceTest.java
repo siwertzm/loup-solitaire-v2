@@ -251,9 +251,9 @@ class PartieServiceTest {
 
         when(utilisateurRepository.findById(marius.id())).thenReturn(Optional.of(utilisateur));
         when(personnageRepository.findByUtilisateur(utilisateur)).thenReturn(List.of(jamaisJoue, ancien, recent));
-        when(personnageMapper.versReponse(ancien)).thenReturn(reponseAncien);
-        when(personnageMapper.versReponse(recent)).thenReturn(reponseRecent);
-        when(personnageMapper.versReponse(jamaisJoue)).thenReturn(reponseJamais);
+        // Le tri est fait avant le mapping (une seule lecture des inventaires, OPS-07).
+        when(personnageMapper.versReponses(List.of(recent, ancien, jamaisJoue)))
+                .thenReturn(List.of(reponseRecent, reponseAncien, reponseJamais));
 
         assertThat(partieService.listerPersonnages(marius))
                 .containsExactly(reponseRecent, reponseAncien, reponseJamais);

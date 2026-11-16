@@ -1,9 +1,13 @@
 package com.loupsolitaire.backend.service.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +76,25 @@ class PersonnageMapperTest {
         item.setObjet(objet);
         item.setQuantite(quantite);
         return item;
+    }
+
+    // OPS-07 : liste de personnages, chaque inventaire va au bon personnage.
+    @Test
+    void versReponsesRepartitLesInventairesLusEnUneFois() {
+        Personnage autre = new Personnage();
+        autre.setId(UUID.randomUUID());
+        autre.setNom("Autre");
+        autre.setChapitreActuel(personnage.getChapitreActuel());
+        autre.setDisciplines(List.of());
+        when(inventaireService.listerInventaires(List.of(personnage, autre))).thenReturn(Map.of(
+                personnage.getId(), List.of(ligne(objet("epee", "Epee", CategorieObjet.ARME), 1))));
+
+        List<PersonnageResponse> reponses = personnageMapper.versReponses(List.of(personnage, autre));
+
+        assertThat(reponses).extracting(PersonnageResponse::nom).containsExactly("Loup", "Autre");
+        assertThat(reponses.get(0).inventaire()).extracting(i -> i.objetId()).containsExactly("epee");
+        assertThat(reponses.get(1).inventaire()).isEmpty();
+        verify(inventaireService, never()).listerInventaire(any());
     }
 
     @Test
