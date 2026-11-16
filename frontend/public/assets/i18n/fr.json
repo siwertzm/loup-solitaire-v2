@@ -234,6 +234,7 @@
     "ERREUR_NOM_MANQUANT": "Donnez un nom à votre personnage.",
     "ERREUR_TIRAGE_MANQUANT": "Lancez les deux dés pour tirer vos caractéristiques.",
     "ERREUR_TIRAGE": "Le tirage des dés a échoué. Touchez à nouveau le dé pour réessayer.",
+    "ERREUR_LIMITE_PERSONNAGES": "Vous avez atteint le nombre maximal de personnages. Supprimez-en un pour en créer un nouveau.",
     "ERREUR_TROP_DE_DISCIPLINES": "Exactement {{n}} disciplines : retirez-en une d'abord.",
     "ERREUR_NOMBRE_DISCIPLINES": "Choisissez exactement {{n}} disciplines.",
     "ERREUR_CREATION": "La création a échoué."

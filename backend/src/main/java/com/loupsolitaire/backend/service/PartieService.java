@@ -60,6 +60,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PartieService {
 
+    static final int MAX_PERSONNAGES_PAR_COMPTE = 20;
+
     private final PersonnageRepository personnageRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final ObjetRepository objetRepository;
@@ -86,6 +88,7 @@ public class PartieService {
     @Transactional
     public TirageResponse tirerCaracteristiques(UtilisateurConnecte connecte) {
         Utilisateur utilisateur = recupererUtilisateurVerrouille(connecte);
+        verifierPlaceLibre(utilisateur);
         return versReponse(tirageCreationService.tirerOuRelire(utilisateur.getId()));
     }
 
@@ -95,6 +98,7 @@ public class PartieService {
     public PersonnageResponse creerPersonnage(UtilisateurConnecte connecte, String nom,
                                               List<IdDiscipline> disciplines) {
         Utilisateur utilisateur = recupererUtilisateurVerrouille(connecte);
+        verifierPlaceLibre(utilisateur);
         TirageCreation tirage = tirageCreationService.consommer(utilisateur.getId());
         Personnage personnage = personnageService.creerPersonnage(
                 utilisateur, nom, disciplines, tirage.getHasardHabilite(), tirage.getHasardEndurance());
@@ -284,6 +288,17 @@ public class PartieService {
     private Utilisateur recupererUtilisateurVerrouille(UtilisateurConnecte connecte) {
         return utilisateurRepository.findByIdPourModification(connecte.id())
                 .orElseThrow(() -> new RessourceNonTrouveeException("Utilisateur non trouve"));
+    }
+
+    // SEC-12 : sans plafond, un script sur un seul compte creait des
+    // personnages en boucle (une dizaine de lignes chacun) et remplissait la
+    // base. Appele apres le verrou de l'utilisateur : deux creations
+    // simultanees ne peuvent pas depasser la limite ensemble.
+    private void verifierPlaceLibre(Utilisateur utilisateur) {
+        if (personnageRepository.countByUtilisateur(utilisateur) >= MAX_PERSONNAGES_PAR_COMPTE) {
+            throw new IllegalArgumentException("Vous avez atteint la limite de " + MAX_PERSONNAGES_PAR_COMPTE
+                    + " personnages : supprimez-en un pour en creer un nouveau");
+        }
     }
 
     private static TirageResponse versReponse(TirageCreation tirage) {

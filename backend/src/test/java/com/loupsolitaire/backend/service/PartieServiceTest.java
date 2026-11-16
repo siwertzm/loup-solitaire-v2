@@ -228,6 +228,22 @@ class PartieServiceTest {
     }
 
     @Test
+    void refuseTirageEtCreationAuDelaDuPlafondDePersonnages() {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setId(marius.id());
+        when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.of(utilisateur));
+        when(personnageRepository.countByUtilisateur(utilisateur))
+                .thenReturn((long) PartieService.MAX_PERSONNAGES_PAR_COMPTE);
+
+        assertThatThrownBy(() -> partieService.tirerCaracteristiques(marius))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> partieService.creerPersonnage(marius, "Loup", List.of()))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(personnageService, tirageCreationService);
+    }
+
+    @Test
     void creerPersonnageRenvoie404SiLeCompteN_existePlus() {
         when(utilisateurRepository.findByIdPourModification(marius.id())).thenReturn(Optional.empty());
 

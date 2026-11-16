@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -5,7 +6,11 @@ import { IonContent } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin, shareReplay, timer } from 'rxjs';
 
-import { IdDiscipline, NB_DISCIPLINES_A_CHOISIR, TirageCreation } from '../../../core/models/personnage.model';
+import {
+  IdDiscipline,
+  NB_DISCIPLINES_A_CHOISIR,
+  TirageCreation,
+} from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { DisciplineService } from '../../../core/services/discipline.service';
 
@@ -56,7 +61,11 @@ export class CreationPersonnagePage {
   readonly chargement = signal(true);
 
   readonly tirageFait = computed(() => this.habilite() !== null && this.endurance() !== null);
-  readonly tirageLabel = computed(() => (this.tirageFait() ? 'CREATION_PERSONNAGE.LABEL_TIRAGE_FAIT' : 'CREATION_PERSONNAGE.LABEL_TIRAGE_EN_ATTENTE'));
+  readonly tirageLabel = computed(() =>
+    this.tirageFait()
+      ? 'CREATION_PERSONNAGE.LABEL_TIRAGE_FAIT'
+      : 'CREATION_PERSONNAGE.LABEL_TIRAGE_EN_ATTENTE',
+  );
   readonly habTiree = computed(() => this.habilite() !== null && !this.roulantHab());
   readonly endTiree = computed(() => this.endurance() !== null && !this.roulantEnd());
   readonly detailHab = computed(() => `10 + ${this.faceHab()}`);
@@ -110,11 +119,17 @@ export class CreationPersonnagePage {
         }
         roulant.set(false);
       },
-      error: () => {
+      error: (err: unknown) => {
         // Permet de réessayer : la prochaine demande repart vers le serveur.
         this.tirage$ = undefined;
         roulant.set(false);
-        this.erreur.set('CREATION_PERSONNAGE.ERREUR_TIRAGE');
+        // SEC-12 : 400 = plafond de personnages du compte atteint.
+        const limiteAtteinte = err instanceof HttpErrorResponse && err.status === 400;
+        this.erreur.set(
+          limiteAtteinte
+            ? 'CREATION_PERSONNAGE.ERREUR_LIMITE_PERSONNAGES'
+            : 'CREATION_PERSONNAGE.ERREUR_TIRAGE',
+        );
       },
     });
   }
