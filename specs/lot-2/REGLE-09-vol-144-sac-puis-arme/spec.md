@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-REGLE-09` | À faire |
+| 2 | Moyenne | S | `fix-REGLE-09` | Fait |
 
 Origine : Cahier des charges (REGLE-09)
 
@@ -10,7 +10,11 @@ Origine : Cahier des charges (REGLE-09)
 
 `EffetChapitreService.resoudreVolEnAttente` accepte une arme avec la portée TOUT même si le Sac contient des objets.
 
-## À faire
+## Mise en œuvre (16/11/2026)
+
+Pas de nouvelle valeur `PorteeVol` ni de migration : la portée `TOUT` ne sert qu'au 144 (le 277 est en portée `ARME`). Sa règle devient « un objet ou repas du Sac ; une arme seulement si le Sac n'en contient aucun » (`EffetChapitreService.resoudreVolEnAttente`, 400 sinon). La popup du frontend ne propose que les choix valides (`chapitre-effets`, `itemsEligiblesVol`). Avec REGLE-12, « plus de Sac » = Sac vide.
+
+## À faire (spec d'origine)
 
 - Nouvelle valeur `PorteeVol.SAC_PUIS_ARME` : arme refusée tant qu'un objet OBJET/REPAS est possédé. Mettre à jour la contrainte CHECK si la colonne en a une (migration).
 

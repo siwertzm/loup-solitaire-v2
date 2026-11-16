@@ -10,13 +10,13 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #21, REGLE-09** (lot 2, étape C), branche `fix-REGLE-09`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #22, DATA-14** (lot 2, étape C), branche `fix-DATA-14`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
-- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12.
+- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09.
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02.
 
 ## Tâches à faire
@@ -33,7 +33,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 21 | C | [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
 | 22 | C | [DATA-14](lot-2/DATA-14-pierres-137/spec.md) | Moyenne | S | 137 : Pierres = 1 objet de Sac |
 | 23 | C | [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
 | 24 | D | [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |

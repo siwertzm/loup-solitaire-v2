@@ -664,6 +664,45 @@ class EffetChapitreServiceTest {
     }
 
     @Test
+    void resoudreVolDu144RefuseUneArmeSiLeSacContientUnObjet() {
+        personnage.setVolEnAttente(PorteeVol.TOUT);
+        InventaireItem hache = creerLigne("hache", CategorieObjet.ARME, 1);
+        InventaireItem repas = creerLigne("repas", CategorieObjet.REPAS, 1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(hache, repas));
+
+        assertThatThrownBy(() -> effetChapitreService.resoudreVolEnAttente(personnage, hache.getObjet()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Sac a Dos");
+
+        verify(inventaireService, never()).retirerObjet(any(), any(), anyInt());
+        assertThat(personnage.getVolEnAttente()).isEqualTo(PorteeVol.TOUT);
+    }
+
+    @Test
+    void resoudreVolDu144AccepteUnRepasDuSac() {
+        personnage.setVolEnAttente(PorteeVol.TOUT);
+        Objet repas = creerLigne("repas", CategorieObjet.REPAS, 1).getObjet();
+
+        effetChapitreService.resoudreVolEnAttente(personnage, repas);
+
+        verify(inventaireService).retirerObjet(personnage, repas, 1);
+        assertThat(personnage.getVolEnAttente()).isNull();
+    }
+
+    @Test
+    void resoudreVolDu144AccepteUneArmeSiLeSacEstVide() {
+        personnage.setVolEnAttente(PorteeVol.TOUT);
+        InventaireItem hache = creerLigne("hache", CategorieObjet.ARME, 1);
+        InventaireItem carte = creerLigne("carte", CategorieObjet.OBJETS_SPECIAUX, 1);
+        when(inventaireService.listerInventaire(personnage)).thenReturn(List.of(hache, carte));
+
+        effetChapitreService.resoudreVolEnAttente(personnage, hache.getObjet());
+
+        verify(inventaireService).retirerObjet(personnage, hache.getObjet(), 1);
+        assertThat(personnage.getVolEnAttente()).isNull();
+    }
+
+    @Test
     void resoudreVolEnAttentePorteeArmeAccepteUneArme() {
         personnage.setVolEnAttente(PorteeVol.ARME);
 

@@ -431,13 +431,16 @@ export class ChapitreEffetsComponent {
    * Objets éligibles pour le vol.
    */
   itemsEligiblesVol(effet: EffetResponse): InventaireItem[] {
-    const categoriesTout: InventaireItem['categorie'][] = ['ARME', 'OBJET', 'REPAS'];
+    const possedes = this.inventaire().filter((i) => i.quantite > 0);
+    const armes = possedes.filter((i) => i.categorie === 'ARME');
+    if (this.volPorteeArme(effet)) {
+      return armes;
+    }
 
-    return this.inventaire().filter(
-      (i) =>
-        i.quantite > 0 &&
-        (this.volPorteeArme(effet) ? i.categorie === 'ARME' : categoriesTout.includes(i.categorie)),
-    );
+    // REGLE-09 (144) : un objet ou repas du Sac ; une arme seulement si le
+    // Sac n'en contient aucun (aligné sur EffetChapitreService.resoudreVolEnAttente).
+    const contenuDuSac = possedes.filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
+    return contenuDuSac.length > 0 ? contenuDuSac : armes;
   }
 
   /**
