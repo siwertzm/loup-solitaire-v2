@@ -34,7 +34,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
 | 19 | C | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
-| 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M | Modéliser le Sac à Dos |
+| 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M/L | Le Sac à Dos devient un Objet Spécial qu'on peut perdre (162, 174, 188, 258, 294) et retrouver (20, 62) |
 | 21 | C | [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
 | 22 | C | [DATA-14](lot-2/DATA-14-pierres-137/spec.md) | Moyenne | S | 137 : Pierres = 1 objet de Sac |
 | 23 | C | [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
