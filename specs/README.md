@@ -18,7 +18,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
-- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
+- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
 
@@ -47,19 +47,20 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 | [REGLE-19](lot-3/REGLE-19-mode-expert/spec.md) | Basse | M/L | Mode expert : Guérison limitée à 10 points au total |
 | [QUAL-17](lot-3/QUAL-17-dialogue-combat-ecrase/spec.md) | Moyenne | S | Boîte de dialogue du combat trop écrasée quand un dé s'affiche |
 | [QUAL-13](lot-3/QUAL-13-bande-originale/spec.md) | Basse | M | Bande originale : socle de musique de fond — retour bêta |
-| [QUAL-14](lot-3/QUAL-14-id-hors-url/spec.md) | Basse | M | Retirer l'id du personnage des URL du jeu |
 | [QUAL-15](lot-3/QUAL-15-page-options/spec.md) | Basse | M | Page Options : son, taille du texte, autres paramètres à définir |
 
 ### Ordre conseillé du lot 3 (proposé le 16/11/2026)
 
 1. **QUAL-17** (dialogue du combat écrasé) : visible par les joueurs, petit.
 2. **REGLE-10 + DATA-12** (283) : règle du jeu fausse.
-3. **RGPD-02** (export des données) : obligation légale aujourd'hui traitée à la main.
-4. **QUAL-03** (nommage) : avant les tâches qui touchent ces fichiers.
-5. **REGLE-18 puis REGLE-19** (Guérison, mode expert) : même code ; questions ouvertes à trancher d'abord.
-6. **QUAL-09** (langue), puis **QUAL-15 + QUAL-13** (Options, musique), **QUAL-14** (URL sans id) : questions ouvertes.
+3. **QUAL-03** (nommage) : avant les tâches qui touchent ces fichiers.
+4. **REGLE-18 puis REGLE-19** (Guérison, mode expert) : même code ; questions ouvertes à trancher d'abord.
+5. **QUAL-15** (page Options) : questions ouvertes.
+6. **RGPD-02** (export des données) : après la page Options (décision du 16/11/2026) ; en attendant, demandes traitées à la main.
 7. **OPS-07** (requêtes SQL), **QUAL-11** (Angular 22) : sans urgence.
-8. **QUAL-04 + REGLE-15** (coins), **QUAL-05** (multi-tomes) : MVP2.
+8. **QUAL-09** (choix de la langue, `en.json` corrigé) : juste avant la musique (décision du 16/11/2026).
+9. **QUAL-13** (bande originale) : avant-dernière (décision du 16/11/2026) ; questions ouvertes (licence de la musique…).
+10. **QUAL-04 + REGLE-15** (coins), **QUAL-05** (multi-tomes) : MVP2.
 
 ## Statuts vérifiés le 11/11/2026
 
