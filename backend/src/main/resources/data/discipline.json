@@ -32,7 +32,7 @@
   {
     "id": "maitrise_des_armes",
     "nom": "Maîtrise des Armes",
-    "description": "En entrant au Monastère Kaï, chaque élève a la possibilité d'être initié au maniement d'une arme. Vous aurez dès lors la parfaite Maîtrise de cette arme et chaque fois que vous combattrez avec elle, vous aurez droit à 2 points d'HABILITÉ supplémentaires."
+    "description": "En entrant au Monastère Kaï, chaque élève a la possibilité d'être initié au maniement d'une arme. Vous aurez dès lors la parfaite Maîtrise de cette arme et chaque fois que vous combattrez avec elle, vous aurez droit à 2 points d'HABILETÉ supplémentaires."
   },
   {
     "id": "bouclier_psychique",
@@ -43,7 +43,7 @@
   {
     "id": "puissance_psychique",
     "nom": "Puissance Psychique",
-    "description": "Cette technique permet au Seigneur Kaï d'attaquer un ennemi en se servant de la force de son esprit : on peut l'utiliser en même temps qu'une arme de combat habituelle et l'on dispose alors de 2 points supplémentaires d'HABILITÉ. Cette puissance psychique, cependant, n'est pas forcément efficace avec toutes les créatures: il se peut que certaines d'entre elles y soient insensibles. Si le cas se présente, vous en serez averti au cours de votre mission."
+    "description": "Cette technique permet au Seigneur Kaï d'attaquer un ennemi en se servant de la force de son esprit : on peut l'utiliser en même temps qu'une arme de combat habituelle et l'on dispose alors de 2 points supplémentaires d'HABILETÉ. Cette puissance psychique, cependant, n'est pas forcément efficace avec toutes les créatures: il se peut que certaines d'entre elles y soient insensibles. Si le cas se présente, vous en serez averti au cours de votre mission."
 
   },
   {

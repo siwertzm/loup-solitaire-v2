@@ -10,13 +10,13 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #23, DATA-17** (lot 2, étape C), branche `fix-DATA-17`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #24, QUAL-08** (lot 2, étape D), branche `fix-QUAL-08`. L'étape C est terminée. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
-- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14.
+- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02.
 
 ## Tâches à faire
@@ -33,7 +33,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 23 | C | [DATA-17](lot-2/DATA-17-textes-du-livre/spec.md) | Basse | S | Fautes et écarts dans le texte des chapitres (comparaison chg96 + VO) |
 | 24 | D | [QUAL-08](lot-2/QUAL-08-textes-en-dur/spec.md) | Moyenne | S | Textes en dur ; messages du serveur affichés tels quels |
 | 25 | D | [REGLE-15](lot-2/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté (met `CLAUDE.md` à jour) |
 | 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
@@ -76,7 +75,7 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 
 ## Ordre conseillé
 
-Les étapes 1, 2, 4.A et 4.B sont faites, 4.C est en cours (voir « Avancement »).
+Les étapes 1, 2, 4.A, 4.B et 4.C sont faites, 4.D est la suivante (voir « Avancement »).
 
 1. **SEC-09** tout de suite : c'est le seul problème que les testeurs TestFlight vont voir. **SEC-10** dans la foulée (même symptôme côté Profil après 15 minutes).
 2. **OPS-08** dans la même petite PR que le `.gitignore` (graphify-out, Zone.Identifier).

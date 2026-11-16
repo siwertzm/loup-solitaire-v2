@@ -2,6 +2,8 @@ package com.loupsolitaire.backend.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +16,11 @@ import org.junit.jupiter.api.Test;
 
 import com.loupsolitaire.backend.dto.ChapitreJson;
 import com.loupsolitaire.backend.dto.CondJson;
+import com.loupsolitaire.backend.dto.DisciplineJson;
 import com.loupsolitaire.backend.dto.EffetJson;
 import com.loupsolitaire.backend.dto.LienJson;
+
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Coherence de chapitre.json avec son propre texte : ce que le texte
@@ -135,6 +140,30 @@ class CoherenceLivreTest {
         return effets.stream().anyMatch(e ->
                 ("endurance".equalsIgnoreCase(e.getType()) && e.getValeur() != null && e.getValeur() == -perte)
                         || "repas".equalsIgnoreCase(e.getType()));
+    }
+
+    // DATA-17 : fautes de frappe corrigees, qui ne doivent pas revenir
+    // (HABILETE et non HABILITE, comme QUAL-07 pour l'interface).
+    private static final List<String> FAUTES_CONNUES = List.of(
+            "HABILIT", "Sommer-lund", "au ras une", "l'échiné", "vore arme", ", Utilisez");
+
+    @Test
+    void aucuneFauteConnueDansLesTextes() throws IOException {
+        List<String> textes = new ArrayList<>();
+        DonneesDuLivre.chapitres().values().forEach(c -> textes.add(c.getId() + " : " + c.getText()));
+        try (InputStream is = CoherenceLivreTest.class.getResourceAsStream("/data/discipline.json")) {
+            JsonMapper.builder().build().readerForListOf(DisciplineJson.class).<List<DisciplineJson>>readValue(is)
+                    .forEach(d -> textes.add(d.getId() + " : " + d.getDescription()));
+        }
+
+        List<String> ecarts = new ArrayList<>();
+        for (String texte : textes) {
+            FAUTES_CONNUES.stream().filter(texte::contains)
+                    .forEach(faute -> ecarts.add(texte.substring(0, texte.indexOf(" : ")) + " contient « " + faute + " »"));
+        }
+
+        assertThat(ecarts).isEmpty();
+        assertThat(DonneesDuLivre.chapitres().get(340).getText()).startsWith("Vous galopez");
     }
 
     private static boolean estUnLienDeCoin(LienJson lien) {
