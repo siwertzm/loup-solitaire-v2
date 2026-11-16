@@ -1,6 +1,9 @@
 <ion-content [fullscreen]="true" class="accueil">
   <div class="ecran">
     <div class="barre-haut">
+      <button type="button" class="rond" [attr.aria-label]="'ACCUEIL.OPTIONS_ARIA' | translate" (click)="options()">
+        <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
+      </button>
       <button type="button" class="rond" [attr.aria-label]="'ACCUEIL.PROFIL_ARIA' | translate" (click)="profil()">
         <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
       </button>

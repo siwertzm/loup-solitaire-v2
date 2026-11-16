@@ -98,6 +98,7 @@
     }
   },
   "ACCUEIL": {
+    "OPTIONS_ARIA": "Options",
     "PROFIL_ARIA": "Mon profil",
     "SUR_TITRE": "Livre premier",
     "TITRE_LIGNE1": "Les Maîtres",
