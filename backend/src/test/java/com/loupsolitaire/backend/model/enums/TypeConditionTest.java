@@ -14,6 +14,7 @@ class TypeConditionTest {
         assertThat(TypeCondition.fromJson("bourse")).isEqualTo(TypeCondition.BOURSE);
         assertThat(TypeCondition.fromJson("hasard")).isEqualTo(TypeCondition.HASARD);
         assertThat(TypeCondition.fromJson("fuite")).isEqualTo(TypeCondition.FUITE);
+        assertThat(TypeCondition.fromJson("evitement")).isEqualTo(TypeCondition.EVITEMENT);
         assertThat(TypeCondition.fromJson("arme")).isEqualTo(TypeCondition.ARME);
         assertThat(TypeCondition.fromJson("endurance")).isEqualTo(TypeCondition.ENDURANCE);
         assertThat(TypeCondition.fromJson("endurance_perdue")).isEqualTo(TypeCondition.ENDURANCE_PERDUE);

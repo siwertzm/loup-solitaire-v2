@@ -10,7 +10,11 @@ public enum TypeCondition {
     // d'arme pendant le combat du chapitre (combat a mains nues, 260) :
     // HABILITE de base + valeur, quelles que soient les armes possedees.
     // Applique par CombatService, jamais a l'arrivee sur le chapitre.
-    SANS_ARME;
+    SANS_ARME,
+    // D-11 : lien qui permet de ne pas livrer le combat du tout (112, 180).
+    // Empruntable avant le premier assaut ; une fois le combat engage, il
+    // faut gagner ou fuir (bouton FUITE actif des la premiere action).
+    EVITEMENT;
  
     public static TypeCondition fromJson(String valeur) {
         if (valeur == null) {
@@ -32,6 +36,7 @@ public enum TypeCondition {
             case "victoire" -> VICTOIRE;
             case "permanent" -> PERMANENT;
             case "sans_arme" -> SANS_ARME;
+            case "evitement" -> EVITEMENT;
             default -> throw new IllegalArgumentException("Type de condition inconnu : " + valeur);
         };
     }

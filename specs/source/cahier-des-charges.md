@@ -26,13 +26,13 @@ Le reste des données est conforme : 577 liens (hors 201), 44 plages de hasard, 
 | DATA-02 | 229 | Kraan (réutilise `kraan` du 17) | END 24 | END 25, nouvel ennemi `kraan_229` | FR « KRAAN HABILETÉ: 16 ENDURANCE: 25 » ; EN idem | ennemi.json + chapitre.json | Oui |
 | DATA-03 | 220 | Garde du corps (réutilise `garde_corps` du 191) | END 21 | END 20, nouvel ennemi `garde_corps_220` | FR « GARDE DU CORPS HABILETÉ : 11 ENDURANCE : 20 » ; EN idem | ennemi.json + chapitre.json | Oui |
 | DATA-04 | 340 | Glok + Loup Maudit (réutilise le 72) | HAB 15 | HAB 14, nouvel ennemi `glok_loup_maudit_340` | FR « HABILETE. 14 ENDURANCE : 24 » ; EN « COMBAT SKILL 14 » | ennemi.json + chapitre.json | Oui |
-| DATA-05 | 112 | Lien vers 248 | `fuite=0` : fuite possible sans combattre | `victoire=1` | FR « Si vous êtes vainqueur, vous pouvez explorer… Mais vous pouvez également quitter les lieux » ; EN idem | chapitre.json | Oui |
+| DATA-05 | 112 | Lien vers 248 | `fuite=0` : fuite possible sans combattre | `victoire=1` | FR « Si vous êtes vainqueur, vous pouvez explorer… Mais vous pouvez également quitter les lieux » ; EN idem | chapitre.json || Non (D-11) |
 | DATA-06 | 205 | Perte de l'équipement | Aucun effet | `vol` valeur 10 (armes + sac), nom « perte » | FR « Leur chef ramasse votre Équipement » ; EN « You must now erase all Weapons and Backpack Items » | chapitre.json | Oui |
 | DATA-07 | 181 | Perte du sac | `vol` valeur 8, toujours appliqué | Aucun effet (la perte passe au 205) | EN, errata : phrase retirée « car on peut atteindre cette section sans avoir perdu son équipement » (arrivée par 22) | chapitre.json | Oui (retenu, D-03) |
 | DATA-08 | 201 | Lien « est » | 215 (VF) | 15 (VO) | EN « head east, turn to 15 » + errata ; le 15 renvoie au 201 vers l'ouest | chapitre.json | Oui (retenu, D-02) |
 | DATA-09 | 291 | Lances ramassables | `lance` × 2 | `lance` × 1 (le livre impose « le Poignard ou l'une des Lances ») | FR « prendre au choix le Poignard ou l'une des Lances » ; EN idem | chapitre.json | Oui |
 | DATA-10 | 62 | 3 Repas des brigands | Obligatoires | Optionnels | FR règle « Chaque fois que vous déciderez d'emporter l'un de ces objets » ; rien n'impose de les prendre | chapitre.json | Oui |
-| DATA-11 | 339 | Seuil de fuite vers 7 | `fuite=1` | `fuite=0` | FR « prendre la fuite à tout moment » ; EN « at any stage of the fight » | chapitre.json | Oui |
+| DATA-11 | 339 | Seuil de fuite vers 7 | `fuite=1` | `fuite=0` | FR « prendre la fuite à tout moment » ; EN « at any stage of the fight » | chapitre.json | Oui (D-11, avec 191 et 220) |
 | DATA-12 | 283 | Malus du Vordak (−2 sans Bouclier) | S'applique dès le 1er assaut | À partir du 2e assaut seulement ; nécessite REGLE-10 | FR « Dès le deuxième assaut… réduire de 2 points » ; EN « second and subsequent rounds » | chapitre.json | Oui (après REGLE-10) |
 | DATA-13 | 260 | Malus « mains nues » | Effet `habilite -4` | Marqueur « combat sans arme » ; nécessite REGLE-11 (sinon −8 si le joueur est déjà désarmé) | FR « votre total d'HABILETÉ se trouvera diminué de 4 points » | chapitre.json | Oui (après REGLE-11) |
 | DATA-14 | 137 | 20 Pierres Précieuses | Catégorie BOURSE, compte dans les 50 pièces | 1 objet de Sac à Dos, nouvel objet pierres\_tombeau (D-04) | FR « Elles prennent place dans votre bourse » ; EN « as a single Backpack Item » | objet.json + chapitre.json | Oui |
@@ -171,6 +171,7 @@ Ordre conseillé dans le lot 1 : d'abord DATA-00 ou un premier changeset Liquiba
 | D-08 | Date de naissance | Supprimer le champ | RGPD-01 : retrait de l'API, de l'entité et de la colonne (migration `DROP COLUMN`, qui efface aussi les dates déjà collectées). |
 | D-09 | Note PA du 113 (Laumspur comme Repas) | Non, VF | Aucun changement. |
 | D-10 | 4 Repas du 184 | 1 obligatoire et 3 facultatifs, sans changer l'ordre d'application | DATA-16 ajouté. Petit changement de code : deux lignes `repas` pour la même section, alors que `ramasserObjetDuChapitre` prend la première trouvée (`PersonnageService.java:509-513`) et que `objet_chapitre_ramasse` est unique par (personnage, chapitre, objet) (`001-baseline.sql:418`). Le plafond de ramassage doit devenir la somme des lignes de l'objet. |
+| D-11 | Quitter un combat : éviter ou fuir (DATA-05, DATA-11) | Décision du 16/11/2026. Nouveau type de condition `evitement` : partir sans livrer le combat, tant qu'aucun assaut n'est joué (112 → 248, VO « Or you may leave » ; 180 → 22). Une fois le combat engagé, il faut gagner ou utiliser FUITE (l'ennemi porte un dernier coup). `fuite=N` = FUITE possible après N assauts ; `fuite=0` = dès la première action, sans pouvoir éviter le combat (191, 220, 339 : « during the fight », « at any stage of the fight ») | DATA-05 non retenu (112 → 248 reste un départ sans combat, en `evitement`). DATA-11 retenu et étendu à 191 et 220. Migration `020-cond-evitement`. Test : `LiensDeCombatTest` (les 8 liens de fuite et d'évitement relus dans la VO). |
 
 ## 8. Tests à écrire
 
@@ -184,7 +185,7 @@ Un test par exigence critique ou haute. Les tests « données » lisent les quat
 | REGLE-04 | Unitaire | `defenseCompteCommeAssaut : aux 231 et 339, vérifier que DEFENSE et OBJET font avancer le compteur d'assauts, comme décidé en D-01`. |
 | REGLE-05 | Intégration | `PersonnageControllerTest.consommerPotionPendantCombatRefuse` (400). |
 | DATA-01 à 04 | Données | `StatsEnnemisConformesAuLivreTest` : table attendue section → \[(HAB, END)\] pour les 29 combats, dont 133 = (16, 18), 220 = (11, 20), 229 = (16, 25), 340 = (14, 24). |
-| DATA-05 | Données | `LiensDeCombatTest` : aucun lien `fuite=0` dont le texte commence par « Si vous êtes vainqueur » ; 112 → 248 exige VICTOIRE. |
+| DATA-05, DATA-11 | Données | `LiensDeCombatTest` : aucun lien `evitement` dont le texte commence par « Si vous êtes vainqueur » ; les 8 liens de fuite et d'évitement ont le seuil de la VO (D-11) ; 112 → 33 exige VICTOIRE. |
 | DATA (global) | Données | `CoherenceLivreTest` : les liens de chaque section = les renvois « rendez-vous au N » du texte (plus les coins et les exceptions VO listées) ; les plages de hasard couvrent 0 à 9 sans chevauchement ; chaque « perdez N points d'ENDURANCE » a son effet. |
 | SEC-01 | Intégration | `CreationPersonnageTest.tirageServeur` : 1 000 créations donnent HAB ∈ \[10, 19\] et END ∈ \[20, 29\] ; un corps avec `hasardHabilite = 1000` n'a aucun effet (ou renvoie 400). |
 | SEC-02 | Intégration | `LimitationDebitTest` : 4e `forgot-password` pour un même email en une heure → 429 ; 11e login par IP et par minute → 429. |

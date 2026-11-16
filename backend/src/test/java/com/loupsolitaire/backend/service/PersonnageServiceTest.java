@@ -619,12 +619,11 @@ class PersonnageServiceTest {
         assertThat(p.getChapitreActuel()).isEqualTo(chapitre1);
     }
 
-    // Lien de fuite a 0 assaut (chapitres 112, 180) : eviter le combat
+    // Lien EVITEMENT (chapitres 112, 180, D-11) : eviter le combat
 
-    private com.loupsolitaire.backend.model.Cond fuiteAZero() {
+    private com.loupsolitaire.backend.model.Cond evitement() {
         com.loupsolitaire.backend.model.Cond cond = new com.loupsolitaire.backend.model.Cond();
-        cond.setType(com.loupsolitaire.backend.model.enums.TypeCondition.FUITE);
-        cond.setValeur("0");
+        cond.setType(com.loupsolitaire.backend.model.enums.TypeCondition.EVITEMENT);
         return cond;
     }
 
@@ -636,7 +635,7 @@ class PersonnageServiceTest {
 
         Chapitre chapitre1 = new Chapitre();
         chapitre1.setId(1);
-        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+        chapitre0.setLiens(List.of(creerLien(chapitre1, evitement())));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
         when(combatRepository.findFirstByPersonnageAndChapitreIdOrderByCreeLeDesc(p, 0))
@@ -656,7 +655,7 @@ class PersonnageServiceTest {
 
         Chapitre chapitre1 = new Chapitre();
         chapitre1.setId(1);
-        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+        chapitre0.setLiens(List.of(creerLien(chapitre1, evitement())));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
         Combat combat = new Combat();
@@ -682,7 +681,7 @@ class PersonnageServiceTest {
 
         Chapitre chapitre1 = new Chapitre();
         chapitre1.setId(1);
-        chapitre0.setLiens(List.of(creerLien(chapitre1, fuiteAZero())));
+        chapitre0.setLiens(List.of(creerLien(chapitre1, evitement())));
 
         when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
         Combat combat = new Combat();

@@ -79,13 +79,13 @@ describe('ChapitrePage — règles affichées', () => {
     });
   });
 
-  it('liensEvitementCombat : fuite à 0 assaut, lien disponible', () => {
-    const fuite0 = lien(248, [{ type: 'FUITE', targetId: null, valeur: '0' }]);
-    const fuite2 = lien(7, [{ type: 'FUITE', targetId: null, valeur: '2' }]);
-    const fuite0Indispo = lien(22, [{ type: 'FUITE', targetId: null, valeur: '0' }], false);
-    page.chapitre.set(unChapitre({ liens: [fuite0, fuite2, fuite0Indispo, lien(1)] }));
+  it('liensEvitementCombat : lien EVITEMENT disponible, pas la fuite à 0 assaut', () => {
+    const evitement = lien(248, [{ type: 'EVITEMENT', targetId: null, valeur: null }]);
+    const fuite0 = lien(7, [{ type: 'FUITE', targetId: null, valeur: '0' }]);
+    const evitementIndispo = lien(22, [{ type: 'EVITEMENT', targetId: null, valeur: null }], false);
+    page.chapitre.set(unChapitre({ liens: [evitement, fuite0, evitementIndispo, lien(1)] }));
 
-    expect(page.liensEvitementCombat()).toEqual([fuite0]);
+    expect(page.liensEvitementCombat()).toEqual([evitement]);
   });
 
   it('trouverLienRetourNarratif : le lien conditionné au coin', () => {

@@ -289,7 +289,9 @@ public class CombatService {
     public boolean peutFuir(Chapitre chapitre, Combat combat) {
         for (Lien lien : chapitre.getLiens()) {
             for (Cond cond : lien.getConditions()) {
-                if (cond.getType() == TypeCondition.FUITE && combat.getAssautsLivres() >= cond.valeurEntiere()) {
+                // EVITEMENT (112, 180) : une fois engage, fuite des la premiere action.
+                if (cond.getType() == TypeCondition.EVITEMENT
+                        || (cond.getType() == TypeCondition.FUITE && combat.getAssautsLivres() >= cond.valeurEntiere())) {
                     return true;
                 }
             }

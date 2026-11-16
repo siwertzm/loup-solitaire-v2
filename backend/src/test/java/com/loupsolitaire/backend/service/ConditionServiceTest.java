@@ -313,37 +313,47 @@ class ConditionServiceTest {
         assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
     }
 
-    // Fuite a 0 assaut : eviter le combat (chapitres 112, 180)
+    // EVITEMENT : eviter le combat (chapitres 112, 180, D-11)
 
     @Test
-    void fuiteAZeroDisponibleAvantToutCombat() {
-        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+    void evitementDisponibleAvantToutCombat() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, null);
 
         stuberCombat(Optional.empty());
         assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
     }
 
     @Test
-    void fuiteAZeroDisponibleSiLeCombatEstOuvertSansAssaut() {
-        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+    void evitementDisponibleSiLeCombatEstOuvertSansAssaut() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, null);
 
         stuberCombat(Optional.of(creerCombat(StatutCombat.EN_COURS, 0, false)));
         assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
     }
 
     @Test
-    void fuiteAZeroIndisponibleUneFoisLeCombatEngage() {
-        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+    void evitementIndisponibleUneFoisLeCombatEngage() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, null);
 
         stuberCombat(Optional.of(creerCombat(StatutCombat.EN_COURS, 1, false)));
         assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
     }
 
     @Test
-    void fuiteAZeroIndisponibleApresUneVictoire() {
-        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+    void evitementIndisponibleApresUneVictoire() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, null);
 
         stuberCombat(Optional.of(creerCombat(StatutCombat.VICTOIRE, 3, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
+    // Fuite a 0 assaut (191, 220, 339) : fuite des la premiere action, mais
+    // le combat ne peut pas etre evite.
+    @Test
+    void fuiteAZeroIndisponibleAvantToutCombat() {
+        Cond cond = creerCond(TypeCondition.FUITE, null, "0");
+
+        stuberCombat(Optional.empty());
         assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
     }
 

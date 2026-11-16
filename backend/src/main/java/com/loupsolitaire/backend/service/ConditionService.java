@@ -70,6 +70,7 @@ public class ConditionService {
             case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
             case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, contexte);
+            case EVITEMENT -> combatEvitable(contexte.combatDuChapitreActuel());
             case PERMANENT, SANS_ARME -> true;
         };
     }
@@ -92,9 +93,6 @@ public class ConditionService {
     // encore EN_COURS si le joueur n'a pas fini de jouer ses tours).
     private boolean conditionDeCombat(Cond cond, ContexteConditions contexte) {
         Optional<Combat> combatOpt = contexte.combatDuChapitreActuel();
-        if (estEvitementDuCombat(cond)) {
-            return combatEvitable(combatOpt);
-        }
         if (combatOpt.isEmpty()) {
             return false;
         }
@@ -116,15 +114,14 @@ public class ConditionService {
         };
     }
 
-    // FUITE a 0 assaut : le texte du livre permet de ne pas livrer le combat
+    // EVITEMENT (D-11) : le texte du livre permet de ne pas livrer le combat
     // du tout (chapitres 112 et 180). Le lien est alors empruntable AVANT le
     // combat, sans subir de riposte. Une fois le combat engage (au moins un
     // assaut joue), il faut fuir depuis l'ecran de combat, avec la riposte
-    // de REGLE-03.
+    // de REGLE-03. FUITE a 0 assaut (191, 220, 339) ne permet PAS d'eviter
+    // le combat : seulement de fuir des la premiere action.
     public static boolean estEvitementDuCombat(Cond cond) {
-        return cond.getType() == TypeCondition.FUITE
-                && cond.getValeur() != null
-                && "0".equals(cond.getValeur().trim());
+        return cond.getType() == TypeCondition.EVITEMENT;
     }
 
     // Vrai si le combat n'a pas encore commence : aucun combat, ou un combat
