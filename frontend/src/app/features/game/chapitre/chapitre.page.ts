@@ -126,7 +126,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
 
   // Computed properties du chapitre
   readonly liens = computed(() => this.chapitre()?.liens ?? []);
-  // Liens de fuite à 0 assaut (chapitres 112, 180) : le texte permet de ne
+  // Liens EVITEMENT (chapitres 112, 180, D-11) : le texte permet de ne
   // pas livrer le combat. Proposés à côté du bouton COMBAT, pour partir sans
   // subir la riposte d'une fuite en cours de combat (REGLE-03). Le backend
   // ne les rend disponibles que tant qu'aucun assaut n'a été joué.
@@ -134,7 +134,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     this.liens().filter(
       (lien) =>
         lien.disponible &&
-        lien.conditions.some((c) => c.type === 'FUITE' && c.valeur?.trim() === '0'),
+        lien.conditions.some((c) => c.type === 'EVITEMENT'),
     ),
   );
   readonly objets = computed(() => this.chapitre()?.objets ?? []);

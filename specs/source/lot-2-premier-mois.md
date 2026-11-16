@@ -27,7 +27,7 @@ Ces 28 exigences suivent le lancement, dans le premier mois. Effort estimé : en
 | DATA-07 | Moyenne | 181 : suppression du vol du Sac — D-03 | S | À faire |
 | DATA-08 | Moyenne | 201 : lien est vers 15 (VO) — D-02 | S | Fait |
 | DATA-10 | Basse | 62 : 3 Repas facultatifs | S | Fait |
-| DATA-11 | Basse | 339 : fuite possible à tout moment (fuite=0) | S | Déja OK |
+| DATA-11 | Basse | 339 : fuite possible à tout moment (fuite=0) | S | Fait (D-11, avec 191 et 220) |
 | DATA-13 | Moyenne | 260 : marqueur « sans arme » à la place de l'effet −4 (avec REGLE-11) | S | À faire |
 | DATA-14 | Moyenne | 137 : 20 Pierres = un seul objet de Sac (pierres\_tombeau) — D-04 | S | À faire |
 | DATA-16 | Basse | 184 : 1 Repas obligatoire + 3 facultatifs, ramassage sur plusieurs lignes — D-10 | S | Fait |

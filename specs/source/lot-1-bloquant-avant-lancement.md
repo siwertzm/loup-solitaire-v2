@@ -20,7 +20,7 @@ Ces 21 exigences doivent être terminées avant l'ouverture au public. Effort es
 | DATA-02 | Critique | 229 : nouvel ennemi kraan\_229 à 16/25 | S | Fait |
 | DATA-03 | Critique | 220 : nouvel ennemi garde\_corps\_220 à 11/20 | S | Fait |
 | DATA-04 | Critique | 340 : nouvel ennemi glok\_loup\_maudit\_340 à 14/24 | S | Fait |
-| DATA-05 | Haute | 112 : lien vers 248 soumis à la victoire (et non fuite=0) | S | Déja OK |
+| DATA-05 | Haute | 112 : lien vers 248 soumis à la victoire (et non fuite=0) | S | Abandonné (D-11 : départ sans combat gardé, type `evitement`) |
 | DATA-09 | Moyenne | 291 : une seule Lance ramassable | S | Fait |
 | RGPD-01 | Haute | Suppression de la date de naissance (API, entité, colonne) — D-08 | S | Fait |
 | RGPD-04 | Moyenne | Politique de confidentialité, CGU, registre, accord Brevo | S | Fait |

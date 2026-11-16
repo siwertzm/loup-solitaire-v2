@@ -18,8 +18,8 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
-- Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie), REGLE-10 + DATA-12 (malus du Vordak à partir du 2e assaut, affiché sur la carte), QUAL-03 (convention de nommage), REGLE-18 (pas de Guérison sur un chapitre à perte d'ENDURANCE ; on reste sur la VO), QUAL-15 (page Options : taille du texte), RGPD-02 (export des données par email), [SEC-11](lot-3/SEC-11-audit-securite/spec.md) (audit du 16/11 : compte deviné au temps de réponse, rafraîchissements simultanés), OPS-07 (requêtes SQL mesurées, N+1 de la liste des personnages supprimé).
-- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
+- Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie), REGLE-10 + DATA-12 (malus du Vordak à partir du 2e assaut, affiché sur la carte), QUAL-03 (convention de nommage), REGLE-18 (pas de Guérison sur un chapitre à perte d'ENDURANCE ; on reste sur la VO), QUAL-15 (page Options : taille du texte), RGPD-02 (export des données par email), [SEC-11](lot-3/SEC-11-audit-securite/spec.md) (audit du 16/11 : compte deviné au temps de réponse, rafraîchissements simultanés), OPS-07 (requêtes SQL mesurées, N+1 de la liste des personnages supprimé), DATA-11 (décision D-11 : FUITE dès la première action aux 191, 220 et 339 ; type `evitement` pour partir sans combattre aux 112 et 180).
+- Abandonné : DATA-05 (16/11/2026, décision D-11 : le 112 → 248 reste un départ sans combat), REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
 
@@ -64,11 +64,10 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 - **DATA-16** était marqué « Fait » : le 184 a toujours `repas` × 4 obligatoires et aucune migration ne le change. Remis à faire, puis abandonné le 16/11/2026 (voir « Avancement »).
 
 **À confirmer (marqués « Déjà OK », mais les données ne suivent pas le cahier) :**
-- **DATA-05** : le lien 112 → 248 est toujours `fuite = 0`. Le code le traite exprès comme « combat évitable » (`PersonnageService.avancerVersChapitre`, chapitres 112 et 180). Si c'est un choix, l'écrire comme décision D-11 ; sinon, créer la spec.
-- **DATA-11** : le lien 339 → 7 est toujours `fuite = 1`, le cahier demande `fuite = 0`. Même question.
-- **REGLE-01 / REGLE-02** : le combat utilise toujours sa table maison et deux tirages par assaut. C'est cohérent avec `CLAUDE.md` (« système maison, volontairement différent du livre ») : à écrire comme décision D-11, pour que le cahier ne dise plus « Critique ».
+- **REGLE-01 / REGLE-02** : le combat utilise toujours sa table maison et deux tirages par assaut. C'est cohérent avec `CLAUDE.md` (« système maison, volontairement différent du livre ») : à écrire comme décision D-12, pour que le cahier ne dise plus « Critique ».
 
 **Abandonné :**
+- **DATA-05** (lien 112 → 248), décision D-11 du 16/11/2026 : le livre permet de partir sans combattre (nouveau type de condition `evitement`). Possible tant qu'aucun assaut n'est joué ; une fois engagé, il faut gagner ou utiliser FUITE. Test explicite dans `LiensDeCombatTest`.
 - **REGLE-06** (interdire de jeter un objet pendant un combat), décision du 12/11/2026 : jeter un objet en plein combat ne peut que désavantager le joueur (ex. sa seule arme : −4 HABILETÉ), sans effet sur le déroulé de l'aventure. `DELETE /personnages/{id}/objets/{objetId}` reste permis en combat ; seule la consommation y est bloquée (REGLE-05).
 
 **Vérifié « Fait » :** SEC-01 à SEC-04, OPS-02, OPS-04, REGLE-03, REGLE-05 (consommation bloquée pendant un combat en cours), REGLE-08, DATA-01 à DATA-04, DATA-08 à DATA-10, RGPD-01, RGPD-04, QUAL-01 (`./mvnw verify` vert avec Testcontainers, 600 tests).

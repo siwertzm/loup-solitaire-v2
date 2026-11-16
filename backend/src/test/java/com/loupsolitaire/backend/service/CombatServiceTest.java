@@ -811,10 +811,10 @@ class CombatServiceTest {
     }
 
     @Test
-    void uneDefenseDebloqueLaFuiteDu339() {
+    void uneDefenseDebloqueLaFuiteDu169() {
         Ennemi ennemi = creerEnnemi("vordak", 5, 10);
         Lien lienFuite = creerLienAvecCondition(TypeCondition.FUITE, "1");
-        Chapitre chapitre = creerChapitreCombat(339, List.of(ennemi), List.of(lienFuite));
+        Chapitre chapitre = creerChapitreCombat(169, List.of(ennemi), List.of(lienFuite));
         Personnage personnage = creerPersonnage(10, 20, chapitre);
         Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
         stuberCombatExistant(personnage, chapitre, combat);
@@ -839,6 +839,28 @@ class CombatServiceTest {
         Chapitre chapitre = creerChapitreCombat(17, List.of(), List.of(lienFuite));
         Combat combat = new Combat();
         combat.setAssautsLivres(3);
+
+        assertThat(combatService.peutFuir(chapitre, combat)).isTrue();
+    }
+
+    // 191, 220, 339 : « at any stage of the fight » -> fuite des la 1re action.
+    @Test
+    void peutFuirDesLaPremiereActionAvecUneFuiteAZero() {
+        Lien lienFuite = creerLienAvecCondition(TypeCondition.FUITE, "0");
+        Chapitre chapitre = creerChapitreCombat(339, List.of(), List.of(lienFuite));
+        Combat combat = new Combat();
+        combat.setAssautsLivres(0);
+
+        assertThat(combatService.peutFuir(chapitre, combat)).isTrue();
+    }
+
+    // D-11 (112, 180) : une fois le combat engage, le bouton FUITE reste actif.
+    @Test
+    void peutFuirDesLaPremiereActionAvecUnEvitement() {
+        Lien lienEvitement = creerLienAvecCondition(TypeCondition.EVITEMENT, null);
+        Chapitre chapitre = creerChapitreCombat(112, List.of(), List.of(lienEvitement));
+        Combat combat = new Combat();
+        combat.setAssautsLivres(0);
 
         assertThat(combatService.peutFuir(chapitre, combat)).isTrue();
     }

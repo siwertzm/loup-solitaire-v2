@@ -2131,7 +2131,7 @@
       },
       {
         "page": "248",
-        "cond": [{ "type": "fuite", "valeur": "0", "targetId": null }]
+        "cond": [{ "type": "evitement", "valeur": null, "targetId": null }]
       }
     ],
     "id": 112
@@ -3048,7 +3048,7 @@
       },
       {
         "page": "22",
-        "cond": [{ "type": "fuite", "valeur": "0", "targetId": null }]
+        "cond": [{ "type": "evitement", "valeur": null, "targetId": null }]
       }
     ],
     "id": 180,
@@ -3204,7 +3204,7 @@
       },
       {
         "page": "234",
-        "cond": [{ "type": "fuite", "valeur": "1", "targetId": null }]
+        "cond": [{ "type": "fuite", "valeur": "0", "targetId": null }]
       }
     ],
     "id": 191,
@@ -3569,7 +3569,7 @@
         "page": "24",
         "cond": [{ "type": "victoire", "valeur": "1", "targetId": null }]
       },
-      { "page": "234", "cond": [{ "type": "fuite", "valeur": "1", "targetId": null }] }
+      { "page": "234", "cond": [{ "type": "fuite", "valeur": "0", "targetId": null }] }
     ],
     "id": 220,
     "objet": []
@@ -5236,7 +5236,7 @@
         "page": "7",
         "cond": [{
           "type": "fuite",
-          "valeur": "1",
+          "valeur": "0",
           "targetId": null
         }]
       }
