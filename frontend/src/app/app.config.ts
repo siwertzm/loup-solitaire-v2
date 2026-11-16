@@ -1,4 +1,4 @@
-import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideIonicAngular } from '@ionic/angular';
@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/angular';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { OptionsService } from './core/services/options.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,8 @@ export const appConfig: ApplicationConfig = {
     // aussi dans la console). Sans DSN, Sentry n'envoie rien.
     { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
     provideZonelessChangeDetection(),
+    // QUAL-15 : taille du texte appliquée avant le premier affichage.
+    provideAppInitializer(() => inject(OptionsService).charger()),
     provideIonicAngular({}),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptors([authInterceptor])),

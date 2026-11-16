@@ -85,6 +85,10 @@ export class ProfilPage implements ViewWillEnter {
     this.router.navigate(['/profil/edition']);
   }
 
+  ouvrirOptions(): void {
+    this.router.navigate(['/options']);
+  }
+
   deconnexion(): void {
     this.auth.logout().subscribe({
       next: () => this.router.navigate(['/auth/login'], { replaceUrl: true }),

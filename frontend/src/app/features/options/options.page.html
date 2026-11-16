@@ -1,0 +1,26 @@
+<ion-content [fullscreen]="true" class="options">
+  <div class="ecran">
+    <button type="button" class="retour" (click)="retour()">
+      {{ 'OPTIONS.RETOUR' | translate }}
+    </button>
+    <h1 class="titre">{{ 'OPTIONS.TITRE' | translate }}</h1>
+
+    <section class="bloc">
+      <h2 class="bloc-titre" id="titre-taille-texte">{{ 'OPTIONS.TAILLE_TEXTE' | translate }}</h2>
+      <div class="choix" role="radiogroup" aria-labelledby="titre-taille-texte">
+        @for (taille of tailles; track taille) {
+          <button
+            type="button"
+            role="radio"
+            [class.actif]="options.tailleTexte() === taille"
+            [attr.aria-checked]="options.tailleTexte() === taille"
+            (click)="choisirTaille(taille)"
+          >
+            {{ 'OPTIONS.TAILLE_' + taille | translate }}
+          </button>
+        }
+      </div>
+      <p class="apercu">{{ 'OPTIONS.APERCU' | translate }}</p>
+    </section>
+  </div>
+</ion-content>

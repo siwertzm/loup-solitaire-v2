@@ -37,7 +37,7 @@ ion-content.intro {
 
   .principal {
     font-family: 'Cinzel', serif;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 600;
     margin-top: 10px;
   }
@@ -91,7 +91,7 @@ ion-content.intro {
       z-index: 1;
       padding-left: 14px;
       font-family: 'Cinzel', serif;
-      font-size: 10px;
+      font-size: 0.625rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: #ece2c8;
@@ -112,7 +112,7 @@ ion-content.intro {
     align-items: center;
     justify-content: center;
     font-family: 'Cinzel', serif;
-    font-size: 22px;
+    font-size: 1.375rem;
     box-shadow: 0px 0px 7px rgba(15, 14, 12, 0.671);
     color: $cuivre;
     text-decoration: none;
@@ -172,7 +172,7 @@ ion-content.intro {
   padding-top: 5px;
 
   font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
 
   transform: translateY(0);
@@ -231,7 +231,7 @@ ion-content.intro {
   .de {
     width: 25px;
     height: 25px;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: $encre;
     border: 2px solid $encre;
     border-radius: 30%;
@@ -257,7 +257,7 @@ ion-content.intro {
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.62;
   z-index: 1;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
@@ -287,7 +287,7 @@ ion-content.intro {
 
 .carte-ennemi-nom {
   font-family: 'Cinzel', serif;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: $encre;
@@ -308,7 +308,7 @@ ion-content.intro {
 
 .carte-ennemi-label {
   font-family: 'Cinzel', serif;
-  font-size: 8.5px;
+  font-size: 0.53125rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: $sepia;
@@ -316,7 +316,7 @@ ion-content.intro {
 
 .carte-ennemi-valeur {
   font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: $encre;
 }
@@ -345,7 +345,7 @@ ion-content.intro {
 
 .encart-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   color: $sepia;
@@ -367,7 +367,7 @@ ion-content.intro {
 
   .mort-texte {
     margin: 0;
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: bold;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -376,7 +376,7 @@ ion-content.intro {
 
   .mort-erreur {
     margin: 0;
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: $rouge;
     text-align: center;
   }
@@ -402,7 +402,7 @@ ion-content.intro {
   background: rgba(236, 226, 200, 0.103);
   border: 2px solid $cuivre;
   color: $cuivre;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: bold;
   letter-spacing: 0.16em;
   box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.705);
@@ -462,7 +462,7 @@ ion-content.intro {
   justify-content: center;
 
   font-family: 'Cinzel', serif;
-  font-size: 20px;
+  font-size: 1.25rem;
 
   &.hasard {
     border: 1px solid rgba(217, 169, 74, 0.5);
@@ -513,7 +513,7 @@ ion-content.intro {
 
 .popup-confirmation-titre {
   font-family: 'Cinzel', serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #c2903a;
@@ -521,7 +521,7 @@ ion-content.intro {
 }
 
 .popup-confirmation-texte {
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   color: $sepia;
   text-align: center;
   margin: 8px 0 16px;
@@ -539,12 +539,12 @@ ion-content.intro {
 
 .popup-confirmation-nom {
   flex: 1;
-  font-size: 14.5px;
+  font-size: 0.90625rem;
 }
 
 .popup-confirmation-quantite {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: $sepia;
 }
 
@@ -555,7 +555,7 @@ ion-content.intro {
   padding: 12px;
   border-radius: 10px;
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   letter-spacing: 0.14em;
 }
 

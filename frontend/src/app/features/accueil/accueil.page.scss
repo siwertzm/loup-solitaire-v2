@@ -11,7 +11,7 @@ $sepia: #8a7a5e;
 $rouge: #e0705a;
 
 :host ::ng-deep .etat strong {
-  font-size: 22px;
+  font-size: 1.375rem;
   color: rgba(236, 226, 200, 0.6);
   font-weight: bold;
 }
@@ -62,7 +62,7 @@ ion-content.accueil {
   cursor: pointer;
 
   ion-icon {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
 
   &:hover {
@@ -78,7 +78,7 @@ ion-content.accueil {
 
   .sur-titre {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.42em;
     color: $cuivre;
     text-transform: uppercase;
@@ -87,14 +87,14 @@ ion-content.accueil {
   h1 {
     font-family: 'Cinzel', serif;
     font-weight: 600;
-    font-size: 38px;
+    font-size: 2.375rem;
     line-height: 1.05;
     letter-spacing: 0.02em;
     margin: 14px 0 8px;
   }
 
   .sous-titre {
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-style: italic;
     color: rgba(236, 226, 200, 0.6);
   }
@@ -154,7 +154,7 @@ ion-content.accueil {
 
 ion-item-option {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
 }
 
@@ -165,9 +165,16 @@ ion-item-options {
 
 .etat {
   padding: 40px 6px;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: rgba(236, 226, 200, 0.6);
   text-align: center;
+  text-wrap: balance;
+
+  // QUAL-15 : en grande taille, les retours à la ligne voulus pour la
+  // taille normale coupent le texte en lignes inégales.
+  :host-context([data-taille-texte='GRANDE']) & ::ng-deep br {
+    display: none;
+  }
 
   &.erreur {
     color: #e0705a;
@@ -208,19 +215,19 @@ ion-item-options {
     align-items: center;
     justify-content: center;
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 0.8125rem;
     box-shadow: 0 2px 5px rgba(58, 50, 38, 0.35);
   }
 
   .nom {
     font-family: 'Cinzel', serif;
-    font-size: 17px;
+    font-size: 1.0625rem;
     font-weight: 600;
   }
 
   .chapitre {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     color: $encre;
@@ -240,7 +247,7 @@ ion-item-options {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1;
   }
 
@@ -249,7 +256,7 @@ ion-item-options {
     justify-content: space-between;
     gap: 18px;
     margin-top: 9px;
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 
   .stat {
@@ -263,13 +270,13 @@ ion-item-options {
 
     .cle {
       font-family: 'Cinzel', serif;
-      font-size: 10px;
+      font-size: 0.625rem;
       letter-spacing: 0.12em;
       color: $sepia;
     }
 
     .valeur {
-      font-size: 19px;
+      font-size: 1.1875rem;
       font-weight: 600;
     }
   }
@@ -283,7 +290,7 @@ ion-item-options {
     background: rgba(58, 50, 38, 0.1);
     color: $encre;
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 0.8125rem;
     letter-spacing: 0.16em;
     cursor: pointer;
 
@@ -314,7 +321,7 @@ ion-item-options {
       opacity: 1;
 
       .jouer-tome {
-        font-size: 11px;
+        font-size: 0.6875rem;
         letter-spacing: 0.2em;
         margin-top: 1px;
       }
@@ -323,7 +330,7 @@ ion-item-options {
         font-family: 'EB Garamond', Georgia, serif;
         font-style: italic;
         font-weight: 400;
-        font-size: 12px;
+        font-size: 0.75rem;
         letter-spacing: normal;
       }
     }
@@ -358,7 +365,7 @@ ion-item-options {
     background: transparent;
     color: $rouge;
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 0.8125rem;
     letter-spacing: 0.16em;
     cursor: pointer;
 
@@ -383,7 +390,7 @@ ion-item-options {
   padding: 13px;
   color: rgba(236, 226, 200, 0.8);
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   cursor: pointer;
 
@@ -400,7 +407,7 @@ ion-item-options {
 .pied {
   flex: none;
   padding-top: 14px;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   color: rgba(236, 226, 200, 0.4);
   text-align: center;
 }
@@ -429,7 +436,7 @@ ion-item-options {
 
   .surtitre {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.2em;
     color: $sepia;
   }
@@ -437,20 +444,20 @@ ion-item-options {
   .popup-titre {
     margin: 8px 0 12px;
     font-family: 'Cinzel', serif;
-    font-size: 19px;
+    font-size: 1.1875rem;
     font-weight: 600;
   }
 
   .popup-texte {
     margin: 0;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     white-space: pre-line;
   }
 
   .popup-erreur {
     margin-top: 10px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: $rouge;
   }
 }
@@ -475,7 +482,7 @@ ion-item-options {
     padding: 12px 8px;
     border-radius: 10px;
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.08em;
     cursor: pointer;
 

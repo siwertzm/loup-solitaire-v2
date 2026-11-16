@@ -115,7 +115,7 @@ $rouge: #b0392e;
   padding: 24px 0;
   color: $sepia;
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -128,13 +128,13 @@ $rouge: #b0392e;
 
   .sac-entete-titre {
     font-family: 'Cinzel', serif;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 700;
   }
 
   .sac-resume {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.08em;
     color: $sepia;
     text-transform: uppercase;
@@ -145,7 +145,7 @@ $rouge: #b0392e;
   font-family: 'Cinzel', serif;
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   color: $sepia;
@@ -180,7 +180,7 @@ $rouge: #b0392e;
 
   .sac-nom {
     font-family: 'Cinzel', serif;
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 
   .sac-tag {
@@ -188,7 +188,7 @@ $rouge: #b0392e;
     display: flex;
     gap: 4px;
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
     color: $sepia;
     text-transform: uppercase;
@@ -198,7 +198,7 @@ $rouge: #b0392e;
   .sac-bonus {
     display: block;
     color: $vert;
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-right: 6px;
 
     &.sac-malus {
@@ -228,7 +228,7 @@ $rouge: #b0392e;
 
   .sac-bourse-cle {
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.14em;
     color: $sepia;
     text-transform: uppercase;
@@ -236,7 +236,7 @@ $rouge: #b0392e;
 
   .sac-bourse-valeur {
     font-family: 'Cinzel', serif;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 700;
   }
 }
@@ -267,7 +267,7 @@ ion-item-sliding {
 
 ion-item-option {
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
 }
 
@@ -297,13 +297,13 @@ ion-item-option {
 
 .popup-consommer-titre {
   font-family: 'Cinzel', serif;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   text-align: center;
 }
 
 .popup-consommer-description {
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   color: $sepia;
   text-align: center;
   margin: 10px 0 0;
@@ -317,7 +317,7 @@ ion-item-option {
   background: rgba(157, 191, 92, 0.18);
   border-radius: 999px;
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   letter-spacing: 0.08em;
   color: $vert;
 }
@@ -334,7 +334,7 @@ ion-item-option {
   padding: 12px;
   border-radius: 10px;
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   letter-spacing: 0.1em;
 }
 
@@ -397,7 +397,7 @@ ion-item-option {
   border: 1px solid rgba(236, 226, 200, 0.35);
   background: rgba(0, 0, 0, 0.45);
   color: $parchemin;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1;
   display: flex;
   align-items: center;

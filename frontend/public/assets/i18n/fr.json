@@ -104,7 +104,7 @@
     "TITRE_LIGNE2": "des Ténèbres",
     "SOUS_TITRE": "Loup Solitaire par Joe DEVER",
     "CHARGEMENT": "Chargement…",
-    "AUCUNE_AVENTURE": "Les Maîtres des Ténèbres ont attaqué<br>le monastère Kaï dans lequel de jeunes prodiges<br>tels que vous sont initiés à l'art de la guerre.<br>Vous êtes le seul survivant de la bataille,<br>et une mission vitale vous incombe désormais :<br>avertir le roi de Sommerlund<br>que les Maîtres des Ténèbres<br>ont décimé l'élite guerrière du pays.<br>Les ennemis qui ont juré votre perte<br>feront tout pour vous en empêcher.",
+    "AUCUNE_AVENTURE": "Les Maîtres des Ténèbres ont attaqué <br>le monastère Kaï dans lequel de jeunes prodiges <br>tels que vous sont initiés à l'art de la guerre. <br>Vous êtes le seul survivant de la bataille, <br>et une mission vitale vous incombe désormais : <br>avertir le roi de Sommerlund <br>que les Maîtres des Ténèbres <br>ont décimé l'élite guerrière du pays. <br>Les ennemis qui ont juré votre perte <br>feront tout pour vous en empêcher.",
     "CHAPITRE_PREFIXE": "CHAP.",
     "HABILITE": "HABILETÉ",
     "ENDURANCE": "ENDURANCE",
@@ -126,6 +126,15 @@
     "POPUP_ANNULER": "ANNULER",
     "INITIALE_PAR_DEFAUT": "LS"
   },
+  "OPTIONS": {
+    "RETOUR": "← RETOUR",
+    "TITRE": "Options",
+    "TAILLE_TEXTE": "TAILLE DU TEXTE",
+    "TAILLE_PETITE": "PETITE",
+    "TAILLE_NORMALE": "NORMALE",
+    "TAILLE_GRANDE": "GRANDE",
+    "APERCU": "Vous êtes à trois mètres environ de l'étranger lorsque son corbeau se met à croasser."
+  },
   "PROFIL": {
     "RETOUR": "‹ ACCUEIL",
     "CHARGEMENT": "Chargement…",
@@ -134,6 +143,7 @@
     "LIGNE_PIECES_PREMIUM": "PIÈCES PREMIUM",
     "LIGNE_MEMBRE_DEPUIS": "MEMBRE DEPUIS",
     "MODIFIER": "MODIFIER MON PROFIL",
+    "OPTIONS": "OPTIONS",
     "FEEDBACK": "SIGNALER UN BUG OU DONNER UN AVIS",
     "DECONNEXION": "SE DÉCONNECTER",
     "ERREUR_CHARGEMENT": "Impossible de charger votre profil.",

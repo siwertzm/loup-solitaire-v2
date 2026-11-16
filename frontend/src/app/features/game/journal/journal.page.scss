@@ -42,7 +42,7 @@ ion-content.journal {
   .titre {
     margin: 0;
     font-family: 'Cinzel', serif;
-    font-size: 28px;
+    font-size: 1.75rem;
     font-weight: 600;
     font-variant: small-caps;
     letter-spacing: 0.03em;
@@ -51,7 +51,7 @@ ion-content.journal {
   .sous-titre {
     margin-top: 4px;
     color: rgba($parchemin, 0.55);
-    font-size: 16px;
+    font-size: 1rem;
     font-style: italic;
   }
 }
@@ -59,7 +59,7 @@ ion-content.journal {
 .message {
   margin: 28px 0 0;
   color: rgba($parchemin, 0.7);
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-style: italic;
 
   &.erreur {
@@ -208,7 +208,7 @@ ion-content.journal {
 .libelle {
   display: block;
   color: $or;
-  font-size: 19px;
+  font-size: 1.1875rem;
   font-variant: small-caps;
   letter-spacing: 0.08em;
   line-height: 1.35;
@@ -223,7 +223,7 @@ ion-content.journal {
   margin-top: 2px;
   overflow: hidden;
   color: rgba($parchemin, 0.8);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;

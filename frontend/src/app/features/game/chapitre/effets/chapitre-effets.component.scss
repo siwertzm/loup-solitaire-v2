@@ -14,7 +14,7 @@ $parchemin: #ece2c8;
 
 .sac-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   color: $sepia;
@@ -33,7 +33,7 @@ $parchemin: #ece2c8;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: 0.9375rem;
 
   .logo {
     flex: none;
@@ -56,12 +56,12 @@ $parchemin: #ece2c8;
 }
 
 .effet-titre {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: $encre;
 }
 
 .effet-description {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: $sepia;
   margin-top: 3px;
 }
@@ -75,7 +75,7 @@ $parchemin: #ece2c8;
   background: transparent;
   border-radius: 8px;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.16em;
 
   &.effet-badge-auto {
@@ -131,7 +131,7 @@ $parchemin: #ece2c8;
 
 .popup-plein-titre {
   font-family: 'Cinzel', serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: $or;
@@ -145,7 +145,7 @@ $parchemin: #ece2c8;
 }
 
 .popup-plein-texte {
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   color: $sepia;
   text-align: center;
   margin: 8px 0 16px;
@@ -170,7 +170,7 @@ $parchemin: #ece2c8;
   display: flex;
   gap: 4px;
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.08em;
   color: $sepia;
 }
@@ -182,12 +182,12 @@ $parchemin: #ece2c8;
 
 .popup-plein-nom {
   flex: 1;
-  font-size: 14.5px;
+  font-size: 0.90625rem;
 }
 
 .popup-plein-quantite {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: $sepia;
 }
 
@@ -199,7 +199,7 @@ $parchemin: #ece2c8;
   border-radius: 6px;
   color: $rouge;
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.1em;
 
   &:disabled {
@@ -216,7 +216,7 @@ $parchemin: #ece2c8;
   border-radius: 10px;
   color: $sepia;
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   letter-spacing: 0.14em;
 }
 
@@ -247,19 +247,19 @@ $parchemin: #ece2c8;
 }
 
 .nbr {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   padding-right: 10px;
 }
 
 .nbr2 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   padding-right: 10px;
 }
 
 .cont {
   padding-right: 2px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 800;
 }

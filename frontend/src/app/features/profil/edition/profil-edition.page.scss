@@ -32,21 +32,21 @@ ion-content.profil-edition {
   border: none;
   padding: 8px 0;
   color: rgba(236, 226, 200, 0.6);
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 }
 
 .titre {
   font-family: 'Cinzel', serif;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 10px 0 18px;
 }
 
 .etat {
   padding: 20px 2px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: rgba(236, 226, 200, 0.6);
 }
 
@@ -54,7 +54,7 @@ ion-content.profil-edition {
   border-radius: 10px;
   padding: 11px 14px;
   margin-bottom: 14px;
-  font-size: 14.5px;
+  font-size: 0.90625rem;
 
   &.succes {
     background: rgba(157, 191, 92, 0.14);
@@ -79,7 +79,7 @@ ion-content.profil-edition {
 
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   letter-spacing: 0.2em;
   color: rgba(236, 226, 200, 0.5);
 }
@@ -91,7 +91,7 @@ ion-content.profil-edition {
 
   .cle {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.14em;
     color: rgba(236, 226, 200, 0.55);
   }
@@ -105,7 +105,7 @@ ion-content.profil-edition {
     padding: 12px 13px;
     color: $parchemin;
     font-family: 'EB Garamond', Georgia, serif;
-    font-size: 16px;
+    font-size: 1rem;
 
     &:focus {
       outline: none;
@@ -140,7 +140,7 @@ ion-content.profil-edition {
     cursor: pointer;
 
     ion-icon {
-      font-size: 21px;
+      font-size: 1.3125rem;
     }
 
     &:focus-visible {
@@ -150,7 +150,7 @@ ion-content.profil-edition {
   }
 
   .aide {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: $rouge;
   }
 }
@@ -162,7 +162,7 @@ ion-content.profil-edition {
   padding: 0;
   color: $cuivre;
   font-family: 'EB Garamond', Georgia, serif !important;
-  font-size: 14px;
+  font-size: 0.875rem;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -171,7 +171,7 @@ ion-content.profil-edition {
 .secondaire {
   border-radius: 11px;
   padding: 14px;
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 
