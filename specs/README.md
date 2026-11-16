@@ -5,7 +5,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Source** : `source/` contient le cahier des charges d'origine (audit du 25/09/2026) et les trois listes de lots. Le détail des constats, les écarts VO/VF (section 5) et les décisions D-01 à D-10 (section 7) y restent.
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
 - **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
-- **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
+- **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Ajouts du porteur du projet pour le lot 3 : REGLE-18 et REGLE-19 (Guérison, édition augmentée), QUAL-17 (dialogue du combat). Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Chaque tâche garde son dossier une fois finie. Quand une tâche est finie : passer son statut à « Fait » dans son `spec.md`, la retirer du tableau « Tâches à faire » et l'ajouter dans « Avancement ».
 
 ## Avancement (16/11/2026)
@@ -43,9 +43,23 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 | [QUAL-09](lot-3/QUAL-09-choix-langue/spec.md) | Moyenne | M | Choix de la langue ; en.json corrigé |
 | [QUAL-11](lot-3/QUAL-11-angular-22/spec.md) | Basse | M | Migration vers Angular 22 et Vitest 5 (`ng update`) |
 | [RGPD-02](lot-3/RGPD-02-export-donnees/spec.md) | Basse | S | Export des données en JSON (reporté du lot 2 : demandes traitées à la main en attendant) |
+| [REGLE-18](lot-3/REGLE-18-guerison-sans-effort/spec.md) | Moyenne | M | Guérison : pas de +1 sur un chapitre de combat, d'effort violent ou de stress intense (VF édition augmentée) |
+| [REGLE-19](lot-3/REGLE-19-mode-expert/spec.md) | Basse | M/L | Mode expert : Guérison limitée à 10 points au total |
+| [QUAL-17](lot-3/QUAL-17-dialogue-combat-ecrase/spec.md) | Moyenne | S | Boîte de dialogue du combat trop écrasée quand un dé s'affiche |
 | [QUAL-13](lot-3/QUAL-13-bande-originale/spec.md) | Basse | M | Bande originale : socle de musique de fond — retour bêta |
 | [QUAL-14](lot-3/QUAL-14-id-hors-url/spec.md) | Basse | M | Retirer l'id du personnage des URL du jeu |
 | [QUAL-15](lot-3/QUAL-15-page-options/spec.md) | Basse | M | Page Options : son, taille du texte, autres paramètres à définir |
+
+### Ordre conseillé du lot 3 (proposé le 16/11/2026)
+
+1. **QUAL-17** (dialogue du combat écrasé) : visible par les joueurs, petit.
+2. **REGLE-10 + DATA-12** (283) : règle du jeu fausse.
+3. **RGPD-02** (export des données) : obligation légale aujourd'hui traitée à la main.
+4. **QUAL-03** (nommage) : avant les tâches qui touchent ces fichiers.
+5. **REGLE-18 puis REGLE-19** (Guérison, mode expert) : même code ; questions ouvertes à trancher d'abord.
+6. **QUAL-09** (langue), puis **QUAL-15 + QUAL-13** (Options, musique), **QUAL-14** (URL sans id) : questions ouvertes.
+7. **OPS-07** (requêtes SQL), **QUAL-11** (Angular 22) : sans urgence.
+8. **QUAL-04 + REGLE-15** (coins), **QUAL-05** (multi-tomes) : MVP2.
 
 ## Statuts vérifiés le 11/11/2026
 
