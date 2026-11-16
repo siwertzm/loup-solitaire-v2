@@ -10,14 +10,14 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #27, QUAL-10** (lot 2, étape D, dernière du lot 2), branche `feature-QUAL-10`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Lot 2 terminé.** Prochaine tâche : **OPS-06** (lot 1, sauvegardes et restauration), à faire avant d'ouvrir l'app au public ; puis le lot 3.
 
-**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
+**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #76) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
-- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12.
+- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
@@ -30,11 +30,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ### Lot 2 — premier mois
 
-Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoie à la section « Ordre conseillé » plus bas.
-
-| # | Étape | ID | Sévérité | Effort | Tâche |
-| --- | --- | --- | --- | --- | --- |
-| 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
+Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (voir « Avancement »).
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
@@ -72,7 +68,7 @@ Les statuts des listes de `source/` ont été contrôlés contre le code et `cha
 
 ## Ordre conseillé
 
-Les étapes 1, 2, 4.A, 4.B et 4.C sont faites, 4.D est la suivante (voir « Avancement »).
+Les étapes 1, 2 et 4 (lot 2) sont faites ; il reste l'étape 3 (OPS-06) (voir « Avancement »).
 
 1. **SEC-09** tout de suite : c'est le seul problème que les testeurs TestFlight vont voir. **SEC-10** dans la foulée (même symptôme côté Profil après 15 minutes).
 2. **OPS-08** dans la même petite PR que le `.gitignore` (graphify-out, Zone.Identifier).

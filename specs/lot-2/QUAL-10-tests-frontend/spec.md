@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M | `feature-QUAL-10` | À faire |
+| 2 | Moyenne | M | `feature-QUAL-10` | Fait |
 
 Origine : demande du 12/11/2026, suite de QUAL-06
 
@@ -12,7 +12,20 @@ QUAL-06 a branché `npm test` dans la CI, mais le frontend n'a que deux fichiers
 
 Le serveur fait autorité sur les règles, mais l'app en recopie une partie pour l'affichage : plafonds d'inventaire, protections contre un malus, objets restant à prendre, bonus d'HABILETÉ affichés en combat. Une divergence avec le backend ne se voit aujourd'hui qu'en jouant : bouton « Prendre » actif alors que le sac est plein, malus annoncé alors que le joueur est protégé, joueur bloqué sur un chapitre.
 
-## À faire
+## Mise en œuvre (16/11/2026)
+
+143 tests Vitest (25 fichiers) en ~5 s, contre 2 fichiers au départ de la spec.
+
+- Aides : `src/testing/fabriques.ts` (`unPersonnage`, `unItem`, `unObjet`, `unChapitre`, `unCombat`…).
+- 1. Socle : `auth.guard.spec.ts`, `token-storage.service.spec.ts` (Preferences web réel, sur localStorage), `auth.service.spec.ts`.
+- 2. API : `personnage`, `chapitre`, `combat`, `catalogue.services` (objet + discipline), `inventaire-sheet.service`.
+- 3. Logique : `chapitre-objets.regles.spec.ts`, `chapitre-effets.regles.spec.ts`, `chapitre.page.regles.spec.ts`, `combat.page.regles.spec.ts` (+ specs existantes de REGLE-09/11/12/16/17, QUAL-12/16).
+- 4. Authentification : `login.page.spec.ts` (`register` et `profil-edition` existaient déjà).
+- Vérification par mutation : `maxArmes`, `maxObjetsEtRepas`, `maxBourse`, `bonusArmeMaitrisee` (×3 composants), `malusSansArme`, bonus de Puissance Psychique : chaque changement fait échouer au moins un test.
+- Non fait (hors critères) : `verify-reset-code` et `reset-password` ; rapport de couverture vers SonarCloud (ferait échouer le contrôle de qualité sur les fichiers non couverts, à faire à part).
+- Constat : `pctJoueur` / `pctEnnemi` ne sont pas bornés à 100 (inutile tant que le serveur garantit ENDURANCE ≤ max) ; laissé tel quel.
+
+## À faire (spec d'origine)
 
 Tests Vitest (`*.spec.ts` à côté du fichier testé), par ordre de priorité. On teste la logique (`computed`, méthodes), pas le rendu HTML ni les styles.
 
