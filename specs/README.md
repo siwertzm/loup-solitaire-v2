@@ -5,14 +5,14 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Source** : `source/` contient le cahier des charges d'origine (audit du 25/09/2026) et les trois listes de lots. Le détail des constats, les écarts VO/VF (section 5) et les décisions D-01 à D-10 (section 7) y restent.
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
 - **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
-- **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
+- **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Chaque tâche garde son dossier une fois finie. Quand une tâche est finie : passer son statut à « Fait » dans son `spec.md`, la retirer du tableau « Tâches à faire » et l'ajouter dans « Avancement ».
 
 ## Avancement (16/11/2026)
 
 **Prochaine tâche : #19, DATA-16** (lot 2, étape C), branche `fix-DATA-16`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
-**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #59) :
+**Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
@@ -43,6 +43,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
 | 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
 | 28 | D | [QUAL-12](lot-2/QUAL-12-bonus-objets-speciaux/spec.md) | Basse | S/M | Bonus des Objets Spéciaux (Casque, Cotte de mailles) dans le Sac et la fiche personnage — retour bêta |
+| 29 | D | [QUAL-16](lot-2/QUAL-16-arme-maitrisee-a-ramasser/spec.md) | Basse | S | Arme maîtrisée signalée parmi les objets à ramasser du chapitre — retour bêta |
 
 ### Lot 3 — plus tard (MVP2, optimisation)
 
@@ -88,5 +89,5 @@ Les étapes 1, 2, 4.A et 4.B sont faites, 4.C est en cours (voir « Avancement �
    - **A. Socle avant les changements de contrat et de données.** QUAL-02 d'abord (au moins `/version`) : les apps installées ne se mettent pas à jour seules, et SEC-06, QUAL-08, REGLE-12 et REGLE-15 changent le contrat API ; il faut pouvoir forcer la mise à jour avant. Puis DATA-00, qui évite une migration SQL à chaque correction DATA/REGLE suivante ; OPS-03 juste après (DATA-00 peut le remplacer : à trancher au récap de DATA-00). SEC-08, OPS-01 et SEC-07 sont courts et rendent la prod plus sûre (409 au lieu de 500, mémoire JVM, H2 hors du jar).
    - **B. Comptes et RGPD.** SEC-06 en premier : une faute de frappe dans l'e-mail bloque le compte, c'est le seul risque de perte de compte restant. SEC-05 après SEC-08 (même zone : inscription et 409). OPS-05 avant RGPD-03, qui s'appuie sur la purge pour ses durées de conservation.
    - **C. Règles du jeu.** D'abord le trou côté serveur où l'API acceptait une action interdite (REGLE-16 : échange répétable ; REGLE-06 abandonnée, voir plus haut), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, DATA-16), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
-   - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant). QUAL-12 (retour bêta, petit) peut se glisser à tout moment de l'étape D.
+   - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant). QUAL-12 et QUAL-16 (retours bêta, petits) peuvent se glisser à tout moment de l'étape D.
 5. **Lot 3** : pas d'ordre imposé. QUAL-15 (page Options) avant ou avec QUAL-13 (bande originale), dont les réglages y vont. Plusieurs specs du lot 3 attendent des réponses (section « À demander avant de commencer »).
