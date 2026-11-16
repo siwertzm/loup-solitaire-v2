@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { InventaireItem } from '../../../core/models/personnage.model';
+import { InventaireItem, OBJET_SAC_A_DOS } from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 
 /**
@@ -16,7 +16,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
  * purement cosmétiques (même principe que la page de création), ils
  * s'arrêtent sur la valeur renvoyée par l'API.
  *
- * Équipement fixe côté backend : hache, repas ×1, carte, coin ×999.
+ * Équipement fixe côté backend : Sac à Dos, hache, repas ×1, carte, coin ×999.
  * Table 0-9 de l'objet aléatoire : glaive, épée, casque, repas ×2,
  * cotte de mailles, masse, potion de soin, bâton, lance, or ×12.
  */
@@ -120,7 +120,10 @@ export class InventaireDepartPage {
     return (
       this.inventaire().find((i) => {
         if (i.objetId === ID_OR) return i.quantite >= SEUIL_OR_BONUS;
-        return ![ID_HACHE, ID_CARTE, ID_COIN].includes(i.objetId) && !(i.objetId === 'repas' && i.quantite === 1);
+        return (
+          ![OBJET_SAC_A_DOS, ID_HACHE, ID_CARTE, ID_COIN].includes(i.objetId) &&
+          !(i.objetId === 'repas' && i.quantite === 1)
+        );
       }) ?? null
     );
   }
@@ -146,7 +149,7 @@ export class InventaireDepartPage {
   readonly casesSpeciaux = computed(() =>
     this.inventaire()
       .filter((i) => i.categorie === 'OBJETS_SPECIAUX')
-      .filter((i) => this.objetRevele() || i.objetId === ID_CARTE || i.objetId === ID_COIN)
+      .filter((i) => this.objetRevele() || [OBJET_SAC_A_DOS, ID_CARTE, ID_COIN].includes(i.objetId))
       .map((i) => ({ nom: i.nom, note: i.quantite > 1 ? `×${i.quantite}` : '' })),
   );
 

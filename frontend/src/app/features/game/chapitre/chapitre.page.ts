@@ -13,7 +13,11 @@ import { RouterLink } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { PersonnageResume } from '../../../core/models/personnage.model';
+import {
+  OBJET_SAC_A_DOS,
+  PersonnageResume,
+  possedeSacADos,
+} from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import {
   ChapitreResponse,
@@ -154,7 +158,9 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     this.objets()
       .filter((o) => o.valeur > 0)
       .map((o) => ({ ...o, restant: this.restantsObjets()[o.objetId] ?? 0 }))
-      .filter((o) => o.restant > 0),
+      .filter((o) => o.restant > 0)
+      // REGLE-17 : un second Sac à Dos ne peut pas être pris, rien à signaler.
+      .filter((o) => !(o.objetId === OBJET_SAC_A_DOS && possedeSacADos(this.personnage()?.inventaire ?? []))),
   );
 
   // REGLE-16 : échanges proposés (effet ECHANGE, ex. Marteau du 307) que le
