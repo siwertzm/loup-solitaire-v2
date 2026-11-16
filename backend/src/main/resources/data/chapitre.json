@@ -336,7 +336,7 @@
     "ennemi": null
   },
   {
-    "text": "Vous levez votre arme pour frapper la créature, dont la gueule hérissée de crocs tranchants comme des rasoirs vient de se refermer d'un claquement sec à quelques centimètres de votre tête. Gêné par le battement de ses ailes, vous avez du mal à vous tenir debout. Réduisez d'un point votre total d'<strong>HABILITÉ</strong>, et combattez ce <strong>Kraan</strong>.\n\n[[ENNEMI]]\n\nSi vous parvenez à tuer votre adversaire, hâtez-vous de descendre le flanc opposé de la colline afin d'éviter les Gloks.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez le 0, rendez-vous au <strong>53</strong>.\nSi vous tirez 1 ou 2, rendez-vous au <strong>274</strong>.\nSi vous tirez entre 3 et 9, rendez-vous au <strong>316</strong>.",
+    "text": "Vous levez votre arme pour frapper la créature, dont la gueule hérissée de crocs tranchants comme des rasoirs vient de se refermer d'un claquement sec à quelques centimètres de votre tête. Gêné par le battement de ses ailes, vous avez du mal à vous tenir debout. Réduisez d'un point votre total d'<strong>HABILETÉ</strong>, et combattez ce <strong>Kraan</strong>.\n\n[[ENNEMI]]\n\nSi vous parvenez à tuer votre adversaire, hâtez-vous de descendre le flanc opposé de la colline afin d'éviter les Gloks.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez le 0, rendez-vous au <strong>53</strong>.\nSi vous tirez 1 ou 2, rendez-vous au <strong>274</strong>.\nSi vous tirez entre 3 et 9, rendez-vous au <strong>316</strong>.",
     "combat": true,
     "ennemi": [
       {
@@ -458,7 +458,7 @@
     ]
   },
   {
-    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, Utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
+    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -484,7 +484,7 @@
     "objet": []
   },
   {
-    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, Utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
+    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -510,7 +510,7 @@
     "objet": []
   },
   {
-    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, Utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
+    "text": "Vous avez parcouru trois kilomètres à cheval parmi les arbres touffus lorsque le sol devient soudain marécageux.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre inférieur à 5, votre cheval s'est enfoncé jusqu'au ventre dans une boue épaisse.\nSi le chiffre obtenu est égal ou supérieur à 5, vous parvenez à vous éloigner de ce bourbier et vous vous rendez au <strong>189</strong>.\n\nSi votre cheval s'est enlisé, utilisez à nouveau le dé pour tirer un autre chiffre.\n\nSi vous obtenez cette fois un chiffre égal ou inférieur à 7, vous vous enfoncez dans la boue jusqu'aux aisselles. En poussant un ultime hennissement désespéré, votre cheval, quant à lui, disparaît définitivement dans la vase.\nSi le chiffre que vous avez tiré est supérieur à 7, vous réussissez tant bien que mal à vous hisser sur un sol plus ferme et vous vous rendez au <strong>189</strong>.\n\nSi vous êtes enlisé jusqu'aux aisselles, voici votre dernière chance ! Tirez un autre chiffre.\n\nSi vous obtenez tout autre chiffre que le 9, le marécage vous engloutit définitivement et votre mission s'achève ici, en même temps que votre vie.\nSi en revanche vous tirez un 9, rendez-vous au <strong>312</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": [
@@ -687,7 +687,7 @@
     "objet": []
   },
   {
-    "text": "Vous vous approchez de la rive du lac en vous préparant à combattre. Le Kraan et la créature qui le chevauche vous aperçoivent aussitôt et foncent vers vous en volant à ras de l'eau. C'est alors que le maître du Kraan pousse un cri qui vous glace le sang. Cette créature est un <strong>Vordak</strong>, un féroce lieutenant des Maîtres des Ténèbres.\n\nIl se rue sur vous, armé d'une grosse Masse d'Armes, et use d'une redoutable <strong>Puissance Psychique</strong>.\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous perdez 2 points de <strong>HABILITÉ</strong> pendant toute la durée du combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>270</strong>.",
+    "text": "Vous vous approchez de la rive du lac en vous préparant à combattre. Le Kraan et la créature qui le chevauche vous aperçoivent aussitôt et foncent vers vous en volant à ras de l'eau. C'est alors que le maître du Kraan pousse un cri qui vous glace le sang. Cette créature est un <strong>Vordak</strong>, un féroce lieutenant des Maîtres des Ténèbres.\n\nIl se rue sur vous, armé d'une grosse Masse d'Armes, et use d'une redoutable <strong>Puissance Psychique</strong>.\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous perdez 2 points d'<strong>HABILETÉ</strong> pendant toute la durée du combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>270</strong>.",
     "combat": true,
     "ennemi": [
       {
@@ -785,7 +785,7 @@
     ]
   },
   {
-    "text": "Sans crier gare, une terrifiante apparition fond sur vous. C'est une créature vêtue de longs vêtements rouges et montée sur le dos d'un Kraan. Votre assaillant pousse un cri à vous glacer le sang : il s'agit d'un <strong>Vordak</strong>, un féroce lieutenant des Maîtres des Ténèbres.\n\nIl est juste au-dessus de vous et il vous faut le combattre. Le monstre vous attaque à l'aide d'une grosse Masse d'Armes et il est également doué d'une redoutable <strong>Puissance Psychique</strong>, dont il va faire usage au cours de l'affrontement.\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous devrez réduire de 2 points votre total d'<strong>HABILITÉ</strong> pendant toute la durée du combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>328</strong>.",
+    "text": "Sans crier gare, une terrifiante apparition fond sur vous. C'est une créature vêtue de longs vêtements rouges et montée sur le dos d'un Kraan. Votre assaillant pousse un cri à vous glacer le sang : il s'agit d'un <strong>Vordak</strong>, un féroce lieutenant des Maîtres des Ténèbres.\n\nIl est juste au-dessus de vous et il vous faut le combattre. Le monstre vous attaque à l'aide d'une grosse Masse d'Armes et il est également doué d'une redoutable <strong>Puissance Psychique</strong>, dont il va faire usage au cours de l'affrontement.\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous devrez réduire de 2 points votre total d'<strong>HABILETÉ</strong> pendant toute la durée du combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>328</strong>.",
     "combat": true,
     "ennemi": [
         {
@@ -1243,7 +1243,7 @@
     "objet": []
   },
   {
-    "text": "Au moment où le Glok bondit, vous vous ruez sur lui et vous le frappez de votre arme, l'empêchant ainsi d'atterrir sur le dos du jeune sorcier.\n\nVous profitez de votre avantage pour frapper à nouveau la créature qui se débat et l'effet de surprise de votre attaque vous permet d'ajouter 4 points à votre total d'<strong>HABILITÉ</strong> pendant toute la durée de ce combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>325</strong>.",
+    "text": "Au moment où le Glok bondit, vous vous ruez sur lui et vous le frappez de votre arme, l'empêchant ainsi d'atterrir sur le dos du jeune sorcier.\n\nVous profitez de votre avantage pour frapper à nouveau la créature qui se débat et l'effet de surprise de votre attaque vous permet d'ajouter 4 points à votre total d'<strong>HABILETÉ</strong> pendant toute la durée de ce combat.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>325</strong>.",
     "combat": true,
     "ennemi": [
       {
@@ -1569,7 +1569,7 @@
     "objet": []
   },
   {
-    "text": "La pierre dégage une intense chaleur et vous brûle la main. Vous perdez 2 points d'<strong>ENDURANCE</strong>. Vous enveloppez alors la pierre dans un pan de votre cape et vous la laissez tomber dans une poche de votre tunique.\n\nUne <strong>Pierre Précieuse</strong> de cette taille doit valoir des centaines de Couronnes ! Vous vous réjouissez de votre bonne fortune et vous remontez sur votre cheval que vous lancez au galop sur le chemin orienté au sud.\n\nRendez-vous au <strong>118</strong>.",
+    "text": "La pierre dégage une intense chaleur et vous brûle la main. Vous perdez 2 points d'<strong>ENDURANCE</strong>. Vous enveloppez alors la pierre dans un pan de votre cape et vous la glissez dans votre Sac à Dos.\n\nUne <strong>Pierre Précieuse</strong> de cette taille doit valoir des centaines de Couronnes ! Vous vous réjouissez de votre bonne fortune et vous remontez sur votre cheval que vous lancez au galop sur le chemin orienté au sud.\n\nRendez-vous au <strong>118</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": [
@@ -1656,7 +1656,7 @@
     "objet": []
   },
   {
-    "text": "Le Gourgaz Géant est étendu à vos pieds ; ses compagnons sifflent de rage en vous lançant des regards furieux, puis ils sautent du pont. Les tirs de flèches reprennent de plus belle tandis que les soldats du Prince forment autour de vous et de leur chef agonisant un mur de protection à l'aide de leurs boucliers.\n\nLe Prince moribond vous regarde alors dans les yeux et prononce ses derniers mots : « Seigneur Kaï, il vous faut transmettre un message au Roi, mon père.\n\nL'ennemi est trop puissant, nous ne pouvons le contenir. C'est à Durenor que se trouve notre salut ; Sa Majesté doit envoyer chercher ce qui peut nous épargner la défaite. Mon père comprendra ce que je veux dire. Prenez mon cheval et gagnez la capitale. »\n\nPuis, sentant sa fin proche, vous dites adieu au Prince, enfourchez son étalon blanc et partez au galop en direction du sud, le long du chemin forestier. Derrière vous, l'ennemi repart à l'assaut du pont, et les échos d'une féroce bataille retentissent encore longtemps à vos oreilles.\n\nRendez-vous au <strong>235</strong>.",
+    "text": "Le Gourgaz Géant est étendu à vos pieds ; ses compagnons sifflent de rage en vous lançant des regards furieux, puis ils sautent du pont. Les tirs de flèches reprennent de plus belle tandis que les soldats du Prince forment autour de vous et de leur chef agonisant un mur de protection à l'aide de leurs boucliers.\n\nLe Prince moribond vous regarde alors dans les yeux et prononce ses derniers mots : « Seigneur Kaï, il vous faut transmettre un message au Roi, mon père.\n\nL'ennemi est trop puissant, nous ne pouvons le contenir. C'est à Durenor que se trouve notre salut ; Sa Majesté doit envoyer chercher ce qui peut nous épargner la défaite. Mon père comprendra ce que je veux dire. Prenez mon cheval et gagnez la capitale. Puissent les Dieux vous accompagner au long de votre voyage ! »\n\nLe cœur plein de tristesse, vous dites alors adieu au Prince, enfourchez son étalon blanc et partez au galop en direction du sud, le long du chemin forestier. Derrière vous, l'ennemi repart à l'assaut du pont, et les échos d'une féroce bataille retentissent encore longtemps à vos oreilles.\n\nRendez-vous au <strong>235</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -1736,7 +1736,7 @@
     "objet": []
   },
   {
-    "text": "Vous jetez un regard prudent derrière le rocher et vous apercevez un soldat étendu sur le dos, son épée et son bouclier à ses côtés. Le bouclier porte l'image d'un Pégase blanc : c'est l'emblème du Prince du Sommer-lund. Ce soldat appartient à la garde du Prince ; son uniforme est déchiré et vous constatez qu'il porte au ras une profonde blessure.\n\nLorsque vous vous approchez de lui, il bat des paupières. « Soignez-moi, supplie-t-il, je ne sens plus mon bras. »\n\nSi vous maîtrisez la Discipline Kaï de la <strong>Guérison</strong> et que vous désirez en faire bénéficier cet homme, rendez-vous au <strong>216</strong>.\nSi vous ne maîtrisez pas cette Discipline, ou si vous ne voulez pas en faire usage, rendez-vous au <strong>31</strong>.",
+    "text": "Vous jetez un regard prudent derrière le rocher et vous apercevez un soldat étendu sur le dos, son épée et son bouclier à ses côtés. Le bouclier porte l'image d'un Pégase blanc : c'est l'emblème du Prince du Sommerlund. Ce soldat appartient à la garde du Prince ; son uniforme est déchiré et vous constatez qu'il porte au bras une profonde blessure.\n\nLorsque vous vous approchez de lui, il bat des paupières. « Soignez-moi, supplie-t-il, je ne sens plus mon bras. »\n\nSi vous maîtrisez la Discipline Kaï de la <strong>Guérison</strong> et que vous désirez en faire bénéficier cet homme, rendez-vous au <strong>216</strong>.\nSi vous ne maîtrisez pas cette Discipline, ou si vous ne voulez pas en faire usage, rendez-vous au <strong>31</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -2433,7 +2433,7 @@
     "id": 135
   },
   {
-    "text": "Les <strong>Gloks</strong> se rapprochent puis s'accroupissent, prêts à bondir. Vous apercevez les pointes dentelées de leurs lances et vous entendez les sons gutturaux qu'ils produisent en parlant. « Rob Gaye Oring Ahrr oho key ! Pamark élbhûtt ! » s'écrie la plus grande des deux créatures qui vous attaque aussitôt.\n\nIl vous faut combattre les deux Gloks à tour de rôle. Vous ajouterez un point d'<strong>HABILITÉ</strong> à votre total en raison de l'avantage que vous donne votre position plus élevée sur le terrain.\n\n[[ENNEMI]]\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>313</strong>.",
+    "text": "Les <strong>Gloks</strong> se rapprochent puis s'accroupissent, prêts à bondir. Vous apercevez les pointes dentelées de leurs lances et vous entendez les sons gutturaux qu'ils produisent en parlant. « Rob Gaye Oring Ahrr oho key ! Pamark élbhûtt ! » s'écrie la plus grande des deux créatures qui vous attaque aussitôt.\n\nIl vous faut combattre les deux Gloks à tour de rôle. Vous ajouterez un point d'<strong>HABILETÉ</strong> à votre total en raison de l'avantage que vous donne votre position plus élevée sur le terrain.\n\n[[ENNEMI]]\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>313</strong>.",
     "combat": true,
     "objet": [],
     "effet": [
@@ -2807,7 +2807,7 @@
     "objet": []
   },
   {
-    "text": "Vous débouchez prudemment chacune des bouteilles et vous reniflez son contenu. Il semble s'agir là de différentes sortes de vin. Mais soudain, une autre bouteille, plus petite, coincée parmi les autres, attire votre attention.\n\nElle est remplie d'un liquide de couleur orange dont l'odeur vous est familière : c'est de l'<strong>Essence d'Alether</strong>, une puissante potion qui a la propriété d'accroître votre force. Vous pouvez conserver cette fiole et en boire le contenu au début d'un combat : votre total d'<strong>HABILITÉ</strong> augmentera alors de 2 points pendant toute la durée de l'affrontement.\n\nCette quantité d'essence d'Alether ne représente qu'une seule dose, vous ne pourrez donc en faire usage qu'une fois.\n\nVous décidez à présent d'inspecter l'écurie en vous rendant au <strong>308</strong>.",
+    "text": "Vous débouchez prudemment chacune des bouteilles et vous reniflez son contenu. Il semble s'agir là de différentes sortes de vin. Mais soudain, une autre bouteille, plus petite, coincée parmi les autres, attire votre attention.\n\nElle est remplie d'un liquide de couleur orange dont l'odeur vous est familière : c'est de l'<strong>Essence d'Alether</strong>, une puissante potion qui a la propriété d'accroître votre force. Vous pouvez conserver cette fiole et en boire le contenu au début d'un combat : votre total d'<strong>HABILETÉ</strong> augmentera alors de 2 points pendant toute la durée de l'affrontement.\n\nCette quantité d'essence d'Alether ne représente qu'une seule dose, vous ne pourrez donc en faire usage qu'une fois.\n\nVous décidez à présent d'inspecter l'écurie en vous rendant au <strong>308</strong>.",
     "combat": false,
     "ennemi": null,
     "effet": null,
@@ -2893,7 +2893,7 @@
     "objet": []
   },
   {
-    "text": "Le tunnel est sombre et il y fait beaucoup plus froid qu'au-dehors. Vous avancez prudemment en tâtonnant la paroi et au bout de trois minutes passées dans une obscurité totale, vous sentez soudain une odeur répugnante de viande pourrie.\n\nSi vous disposez d'une <strong>Torche</strong> et d'un <strong>Briquet d'Amadou</strong>, vous pourrez vous en servir pour vous éclairer.\n\nSoudain, une lourde masse tombe du plafond du tunnel et atterrit sur votre dos. Sous le choc, vos jambes fléchissent et vous vous retrouvez à genoux. C'est un <strong>Gluâtre des Profondeurs</strong> qui vient de vous attaquer en essayant de vous étrangler de ses longs tentacules visqueux.\n\n[[ENNEMI]]\n\nSi vous n'avez pas de Torche pour vous éclairer, vous devrez réduire de 3 points votre total d'<strong>HABILITÉ</strong> pendant toute la durée du combat.\n\nLe Gluâtre est insensible aux Disciplines Kaï de la <strong>Puissance Psychique</strong> et de la <strong>Communication Animale</strong>.\n\nSi vous êtes vainqueur, rendez-vous au <strong>319</strong>.",
+    "text": "Le tunnel est sombre et il y fait beaucoup plus froid qu'au-dehors. Vous avancez prudemment en tâtonnant la paroi et au bout de trois minutes passées dans une obscurité totale, vous sentez soudain une odeur répugnante de viande pourrie.\n\nSi vous disposez d'une <strong>Torche</strong> et d'un <strong>Briquet d'Amadou</strong>, vous pourrez vous en servir pour vous éclairer.\n\nSoudain, une lourde masse tombe du plafond du tunnel et atterrit sur votre dos. Sous le choc, vos jambes fléchissent et vous vous retrouvez à genoux. C'est un <strong>Gluâtre des Profondeurs</strong> qui vient de vous attaquer en essayant de vous étrangler de ses longs tentacules visqueux.\n\n[[ENNEMI]]\n\nSi vous n'avez pas de Torche pour vous éclairer, vous devrez réduire de 3 points votre total d'<strong>HABILETÉ</strong> pendant toute la durée du combat.\n\nLe Gluâtre est insensible aux Disciplines Kaï de la <strong>Puissance Psychique</strong> et de la <strong>Communication Animale</strong>.\n\nSi vous êtes vainqueur, rendez-vous au <strong>319</strong>.",
     "combat": true,
     "ennemi": [
       { "id": "gluatre" }
@@ -3382,7 +3382,7 @@
     "ennemi": null
   },
   {
-    "text": "Leur chef ramasse votre Équipement et vous fait signe d'avancer le long du chemin. Les deux autres ont alors un sourire mauvais et vous vous rendez soudain compte qu'il ne s'agit pas du tout de soldats : ce sont des brigands déguisés.\n\nVous prenez aussitôt la fuite en courant à toutes jambes vers la capitale. Mais au même instant, un frisson vous parcourt l'échiné : vous venez en effet d'entendre derrière vous le déclic d'une arbalète que l'on arme.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre entre 0 et 4, rendez-vous au <strong>181</strong>.\nEntre 5 et 9, rendez-vous au <strong>145</strong>.",
+    "text": "Leur chef ramasse votre Équipement et vous fait signe d'avancer le long du chemin. Les deux autres ont alors un sourire mauvais et vous vous rendez soudain compte qu'il ne s'agit pas du tout de soldats : ce sont des brigands déguisés.\n\nVous prenez aussitôt la fuite en courant à toutes jambes vers la capitale. Mais au même instant, un frisson vous parcourt l'échine : vous venez en effet d'entendre derrière vous le déclic d'une arbalète que l'on arme.\n\nLancez le dé pour obtenir un chiffre.\n\nSi vous tirez un chiffre entre 0 et 4, rendez-vous au <strong>181</strong>.\nEntre 5 et 9, rendez-vous au <strong>145</strong>.",
     "combat": false,
     "lien": [
       { "page": "181", "cond": [{ "type": "hasard", "valeur": "[0, 4]", "targetId": null }] },
@@ -3677,7 +3677,7 @@
     "ennemi": null
   },
   {
-    "text": "Le Kraan vole au-dessus de votre tête en soulevant des nuages de poussière par le seul battement de ses ailes immenses. Bientôt, vous avez le nez et les yeux pleins de poussière et vous vous mettez à tousser et à cligner les paupières.\n\nPuis, soudain, le monstre vous attaque. Vous allez devoir le combattre jusqu'à la mort de l'un de vous deux, mais en raison de la poussière qui vous désavantage, il vous faut réduire de 1 point votre total d'<strong>HABILITÉ</strong> pendant toute la durée de l'affrontement.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, vous avez le choix entre : vérifier si la créature ne transportait pas quelque objet qui pourrait mériter votre intérêt. Rendez-vous alors au <strong>267</strong>\n\nOu poursuivre votre chemin le long du sentier orienté à l'est. Rendez-vous pour cela au <strong>125</strong>.",
+    "text": "Le Kraan vole au-dessus de votre tête en soulevant des nuages de poussière par le seul battement de ses ailes immenses. Bientôt, vous avez le nez et les yeux pleins de poussière et vous vous mettez à tousser et à cligner les paupières.\n\nPuis, soudain, le monstre vous attaque. Vous allez devoir le combattre jusqu'à la mort de l'un de vous deux, mais en raison de la poussière qui vous désavantage, il vous faut réduire de 1 point votre total d'<strong>HABILETÉ</strong> pendant toute la durée de l'affrontement.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, vous avez le choix entre : vérifier si la créature ne transportait pas quelque objet qui pourrait mériter votre intérêt. Rendez-vous alors au <strong>267</strong>\n\nOu poursuivre votre chemin le long du sentier orienté à l'est. Rendez-vous pour cela au <strong>125</strong>.",
     "combat": true,
     "ennemi": [{ "id": "kraan_229" }],
     "effet": [
@@ -3783,7 +3783,7 @@
     "ennemi": null
   },
   {
-    "text": "La <strong>Pierre de Vordak</strong> reste suspendue au-dessus de la bouche du squelette en diffusant une lueur rouge vif. Puis soudain, en une violente explosion, des flammes écarlates jaillissent du sarcophage, détruisant complètement la Pierre de Vordak.\n\nVous êtes projeté contre le mur et assommé par le choc. Lorsque vous reprenez connaissance, la chambre mortuaire est complètement vide : le sarcophage et le squelette du roi ont tous deux disparu.\n\nQuant à vous, les nouvelles ne sont pas bonnes : vous avez, en effet, perdu 6 points d'<strong>ENDURANCE</strong> et votre total d'<strong>HABILITÉ</strong> se trouve réduit de 1 point pour le reste de vos jours.\n\nVous vous relevez précautionneusement et vous vous dirigez vers le tunnel en titubant.\n\nRendez-vous au <strong>104</strong>.",
+    "text": "La <strong>Pierre de Vordak</strong> reste suspendue au-dessus de la bouche du squelette en diffusant une lueur rouge vif. Puis soudain, en une violente explosion, des flammes écarlates jaillissent du sarcophage, détruisant complètement la Pierre de Vordak.\n\nVous êtes projeté contre le mur et assommé par le choc. Lorsque vous reprenez connaissance, la chambre mortuaire est complètement vide : le sarcophage et le squelette du roi ont tous deux disparu.\n\nQuant à vous, les nouvelles ne sont pas bonnes : vous avez, en effet, perdu 6 points d'<strong>ENDURANCE</strong> et votre total d'<strong>HABILETÉ</strong> se trouve réduit de 1 point pour le reste de vos jours.\n\nVous vous relevez précautionneusement et vous vous dirigez vers le tunnel en titubant.\n\nRendez-vous au <strong>104</strong>.",
     "combat": false,
     "objet": [
       { "id": "pierre_de_vordak", "valeur": -1, "optionnel": false }
@@ -4079,7 +4079,7 @@
     "id": 259
   },
   {
-    "text": "En nageant vers la rive, vous apercevez la silhouette du soldat étendu sur la berge, les bras en croix. Vous vous approchez de lui, mais il n'y a plus rien à faire : il s'est rompu le cou en tombant et il est déjà mort.\n\nOr tandis que vous êtes agenouillé auprès de lui, deux <strong>Gloks</strong> bondissent soudain sur vous et il vous faut les combattre. Vous n'avez pas d'armes et vous devrez donc vous battre à mains nues. De ce fait, votre total d'<strong>HABILITÉ</strong> se trouvera diminué de 4 points. Vous affronterez les deux Gloks à tour de rôle.\n\n[[ENNEMI]]\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>156</strong>.",
+    "text": "En nageant vers la rive, vous apercevez la silhouette du soldat étendu sur la berge, les bras en croix. Vous vous approchez de lui, mais il n'y a plus rien à faire : il s'est rompu le cou en tombant et il est déjà mort.\n\nOr tandis que vous êtes agenouillé auprès de lui, deux <strong>Gloks</strong> bondissent soudain sur vous et il vous faut les combattre. Vous n'avez pas d'armes et vous devrez donc vous battre à mains nues. De ce fait, votre total d'<strong>HABILETÉ</strong> se trouvera diminué de 4 points. Vous affronterez les deux Gloks à tour de rôle.\n\n[[ENNEMI]]\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>156</strong>.",
     "combat": true,
     "objet": [],
     "effet": [
@@ -4381,7 +4381,7 @@
     "id": 282
   },
   {
-    "text": "Vous êtes à trois mètres environ de l'étranger lorsque son corbeau se met à croasser pour l'avertir de votre approche. L'homme fait aussitôt volte-face et vous vous immobilisez saisi de terreur : car en fait ce n'est pas un homme que vous avez devant vous, mais un <strong>Vordak</strong>, l'un des plus redoutables lieutenants des Maîtres des Ténèbres. Cette créature appartient au monde des morts vivants et vous allez devoir la combattre dans un affrontement sans merci.\n\nLa surprise de votre attaque vous permet d'ajouter 2 points à votre total d'<strong>HABILITÉ</strong> lors du premier assaut. Dès le deuxième assaut, en revanche, et au cours des suivants, vous devrez réduire de 2 points ce même total d'<strong>HABILITÉ</strong> à moins que vous ne maîtrisiez la Discipline Kaï du <strong>Bouclier Psychique</strong>. Le Vordak vous attaque, en effet, en utilisant simultanément deux armes redoutables : une énorme Masse d'Armes et sa formidable <strong>Puissance Psychique</strong>.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>123</strong>.",
+    "text": "Vous êtes à trois mètres environ de l'étranger lorsque son corbeau se met à croasser pour l'avertir de votre approche. L'homme fait aussitôt volte-face et vous vous immobilisez saisi de terreur : car en fait ce n'est pas un homme que vous avez devant vous, mais un <strong>Vordak</strong>, l'un des plus redoutables lieutenants des Maîtres des Ténèbres. Cette créature appartient au monde des morts vivants et vous allez devoir la combattre dans un affrontement sans merci.\n\nLa surprise de votre attaque vous permet d'ajouter 2 points à votre total d'<strong>HABILETÉ</strong> lors du premier assaut. Dès le deuxième assaut, en revanche, et au cours des suivants, vous devrez réduire de 2 points ce même total d'<strong>HABILETÉ</strong> à moins que vous ne maîtrisiez la Discipline Kaï du <strong>Bouclier Psychique</strong>. Le Vordak vous attaque, en effet, en utilisant simultanément deux armes redoutables : une énorme Masse d'Armes et sa formidable <strong>Puissance Psychique</strong>.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>123</strong>.",
     "combat": true,
     "objet": [],
     "effet": [
@@ -5241,7 +5241,7 @@
     "id": 339
   },
   {
-    "text": "ous galopez à la rencontre du Loup Maudit et de son cavalier, vore arme prête à frapper. Le Glok vous voit et dégaine aussitôt son cimeterre. Vous combattez le Loup Maudit et le Glok en les considérant comme un seul et même adversaire.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>193</strong>.",
+    "text": "Vous galopez à la rencontre du Loup Maudit et de son cavalier, votre arme prête à frapper. Le Glok vous voit et dégaine aussitôt son cimeterre. Vous combattez le Loup Maudit et le Glok en les considérant comme un seul et même adversaire.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>193</strong>.",
     "combat": true,
     "objet": [],
     "effet": null,
@@ -5285,7 +5285,7 @@
     "id": 341
   },
   {
-    "text": "Tandis que votre voix se répercute en écho parmi les arbres, l'étranger se tourne lentement vers vous. Votre cœur se met alors à battre à tout rompre et votre sang se glace, car l'être qui vous fait face n'est pas un homme : il s'agit d'un <strong>Vordak</strong>, l'un des plus redoutables lieutenants des Maîtres des Ténèbres.\n\nC'est une créature de l'Au-Delà, un mort vivant. Le monstre pousse un cri perçant puis brandit une énorme Masse d'Armes et se rue sur vous. Paralysé par la terreur, vous sentez également que le Vordak vous attaque avec toute la force de sa <strong>Puissance Psychique</strong>.\n\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous devrez réduire de 2 points votre total d'<strong>HABILITE</strong> au cours de ce combat. Il vous faut affronter cette créature qui est elle-même invulnérable à votre propre <strong>Puissance Psychique</strong>.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>123</strong>.",
+    "text": "Tandis que votre voix se répercute en écho parmi les arbres, l'étranger se tourne lentement vers vous. Votre cœur se met alors à battre à tout rompre et votre sang se glace, car l'être qui vous fait face n'est pas un homme : il s'agit d'un <strong>Vordak</strong>, l'un des plus redoutables lieutenants des Maîtres des Ténèbres.\n\nC'est une créature de l'Au-Delà, un mort vivant. Le monstre pousse un cri perçant puis brandit une énorme Masse d'Armes et se rue sur vous. Paralysé par la terreur, vous sentez également que le Vordak vous attaque avec toute la force de sa <strong>Puissance Psychique</strong>.\n\nSi vous ne maîtrisez pas la Discipline Kaï du <strong>Bouclier Psychique</strong>, vous devrez réduire de 2 points votre total d'<strong>HABILETÉ</strong> au cours de ce combat. Il vous faut affronter cette créature qui est elle-même invulnérable à votre propre <strong>Puissance Psychique</strong>.\n\n[[ENNEMI]]\n\nSi vous êtes vainqueur, rendez-vous au <strong>123</strong>.",
     "combat": true,
     "objet": [],
     "effet": [

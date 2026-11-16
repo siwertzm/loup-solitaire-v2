@@ -2,9 +2,13 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Basse | S | `fix-DATA-17` | À faire |
+| 2 | Basse | S | `fix-DATA-17` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau) — comparaison complète de `chapitre.json` (sections 1 à 350) avec la VF en ligne chg96 et la VO Project Aon.
+
+## Mise en œuvre (16/11/2026)
+
+Toutes les corrections des tableaux ci-dessous sont faites dans `chapitre.json` et `discipline.json`. Le 137 et le 181 l'avaient déjà été par DATA-14 et DATA-07. Pas de migration : DATA-00 recharge le catalogue quand le JSON change. Test : `CoherenceLivreTest.aucuneFauteConnueDansLesTextes`.
 
 ## Sources de référence
 
