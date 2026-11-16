@@ -10,7 +10,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #25, REGLE-15** (lot 2, étape D, à confirmer avant de commencer : change une règle de `CLAUDE.md`), branche `feature-REGLE-15`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #26, REGLE-04** (lot 2, étape D), branche `feature-REGLE-04`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #64) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
@@ -18,7 +18,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15).
-- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02.
+- Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
 
@@ -34,7 +34,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 25 | D | [REGLE-15](lot-2/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté (met `CLAUDE.md` à jour) |
 | 26 | D | [REGLE-04](lot-2/REGLE-04-aide-combat-regle-maison/spec.md) | Basse | S | Aide du combat : DEFENSE et OBJET |
 | 27 | D | [QUAL-10](lot-2/QUAL-10-tests-frontend/spec.md) | Moyenne | M | Tests du frontend existant (guard, services, logique de jeu) |
 | 28 | D | [QUAL-12](lot-2/QUAL-12-bonus-objets-speciaux/spec.md) | Basse | S/M | Bonus des Objets Spéciaux (Casque, Cotte de mailles) dans le Sac et la fiche personnage — retour bêta |
@@ -48,6 +47,7 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 | [OPS-07](lot-3/OPS-07-requetes-sql/spec.md) | Basse | M | Moins de requêtes SQL par action |
 | [QUAL-03](lot-3/QUAL-03-nommage/spec.md) | Basse | S | Convention de nommage |
 | [QUAL-04](lot-3/QUAL-04-portefeuille-coins/spec.md) | Haute (MVP2) | L | Portefeuille de coins |
+| [REGLE-15](lot-3/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté à chaque retour ou résurrection (reporté du lot 2, à faire avec QUAL-04 ; met `CLAUDE.md` à jour) |
 | [QUAL-05](lot-3/QUAL-05-multi-tomes/spec.md) | Moyenne (MVP2) | L | Modèle multi-tomes |
 | [QUAL-09](lot-3/QUAL-09-choix-langue/spec.md) | Moyenne | M | Choix de la langue ; en.json corrigé |
 | [QUAL-11](lot-3/QUAL-11-angular-22/spec.md) | Basse | M | Migration vers Angular 22 et Vitest 5 (`ng update`) |
@@ -84,5 +84,5 @@ Les étapes 1, 2, 4.A, 4.B et 4.C sont faites, 4.D est la suivante (voir « Avan
    - **A. Socle avant les changements de contrat et de données.** QUAL-02 d'abord (au moins `/version`) : les apps installées ne se mettent pas à jour seules, et SEC-06, QUAL-08, REGLE-12 et REGLE-15 changent le contrat API ; il faut pouvoir forcer la mise à jour avant. Puis DATA-00, qui évite une migration SQL à chaque correction DATA/REGLE suivante ; OPS-03 juste après (DATA-00 peut le remplacer : à trancher au récap de DATA-00). SEC-08, OPS-01 et SEC-07 sont courts et rendent la prod plus sûre (409 au lieu de 500, mémoire JVM, H2 hors du jar).
    - **B. Comptes et RGPD.** SEC-06 en premier : une faute de frappe dans l'e-mail bloque le compte, c'est le seul risque de perte de compte restant. SEC-05 après SEC-08 (même zone : inscription et 409). OPS-05 avant RGPD-03, qui s'appuie sur la purge pour ses durées de conservation.
    - **C. Règles du jeu.** D'abord le trou côté serveur où l'API acceptait une action interdite (REGLE-16 : échange répétable ; REGLE-06 abandonnée, voir plus haut), puis les corrections de code isolées (REGLE-13, REGLE-07), puis celles qui changent `chapitre.json` (REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07 ; DATA-16 abandonnée), simples après DATA-00. REGLE-12 (Sac à Dos) avant REGLE-09 et DATA-14, qui parlent des objets « de Sac ». DATA-17 (textes) en dernier, sans risque.
-   - **D. Frontend.** QUAL-08 avant REGLE-15 : le profil doit afficher le vrai nombre de coins avant qu'il commence à baisser. REGLE-15 change une règle de `CLAUDE.md` : à confirmer avant de la commencer. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant). QUAL-12 et QUAL-16 (retours bêta, petits) peuvent se glisser à tout moment de l'étape D.
+   - **D. Frontend.** REGLE-15 (coin décompté) est reportée au lot 3 avec QUAL-04. QUAL-10 en dernier, pour tester le front une fois les changements ci-dessus faits (la règle de `CLAUDE.md` impose déjà un test pour toute nouvelle logique en attendant). QUAL-12 et QUAL-16 (retours bêta, petits) peuvent se glisser à tout moment de l'étape D.
 5. **Lot 3** : pas d'ordre imposé. QUAL-15 (page Options) avant ou avec QUAL-13 (bande originale), dont les réglages y vont. Plusieurs specs du lot 3 attendent des réponses (section « À demander avant de commencer »).

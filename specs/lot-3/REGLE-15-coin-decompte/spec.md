@@ -2,9 +2,13 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M | `feature-REGLE-15` | À faire |
+| 3 | Moyenne | M | `feature-REGLE-15` | À faire (reportée) |
 
 Origine : Cahier des charges (REGLE-15, décision D-07)
+
+## Report (16/11/2026)
+
+Reportée du lot 2 au lot 3 par le porteur du projet : le coin reste non décompté (règle actuelle de `CLAUDE.md`). À reprendre avec QUAL-04 (portefeuille de coins), avec l'affichage des Pièces Premium du profil laissé à « 999 » par QUAL-08.
 
 ## Problème
 
