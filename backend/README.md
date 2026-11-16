@@ -97,6 +97,10 @@ table `catalogue_empreinte`. À chaque démarrage :
   des joueurs ne référencent que des identifiants stables (chapitre, objet,
   ennemi, discipline) et ne sont pas touchées.
 
+Le cache de second niveau d'Hibernate (OPS-07) est entièrement vidé au début
+d'un rechargement, collections comprises, pour ne pas relire d'anciens liens
+ou effets supprimés en base.
+
 Corriger le livre = modifier le JSON puis redéployer, **sans migration de
 données**. Une entrée retirée d'un JSON reste en base (un joueur peut
 l'avoir dans son inventaire) et est signalée dans les logs.
@@ -433,7 +437,7 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 ### Codes retour combat notables
 
 - `Combat.statut` : `EN_COURS`, `VICTOIRE`, `DEFAITE`, `FUITE`, `INTERROMPU` (seuil "assaut échec" du chapitre atteint sans que l'ennemi soit mort).
-- `fuitePossible` (dans `CombatResponse`) : indique si le bouton Fuite peut être proposé (condition `FUITE` du chapitre satisfaite).
+- `fuitePossible` (dans `CombatResponse`) : indique si le bouton Fuite peut être proposé (seuil d'assauts d'une condition `FUITE` atteint, ou lien `EVITEMENT` sur le chapitre : fuite dès la 1re action).
 - Après `DEFAITE`, seule la route `chapitre/revenir-apres-defaite` permet de continuer.
 
 ## Modèle de jeu (résumé des règles implémentées)
@@ -468,8 +472,16 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 - **Combat** : système propre au projet (tables `TABLE_DEGATS_INFLIGES` /
   `TABLE_DEGATS_SUBIS` rééquilibrées, actions ATTAQUE/DEFENSE/OBJET/FUITE) —
   **différent du système officiel du livre** (qui résout chaque round avec un
-  seul tirage sur une table unique, sans choix tactique). Voir
+  seul tirage sur une table unique, sans choix tactique). Choix assumé
+  (décision D-12 du cahier des charges). Voir
   [Limitations connues](#limitations-connues).
+- **Quitter un combat** (décision D-11) :
+  - `fuite = N` : bouton FUITE actif après N assauts ; `0` = dès la 1re
+    action (191, 220, 339), sans pouvoir éviter le combat ;
+  - `evitement` : partir sans combattre tant qu'aucun assaut n'est joué
+    (112 → 248, 180 → 22) ; une fois engagé, FUITE dès la 1re action ;
+  - `evitement = 1` : le lien reste aussi proposé après une victoire
+    (112 → 248, DATA-18).
 - **Mort** : consomme une Pièce Premium (`coin`, objet spécial illimité pour
   l'instant) pour continuer, que ce soit après une défaite en combat ou une
   perte d'ENDURANCE hors combat.
@@ -559,7 +571,8 @@ backend/src/main/resources/
 - **Système de combat non fidèle au livre** : le livre résout chaque round
   avec un seul tirage sur une table unique (dégâts des deux camps
   simultanément), sans décision tactique. Ce projet ajoute des actions
-  ATTAQUE/DEFENSE/OBJET et des tables rééquilibrées maison.
+  ATTAQUE/DEFENSE/OBJET et des tables rééquilibrées maison. Choix assumé :
+  REGLE-01 et REGLE-02 ne sont pas retenus (décision D-12).
 - **Fuite** : comme dans le livre, l'ennemi porte un dernier coup pendant la
   fuite (seul Loup Solitaire subit des dégâts). La fuite réussit sauf si ce
   coup le tue (REGLE-03).
