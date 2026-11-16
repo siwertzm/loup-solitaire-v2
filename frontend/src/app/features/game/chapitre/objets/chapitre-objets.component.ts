@@ -495,9 +495,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
       },
 
       error: (err) => {
-        console.error(
-          this.translate.instant('CHAPITRE_OBJETS.ERREUR_RAMASSAGE'),
-          err,
+        console.error('Erreur lors du ramassage de l\'objet :', err,
         );
 
         this.ramassageEnCours.set(null);
@@ -532,9 +530,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
       },
 
       error: (err) => {
-        console.error(
-          this.translate.instant('CHAPITRE_OBJETS.ERREUR_RETRAIT'),
-          err,
+        console.error('Erreur lors du retrait de l\'objet :', err,
         );
 
         this.retraitPopupEnCours.set(null);

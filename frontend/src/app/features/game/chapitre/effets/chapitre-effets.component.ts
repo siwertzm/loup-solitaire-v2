@@ -482,7 +482,7 @@ export class ChapitreEffetsComponent {
       },
 
       error: (err) => {
-        console.error(this.translate.instant('CHAPITRE_EFFETS.ERREUR_VOL'), err);
+        console.error('Erreur lors de la résolution du vol :', err);
 
         this.volEnCours.set(null);
       },
@@ -587,7 +587,7 @@ export class ChapitreEffetsComponent {
       },
 
       error: (err) => {
-        console.error(this.translate.instant('CHAPITRE_EFFETS.ERREUR_ECHANGE'), err);
+        console.error('Erreur lors de l\'échange d\'objet :', err);
 
         this.echangeEnCours.set(null);
       },

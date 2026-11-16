@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { throwError } from 'rxjs';
 import { signal } from '@angular/core';
 
 import { ChapitreResponse, LienResponse } from '../../../core/models/chapitre.model';
@@ -173,5 +174,50 @@ describe('ChapitrePage — choix « Sinon »', () => {
     expect(page.estChoixSinon(lien('-1'))).toBe(true);
     expect(page.estChoixSinon(lien('1'))).toBe(false);
     expect(page.estChoixSinon(lien(null))).toBe(false);
+  });
+});
+
+// QUAL-08 : un refus du serveur affiche le texte i18n, jamais le message brut
+// de l'API (sans accents, avec des routes techniques).
+describe('ChapitrePage — erreur de résurrection', () => {
+  const erreurServeur = {
+    status: 400,
+    error: { message: 'ressuscitez-le via POST /personnages/{id}/chapitre/revenir-apres-defaite' },
+  };
+  let page: ChapitrePage;
+
+  beforeEach(() => {
+    const echec = () => throwError(() => erreurServeur);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
+        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: ChapitreService, useValue: {} },
+        { provide: CombatService, useValue: {} },
+        {
+          provide: PersonnageService,
+          useValue: { ressusciter: echec, revenirApresDefaite: echec },
+        },
+        { provide: DisciplineService, useValue: {} },
+        { provide: ObjetService, useValue: {} },
+        { provide: InventaireSheetService, useValue: { personnageMisAJour: signal(null) } },
+        { provide: TranslateService, useValue: { instant: (cle: string) => cle } },
+      ],
+    });
+    page = TestBed.runInInjectionContext(() => new ChapitrePage());
+    page.personnageId.set('p1');
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+
+  it('ressusciter affiche le texte i18n', () => {
+    page.ressusciter();
+
+    expect(page.erreurRessusciter()).toBe('CHAPITRE_PAGE.ERREUR_RESSUSCITER_INSTANT');
+  });
+
+  it('revenir après une défaite affiche le texte i18n', () => {
+    page.revenirApresDefaite();
+
+    expect(page.erreurRessusciter()).toBe('CHAPITRE_PAGE.ERREUR_REVENIR_INSTANT');
   });
 });

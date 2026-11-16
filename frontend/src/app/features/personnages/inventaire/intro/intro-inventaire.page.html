@@ -11,11 +11,7 @@
         @for (element of equipementDepart; track element.cle) {
           <div class="objet-possible">
             <div class="objet-icone">
-              @if (element.icone) {
-                <img [src]="element.icone" [alt]="element.cle | translate" />
-              } @else {
-                <span>{{ element.initiale }}</span>
-              }
+              <img [src]="element.icone" [alt]="element.cle | translate" />
             </div>
             <span class="objet-nom">{{ element.cle | translate }}</span>
           </div>
@@ -39,11 +35,7 @@
         @for (objet of objetsPossibles; track objet.cle) {
           <div class="objet-possible">
             <div class="objet-icone">
-              @if (objet.icone) {
-                <img [src]="objet.icone" [alt]="objet.cle | translate" />
-              } @else {
-                <span>{{ objet.initiale }}</span>
-              }
+              <img [src]="objet.icone" [alt]="objet.cle | translate" />
             </div>
             <span class="objet-nom">{{ objet.cle | translate }}</span>
             @if (objet.detail) {

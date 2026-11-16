@@ -62,7 +62,7 @@ export class InventaireSheetComponent {
           this.chargement.set(false);
         },
         error: (err) => {
-          console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CHARGEMENT_INVENTAIRE'), err);
+          console.error('Erreur lors du chargement de l\'inventaire :', err);
           this.chargement.set(false);
         },
       });
@@ -71,7 +71,7 @@ export class InventaireSheetComponent {
       // évite toute question de fraîcheur des données entre deux usages.
       this.objetService.lister().subscribe({
         next: (objets) => this.tousObjets.set(objets),
-        error: (err) => console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CHARGEMENT_OBJETS'), err),
+        error: (err) => console.error('Erreur lors du chargement des objets :', err),
       });
     });
   }
@@ -232,7 +232,7 @@ export class InventaireSheetComponent {
         this.objetAConfirmer.set(null);
       },
       error: (err) => {
-        console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_CONSOMMATION'), err);
+        console.error('Erreur lors de la consommation de l\'objet :', err);
         this.consommationEnCours.set(null);
       },
     });
@@ -287,7 +287,7 @@ export class InventaireSheetComponent {
         this.feuilleSac()?.nativeElement.scrollTo({ top: 0 });
       },
       error: (err) => {
-        console.error(this.translate.instant('INVENTAIRE_SHEET.ERREUR_RETRAIT'), err);
+        console.error('Erreur lors du retrait de l\'objet :', err);
         this.retraitEnCours.set(null);
       },
     });
