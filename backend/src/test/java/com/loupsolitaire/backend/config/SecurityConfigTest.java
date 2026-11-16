@@ -117,7 +117,7 @@ class SecurityConfigTest {
         // du controleur, sans LazyInitializationException.
         mockMvc.perform(get("/objets").header(HttpHeaders.AUTHORIZATION, bearer()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(28));
+                .andExpect(jsonPath("$.length()").value(29));
     }
 
     @Test

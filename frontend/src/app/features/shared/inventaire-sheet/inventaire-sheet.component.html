@@ -74,6 +74,15 @@
             </div>
           }
 
+          @if (!possedeSac()) {
+            <div class="sac-section-titre">
+              {{ 'INVENTAIRE_SHEET.SECTION_OBJETS_REPAS' | translate }}
+            </div>
+            <div class="sac-ligne sac-ligne-vide">
+              <span class="sac-nom">{{ 'INVENTAIRE_SHEET.SANS_SAC' | translate }}</span>
+            </div>
+          }
+
           @if (objetsEtRepasCount() !== 0) {
             <div class="sac-section-titre">
               {{ 'INVENTAIRE_SHEET.SECTION_OBJETS_REPAS' | translate }}
@@ -131,7 +140,7 @@
                   <ion-item-option
                     color="danger"
                     [disabled]="retraitEnCours() === s.objetId"
-                    (click)="retirer(s.objetId, slideS)"
+                    (click)="demanderRetrait(s.objetId, slideS)"
                   >
                     {{ 'INVENTAIRE_SHEET.BOUTON_RETIRER' | translate }}
                   </ion-item-option>
@@ -180,6 +189,29 @@
           (click)="confirmerConsommation()"
         >
           {{ (enCombat() ? 'INVENTAIRE_SHEET.POPUP_UTILISER_COMBAT' : 'INVENTAIRE_SHEET.POPUP_CONSOMMER') | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (retraitSacAConfirmer()) {
+  <div class="voile-consommer" (click)="annulerRetraitSac()">
+    <div class="popup-consommer" role="alertdialog" (click)="$event.stopPropagation()">
+      <div class="popup-consommer-titre">{{ 'INVENTAIRE_SHEET.POPUP_SAC_TITRE' | translate }}</div>
+      <p class="popup-consommer-description">{{ 'INVENTAIRE_SHEET.POPUP_SAC_TEXTE' | translate }}</p>
+
+      <div class="popup-consommer-actions">
+        <button type="button" class="popup-consommer-annuler" (click)="annulerRetraitSac()">
+          {{ 'INVENTAIRE_SHEET.POPUP_ANNULER' | translate }}
+        </button>
+        <button
+          type="button"
+          class="popup-consommer-confirmer"
+          [disabled]="retraitEnCours() === sacADos"
+          (click)="confirmerRetraitSac()"
+        >
+          {{ 'INVENTAIRE_SHEET.POPUP_SAC_CONFIRMER' | translate }}
         </button>
       </div>
     </div>

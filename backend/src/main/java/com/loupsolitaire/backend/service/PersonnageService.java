@@ -22,6 +22,7 @@ import com.loupsolitaire.backend.model.ObjetChap;
 import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
 import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
+import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.model.enums.TypeEffet;
@@ -191,7 +192,9 @@ public class PersonnageService {
     }
 
     private void equiperMateriel(Personnage personnage) {
-        // Equipement fixe.
+        // Equipement fixe. Le Sac a Dos en premier : sans lui, aucun objet
+        // ni repas ne peut etre porte (REGLE-12).
+        ajouter(personnage, InventaireService.OBJET_SAC_A_DOS, 1);
         ajouter(personnage, "hache", 1);
         ajouter(personnage, "repas", 1);
         ajouter(personnage, "carte", 1);
@@ -572,6 +575,11 @@ public class PersonnageService {
         // Obligatoire : complete tout le manque en un appel (ecran "PLEIN",
         // un seul clic une fois la place liberee).
         int quantiteDemandee = objetChap.isOptionnel() ? 1 : objetChap.getValeur() - dejaApplique;
+
+        boolean objetDeSac = objet.getCategorie() == CategorieObjet.OBJET || objet.getCategorie() == CategorieObjet.REPAS;
+        if (objetDeSac && !inventaireService.possedeSacADos(personnage)) {
+            throw new IllegalArgumentException("Sans Sac a Dos, vous ne pouvez pas porter cet objet");
+        }
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, objet, quantiteDemandee);
 

@@ -47,6 +47,10 @@ public class InventaireService {
             CategorieObjet.OBJET, CategorieObjet.REPAS
     );
 
+    // REGLE-12 : le Sac a Dos (Objet Special) contient les objets et repas.
+    // Sans lui, leur limite tombe a 0 ; le perdre fait perdre son contenu.
+    public static final String OBJET_SAC_A_DOS = "sac_a_dos";
+
     private final InventaireItemRepository inventaireItemRepository;
     private final ObjetService objetService;
 
@@ -65,6 +69,10 @@ public class InventaireService {
         List<InventaireItem> objetsRemplacables = List.of();
 
         Integer limite = limitePour(objet.getCategorie());
+        if (limite != null && GROUPE_OBJETS_ET_REPAS.contains(objet.getCategorie()) && !possedeSacADos(personnage)) {
+            // Rien a remplacer : c'est le Sac qui manque, pas la place.
+            return new ResultatAjout(objet, quantite, 0, List.of());
+        }
         if (limite != null) {
             List<InventaireItem> itemsDuGroupe = itemsDuGroupe(personnage, objet.getCategorie());
             int quantiteActuelle = itemsDuGroupe.stream().mapToInt(InventaireItem::getQuantite).sum();
@@ -144,6 +152,9 @@ public class InventaireService {
             // n'en possede plus AUCUN exemplaire. Une reduction partielle
             // (reste > 0) ne doit rien changer au bonus.
             objetService.retirerBonusPerte(personnage, objet);
+            if (OBJET_SAC_A_DOS.equals(objet.getId())) {
+                viderSacADos(personnage);
+            }
         } else {
             // Ligne deja chargee dans la transaction : Hibernate enregistre
             // la nouvelle quantite tout seul.
@@ -154,6 +165,17 @@ public class InventaireService {
         // totale), l'habilite depend de l'etat global des armes : on
         // recalcule a chaque retrait, partiel ou total.
         recalculerHabiliteSiArme(personnage, objet.getCategorie());
+    }
+
+    public boolean possedeSacADos(Personnage personnage) {
+        return inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), OBJET_SAC_A_DOS)
+                .isPresent();
+    }
+
+    private void viderSacADos(Personnage personnage) {
+        listerInventaire(personnage).stream()
+                .filter(item -> GROUPE_OBJETS_ET_REPAS.contains(item.getObjet().getCategorie()))
+                .forEach(item -> retirerObjet(personnage, item.getObjet(), item.getQuantite()));
     }
 
     // Recalcule et persiste l'HABILITE effective apres un changement

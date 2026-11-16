@@ -1,0 +1,16 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 018-sac-a-dos-personnages
+      author: siwertzm
+
+      changes:
+        - sqlFile:
+            path: 018-sac-a-dos-personnages.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+      rollback:
+        - sql:
+            sql: DELETE FROM public.inventaire_item WHERE objet_id = 'sac_a_dos';

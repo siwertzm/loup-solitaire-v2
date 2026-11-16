@@ -368,6 +368,10 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
   pas » ; les choix « Sinon » sont exclusifs (REGLE-14).
 - **Inventaire** : max 2 armes, max 8 (objets + repas confondus), max 50 pièces
   d'or ; objets spéciaux (armure, clés, carte...) illimités.
+- **Sac à Dos** (REGLE-12) : Objet Spécial `sac_a_dos`, donné à la création.
+  Sans Sac, aucun objet ni repas ne peut être porté (ramassage → 400) ; le
+  perdre fait perdre son contenu. Perdu aux 162, 174, 188 (tirage 0-6), 258,
+  294 ; ramassable aux 20 et 62.
 - **Repas** : consomme 1 Repas à chaque effet `REPAS` d'un chapitre, sinon
   -3 ENDURANCE ; dispensé si discipline Chasse.
 - **Discipline Guérison** : +1 ENDURANCE à chaque chapitre traversé sans
@@ -376,8 +380,9 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
   ennemi qui y résiste.
 - **Effets de chapitre** gérés : `ENDURANCE`, `HABILITE` (temporaire, reset à
   chaque changement de chapitre, sauf condition `PERMANENT` qui modifie la
-  valeur de base), `VOL` (plusieurs portées : 1 objet au choix, toutes les
-  armes, tout le sac, tout), `REPAS`, `ECHANGE`.
+  valeur de base), `VOL` (la valeur code la portée : 1 = un objet au choix,
+  2 = toutes les armes, 8 = contenu du Sac, 9 = le Sac à Dos, 10 = armes +
+  contenu du Sac, 11 = Sac à Dos + armes), `REPAS`, `ECHANGE`.
 - **Combat** : système propre au projet (tables `TABLE_DEGATS_INFLIGES` /
   `TABLE_DEGATS_SUBIS` rééquilibrées, actions ATTAQUE/DEFENSE/OBJET/FUITE) —
   **différent du système officiel du livre** (qui résout chaque round avec un

@@ -2,7 +2,12 @@ import { Component, computed, effect, ElementRef, inject, signal, viewChild } fr
 import { IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { PersonnageResume, ObjetResume } from '../../../core/models/personnage.model';
+import {
+  OBJET_SAC_A_DOS,
+  ObjetResume,
+  PersonnageResume,
+  possedeSacADos,
+} from '../../../core/models/personnage.model';
 import { PersonnageService } from '../../../core/services/personnage.service';
 import { ObjetService } from '../../../core/services/objet.service';
 import { InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
@@ -242,6 +247,32 @@ export class InventaireSheetComponent {
    * après coup (sinon le bouton "Retirer" reste affiché, ouvert, même une
    * fois l'objet retiré) ; on remonte aussi le scroll en haut de la feuille.
    */
+  readonly sacADos = OBJET_SAC_A_DOS;
+  readonly possedeSac = computed(() => possedeSacADos(this.inventaire()));
+
+  /** REGLE-12 : retrait du Sac à Dos en attente de confirmation (il vide le Sac). */
+  readonly retraitSacAConfirmer = signal<IonItemSliding | null>(null);
+
+  demanderRetrait(objetId: string, sliding: IonItemSliding): void {
+    if (objetId === OBJET_SAC_A_DOS) {
+      this.retraitSacAConfirmer.set(sliding);
+      return;
+    }
+    this.retirer(objetId, sliding);
+  }
+
+  confirmerRetraitSac(): void {
+    const sliding = this.retraitSacAConfirmer();
+    if (!sliding) return;
+    this.retraitSacAConfirmer.set(null);
+    this.retirer(OBJET_SAC_A_DOS, sliding);
+  }
+
+  annulerRetraitSac(): void {
+    this.retraitSacAConfirmer()?.close();
+    this.retraitSacAConfirmer.set(null);
+  }
+
   retirer(objetId: string, sliding: IonItemSliding): void {
     const id = this.sheet.personnageId();
     if (!id || this.retraitEnCours()) return;

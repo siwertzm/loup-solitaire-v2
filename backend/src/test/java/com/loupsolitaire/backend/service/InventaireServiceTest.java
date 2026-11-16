@@ -3,6 +3,7 @@ package com.loupsolitaire.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +43,10 @@ class InventaireServiceTest {
         personnage = new Personnage();
         personnage.setHabiliteBase(15);
         personnage.setHabilite(15);
+        // REGLE-12 : par defaut le personnage a son Sac a Dos.
+        Objet sac = creerObjet(InventaireService.OBJET_SAC_A_DOS, CategorieObjet.OBJETS_SPECIAUX);
+        lenient().when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), InventaireService.OBJET_SAC_A_DOS))
+                .thenReturn(Optional.of(creerLigne(sac, 1)));
     }
 
     private Objet creerObjet(String id, CategorieObjet categorie) {
@@ -91,6 +96,60 @@ class InventaireServiceTest {
 
         assertThat(resultat.quantiteAjoutee()).isEqualTo(3);
         assertThat(ligneExistante.getQuantite()).isEqualTo(5);
+    }
+
+    // =========================================================
+    // REGLE-12 : Sac a Dos
+    // =========================================================
+
+    @Test
+    void sansSacADosAucunObjetNiRepasNEstAjoute() {
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), InventaireService.OBJET_SAC_A_DOS))
+                .thenReturn(Optional.empty());
+        Objet repas = creerObjet("repas", CategorieObjet.REPAS);
+
+        ResultatAjout resultat = inventaireService.ajouterObjet(personnage, repas, 2);
+
+        assertThat(resultat.quantiteAjoutee()).isZero();
+        assertThat(resultat.objetsRemplacables()).isEmpty();
+        verify(inventaireItemRepository, never()).save(any());
+    }
+
+    @Test
+    void sansSacADosLesArmesSAjoutentToujours() {
+        // Le Sac n'est pas consulte pour une arme (pas d'appel a possedeSacADos).
+        Objet epee = creerObjet("epee", CategorieObjet.ARME);
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "epee")).thenReturn(Optional.empty());
+        when(inventaireItemRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        ResultatAjout resultat = inventaireService.ajouterObjet(personnage, epee, 1);
+
+        assertThat(resultat.quantiteAjoutee()).isEqualTo(1);
+    }
+
+    @Test
+    void perdreLeSacADosRetireSesObjetsEtRepasMaisPasLeReste() {
+        Objet sac = creerObjet(InventaireService.OBJET_SAC_A_DOS, CategorieObjet.OBJETS_SPECIAUX);
+        InventaireItem ligneSac = creerLigne(sac, 1);
+        InventaireItem repas = creerLigne(creerObjet("repas", CategorieObjet.REPAS), 3);
+        InventaireItem potion = creerLigne(creerObjet("potion_de_soin", CategorieObjet.OBJET), 1);
+        InventaireItem epee = creerLigne(creerObjet("epee", CategorieObjet.ARME), 1);
+        InventaireItem carte = creerLigne(creerObjet("carte", CategorieObjet.OBJETS_SPECIAUX), 1);
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), InventaireService.OBJET_SAC_A_DOS))
+                .thenReturn(Optional.of(ligneSac));
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "repas")).thenReturn(Optional.of(repas));
+        when(inventaireItemRepository.findByPersonnageIdAndObjetId(personnage.getId(), "potion_de_soin"))
+                .thenReturn(Optional.of(potion));
+        when(inventaireItemRepository.findByPersonnageId(personnage.getId()))
+                .thenReturn(List.of(repas, potion, epee, carte));
+
+        inventaireService.retirerObjet(personnage, sac, 1);
+
+        verify(inventaireItemRepository).delete(ligneSac);
+        verify(inventaireItemRepository).delete(repas);
+        verify(inventaireItemRepository).delete(potion);
+        verify(inventaireItemRepository, never()).delete(epee);
+        verify(inventaireItemRepository, never()).delete(carte);
     }
 
     @Test

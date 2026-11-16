@@ -118,7 +118,7 @@ class PersonnageServiceTest {
         // defaut au cas par cas.
         lenient().when(conditionService.estLienDisponible(any(), any())).thenReturn(true);
 
-        for (String id : List.of("hache", "repas", "carte", "or", "glaive", "epee", "casque",
+        for (String id : List.of("sac_a_dos", "hache", "repas", "carte", "or", "glaive", "epee", "casque",
                 "cotte_de_mailles", "masse", "potion_de_soin", "baton", "lance", "coin",
                 "poignard", "sabre", "marteau")) {
             Objet objet = new Objet();
@@ -209,6 +209,7 @@ class PersonnageServiceTest {
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("hache")), eq(1));
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("repas")), eq(1));
         verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("carte")), eq(1));
+        verify(inventaireService).ajouterObjet(any(), eq(objetsParId.get("sac_a_dos")), eq(1));
     }
 
     @Test
@@ -1293,6 +1294,38 @@ class PersonnageServiceTest {
 
         // Toujours 1 par appel, jamais la "valeur" du chapitre directement.
         verify(inventaireService).ajouterObjet(p, repas, 1);
+    }
+
+    // REGLE-12 : sans Sac a Dos, pas d'objet ni de repas ; une arme reste possible.
+    @Test
+    void refuseDeRamasserUnRepasSansSacADos() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        Objet repas = objetsParId.get("repas");
+        repas.setCategorie(CategorieObjet.REPAS);
+        chapitre0.setObjets(List.of(creerObjetChap(repas, 2, true)));
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(inventaireService.possedeSacADos(p)).thenReturn(false);
+
+        assertThatThrownBy(() -> personnageService.ramasserObjetDuChapitre(p, repas))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Sac a Dos");
+
+        verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());
+    }
+
+    @Test
+    void ramasseUneArmeSansSacADos() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        Objet epee = objetsParId.get("epee");
+        epee.setCategorie(CategorieObjet.ARME);
+        chapitre0.setObjets(List.of(creerObjetChap(epee, 1, true)));
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+
+        personnageService.ramasserObjetDuChapitre(p, epee);
+
+        verify(inventaireService).ajouterObjet(p, epee, 1);
     }
 
     @Test

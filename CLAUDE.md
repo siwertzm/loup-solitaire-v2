@@ -42,6 +42,7 @@ npm run build && npx cap sync    # après un changement web, pour Android/iOS
 ## Règles du jeu implémentées (à respecter)
 - Création : HABILETÉ = 10 + d10(0-9), ENDURANCE = 20 + d10(0-9), exactement 5 disciplines Kaï sur 10.
 - Inventaire : max 2 armes, max 8 objets + repas cumulés, max 50 pièces d'or, objets spéciaux illimités.
+- Sac à Dos (`sac_a_dos`, Objet Spécial, donné à la création) : sans lui, aucun objet ni repas ; le perdre fait perdre son contenu. Effets `vol` : 11 = Sac + armes, 10 = armes + contenu (Sac gardé), 9 = Sac, 8 = contenu.
 - HABILETÉ : -4 sans arme, +2 avec l'arme de Maîtrise des Armes ; HABILETÉ temporaire remise à zéro à chaque changement de chapitre (sauf condition `PERMANENT`).
 - Repas : 1 repas consommé par effet `REPAS`, sinon -3 ENDURANCE ; Chasse en dispense. Guérison : +1 ENDURANCE par chapitre sans combat.
 - Combat : système **maison** (ATTAQUE / DEFENSE / OBJET / FUITE, tables rééquilibrées), volontairement différent du livre. Fuite : l'ennemi porte un dernier coup.

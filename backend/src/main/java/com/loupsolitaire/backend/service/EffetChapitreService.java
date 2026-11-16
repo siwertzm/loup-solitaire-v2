@@ -39,10 +39,14 @@ public class EffetChapitreService {
     // VOL : le "valeur" code une PORTEE de perte, pas une quantite (voir
     // doc de conception, analyse menee avec l'utilisateur sur les 9 cas
     // reels du tome) :
-    //   10 -> tout (sac + armes) ; 8 -> tout le sac ; 2+cond ARME -> toutes
-    //   les armes ; 1+cond ARME -> 1 arme au choix ; 1 sans condition ->
-    //   1 objet/repas/arme au choix.
+    //   11 -> le Sac a Dos lui-meme (donc son contenu) + les armes ;
+    //   10 -> armes + contenu du Sac, le Sac reste ; 9 -> le Sac a Dos
+    //   lui-meme ; 8 -> contenu du Sac ; 2+cond ARME -> toutes les armes ;
+    //   1+cond ARME -> 1 arme au choix ; 1 sans condition -> 1 objet/repas/
+    //   arme au choix.
+    private static final int VOL_SAC_A_DOS_ET_ARMES = 11;
     private static final int VOL_TOUT = 10;
+    private static final int VOL_SAC_A_DOS = 9;
     private static final int VOL_SAC = 8;
     private static final int VOL_TOUTES_ARMES = 2;
     private static final int VOL_UN_AU_CHOIX = 1;
@@ -241,7 +245,12 @@ public class EffetChapitreService {
 
         boolean gateArme = effet.getConditions().stream().anyMatch(c -> c.getType() == TypeCondition.ARME);
 
-        if (effet.getValeur() == VOL_TOUT) {
+        if (effet.getValeur() == VOL_SAC_A_DOS_ET_ARMES) {
+            perdreSacADos(personnage);
+            retirerTout(personnage, Set.of(CategorieObjet.ARME));
+        } else if (effet.getValeur() == VOL_SAC_A_DOS) {
+            perdreSacADos(personnage);
+        } else if (effet.getValeur() == VOL_TOUT) {
             retirerTout(personnage, CATEGORIES_TOUT);
         } else if (effet.getValeur() == VOL_SAC) {
             retirerTout(personnage, CATEGORIES_SAC);
@@ -292,6 +301,14 @@ public class EffetChapitreService {
 
     // Retire integralement tous les objets possedes dans les categories
     // donnees (utilise par VOL_TOUT/VOL_SAC/VOL_TOUTES_ARMES).
+    // Retirer le Sac vide aussi son contenu (InventaireService.retirerObjet).
+    private void perdreSacADos(Personnage personnage) {
+        inventaireService.listerInventaire(personnage).stream()
+                .filter(item -> InventaireService.OBJET_SAC_A_DOS.equals(item.getObjet().getId()))
+                .findFirst()
+                .ifPresent(item -> inventaireService.retirerObjet(personnage, item.getObjet(), item.getQuantite()));
+    }
+
     private void retirerTout(Personnage personnage, Set<CategorieObjet> categories) {
         List<InventaireItem> items = inventaireService.listerInventaire(personnage).stream()
                 .filter(item -> categories.contains(item.getObjet().getCategorie()))

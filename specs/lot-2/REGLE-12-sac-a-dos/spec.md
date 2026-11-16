@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | M/L | `feature-REGLE-12` | À faire |
+| 2 | Moyenne | M/L | `feature-REGLE-12` | Fait |
 
 Origine : Cahier des charges (REGLE-12, décision D-06), revu par le porteur du projet le 16/11/2026
 
@@ -46,7 +46,15 @@ Liés : 277 et 338 (le Sac est retrouvé intact sur place, pas de perte) ; 144 (
 - `objet.json` / `chapitre.json` seulement pour les données ; une migration Liquibase seulement si le modèle change (ex. contrainte CHECK, voir mémo enums).
 - Mettre à jour `CLAUDE.md` (règles d'inventaire) et `backend/README.md` (modèle de jeu).
 
-## À demander avant de commencer
+## Décisions de mise en œuvre (16/11/2026)
+
+- **205** : le Sac est gardé (VO) ; `vol` 10 inchangé (armes + contenu du Sac).
+- **Codage de la perte** : nouvelles valeurs de `vol`, 11 = Sac + armes (162, 174, 258, 294) et 9 = Sac seul (188, tirage 0-6). 8 n'est plus utilisée dans le livre.
+- **Retrait volontaire** : autorisé, avec une popup de confirmation (le contenu est perdu aussi).
+- **62** : un seul Sac ramassable.
+- **Personnages existants** : tous reçoivent un Sac (migration `018-sac-a-dos-personnages`).
+
+## Questions posées au départ
 
 - **205** : la VO fait perdre les objets mais pas le Sac. On garde le Sac au 205 (fidèle à la VO), ou on le retire aussi ?
 - **Comment coder la perte du Sac** dans les effets : nouvelle valeur de `vol` (ex. Sac + armes, Sac seul), ou perte de l'objet `sac_a_dos` via les valeurs 8 / 10 actuelles ? Les valeurs 8 et 10 servent aussi au 205, où le Sac est gardé. À trancher au récap.
