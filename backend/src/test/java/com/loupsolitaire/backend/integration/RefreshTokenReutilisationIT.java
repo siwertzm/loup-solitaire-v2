@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,5 +88,50 @@ class RefreshTokenReutilisationIT extends IntegrationPostgres {
                 .isInstanceOf(TokenInvalideException.class);
         assertThatThrownBy(() -> authService.rafraichir(joueur.refreshToken()))
                 .isInstanceOf(TokenInvalideException.class);
+    }
+
+    // SEC-11 : deux rafraichissements SIMULTANES du meme jeton. Le premier
+    // est une transaction pas encore validee ; le second doit attendre son
+    // verrou, puis voir le jeton deja utilise et revoquer toutes les
+    // sessions. Sans verrou, il lisait "pas encore utilise" et passait aussi.
+    @Test
+    void deuxRafraichissementsSimultanesDuMemeJetonNeDonnentQuUneSession() throws Exception {
+        String jeton = refreshTokenService.creerToken(utilisateur);
+        CountDownLatch premierFait = new CountDownLatch(1);
+        CountDownLatch validerPremier = new CountDownLatch(1);
+
+        CompletableFuture<Void> premier = CompletableFuture.runAsync(() ->
+                new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+                    authService.rafraichir(jeton);
+                    premierFait.countDown();
+                    attendre(validerPremier);
+                }));
+        assertThat(premierFait.await(10, TimeUnit.SECONDS)).isTrue();
+
+        CompletableFuture<String> second = CompletableFuture.supplyAsync(() -> {
+            try {
+                authService.rafraichir(jeton);
+                return "ACCEPTE";
+            } catch (TokenInvalideException e) {
+                return "REFUSE";
+            }
+        });
+
+        // Le second attend le verrou du premier, encore ouvert.
+        assertThatThrownBy(() -> second.get(500, TimeUnit.MILLISECONDS))
+                .isInstanceOf(TimeoutException.class);
+
+        validerPremier.countDown();
+        premier.get(10, TimeUnit.SECONDS);
+        assertThat(second.get(10, TimeUnit.SECONDS)).isEqualTo("REFUSE");
+        assertThat(sessionsActives()).isZero();
+    }
+
+    private static void attendre(CountDownLatch signal) {
+        try {
+            signal.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

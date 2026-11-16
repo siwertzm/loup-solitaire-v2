@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.LockModeType;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +18,10 @@ import com.loupsolitaire.backend.model.Utilisateur;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
 
+    // SEC-11 : verrou sur la ligne jusqu'a la fin de la transaction. Deux
+    // rafraichissements simultanes du meme jeton passent l'un apres l'autre :
+    // le second le voit deja utilise et revoque toutes les sessions (SEC-04).
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<RefreshToken> findByTokenHash(String tokenHash);
 
     List<RefreshToken> findAllByUtilisateurAndRevokedFalse(Utilisateur utilisateur);
