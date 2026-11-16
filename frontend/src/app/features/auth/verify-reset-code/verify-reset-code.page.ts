@@ -80,7 +80,7 @@ export class VerifyResetCodePage implements OnInit {
   ngOnInit(): void {
 
     const email =
-      this.authService.getPasswordResetEmail();
+      this.authService.emailReinitialisation();
 
     /*
      * Impossible d'arriver directement à cette

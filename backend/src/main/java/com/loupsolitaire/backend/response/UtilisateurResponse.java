@@ -24,7 +24,7 @@ public record UtilisateurResponse(
         List<PersonnageResponse> personnages) {
 
     // Pour les endpoints qui n'ont pas besoin de la liste des personnages
-    // (register, updateProfil) : evite une requete inutile.
+    // (register, modifierProfil) : evite une requete inutile.
     public static UtilisateurResponse fromEntity(Utilisateur utilisateur) {
         return fromEntity(utilisateur, List.of());
     }

@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     // nom d'utilisateur etait egal a l'email d'un autre compte, cette requete
     // renverrait deux lignes (erreur 500, et le vrai proprietaire de l'email ne
     // pourrait plus se connecter). Les nouveaux noms ne peuvent plus contenir
-    // "@" (RegisterRequest/UpdateProfilRequest), mais la regle ci-dessous
+    // "@" (RegisterRequest/ModificationProfilRequest), mais la regle ci-dessous
     // protege aussi les comptes crees avant cette validation :
     // - identifiant avec "@" : l'EMAIL est prioritaire, puis le nom en repli
     //   (pour un ancien compte dont le nom contiendrait "@") ;

@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | S | `fix-QUAL-03` | À faire |
+| 3 | Basse | S | `fix-QUAL-03` | Fait |
 
 Origine : Cahier des charges (QUAL-03)
 
@@ -18,6 +18,13 @@ Complété par l'audit Claude Code du 11/11/2026 :
 ## À faire
 
 - Définir la convention avant la v1 publique ; corriger les commentaires obsolètes.
+
+## Réalisé (16/11/2026)
+
+- Convention écrite dans `CLAUDE.md` : URL et champs JSON existants figés en anglais (contrat avec les apps installées) ; noms internes, nouvelles routes et nouveaux champs en français.
+- Renommés : `ChangementMotDePasseRequest`, `SuppressionCompteRequest`, `ModificationProfilRequest` ; méthodes de `AuthController` (`profil`, `modifierProfil`, `changerMotDePasse`, `supprimerCompte`) ; front `enregistrerJetons`, `emailReinitialisation`, `jetonReinitialisation`.
+- Coquille `viel_homme_fou` → `vieil_homme_fou` ; commentaires de `ConditionService`, `EffetChapitreService`, `PersonnageService` corrigés.
+- Restent en anglais (hors liste de l'audit, à renommer au fil de l'eau) : autres méthodes de `AuthController` et `auth.service.ts` (`register`, `login`, `forgotPassword`…), `ForgotPasswordRequest`, `ResetPasswordRequest`… ; clés i18n inchangées.
 
 ## Critères d'acceptation
 

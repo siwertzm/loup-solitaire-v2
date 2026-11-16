@@ -27,7 +27,7 @@ describe('authInterceptor', () => {
           useValue: {
             getAccessToken: () => tokens.access,
             getRefreshToken: () => tokens.refresh,
-            setTokens: async (access: string, refresh: string) => {
+            enregistrerJetons: async (access: string, refresh: string) => {
               tokens = { access, refresh };
             },
             clear: vi.fn(),

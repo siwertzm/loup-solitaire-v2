@@ -46,7 +46,7 @@ import com.loupsolitaire.backend.exception.ConflitException;
 import com.loupsolitaire.backend.exception.GlobalExceptionHandler;
 import com.loupsolitaire.backend.exception.TokenInvalideException;
 import com.loupsolitaire.backend.request.RegisterRequest;
-import com.loupsolitaire.backend.request.UpdateProfilRequest;
+import com.loupsolitaire.backend.request.ModificationProfilRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
 import com.loupsolitaire.backend.service.AuthService;
@@ -384,7 +384,7 @@ class AuthControllerTest {
     // =========================================================
 
     @Test
-    void getCurrentUserRenvoieLeProfilDeL_utilisateurConnecte() throws Exception {
+    void profilRenvoieLeProfilDeL_utilisateurConnecte() throws Exception {
         authentifier();
         when(compteService.profil(marius)).thenReturn(profil("marius", "marius@example.com"));
 
@@ -404,7 +404,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("nouveau@example.com"));
 
-        ArgumentCaptor<UpdateProfilRequest> requete = ArgumentCaptor.forClass(UpdateProfilRequest.class);
+        ArgumentCaptor<ModificationProfilRequest> requete = ArgumentCaptor.forClass(ModificationProfilRequest.class);
         verify(compteService).modifierProfil(org.mockito.ArgumentMatchers.eq(marius), requete.capture());
         assertThat(requete.getValue().getEmail()).isEqualTo("nouveau@example.com");
     }
