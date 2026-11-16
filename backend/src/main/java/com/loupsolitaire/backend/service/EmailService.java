@@ -568,9 +568,6 @@ public class EmailService {
     }
 
     /**
-     * Evite d'injecter directement une valeur dynamique dans le HTML.
-     */
-    /**
      * Mise en page commune a tous les emails (en-tete, cadre, pied avec le
      * lien vers la politique de confidentialite). Chaque email ne fournit
      * que sa marge, son titre, son contenu et la phrase du pied.
@@ -764,6 +761,7 @@ public class EmailService {
         return appProperties.baseUrl() + "/legal/confidentialite.html";
     }
 
+    // Evite d'injecter directement une valeur dynamique dans le HTML.
     private String echapperHtml(String valeur) {
 
         if (valeur == null) {

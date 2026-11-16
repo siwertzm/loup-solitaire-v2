@@ -418,8 +418,8 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 | GET | `/personnages/{id}` | 🔒 | Fiche personnage complète (stats, disciplines, inventaire, chapitre courant). |
 | GET | `/personnages/{id}/chapitre` | 🔒 | Chapitre courant : texte, ennemis, effets, liens (avec leurs conditions et leur disponibilité déjà évaluée), objets proposés. Fige un tirage de Table de Hasard (`tirageHasard`) tant que le personnage reste sur ce chapitre. |
 | POST | `/personnages/{id}/chapitre/{chapitreCibleId}` | 🔒 | Avance vers `chapitreCibleId` si un lien valide (conditions remplies) existe depuis le chapitre actuel. Réinitialise l'HABILITE temporaire. |
-| POST | `/personnages/{id}/chapitre/revenir-apres-defaite` | 🔒 | Après une défaite en combat (`Combat.statut = DEFAITE`) : consomme une Pièce Premium (`coin`) pour revenir au chapitre précédent, ENDURANCE totalement restaurée. |
-| POST | `/personnages/{id}/ressusciter` | 🔒 | Seule action possible pour un personnage mort hors combat (`mort = true`, ENDURANCE tombée à 0 via un effet de chapitre). Consomme une Pièce Premium, restaure l'ENDURANCE au maximum, reste sur le même chapitre. |
+| POST | `/personnages/{id}/chapitre/revenir-apres-defaite` | 🔒 | Après une défaite en combat (`Combat.statut = DEFAITE`) : exige une Pièce Premium (`coin`, non consommée en MVP1) pour revenir au chapitre précédent, ENDURANCE totalement restaurée. |
+| POST | `/personnages/{id}/ressusciter` | 🔒 | Seule action possible pour un personnage mort hors combat (`mort = true`, ENDURANCE tombée à 0 via un effet de chapitre). Exige une Pièce Premium (non consommée en MVP1), restaure l'ENDURANCE au maximum, reste sur le même chapitre. |
 | POST | `/personnages/{id}/objets/{objetId}` | 🔒 | Ramasse un exemplaire d'un objet proposé par le chapitre courant (vérifié côté serveur). |
 | DELETE | `/personnages/{id}/objets/{objetId}?quantite=1` | 🔒 | Retire un objet de l'inventaire (debug/test), sans appliquer d'effet de consommation. |
 | POST | `/personnages/{id}/objets/{objetId}/consommer` | 🔒 | Consomme un objet (potion, Laumspur...) : applique son effet (ENDURANCE/HABILITE) puis le retire de l'inventaire. |
@@ -484,9 +484,10 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
     (112 → 248, 180 → 22) ; une fois engagé, FUITE dès la 1re action ;
   - `evitement = 1` : le lien reste aussi proposé après une victoire
     (112 → 248, DATA-18).
-- **Mort** : consomme une Pièce Premium (`coin`, objet spécial illimité pour
-  l'instant) pour continuer, que ce soit après une défaite en combat ou une
-  perte d'ENDURANCE hors combat.
+- **Mort** : il faut posséder une Pièce Premium (`coin`, objet spécial) pour
+  continuer, que ce soit après une défaite en combat ou une perte
+  d'ENDURANCE hors combat. En MVP1 elle n'est **pas consommée** (999 au
+  départ).
 
 ## Format des erreurs
 

@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 // fuitePossible : vrai si le chapitre propose une condition FUITE dont le
-// seuil d'assauts est deja atteint (le frontend peut alors proposer le
-// bouton FUITE ; l'appeler avant sinon leve une erreur cote serveur).
+// seuil d'assauts est deja atteint, ou un lien EVITEMENT (fuite des la 1re
+// action, D-11) : le frontend peut alors proposer le bouton FUITE ;
+// l'appeler avant leve une erreur cote serveur (voir CombatService.peutFuir).
 //
 // dernierTour : detail du calcul du tour qui vient d'etre joue (rapport de
 // combat, tirages, degats, % de reduction). Null sur GET/POST /combat,

@@ -20,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 //   AUCUN effet a la recuperation, ni au retrait/perte generique. L'effet
 //   ne s'applique qu'a la CONSOMMATION explicite (voir
 //   appliquerEffetsConsommation), qui ne retire PAS l'objet elle-meme :
-//   c'est au controleur d'enchainer avec InventaireService.retirerObjet,
+//   l'appelant (PartieService.consommerObjet, CombatService.jouerObjet)
+//   enchaine avec InventaireService.retirerObjet,
 //   pour eviter une dependance circulaire entre les deux services.
 //
 // HABILITE : toujours TEMPORAIRE (habiliteTemp), remis a zero a chaque
@@ -60,7 +61,7 @@ public class ObjetService {
     // Reserve a la categorie OBJET : armes, bourse et objets speciaux
     // (armure) ne se "consomment" pas.
     // Ne retire PAS l'objet de l'inventaire : a faire ensuite via
-    // InventaireService.retirerObjet (orchestre par le controleur).
+    // InventaireService.retirerObjet (voir PartieService.consommerObjet).
     @Transactional
     public void appliquerEffetsConsommation(Personnage personnage, Objet objet) {
         personnage.verifierVivant();
