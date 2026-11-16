@@ -22,5 +22,9 @@ public record CombatResponse(
         // REGLE-11 : malus d'HABILETE du combat a mains nues (-4 au 260),
         // qui remplace l'ajustement d'arme ; null pour les autres combats.
         Integer malusMainsNues,
+        // REGLE-10 : bonus/malus d'HABILETE de l'assaut a venir, deja compte
+        // dans les calculs du serveur (283 : +2 au 1er, -2 ensuite sans
+        // Bouclier Psychique) ; 0 sinon.
+        int bonusHabiliteAssaut,
         ResultatTourResponse dernierTour) {
 }

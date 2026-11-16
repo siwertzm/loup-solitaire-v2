@@ -116,6 +116,16 @@ class CombatMapperTest {
     }
 
     @Test
+    void indiqueLeBonusDHabiliteDeLAssautAVenir() {
+        // REGLE-10 : la carte du joueur affiche le +2 / -2 du Vordak (283).
+        Combat combat = combat(StatutCombat.EN_COURS, List.of(ennemi("vordak", 25)), 0);
+        when(chapitreRepository.findById(CHAPITRE_ID)).thenReturn(Optional.of(chapitre));
+        when(combatService.bonusHabiliteAssaut(combat.getPersonnage(), chapitre, combat)).thenReturn(-2);
+
+        assertThat(combatMapper.versReponse(combat).bonusHabiliteAssaut()).isEqualTo(-2);
+    }
+
+    @Test
     void indiqueQueLaFuiteEstPossibleSiCombatServiceLeDit() {
         Combat combat = combat(StatutCombat.EN_COURS, List.of(ennemi("kraan", 10)), 0);
         when(chapitreRepository.findById(CHAPITRE_ID)).thenReturn(Optional.of(chapitre));

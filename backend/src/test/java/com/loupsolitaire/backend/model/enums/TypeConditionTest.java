@@ -18,6 +18,7 @@ class TypeConditionTest {
         assertThat(TypeCondition.fromJson("endurance")).isEqualTo(TypeCondition.ENDURANCE);
         assertThat(TypeCondition.fromJson("endurance_perdue")).isEqualTo(TypeCondition.ENDURANCE_PERDUE);
         assertThat(TypeCondition.fromJson("assaut_max")).isEqualTo(TypeCondition.ASSAUT_MAX);
+        assertThat(TypeCondition.fromJson("assaut_min")).isEqualTo(TypeCondition.ASSAUT_MIN);
         assertThat(TypeCondition.fromJson("assaut_echec")).isEqualTo(TypeCondition.ASSAUT_ECHEC);
         assertThat(TypeCondition.fromJson("victoire")).isEqualTo(TypeCondition.VICTOIRE);
         assertThat(TypeCondition.fromJson("permanent")).isEqualTo(TypeCondition.PERMANENT);

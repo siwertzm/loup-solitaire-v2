@@ -111,6 +111,13 @@
                   <small>{{ malus }}</small>
                 </button>
               }
+              @if (bonusAssaut(); as bonus) {
+                <!-- REGLE-10 : bonus/malus limité à certains assauts (283). -->
+                <button type="button" class="bonus-picto" [class.bonus-assaut]="bonus > 0" [class.malus-assaut]="bonus < 0" [attr.title]="'COMBAT_PAGE.TITLE_ASSAUT' | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }" [attr.aria-label]="'COMBAT_PAGE.TITLE_ASSAUT' | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }" (click)="ouvrirExplicationBonus('assaut')">
+                  <img src="/assets/icon/combat.png" alt="" />
+                  <small>{{ bonus > 0 ? '+' : '' }}{{ bonus }}</small>
+                </button>
+              }
               @if (bonusArmeMaitrisee(); as arme) {
                 <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
                   <img src="/assets/icon/epee.png" alt="" />
@@ -166,6 +173,10 @@
                 @case ('mains-nues') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_MAINS_NUES_TITRE' | translate }}</h2>
                   <p [innerHTML]="'COMBAT_PAGE.POPUP_MAINS_NUES_TEXTE' | translate: { malus: malusMainsNues() }"></p>
+                }
+                @case ('assaut') {
+                  <h2>{{ 'COMBAT_PAGE.POPUP_ASSAUT_TITRE' | translate }}</h2>
+                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ASSAUT_TEXTE' | translate: { bonus: (bonusAssaut() > 0 ? '+' : '') + bonusAssaut(), n: numeroAssaut() }"></p>
                 }
                 @case ('puissance') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_PUISSANCE_TITRE' | translate }}</h2>

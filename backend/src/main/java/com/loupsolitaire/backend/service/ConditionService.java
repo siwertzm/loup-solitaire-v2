@@ -68,7 +68,7 @@ public class ConditionService {
             case ENDURANCE -> enduranceSuffisante(cond, personnage);
             case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
-            case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, contexte);
+            case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, contexte);
             case PERMANENT, SANS_ARME -> true;
         };
     }

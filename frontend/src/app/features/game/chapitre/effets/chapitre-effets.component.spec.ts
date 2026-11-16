@@ -89,3 +89,58 @@ describe("ChapitreEffetsComponent — échange d'une arme maîtrisée", () => {
     expect(creer('Épée').armeProposeeMaitrisee('marteau')).toBe(false);
   });
 });
+
+// REGLE-10 : au 283, +2 au premier assaut, puis -2 à partir du deuxième
+// sauf Bouclier Psychique (DISCIPLINE + ASSAUT_MIN).
+describe('ChapitreEffetsComponent — effets par assaut du 283', () => {
+  const bonus: EffetResponse = {
+    type: 'HABILITE',
+    valeur: 2,
+    nom: 'habilite',
+    conditions: [{ type: 'ASSAUT_MAX', targetId: null, valeur: '1' }],
+  };
+  const malus: EffetResponse = {
+    type: 'HABILITE',
+    valeur: -2,
+    nom: 'habilite',
+    conditions: [
+      { type: 'DISCIPLINE', targetId: 'bouclier_psychique', valeur: '-1' },
+      { type: 'ASSAUT_MIN', targetId: null, valeur: '2' },
+    ],
+  };
+
+  function creer(disciplines: string[]): ChapitreEffetsComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: InventaireSheetService, useValue: {} },
+        { provide: PersonnageService, useValue: {} },
+        {
+          provide: TranslateService,
+          useValue: { instant: (cle: string, p?: { n: number }) => (p ? `${cle}:${p.n}` : cle) },
+        },
+      ],
+    });
+    TestBed.overrideComponent(ChapitreEffetsComponent, { set: { template: '', imports: [] } });
+    const fixture = TestBed.createComponent(ChapitreEffetsComponent);
+    fixture.componentRef.setInput('effets', [bonus, malus]);
+    fixture.componentRef.setInput('personnage', {
+      disciplines,
+      inventaire: [],
+    } as unknown as PersonnageResume);
+    return fixture.componentInstance;
+  }
+
+  it('affiche le bonus du premier assaut et le malus à partir du deuxième', () => {
+    const c = creer([]);
+    expect(c.libelleAssaut(c.conditionAssaut(bonus)!)).toBe('CHAPITRE_EFFETS.ASSAUT_PREMIER');
+    expect(c.libelleAssaut(c.conditionAssaut(malus)!)).toBe('CHAPITRE_EFFETS.ASSAUT_A_PARTIR:2');
+  });
+
+  it("le malus s'applique sans Bouclier Psychique", () => {
+    expect(creer([]).effetEvite(malus.conditions[1])).toBe(false);
+  });
+
+  it('le malus est évité avec le Bouclier Psychique', () => {
+    expect(creer(['BOUCLIER_PSYCHIQUE']).effetEvite(malus.conditions[1])).toBe(true);
+  });
+});

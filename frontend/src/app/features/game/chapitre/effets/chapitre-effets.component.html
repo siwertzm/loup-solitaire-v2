@@ -99,13 +99,11 @@
           }
         </div>
       </div>
-    } @else if (
-      effet.type.toUpperCase() === 'HABILITE' && conditionAssautMax(effet);
-      as condition
-    ) {
-      <!-- Bonus/malus HABILITE limité aux N premiers assauts du combat
-           (ex. chapitre 283) : déjà appliqué en temps réel côté backend
-           selon le nombre d'assauts joués, on affiche juste ce que c'est. -->
+    } @else if (effet.type.toUpperCase() === 'HABILITE' && conditionAssaut(effet); as condition) {
+      <!-- Bonus/malus HABILITE limité à certains assauts du combat
+           (ex. chapitre 283) : appliqué en temps réel côté backend selon
+           le nombre d'assauts joués, on affiche juste ce que c'est (et
+           ÉVITÉ si le joueur a la protection, REGLE-10). -->
       <div class="effet-ligne">
         <div class="effet-nom">
           <div class="logo">
@@ -116,7 +114,7 @@
           </div>
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.HABILITE_TITRE' | translate }}</span>
-            <span class="effet-description">{{ libelleAssautMax(condition) }}</span>
+            <span class="effet-description">{{ libelleAssaut(condition) }}</span>
           </div>
         </div>
 
@@ -124,6 +122,10 @@
           @if (effet.valeur !== null && effet.valeur > 0) {
             <button type="button" class="effet-badge effet-badge-chasse" disabled>
               {{ 'CHAPITRE_EFFETS.BADGE_HABILITE_BONUS' | translate: { valeur: effet.valeur } }}
+            </button>
+          } @else if (effetEvite(condition)) {
+            <button type="button" class="effet-badge effet-badge-chasse" disabled>
+              {{ 'CHAPITRE_EFFETS.BADGE_EVITE' | translate }}
             </button>
           } @else {
             <button type="button" class="effet-badge effet-badge-endurance" disabled>
@@ -219,7 +221,9 @@
           <div class="effet-texte">
             <span class="effet-titre">{{ 'CHAPITRE_EFFETS.ECHANGE_TITRE' | translate }}</span>
             @if (armeProposeeMaitrisee(condition.targetId!)) {
-              <span class="popup-plein-maitrisee">{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}</span>
+              <span class="popup-plein-maitrisee">{{
+                'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate
+              }}</span>
             }
           </div>
         </div>
@@ -320,7 +324,9 @@
               | translate: { nom: nomObjet(condition.targetId!) }
           }}
           @if (armeProposeeMaitrisee(condition.targetId!)) {
-            <span class="popup-plein-maitrisee">{{ 'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate }}</span>
+            <span class="popup-plein-maitrisee">{{
+              'INVENTAIRE_SHEET.TAG_MAITRISEE' | translate
+            }}</span>
           }
         </div>
         <p class="popup-plein-texte">{{ 'CHAPITRE_EFFETS.POPUP_ECHANGE_TEXTE' | translate }}</p>

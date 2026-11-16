@@ -481,7 +481,7 @@ public class GameDataLoader implements ApplicationRunner {
                 }
             }
             // Seuils numeriques (endurance, nombre d'assauts, 1/0...).
-            case ENDURANCE, ENDURANCE_INF, FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE -> cond.valeurEntiere();
+            case ENDURANCE, ENDURANCE_INF, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> cond.valeurEntiere();
         }
     }
 
