@@ -95,7 +95,7 @@ export class AuthService {
       )
       .pipe(
         tap((res) =>
-          this.tokenStorage.setTokens(
+          this.tokenStorage.enregistrerJetons(
             res.accessToken,
             res.refreshToken,
           ),
@@ -123,7 +123,7 @@ export class AuthService {
       )
       .pipe(
         tap((res) =>
-          this.tokenStorage.setTokens(
+          this.tokenStorage.enregistrerJetons(
             res.accessToken,
             res.refreshToken,
           ),
@@ -166,7 +166,7 @@ export class AuthService {
       )
       .pipe(
         tap((res) =>
-          this.tokenStorage.setTokens(
+          this.tokenStorage.enregistrerJetons(
             res.accessToken,
             res.refreshToken,
           ),
@@ -316,14 +316,14 @@ export class AuthService {
       );
   }
 
-  getPasswordResetEmail(): string | null {
+  emailReinitialisation(): string | null {
 
     return sessionStorage.getItem(
       this.passwordResetEmailKey,
     );
   }
 
-  getPasswordResetToken(): string | null {
+  jetonReinitialisation(): string | null {
 
     return sessionStorage.getItem(
       this.passwordResetTokenKey,

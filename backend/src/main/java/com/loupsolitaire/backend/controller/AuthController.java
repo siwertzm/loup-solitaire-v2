@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.loupsolitaire.backend.config.AppProperties;
 import com.loupsolitaire.backend.config.UtilisateurConnecte;
 import com.loupsolitaire.backend.request.AuthRequest;
-import com.loupsolitaire.backend.request.ChangePasswordRequest;
-import com.loupsolitaire.backend.request.DeleteAccountRequest;
+import com.loupsolitaire.backend.request.ChangementMotDePasseRequest;
+import com.loupsolitaire.backend.request.SuppressionCompteRequest;
 import com.loupsolitaire.backend.request.ForgotPasswordRequest;
 import com.loupsolitaire.backend.request.RefreshRequest;
 import com.loupsolitaire.backend.request.RegisterRequest;
 import com.loupsolitaire.backend.request.ResendVerificationRequest;
 import com.loupsolitaire.backend.request.ResetPasswordRequest;
-import com.loupsolitaire.backend.request.UpdateProfilRequest;
+import com.loupsolitaire.backend.request.ModificationProfilRequest;
 import com.loupsolitaire.backend.request.VerifyResetCodeRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.ResetCodeResponse;
@@ -130,21 +130,21 @@ public class AuthController {
     // =========================================================
 
     @GetMapping("/me")
-    public UtilisateurResponse getCurrentUser(@AuthenticationPrincipal UtilisateurConnecte connecte) {
+    public UtilisateurResponse profil(@AuthenticationPrincipal UtilisateurConnecte connecte) {
         return compteService.profil(connecte);
     }
 
     // Champs optionnels : seuls ceux fournis (non null) sont mis a jour.
     @PutMapping("/me")
-    public UtilisateurResponse updateProfil(
-            @Valid @RequestBody UpdateProfilRequest request,
+    public UtilisateurResponse modifierProfil(
+            @Valid @RequestBody ModificationProfilRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
         return compteService.modifierProfil(connecte, request);
     }
 
     @PutMapping("/me/password")
-    public AuthResponse changePassword(
-            @Valid @RequestBody ChangePasswordRequest request,
+    public AuthResponse changerMotDePasse(
+            @Valid @RequestBody ChangementMotDePasseRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
         return compteService.changerMotDePasse(connecte, request.getCurrentPassword(), request.getNewPassword());
     }
@@ -152,8 +152,8 @@ public class AuthController {
     // Suppression definitive et irreversible, apres verification du mot de passe.
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAccount(
-            @Valid @RequestBody DeleteAccountRequest request,
+    public void supprimerCompte(
+            @Valid @RequestBody SuppressionCompteRequest request,
             @AuthenticationPrincipal UtilisateurConnecte connecte) {
         compteService.supprimerCompte(connecte, request.getPassword());
     }

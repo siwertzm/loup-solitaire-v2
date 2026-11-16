@@ -31,7 +31,7 @@ public interface PasswordResetTokenRepository
 
     // Necessaire avant UtilisateurRepository.delete(utilisateur) : sans ca, la
     // contrainte de cle etrangere utilisateur_id bloque la suppression du
-    // compte (voir AuthController.deleteAccount).
+    // compte (voir AuthController.supprimerCompte).
     void deleteByUtilisateur(Utilisateur utilisateur);
 
     // OPS-05 : demandes "mot de passe oublie" dont le code ET l'etape de

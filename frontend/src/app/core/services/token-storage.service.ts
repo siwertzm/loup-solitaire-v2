@@ -44,7 +44,7 @@ export class TokenStorageService {
     return this.refreshTokenSnapshot;
   }
 
-  async setTokens(accessToken: string, refreshToken: string): Promise<void> {
+  async enregistrerJetons(accessToken: string, refreshToken: string): Promise<void> {
     this.accessTokenSnapshot = accessToken;
     this.refreshTokenSnapshot = refreshToken;
     await Promise.all([

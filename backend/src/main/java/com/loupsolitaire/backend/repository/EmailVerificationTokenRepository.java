@@ -18,7 +18,7 @@ public interface EmailVerificationTokenRepository extends JpaRepository<EmailVer
 
     // Necessaire avant UtilisateurRepository.delete(utilisateur) : sans ca, la
     // contrainte de cle etrangere utilisateur_id bloque la suppression du
-    // compte (voir AuthController.deleteAccount).
+    // compte (voir AuthController.supprimerCompte).
     void deleteByUtilisateur(Utilisateur utilisateur);
 
     // OPS-05 : liens de verification expires.

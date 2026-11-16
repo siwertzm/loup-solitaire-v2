@@ -248,7 +248,7 @@ public class PersonnageService {
         Integer chapitreActuelId = personnage.getChapitreActuel().getId();
 
         // personnage.getChapitreActuel() vient d'une session deja fermee
-        // (chargee par le controleur) : ses collections lazy (liens) ne sont
+        // (chargee par PartieService) : ses collections lazy (liens) ne sont
         // pas accessibles telles quelles. On recharge le chapitre a neuf ici,
         // dans la transaction courante.
         Chapitre chapitreActuel = chapitreRepository.findById(chapitreActuelId)

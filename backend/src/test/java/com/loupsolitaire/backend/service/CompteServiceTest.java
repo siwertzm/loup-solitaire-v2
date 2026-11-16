@@ -34,7 +34,7 @@ import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.RegisterRequest;
-import com.loupsolitaire.backend.request.UpdateProfilRequest;
+import com.loupsolitaire.backend.request.ModificationProfilRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
@@ -304,8 +304,8 @@ class CompteServiceTest {
     }
 
     // SEC-06 : changement d'email avec le bon mot de passe.
-    private UpdateProfilRequest changementEmail(String email, String motDePasse) {
-        UpdateProfilRequest request = new UpdateProfilRequest();
+    private ModificationProfilRequest changementEmail(String email, String motDePasse) {
+        ModificationProfilRequest request = new ModificationProfilRequest();
         request.setEmail(email);
         request.setMotDePasseActuel(motDePasse);
         return request;
@@ -354,7 +354,7 @@ class CompteServiceTest {
     @Test
     void modifierProfilNeRedemandePasDeVerificationSiL_emailNeChangeQueDeCasse() {
         utilisateurConnecteExiste();
-        UpdateProfilRequest request = new UpdateProfilRequest();
+        ModificationProfilRequest request = new ModificationProfilRequest();
         request.setEmail("MARIUS@example.com");
 
         compteService.modifierProfil(connecte, request);
@@ -368,7 +368,7 @@ class CompteServiceTest {
         utilisateurConnecteExiste();
         when(passwordEncoder.matches("bon-mdp", "hash-actuel")).thenReturn(true);
         when(utilisateurRepository.existsByEmail("prisparunautre@example.com")).thenReturn(true);
-        UpdateProfilRequest request = changementEmail("prisparunautre@example.com", "bon-mdp");
+        ModificationProfilRequest request = changementEmail("prisparunautre@example.com", "bon-mdp");
 
         assertThatThrownBy(() -> compteService.modifierProfil(connecte, request))
                 .isInstanceOf(ConflitException.class);
@@ -381,7 +381,7 @@ class CompteServiceTest {
     void modifierProfilRefuseUnUsernameDejaPris() {
         utilisateurConnecteExiste();
         when(utilisateurRepository.existsByUsername("bob")).thenReturn(true);
-        UpdateProfilRequest request = new UpdateProfilRequest();
+        ModificationProfilRequest request = new ModificationProfilRequest();
         request.setUsername("bob");
 
         assertThatThrownBy(() -> compteService.modifierProfil(connecte, request))
@@ -395,7 +395,7 @@ class CompteServiceTest {
     void modifierProfilSansAucunChampNeChangeRien() {
         utilisateurConnecteExiste();
 
-        compteService.modifierProfil(connecte, new UpdateProfilRequest());
+        compteService.modifierProfil(connecte, new ModificationProfilRequest());
 
         assertThat(utilisateur.getUsername()).isEqualTo("marius");
         assertThat(utilisateur.getEmail()).isEqualTo("marius@example.com");

@@ -183,8 +183,8 @@ public class EffetChapitreService {
     // HABILITE). Dans ce tome, la seule condition rencontree sur un effet
     // ENDURANCE est HASARD (jamais discipline/objet) : pas de semantique
     // inversee a gerer ici, on reutilise directement ConditionService.
-    // Toute autre condition (combat non construit) fait qu'on ignore
-    // l'effet, comme pour HABILITE.
+    // Toute autre condition (conditions de combat, gerees par CombatService)
+    // fait qu'on ignore l'effet, comme pour HABILITE.
     @Transactional
     public void appliquerEffetEndurance(Personnage personnage, Effet effet) {
         Optional<Cond> condition = effet.getConditions().stream().findFirst();

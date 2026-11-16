@@ -17,7 +17,7 @@ import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.repository.PersonnageRepository;
 import com.loupsolitaire.backend.repository.UtilisateurRepository;
 import com.loupsolitaire.backend.request.RegisterRequest;
-import com.loupsolitaire.backend.request.UpdateProfilRequest;
+import com.loupsolitaire.backend.request.ModificationProfilRequest;
 import com.loupsolitaire.backend.response.AuthResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.response.UtilisateurResponse;
@@ -148,7 +148,7 @@ public class CompteService {
 
     // Champs optionnels : seuls ceux fournis (non null) sont mis a jour.
     @Transactional
-    public UtilisateurResponse modifierProfil(UtilisateurConnecte connecte, UpdateProfilRequest request) {
+    public UtilisateurResponse modifierProfil(UtilisateurConnecte connecte, ModificationProfilRequest request) {
         Utilisateur utilisateur = recupererUtilisateur(connecte);
 
         if (request.getUsername() != null && !request.getUsername().equals(utilisateur.getUsername())) {

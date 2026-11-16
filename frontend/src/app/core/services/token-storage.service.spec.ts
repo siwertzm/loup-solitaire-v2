@@ -19,11 +19,11 @@ describe('TokenStorageService', () => {
     expect(service.getRefreshToken()).toBe('refresh-stocke');
   });
 
-  it("setTokens met à jour la copie synchrone avant la fin de l'écriture", async () => {
+  it("enregistrerJetons met à jour la copie synchrone avant la fin de l'écriture", async () => {
     const service = TestBed.inject(TokenStorageService);
     await service.whenReady();
 
-    const ecriture = service.setTokens('nouvel-access', 'nouveau-refresh');
+    const ecriture = service.enregistrerJetons('nouvel-access', 'nouveau-refresh');
 
     expect(service.getAccessToken()).toBe('nouvel-access');
     expect(service.getRefreshToken()).toBe('nouveau-refresh');

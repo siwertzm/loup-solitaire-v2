@@ -28,7 +28,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID
 
     // Necessaire avant UtilisateurRepository.delete(utilisateur) : sans ca, la
     // contrainte de cle etrangere utilisateur_id bloque la suppression du
-    // compte (voir AuthController.deleteAccount).
+    // compte (voir AuthController.supprimerCompte).
     void deleteByUtilisateur(Utilisateur utilisateur);
 
     // OPS-05 : sessions expirees avant cette date (les revoquees non

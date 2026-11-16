@@ -17,7 +17,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class UpdateProfilRequest {
+public class ModificationProfilRequest {
 
     @Size(min = 3, max = 50, message = "Le nom d'utilisateur doit contenir entre 3 et 50 caracteres")
     // Interdit "@" : le login accepte le nom d'utilisateur OU l'email. Un nom

@@ -24,9 +24,10 @@ import lombok.RequiredArgsConstructor;
 // Evaluables statiquement a partir de l'inventaire/des stats : DISCIPLINE,
 // OBJET, ARME, BOURSE, ENDURANCE.
 //
-// HASARD : evalue via Personnage.dernierTirageHasard, regenere a chaque
-// chargement du chapitre (voir PersonnageService.rafraichirTirageHasard) et
-// relu (jamais re-tire) ici, pour que la validation au moment du choix
+// HASARD : evalue via Personnage.dernierTirageHasard, tire par
+// PersonnageService a l'arrivee sur un chapitre (creation, avancee, retour
+// apres une mort) puis fige tant que le personnage y reste, et relu (jamais
+// re-tire) ici, pour que la validation au moment du choix
 // corresponde exactement a ce que le joueur a vu affiche.
 //
 // FUITE, ASSAUT_MAX, ASSAUT_ECHEC, ENDURANCE_PERDUE, VICTOIRE : evaluees a

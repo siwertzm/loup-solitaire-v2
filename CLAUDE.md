@@ -8,6 +8,7 @@ Détails complets : `backend/README.md` et `frontend/README.md`.
 - Tout est en **français** : code métier (classes, méthodes, variables), commentaires, messages d'erreur, commits.
 - Commentaires Java sans accents (style existant) ; textes UI avec accents dans `fr.json`.
 - Exceptions techniques gardées en anglais quand le framework l'impose (`AuthRequest`, `RefreshToken`...).
+- **Contrat de l'API figé en anglais** (QUAL-03) : les URL (`/auth/register`, `/auth/me/password`...) et les champs JSON existants (`currentPassword`, `newPassword`...) ne se renomment pas, les apps installées les utilisent. Les noms internes (méthodes, classes Java, services TS) sont en français ; les nouvelles routes et nouveaux champs aussi.
 
 ## Stack
 - **Backend** : Java 21, Spring Boot, Spring Security + JWT (access 15 min + refresh token opaque haché SHA-256, rotation), JPA/Hibernate, PostgreSQL, Liquibase, Lombok, Sentry, Maven (`./mvnw`).

@@ -90,7 +90,7 @@ export class ResetPasswordPage implements OnInit {
 
     this.resetToken =
       this.authService
-        .getPasswordResetToken();
+        .jetonReinitialisation();
 
     /*
      * L'utilisateur ne peut pas ouvrir directement
@@ -100,7 +100,7 @@ export class ResetPasswordPage implements OnInit {
 
       const email =
         this.authService
-          .getPasswordResetEmail();
+          .emailReinitialisation();
 
       this.router.navigateByUrl(
         email

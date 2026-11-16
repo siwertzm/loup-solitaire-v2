@@ -12,14 +12,14 @@ describe('AuthService', () => {
   let service: AuthService;
   let backend: HttpTestingController;
   let stockage: {
-    setTokens: ReturnType<typeof vi.fn>;
+    enregistrerJetons: ReturnType<typeof vi.fn>;
     clear: ReturnType<typeof vi.fn>;
     getRefreshToken: () => string;
   };
 
   beforeEach(() => {
     sessionStorage.clear();
-    stockage = { setTokens: vi.fn(), clear: vi.fn(), getRefreshToken: () => 'r1' };
+    stockage = { enregistrerJetons: vi.fn(), clear: vi.fn(), getRefreshToken: () => 'r1' };
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
@@ -39,7 +39,7 @@ describe('AuthService', () => {
     const req = backend.expectOne(`${base}/login`);
     expect(req.request.method).toBe('POST');
     req.flush(jetons);
-    expect(stockage.setTokens).toHaveBeenCalledWith('a2', 'r2');
+    expect(stockage.enregistrerJetons).toHaveBeenCalledWith('a2', 'r2');
   });
 
   it('changePassword enregistre les nouveaux jetons', () => {
@@ -49,7 +49,7 @@ describe('AuthService', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({ currentPassword: 'ancien', newPassword: 'nouveau' });
     req.flush(jetons);
-    expect(stockage.setTokens).toHaveBeenCalledWith('a2', 'r2');
+    expect(stockage.enregistrerJetons).toHaveBeenCalledWith('a2', 'r2');
   });
 
   it('logout envoie le refresh token et vide la session', () => {
@@ -79,8 +79,8 @@ describe('AuthService', () => {
       service.forgotPassword('loup@exemple.fr').subscribe();
       backend.expectOne(`${base}/forgot-password`).flush(null);
 
-      expect(service.getPasswordResetEmail()).toBe('loup@exemple.fr');
-      expect(service.getPasswordResetToken()).toBeNull();
+      expect(service.emailReinitialisation()).toBe('loup@exemple.fr');
+      expect(service.jetonReinitialisation()).toBeNull();
     });
 
     it('verifyResetCode garde le resetToken reçu', () => {
@@ -89,7 +89,7 @@ describe('AuthService', () => {
       expect(req.request.body).toEqual({ email: 'loup@exemple.fr', code: '123456' });
       req.flush({ resetToken: 'jeton-reset' });
 
-      expect(service.getPasswordResetToken()).toBe('jeton-reset');
+      expect(service.jetonReinitialisation()).toBe('jeton-reset');
     });
 
     it('resetPassword nettoie tout le parcours', () => {
@@ -99,8 +99,8 @@ describe('AuthService', () => {
       service.resetPassword('jeton-reset', 'nouveau').subscribe();
       backend.expectOne(`${base}/reset-password`).flush(null);
 
-      expect(service.getPasswordResetEmail()).toBeNull();
-      expect(service.getPasswordResetToken()).toBeNull();
+      expect(service.emailReinitialisation()).toBeNull();
+      expect(service.jetonReinitialisation()).toBeNull();
     });
   });
 });
