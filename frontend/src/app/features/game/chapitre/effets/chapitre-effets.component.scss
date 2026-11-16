@@ -138,6 +138,12 @@ $parchemin: #ece2c8;
   text-align: center;
 }
 
+// QUAL-16 : tag MAÎTRISÉE à la suite du nom de l'arme proposée.
+.popup-plein-titre .popup-plein-maitrisee {
+  display: inline-flex;
+  margin-left: 6px;
+}
+
 .popup-plein-texte {
   font-size: 13.5px;
   color: $sepia;

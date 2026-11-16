@@ -2,7 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 
 import { EffetResponse } from '../../../../core/models/chapitre.model';
-import { InventaireItem, PersonnageResume } from '../../../../core/models/personnage.model';
+import {
+  InventaireItem,
+  ObjetResume,
+  PersonnageResume,
+} from '../../../../core/models/personnage.model';
 import { InventaireSheetService } from '../../../../core/services/inventaire-sheet.service';
 import { PersonnageService } from '../../../../core/services/personnage.service';
 import { ChapitreEffetsComponent } from './chapitre-effets.component';
@@ -42,5 +46,46 @@ describe('ChapitreEffetsComponent — vol du 144', () => {
 
   it('propose les armes quand le Sac est vide', () => {
     expect(creer([hache, carte]).itemsEligiblesVol(vol144)).toEqual([hache]);
+  });
+});
+
+// QUAL-16 : l'arme proposée par un échange (Marteau de l'ermite, 307) est
+// signalée si c'est l'arme de la Maîtrise des Armes.
+describe("ChapitreEffetsComponent — échange d'une arme maîtrisée", () => {
+  const echange: EffetResponse = {
+    type: 'ECHANGE',
+    valeur: 1,
+    nom: 'echange',
+    conditions: [{ type: 'ARME', targetId: 'marteau', valeur: '1' }],
+  };
+  const catalogue: ObjetResume[] = [
+    { id: 'marteau', nom: 'Marteau de Guerre', description: null, categorie: 'ARME', effets: [] },
+  ];
+
+  function creer(armeMaitrisee: string | null): ChapitreEffetsComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: InventaireSheetService, useValue: {} },
+        { provide: PersonnageService, useValue: {} },
+        { provide: TranslateService, useValue: { instant: (cle: string) => cle } },
+      ],
+    });
+    TestBed.overrideComponent(ChapitreEffetsComponent, { set: { template: '', imports: [] } });
+    const fixture = TestBed.createComponent(ChapitreEffetsComponent);
+    fixture.componentRef.setInput('effets', [echange]);
+    fixture.componentRef.setInput('tousObjets', catalogue);
+    fixture.componentRef.setInput('personnage', {
+      armeMaitrisee,
+      inventaire: [],
+    } as unknown as PersonnageResume);
+    return fixture.componentInstance;
+  }
+
+  it("signale l'arme proposée quand elle est maîtrisée", () => {
+    expect(creer('Marteau de Guerre').armeProposeeMaitrisee('marteau')).toBe(true);
+  });
+
+  it('ne signale rien pour une autre Maîtrise', () => {
+    expect(creer('Épée').armeProposeeMaitrisee('marteau')).toBe(false);
   });
 });

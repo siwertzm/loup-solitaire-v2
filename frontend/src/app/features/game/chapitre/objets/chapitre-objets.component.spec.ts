@@ -90,3 +90,45 @@ describe('ChapitreObjetsComponent — Sac à Dos', () => {
     expect(composant.sansSac('repas')).toBe(false);
   });
 });
+
+// QUAL-16 : l'arme de la Maîtrise des Armes est signalée parmi les objets à
+// ramasser (comparaison par nom, comme l'inventaire).
+describe('ChapitreObjetsComponent — arme maîtrisée', () => {
+  const catalogue: ObjetResume[] = [
+    { id: 'epee', nom: 'Épée', description: null, categorie: 'ARME', effets: [] },
+    { id: 'lance', nom: 'Lance', description: null, categorie: 'ARME', effets: [] },
+  ];
+  const epee = { objetId: 'epee', nom: 'Épée', valeur: 1, optionnel: true };
+  const lance = { objetId: 'lance', nom: 'Lance', valeur: 1, optionnel: true };
+
+  function creer(armeMaitrisee: string | null): ChapitreObjetsComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ChapitreService, useValue: {} },
+        { provide: PersonnageService, useValue: {} },
+        { provide: InventaireSheetService, useValue: { personnageMisAJour: signal(null) } },
+        { provide: TranslateService, useValue: { instant: (cle: string) => cle } },
+      ],
+    });
+    TestBed.overrideComponent(ChapitreObjetsComponent, { set: { template: '', imports: [] } });
+    const fixture = TestBed.createComponent(ChapitreObjetsComponent);
+    fixture.componentRef.setInput('objets', [epee, lance]);
+    fixture.componentRef.setInput('tousObjets', catalogue);
+    fixture.componentRef.setInput('personnage', {
+      armeMaitrisee,
+      inventaire: [],
+    } as unknown as PersonnageResume);
+    return fixture.componentInstance;
+  }
+
+  it("signale l'arme maîtrisée", () => {
+    const composant = creer('Épée');
+
+    expect(composant.estMaitrisee(epee)).toBe(true);
+    expect(composant.estMaitrisee(lance)).toBe(false);
+  });
+
+  it('ne signale rien sans Maîtrise des Armes', () => {
+    expect(creer(null).estMaitrisee(epee)).toBe(false);
+  });
+});
