@@ -33,6 +33,9 @@ export class ProfilPage implements ViewWillEnter {
   readonly suppressionOuverte = signal(false);
   readonly suppressionEnvoi = signal(false);
   readonly erreurSuppression = signal<string | null>(null);
+  /** RGPD-02 : résultat de la demande d'export (clé i18n et ton du bandeau). */
+  readonly exportEnvoi = signal(false);
+  readonly resultatExport = signal<{ cle: string; succes: boolean } | null>(null);
 
   readonly initiale = computed(() => (this.compte()?.username ?? '?').charAt(0).toUpperCase());
 
@@ -122,6 +125,28 @@ export class ProfilPage implements ViewWillEnter {
         this.erreurSuppression.set(
           err.status === 401 ? 'PROFIL.ERREUR_SUPPRESSION_MDP' : 'PROFIL.ERREUR_SUPPRESSION',
         );
+      },
+    });
+  }
+
+  exporterDonnees(): void {
+    if (this.exportEnvoi()) return;
+    this.exportEnvoi.set(true);
+    this.resultatExport.set(null);
+    this.auth.exporterDonnees().subscribe({
+      next: () => {
+        this.exportEnvoi.set(false);
+        this.resultatExport.set({ cle: 'PROFIL.EXPORT_ENVOYE', succes: true });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.exportEnvoi.set(false);
+        const cle =
+          err.status === 400
+            ? 'PROFIL.EXPORT_EMAIL_NON_VERIFIE'
+            : err.status === 429
+              ? 'PROFIL.EXPORT_TROP_DE_DEMANDES'
+              : 'PROFIL.EXPORT_ERREUR';
+        this.resultatExport.set({ cle, succes: false });
       },
     });
   }

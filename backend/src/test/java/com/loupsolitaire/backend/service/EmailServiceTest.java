@@ -240,6 +240,23 @@ class EmailServiceTest {
         assertThat(brut).contains("&lt;b&gt;marius&lt;/b&gt;").doesNotContain("<b>marius</b></p>");
     }
 
+    // RGPD-02 : l'export part en piece jointe JSON a l'adresse du compte.
+    @Test
+    void envoyerExportDonneesJointLeFichierJson() throws Exception {
+        emailService.envoyerExportDonnees("marius@example.com",
+                "{\"compte\":\"marius\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        verify(mailSender).send(mimeMessage);
+        mimeMessage.saveChanges();
+        java.io.ByteArrayOutputStream contenu = new java.io.ByteArrayOutputStream();
+        mimeMessage.writeTo(contenu);
+        String brut = contenu.toString(java.nio.charset.StandardCharsets.UTF_8);
+
+        assertThat(mimeMessage.getAllRecipients()[0]).hasToString("marius@example.com");
+        assertThat(mimeMessage.getSubject()).contains("Tes données");
+        assertThat(brut).contains("filename=loup-solitaire-donnees.json").contains("application/json");
+    }
+
     // RGPD-03 : un envoi qui echoue est journalise sans l'adresse complete,
     // meme quand le message d'erreur du serveur d'email la contient.
     @Test

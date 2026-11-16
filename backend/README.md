@@ -399,6 +399,7 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 | GET | `/auth/me` | 🔒 | Profil de l'utilisateur connecté + liste de ses personnages. |
 | PUT | `/auth/me` | 🔒 | Met à jour `username` et/ou `email` (champs optionnels). Changer d'email exige `motDePasseActuel` (`401` sinon) et ne change pas l'email du compte : le nouveau est gardé dans `emailEnAttente`, un lien de confirmation part à la nouvelle adresse et une alerte à l'ancienne. L'ancien email sert à se connecter jusqu'au clic sur le lien (SEC-06). |
 | PUT | `/auth/me/password` | 🔒 | Change le mot de passe (`currentPassword`, `newPassword`), renvoie un nouveau couple de jetons. |
+| POST | `/auth/me/export` | 🔒 | RGPD-02 : envoie toutes les données du compte (profil, personnages, inventaires, journaux, combats) en pièce jointe JSON à l'email **vérifié** du compte. `202` ; `400` si l'email n'est pas vérifié ; `429` au-delà de 3 exports par 24 h. Mot de passe et jetons exclus. |
 | DELETE | `/auth/me` | 🔒 | Supprime définitivement le compte, après vérification du mot de passe (`password`). `204`. |
 
 ### Personnages (`/personnages`)

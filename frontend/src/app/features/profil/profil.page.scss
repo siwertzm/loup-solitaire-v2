@@ -190,6 +190,11 @@ ion-content.profil {
     background: rgba(184, 65, 47, 0.14);
     color: $rouge;
   }
+
+  &.succes {
+    background: rgba(157, 191, 92, 0.14);
+    color: #9dbf5c;
+  }
 }
 
 .suppression {

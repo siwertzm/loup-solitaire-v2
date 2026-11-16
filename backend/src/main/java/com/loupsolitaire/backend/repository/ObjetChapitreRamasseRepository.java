@@ -17,6 +17,9 @@ public interface ObjetChapitreRamasseRepository extends JpaRepository<ObjetChapi
     // quantites restantes de tous ses objets optionnels sans une requete par objet.
     List<ObjetChapitreRamasse> findByPersonnageIdAndChapitreId(UUID personnageId, Integer chapitreId);
 
+    // RGPD-02 : export des donnees du compte.
+    List<ObjetChapitreRamasse> findByPersonnageId(UUID personnageId);
+
     // Necessaire avant PersonnageRepository.delete(personnage) : sans ca, la
     // contrainte de cle etrangere personnage_id bloque la suppression du
     // personnage (violation FK, voir PersonnageService.supprimerPersonnage).

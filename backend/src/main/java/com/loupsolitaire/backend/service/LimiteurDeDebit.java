@@ -43,12 +43,14 @@ public class LimiteurDeDebit {
     public static final String RESET_DEMANDE_EMAIL = "reset-demande-email";
     public static final String RESET_CODE_EMAIL = "reset-code-email";
     public static final String RENVOI_VERIFICATION_EMAIL = "renvoi-verification-email";
+    public static final String EXPORT_DONNEES_COMPTE = "export-donnees-compte";
 
     // Toutes les regles utilisees par le code : chacune doit etre configuree
     // (application.properties), sinon l'application refuse de demarrer.
     public static final Set<String> REGLES = Set.of(
             AUTH_IP, LOGIN_IP, INSCRIPTION_IP, EMAIL_IP, REFRESH_IP,
-            LOGIN_COMPTE, RESET_DEMANDE_EMAIL, RESET_CODE_EMAIL, RENVOI_VERIFICATION_EMAIL);
+            LOGIN_COMPTE, RESET_DEMANDE_EMAIL, RESET_CODE_EMAIL, RENVOI_VERIFICATION_EMAIL,
+            EXPORT_DONNEES_COMPTE);
 
     // Borne la memoire : au-dela, les compteurs les moins utilises sont
     // oublies (un attaquant qui change d'IP sans arret ne fait pas grossir

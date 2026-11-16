@@ -395,6 +395,16 @@ class AuthControllerTest {
     }
 
     @Test
+    void exporterDonneesRepond202EtDemandeLEnvoiPourL_utilisateurConnecte() throws Exception {
+        authentifier();
+
+        mockMvc.perform(post("/auth/me/export"))
+                .andExpect(status().isAccepted());
+
+        verify(compteService).envoyerExportDonnees(marius);
+    }
+
+    @Test
     void updateProfilTransmetLaRequeteDeL_utilisateurConnecte() throws Exception {
         authentifier();
         when(compteService.modifierProfil(any(), any())).thenReturn(profil("marius", "nouveau@example.com"));

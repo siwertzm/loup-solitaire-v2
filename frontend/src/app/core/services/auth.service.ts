@@ -174,6 +174,11 @@ export class AuthService {
       );
   }
 
+  /** RGPD-02 : le serveur envoie toutes les données du compte par email (202). */
+  exporterDonnees(): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/me/export`, {});
+  }
+
   supprimerCompte(
     password: string,
   ): Observable<void> {

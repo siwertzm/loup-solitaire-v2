@@ -5,6 +5,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -35,6 +36,8 @@ public class EmailService {
 
     // En-tete de la version texte brut de chaque email.
     private static final String EN_TETE_TEXTE = "LOUP SOLITAIRE\n\n";
+    // Marge des emails a simple message (alerte, rappel, export).
+    private static final String MARGE_MESSAGE = "34px 34px 28px 34px";
 
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
@@ -256,7 +259,7 @@ public class EmailService {
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
-                    "34px 34px 28px 34px",
+                    MARGE_MESSAGE,
                     "Changement d'adresse demandé",
                     paragraphes(demande, conseil),
                     "Si c'est bien toi, tu n'as rien à faire."
@@ -301,7 +304,7 @@ public class EmailService {
                     "Politique de confidentialité : " + lienConfidentialite();
 
             String html = miseEnPage(
-                    "34px 34px 28px 34px",
+                    MARGE_MESSAGE,
                     "Tu as déjà un compte",
                     paragraphes(rappel, conseil),
                     "Si tu n'es pas à l'origine de cette demande, ignore simplement cet email : rien n'a changé."
@@ -314,6 +317,51 @@ public class EmailService {
         } catch (Exception e) {
             log.error(
                     "Echec de la preparation du rappel de compte existant a {} : {}",
+                    Emails.masquer(destinataire),
+                    Emails.masquerDansTexte(e.getMessage())
+            );
+        }
+    }
+
+    /**
+     * RGPD-02 : export des donnees du compte, en piece jointe JSON, envoye
+     * uniquement a l'adresse verifiee du compte.
+     */
+    public void envoyerExportDonnees(String destinataire, byte[] donneesJson) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(appProperties.mail().from());
+            helper.setTo(destinataire);
+            helper.setSubject("Tes données — Loup Solitaire");
+
+            String contenu = "Tu trouveras en pièce jointe toutes les données de ton compte : "
+                    + "profil, personnages, inventaires, journaux et combats, au format JSON.";
+            String conseil = "Ce fichier contient ton adresse email : garde-le pour toi.";
+
+            String texteBrut =
+                    EN_TETE_TEXTE +
+                    contenu + "\n\n" +
+                    conseil + "\n\n" +
+                    "Politique de confidentialité : " + lienConfidentialite();
+
+            String html = miseEnPage(
+                    MARGE_MESSAGE,
+                    "Tes données",
+                    paragraphes(contenu, conseil),
+                    "Si tu n'es pas à l'origine de cette demande, change ton mot de passe."
+            );
+
+            helper.setText(texteBrut, html);
+            helper.addAttachment("loup-solitaire-donnees.json",
+                    new ByteArrayResource(donneesJson), "application/json");
+
+            envoyerApresCommit(message, "export des donnees", destinataire);
+
+        } catch (Exception e) {
+            log.error(
+                    "Echec de la preparation de l'export des donnees a {} : {}",
                     Emails.masquer(destinataire),
                     Emails.masquerDansTexte(e.getMessage())
             );
