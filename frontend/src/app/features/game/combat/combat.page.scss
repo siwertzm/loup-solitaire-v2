@@ -625,7 +625,8 @@ $beige: #e0d3b4;
 .dialogue {
   flex: none;
   box-sizing: border-box;
-  height: clamp(110px, 21.6vh, 160px);
+  // QUAL-17 : assez haute pour le jet de de (texte + libelle + de) sans toucher la bordure
+  height: clamp(150px, 26vh, 200px);
   padding: clamp(7px, 1.2vh, 10px) 10px clamp(10px, 1.65vh, 14px);
   background: #1b2417;
 }
