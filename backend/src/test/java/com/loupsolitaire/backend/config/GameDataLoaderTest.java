@@ -86,8 +86,8 @@ class GameDataLoaderTest {
     // verifie une etape sans dependre des autres.
     @BeforeEach
     void catalogueSimule() {
-        lenient().when(entityManagerFactory.unwrap(SessionFactory.class))
-                .thenReturn(mock(SessionFactory.class, Answers.RETURNS_DEEP_STUBS));
+        SessionFactory sessionFactory = mock(SessionFactory.class, Answers.RETURNS_DEEP_STUBS);
+        lenient().when(entityManagerFactory.unwrap(SessionFactory.class)).thenReturn(sessionFactory);
         lenient().when(disciplineRepository.findById(any())).thenAnswer(inv -> {
             Discipline d = new Discipline();
             d.setId(inv.getArgument(0));
@@ -466,14 +466,18 @@ class GameDataLoaderTest {
 
     @Test
     void accepteUnEvitementSansValeurOuAUn() {
-        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, null), OBJETS_CONNUS);
-        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, "1"), OBJETS_CONNUS);
+        Cond sansValeur = cond(TypeCondition.EVITEMENT, null, null);
+        Cond aUn = cond(TypeCondition.EVITEMENT, null, "1");
+
+        assertThatCode(() -> GameDataLoader.validerCondition(sansValeur, OBJETS_CONNUS)).doesNotThrowAnyException();
+        assertThatCode(() -> GameDataLoader.validerCondition(aUn, OBJETS_CONNUS)).doesNotThrowAnyException();
     }
 
     @Test
     void refuseUnEvitementAvecUneAutreValeur() {
-        assertThatThrownBy(() -> GameDataLoader.validerCondition(
-                cond(TypeCondition.EVITEMENT, null, "2"), OBJETS_CONNUS))
+        Cond aDeux = cond(TypeCondition.EVITEMENT, null, "2");
+
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(aDeux, OBJETS_CONNUS))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("evitement");
     }
