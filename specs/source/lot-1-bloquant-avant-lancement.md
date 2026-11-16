@@ -11,8 +11,8 @@ Ces 21 exigences doivent être terminées avant l'ouverture au public. Effort es
 | OPS-02 | Haute | Délais SMTP à 5 s et envoi des emails après commit, en asynchrone | M | Fait |
 | OPS-04 | Haute | Logs JSON, métriques, suivi des erreurs, sonde externe et alerte sur les 5xx | M | Fait |
 | OPS-06 | Haute | Sauvegardes vérifiées sur le plan Render, restauration testée, rollback des changesets | M | À faire |
-| REGLE-01 | Critique | Table des Coups Portés officielle (130 couples E/LS) | S | Déja OK |
-| REGLE-02 | Haute | Un seul tirage par assaut ; pertes des deux camps appliquées, même quand l'ennemi meurt | S | Déja OK |
+| REGLE-01 | Critique | Table des Coups Portés officielle (130 couples E/LS) | S | Abandonné (D-12 : combat maison gardé) |
+| REGLE-02 | Haute | Un seul tirage par assaut ; pertes des deux camps appliquées, même quand l'ennemi meurt | S | Abandonné (D-12 : combat maison gardé) |
 | REGLE-03 | Haute | Fuite : l'assaut est joué, seul Loup Solitaire perd des points | S | Fait |
 | REGLE-05 | Haute | Pas de potion via /consommer pendant un combat en cours ; Alether avant le 1er assaut | S | Fait |
 | REGLE-08 | Moyenne | Ordre des ennemis multiples garanti (colonne ordre + @OrderColumn) | S | Fait |

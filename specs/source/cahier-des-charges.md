@@ -9,7 +9,7 @@ Audit en lecture seule de siwertzm/loup-solitaire-v2 (main, commit a96e67d), com
 **Verdict : pas prêt pour la production grand public.** Le moteur de navigation et les données sont globalement fidèles (577 liens, 44 plages de hasard et toutes les pertes d'ENDURANCE vérifiés par script), mais cinq points bloquent un lancement public.
 
 1. **Triche à la création (SEC-01)** : les tirages d'HABILETÉ et d'ENDURANCE sont faits par le client (`Math.random()`) et acceptés sans borne par le serveur. Un appel forgé crée un personnage à 1 010 d'HABILETÉ.
-2. **Combat non conforme au livre (REGLE-01 à 03)** : 116 des 130 cellules « LS » de la Table des Coups Portés diffèrent de l'officielle, et le joueur et l'ennemi utilisent deux tirages séparés. Par simulation, un Gourgaz passe de 50 % à 57 % de victoires, un Vordak de 88 % à 97 %.
+2. **Combat non conforme au livre (REGLE-01 à 03)** — REGLE-01 et REGLE-02 non retenus, combat maison gardé (D-12) : 116 des 130 cellules « LS » de la Table des Coups Portés diffèrent de l'officielle, et le joueur et l'ennemi utilisent deux tirages séparés. Par simulation, un Gourgaz passe de 50 % à 57 % de victoires, un Vordak de 88 % à 97 %.
 3. **Données d'ennemis fausses (DATA-01 à 04)** : le Serpent Ailé (133) est à 12/10 au lieu de 16/18 ; trois ennemis réutilisés (220, 229, 340) gardent les stats d'une autre section.
 4. **Aucune protection contre les abus (SEC-02)** : ni limitation de débit, ni envoi d'emails asynchrone. Le code de réinitialisation à 6 chiffres est attaquable sans limite, et une panne SMTP peut épuiser le pool de 10 connexions.
 5. **Secret JWT par défaut (SEC-03)** : si `JWT_SECRET` manque sur Render, l'application démarre avec une clé publiée dans le dépôt, et n'importe qui peut forger un jeton.
@@ -172,6 +172,7 @@ Ordre conseillé dans le lot 1 : d'abord DATA-00 ou un premier changeset Liquiba
 | D-09 | Note PA du 113 (Laumspur comme Repas) | Non, VF | Aucun changement. |
 | D-10 | 4 Repas du 184 | 1 obligatoire et 3 facultatifs, sans changer l'ordre d'application | DATA-16 ajouté. Petit changement de code : deux lignes `repas` pour la même section, alors que `ramasserObjetDuChapitre` prend la première trouvée (`PersonnageService.java:509-513`) et que `objet_chapitre_ramasse` est unique par (personnage, chapitre, objet) (`001-baseline.sql:418`). Le plafond de ramassage doit devenir la somme des lignes de l'objet. |
 | D-11 | Quitter un combat : éviter ou fuir (DATA-05, DATA-11) | Décision du 16/11/2026. Nouveau type de condition `evitement` : partir sans livrer le combat, tant qu'aucun assaut n'est joué (112 → 248, VO « Or you may leave » ; 180 → 22). Une fois le combat engagé, il faut gagner ou utiliser FUITE (l'ennemi porte un dernier coup). `fuite=N` = FUITE possible après N assauts ; `fuite=0` = dès la première action, sans pouvoir éviter le combat (191, 220, 339 : « during the fight », « at any stage of the fight ») | DATA-05 non retenu (112 → 248 reste un départ sans combat, en `evitement`). DATA-11 retenu et étendu à 191 et 220. Migration `020-cond-evitement`. Test : `LiensDeCombatTest` (les 8 liens de fuite et d'évitement relus dans la VO). |
+| D-12 | Table des Coups Portés et tirages du combat (REGLE-01, REGLE-02) | Décision du 16/11/2026 : on garde le combat maison (table « LS » rééquilibrée, deux tirages par assaut, actions ATTAQUE / DEFENSE / OBJET / FUITE), volontairement différent du livre | REGLE-01 et REGLE-02 non retenus : ce ne sont plus des écarts « Critique » / « Haute » mais un choix de conception (`CLAUDE.md`, section Règles du jeu). Les tests `tableConformeAuLivre` et `unSeulTiragePourLesDeuxCamps` (section 8) ne sont pas à écrire. REGLE-03 (dernier coup pendant la fuite) et D-01 (DEFENSE et OBJET) restent valables. |
 
 ## 8. Tests à écrire
 
@@ -179,8 +180,8 @@ Un test par exigence critique ou haute. Les tests « données » lisent les quat
 
 | Exigence | Type | Test |
 | --- | --- | --- |
-| REGLE-01 | Unitaire | `TableCombatServiceTest.tableConformeAuLivre` : fixture de 130 couples (E, LS) transcrite de crtneg.png et crtpos.png, comparaison cellule par cellule. |
-| REGLE-02 | Unitaire | `CombatServiceTest.unSeulTiragePourLesDeuxCamps` : `Random` bouchonné renvoyant 3 ; vérifier un seul appel et les pertes E et LS de la même cellule, y compris quand l'ennemi meurt. |
+| REGLE-01 | Unitaire | Non retenu (D-12). ~~`TableCombatServiceTest.tableConformeAuLivre` : fixture de 130 couples (E, LS) transcrite de crtneg.png et crtpos.png, comparaison cellule par cellule.~~ |
+| REGLE-02 | Unitaire | Non retenu (D-12). ~~`CombatServiceTest.unSeulTiragePourLesDeuxCamps` : `Random` bouchonné renvoyant 3 ; vérifier un seul appel et les pertes E et LS de la même cellule, y compris quand l'ennemi meurt.~~ |
 | REGLE-03 | Unitaire | `CombatServiceTest.fuiteInfligeLaPerteLSSeulement`. |
 | REGLE-04 | Unitaire | `defenseCompteCommeAssaut : aux 231 et 339, vérifier que DEFENSE et OBJET font avancer le compteur d'assauts, comme décidé en D-01`. |
 | REGLE-05 | Intégration | `PersonnageControllerTest.consommerPotionPendantCombatRefuse` (400). |
