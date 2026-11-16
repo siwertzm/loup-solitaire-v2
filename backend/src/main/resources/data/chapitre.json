@@ -2449,10 +2449,10 @@
     "id": 136
   },
   {
-    "text": "Lorsque la dernière de ces répugnantes créatures meurt enfin, la lumière verdâtre commence à diminuer. Vous constatez alors que dans chacun des crânes fracassés se trouve une <strong>Pierre Précieuse</strong>.\n\nVous ramassez ces <strong>vingt Pierres</strong> juste avant que la lueur s'éteigne, plongeant la chambre mortuaire dans une totale obscurité. Elles prennent place dans votre bourse.\n\nVous vous hâtez de quitter la Crypte et vous poursuivez votre chemin.\n\nRendez-vous au <strong>23</strong>.",
+    "text": "Lorsque la dernière de ces répugnantes créatures meurt enfin, la lumière verdâtre commence à diminuer. Vous constatez alors que dans chacun des crânes fracassés se trouve une <strong>Pierre Précieuse</strong>.\n\nVous ramassez ces <strong>vingt Pierres</strong> juste avant que la lueur s'éteigne, plongeant la chambre mortuaire dans une totale obscurité. Elles comptent pour un seul objet de votre Sac à Dos.\n\nVous vous hâtez de quitter la Crypte et vous poursuivez votre chemin.\n\nRendez-vous au <strong>23</strong>.",
     "combat": false,
     "objet": [
-      { "id": "pierre_precieuse", "valeur": 20, "optionnel": false }
+      { "id": "pierres_tombeau", "valeur": 1, "optionnel": false }
     ],
     "effet": null,
     "ennemi": null,

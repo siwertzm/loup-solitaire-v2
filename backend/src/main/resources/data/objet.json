@@ -150,6 +150,13 @@
     "effet": null
   },
   {
+    "id": "pierres_tombeau",
+    "nom": "20 Pierres Précieuses",
+    "description": "Vingt Pierres trouvées dans les crânes des Gardiens du Tombeau. Elles comptent pour un seul objet du Sac à Dos.",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
     "id": "pierre_precieuse",
     "nom": "Pierre Précieuse",
     "description": "Une pierre précieuse, utilisée pour marchander.",
