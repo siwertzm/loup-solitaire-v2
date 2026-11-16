@@ -481,8 +481,13 @@ public class PersonnageService {
     //
     // REGLE-13 : rien sur les sous-sections (2101, 2102) : elles rejouent le
     // meme paragraphe 21, deja compte a l'arrivee.
+    //
+    // REGLE-18 : rien non plus sur un chapitre qui a un effet de perte
+    // d'ENDURANCE (piege, chute...), meme si la perte est evitee (discipline,
+    // objet, tirage) : decision du porteur du projet (16/11/2026).
     private void appliquerGuerison(Personnage personnage, Chapitre nouveauChapitre) {
-        if (nouveauChapitre.isCombat() || nouveauChapitre.getId() > DERNIER_PARAGRAPHE_DU_LIVRE) {
+        if (nouveauChapitre.isCombat() || nouveauChapitre.getId() > DERNIER_PARAGRAPHE_DU_LIVRE
+                || aUnEffetDePerteDEndurance(nouveauChapitre)) {
             return;
         }
 
@@ -494,6 +499,11 @@ public class PersonnageService {
 
         int nouvelleEndurance = Math.min(personnage.getEnduranceMax(), personnage.getEnduranceActuelle() + 1);
         personnage.setEnduranceActuelle(nouvelleEndurance);
+    }
+
+    private static boolean aUnEffetDePerteDEndurance(Chapitre chapitre) {
+        return chapitre.getEffets().stream()
+                .anyMatch(effet -> effet.getType() == TypeEffet.ENDURANCE && effet.getValeur() < 0);
     }
 
     private void appliquerObjetChap(Personnage personnage, Chapitre chapitre, ObjetChap objetChap) {

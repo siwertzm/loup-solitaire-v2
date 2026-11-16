@@ -36,6 +36,7 @@ import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
 import com.loupsolitaire.backend.model.Chapitre;
 import com.loupsolitaire.backend.model.Combat;
 import com.loupsolitaire.backend.model.Discipline;
+import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.InventaireItem;
 import com.loupsolitaire.backend.model.Objet;
 import com.loupsolitaire.backend.model.ObjetChapitreRamasse;
@@ -43,6 +44,7 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.model.Utilisateur;
 import com.loupsolitaire.backend.model.enums.CategorieObjet;
 import com.loupsolitaire.backend.model.enums.IdDiscipline;
+import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.model.enums.StatutCombat;
 import com.loupsolitaire.backend.repository.ChapitreRepository;
 import com.loupsolitaire.backend.repository.CombatRepository;
@@ -795,6 +797,43 @@ class PersonnageServiceTest {
         personnageService.avancerVersChapitre(p, 1);
 
         assertThat(p.getEnduranceActuelle()).isEqualTo(20);
+    }
+
+    // REGLE-18 : pas de Guerison sur un chapitre a effet de perte
+    // d'ENDURANCE ; un effet ENDURANCE positif ne la bloque pas.
+    private int enduranceApresGuerisonSurUnChapitreAvecEffet(int valeurEffetEndurance) {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        p.setEnduranceMax(20);
+        p.setEnduranceActuelle(15);
+        Discipline guerison = new Discipline();
+        guerison.setId(IdDiscipline.GUERISON);
+        p.setDisciplines(List.of(guerison));
+
+        Effet effet = new Effet();
+        effet.setType(TypeEffet.ENDURANCE);
+        effet.setValeur(valeurEffetEndurance);
+        Chapitre chapitre1 = new Chapitre();
+        chapitre1.setId(1);
+        chapitre1.setEffets(List.of(effet));
+        chapitre0.setLiens(List.of(creerLien(chapitre1)));
+
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(tableDeHasardService.tirerChiffre()).thenReturn(0);
+
+        personnageService.avancerVersChapitre(p, 1);
+        // effetChapitreService est un mock : seule la Guerison bouge l'ENDURANCE.
+        return p.getEnduranceActuelle();
+    }
+
+    @Test
+    void pasDeGuerisonSurUnChapitreAvecUnEffetDePerteDEndurance() {
+        assertThat(enduranceApresGuerisonSurUnChapitreAvecEffet(-2)).isEqualTo(15);
+    }
+
+    @Test
+    void laGuerisonResteSurUnChapitreAvecUnEffetDEndurancePositif() {
+        assertThat(enduranceApresGuerisonSurUnChapitreAvecEffet(2)).isEqualTo(16);
     }
 
     private static Chapitre chapitreSansCombat(int id) {

@@ -455,7 +455,8 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 - **Repas** : consomme 1 Repas à chaque effet `REPAS` d'un chapitre, sinon
   -3 ENDURANCE ; dispensé si discipline Chasse.
 - **Discipline Guérison** : +1 ENDURANCE à chaque chapitre traversé sans
-  combat (pas sur les sous-sections 2101 et 2102, REGLE-13).
+  combat (pas sur les sous-sections 2101 et 2102, REGLE-13), ni sur un
+  chapitre qui a un effet `ENDURANCE` négatif, même évité (REGLE-18).
 - **Discipline Puissance Psychique** : +2 HABILITE en combat, sauf contre un
   ennemi qui y résiste.
 - **Effets de chapitre** gérés : `ENDURANCE`, `HABILITE` (temporaire, reset à

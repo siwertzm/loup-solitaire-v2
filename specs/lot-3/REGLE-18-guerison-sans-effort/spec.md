@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Moyenne | M | `feature-REGLE-18` | À faire |
+| 3 | Moyenne | M | `feature-REGLE-18` | Fait |
 
 Origine : demande du porteur du projet (16/11/2026), d'après la VF édition augmentée
 
@@ -18,7 +18,11 @@ La Guérison rend +1 ENDURANCE à chaque chapitre sans combat. La **VF édition 
 - **Dégâts déjà repérables dans les données** : 16 chapitres sans combat ont un effet `endurance` négatif : 36, 76, 119, 144, 146, 158, 166, 188, 203, 236, 276, 304, 308, 313, 320, 343. Les Repas (7 chapitres, −3 si pas de Repas) sont aussi une perte possible.
 - **« Effort » n'existe pas dans les données** : il faudra relire les 350 textes (VF + VO) pour repérer les chapitres d'effort (course, nage, escalade, fuite…) et les marquer dans `chapitre.json`.
 
-## À faire (à préciser avec les réponses ci-dessous)
+## Décision (16/11/2026)
+
+Le porteur du projet reste sur la **VO** (décision D-02) : pas de règle de l'édition augmentée, pas de relecture des chapitres d'effort ou de stress. Seule restriction ajoutée : **pas de Guérison sur un chapitre qui a un effet `ENDURANCE` négatif** (les 16 chapitres listés ci-dessus), même si la perte est évitée. Les chapitres de Repas gardent la Guérison. Aucune donnée ni migration : `PersonnageService.appliquerGuerison` lit les effets du chapitre. Texte de `discipline.json` inchangé.
+
+## À faire (prévu avant la décision)
 
 - Données : marquer les chapitres sans Guérison (ex. nouvel effet ou indicateur dans `chapitre.json`, rechargé par DATA-00) ; liste établie par relecture de chaque chapitre, présentée au porteur du projet pour validation avant de l'appliquer.
 - Code : ne pas appliquer la Guérison sur ces chapitres (combat : déjà le cas).
