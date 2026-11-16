@@ -386,7 +386,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
-      error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_PERSONNAGE'), err),
+      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
     });
 
     // Idempotent côté backend : renvoie le combat déjà EN_COURS (ou résolu)
@@ -409,7 +409,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   private echecChargement(err: unknown): void {
-    console.error(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_COMBAT'), err);
+    console.error('Erreur lors du chargement du combat :', err);
     this.erreur.set(this.translate.instant('COMBAT_PAGE.ERREUR_CHARGEMENT_COMBAT_TEXTE'));
     this.chargement.set(false);
   }
@@ -606,7 +606,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
                 this.personnage.set(p);
               }
             },
-            error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_RECHARGEMENT_PERSONNAGE'), err),
+            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
           });
           this.deAttaqueVisible.set(false);
           this.jouerFile(action === 'ATTAQUE' ? messages.slice(1) : messages);
@@ -624,7 +624,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
                 this.personnage.set(p);
               }
             },
-            error: (err) => console.error(this.translate.instant('COMBAT_PAGE.ERREUR_RECHARGEMENT_PERSONNAGE'), err),
+            error: (err) => console.error('Erreur lors du rechargement du personnage :', err),
           });
           this.timerDe = setTimeout(() => {
             if (this.timerDeFaces) clearInterval(this.timerDeFaces);
@@ -643,7 +643,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
         if (this.timerDeFaces) clearInterval(this.timerDeFaces);
         this.deAttaqueVisible.set(false);
         this.deAttaqueRoule.set(false);
-        console.error(this.translate.instant('COMBAT_PAGE.ERREUR_TOUR_COMBAT'), err);
+        console.error('Erreur lors du tour de combat :', err);
         this.jouerFile([{ txt: this.translate.instant('COMBAT_PAGE.MSG_ERREUR_REESSAYER') }]);
       },
     });

@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 2 | Moyenne | S | `fix-QUAL-08` | À faire |
+| 2 | Moyenne | S | `fix-QUAL-08` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau)
 
@@ -18,7 +18,14 @@ La règle « aucune chaîne en dur, tout passe par i18n » (`CLAUDE.md`) n'est p
    - `intro-inventaire.page.ts` : initiales des objets (`'G'`, `'É'`, `'C'`…) écrites en français dans le code ; elles ne suivent pas la langue.
 4. **Traductions inutiles.** Environ 25 clés `*.ERREUR_…` ne servent qu'à `console.error(this.translate.instant(...), err)`. Un message de console n'a pas besoin d'être traduit ; ces clés gonflent fr.json et en.json pour rien.
 
-## À faire
+## Mise en œuvre (16/11/2026)
+
+- Point 1 : `chapitre.page.ts` affiche toujours `ERREUR_REVENIR_INSTANT` / `ERREUR_RESSUSCITER_INSTANT`.
+- Point 2 : `COMBAT_PAGE.ABREVIATION_ENDURANCE` (END) et `ABREVIATION_HABILETE` (fr HAB, en CS) : « HAB » était aussi en dur dans le combat.
+- Point 3 : date « Membre depuis » dans la langue active ; initiales de `intro-inventaire` **supprimées** (tous les objets ont une icône, le repli n'était jamais affiché). **Pièces Premium du profil laissées à « 999 »** (décision du 16/11/2026 : à revoir avec REGLE-15 / QUAL-04, les coins appartiennent aux personnages, pas au compte).
+- Point 4 : les `console.error` gardent le texte français en dur ; 20 clés `ERREUR_…` supprimées de fr.json et en.json.
+
+## À faire (spec d'origine)
 
 - Point 1 : afficher toujours la clé i18n déjà prévue (`CHAPITRE_PAGE.ERREUR_REVENIR_INSTANT`, `ERREUR_RESSUSCITER_INSTANT`), jamais `err.error.message`.
 - Point 2 : nouvelle clé `COMBAT_PAGE.ABREVIATION_ENDURANCE` (fr « END », en « END »).

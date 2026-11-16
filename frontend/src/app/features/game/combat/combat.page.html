@@ -55,10 +55,10 @@
               }
               <div class="plaque-titre">
                 <span class="nom">{{ ennemi.nom }}</span>
-                <span class="hab">HAB {{ ennemi.habilite }}</span>
+                <span class="hab">{{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ ennemi.habilite }}</span>
               </div>
               <div class="plaque-barre">
-                <span class="etiquette">END</span>
+                <span class="etiquette">{{ 'COMBAT_PAGE.ABREVIATION_ENDURANCE' | translate }}</span>
                 <div class="jauge">
                   <div class="remplissage" [class]="'remplissage ' + classeBarreEnnemi()" [style.width.%]="pctEnnemi()"></div>
                 </div>
@@ -136,13 +136,13 @@
           <div class="plaque-titre">
             <span class="nom">{{ nomJoueur() }}</span>
             <span class="hab">
-              HAB {{ habiliteJoueur() }}@if (detailHabiliteAffiche(); as detail) {
+              {{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ habiliteJoueur() }}@if (detailHabiliteAffiche(); as detail) {
                 <span class="hab-detail">({{ detail }})</span>
               }
             </span>
           </div>
           <div class="plaque-barre">
-            <span class="etiquette">END</span>
+            <span class="etiquette">{{ 'COMBAT_PAGE.ABREVIATION_ENDURANCE' | translate }}</span>
             <div class="jauge">
               <div class="remplissage" [class]="'remplissage ' + classeBarreJoueur()" [style.width.%]="pctJoueur()"></div>
             </div>

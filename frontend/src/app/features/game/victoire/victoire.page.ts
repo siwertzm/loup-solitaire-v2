@@ -40,7 +40,7 @@ export class VictoirePage implements ViewWillEnter {
 
     this.personnageService.recuperer(id).subscribe({
       next: (p) => this.personnage.set(p),
-      error: (err) => console.error(this.translate.instant('VICTOIRE.ERREUR_CHARGEMENT'), err),
+      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
     });
   }
 

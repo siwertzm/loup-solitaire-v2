@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { MoiResponse } from '../../core/models/personnage.model';
 import { PersonnageService } from '../../core/services/personnage.service';
@@ -18,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ProfilPage implements ViewWillEnter {
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
   private readonly personnages$ = inject(PersonnageService);
   private readonly auth = inject(AuthService);
 
@@ -36,14 +37,14 @@ export class ProfilPage implements ViewWillEnter {
   readonly initiale = computed(() => (this.compte()?.username ?? '?').charAt(0).toUpperCase());
 
   /**
-   * "Membre depuis" formaté en français ("mars 2026"), à partir de
+   * "Membre depuis" formaté dans la langue active ("mars 2026"), à partir de
    * Utilisateur.dateCreation (backend). Repli pour les comptes créés
    * avant l'ajout de ce champ (dateCreation alors null côté backend).
    */
   readonly membreDepuis = computed(() => {
     const iso = this.compte()?.dateCreation;
     if (!iso) return 'PROFIL.MEMBRE_DEPUIS_INCONNU';
-    return new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date(iso));
+    return new Intl.DateTimeFormat(this.translate.getCurrentLang() ?? 'fr', { month: 'long', year: 'numeric' }).format(new Date(iso));
   });
 
   readonly lignes = computed(() => {

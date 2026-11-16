@@ -381,8 +381,7 @@
     "TITRE_TOME_2": "Fire on the Water",
     "PARAGRAPHE_TOME_2": "The Darklords have invaded the Kingdom of Sommerlund. Holmgard, the capital, is besieged by a powerful enemy army. Only the Sommerswerd can free the city. It is you, Lone Wolf, who must travel to the Kingdom of Durenor to fetch it... A long and perilous journey awaits you, by sea and by land.",
     "RETOUR_MENU": "BACK TO MENU",
-    "NOM_PAR_DEFAUT": "Lone Wolf",
-    "ERREUR_CHARGEMENT": "Error while loading the character:"
+    "NOM_PAR_DEFAUT": "Lone Wolf"
   },
   "CHAPITRE_EFFETS": {
     "ALT_REPAS": "Meal",
@@ -426,8 +425,6 @@
     "POPUP_ECHANGE_TEXTE": "Choose what you give up in exchange.",
     "POPUP_ECHANGE_VIDE": "You have nothing to trade here.",
     "BOUTON_ECHANGER": "Trade",
-    "ERREUR_VOL": "Error while resolving the theft:",
-    "ERREUR_ECHANGE": "Error while trading the item:",
     "PERTE_TITRE": "LOSS",
     "CASSE_TITRE": "BREAKAGE",
     "HABILITE_MAINS_NUES": "Bare-handed fight, without your weapons"
@@ -452,9 +449,7 @@
     "TAG_MAITRISEE": "MASTERED",
     "BONUS_HABILITE": "+{{bonus}} CS",
     "BOUTON_RETIRER": "Remove",
-    "POPUP_ANNULER": "CANCEL",
-    "ERREUR_RAMASSAGE": "Error while picking up the item:",
-    "ERREUR_RETRAIT": "Error while removing the item:"
+    "POPUP_ANNULER": "CANCEL"
   },
   "CHAPITRE_PAGE": {
     "AVATAR_ARIA": "Open the character sheet",
@@ -489,18 +484,10 @@
     "DISCIPLINE_REQUISE": "Discipline needed",
     "OBJET_REQUIS": "Item needed",
     "ERREUR_IDENTIFIANT_INTROUVABLE": "Character ID not found.",
-    "ERREUR_CHARGEMENT_PERSONNAGE": "Error while loading the character:",
-    "ERREUR_CHARGEMENT_DISCIPLINES": "Error while loading the Disciplines:",
-    "ERREUR_CHARGEMENT_OBJETS": "Error while loading the items:",
-    "ERREUR_RECUPERATION_CHAPITRE": "Error while retrieving the chapter:",
     "ERREUR_CHARGEMENT_CHAPITRE": "Unable to load the current chapter.",
-    "ERREUR_AVANCEMENT": "Error while moving to the chapter:",
     "ERREUR_AVANCER_CHAPITRE": "Unable to move to this chapter.",
-    "ERREUR_RETOUR_DEFAITE": "Error while returning after defeat:",
     "ERREUR_REVENIR_INSTANT": "Unable to go back right now.",
-    "ERREUR_AVANCEMENT_RESURRECTION": "Error while moving on after reviving:",
     "ERREUR_AVANCER_RESURRECTION": "Unable to move on after reviving.",
-    "ERREUR_RESURRECTION": "Error while reviving:",
     "ERREUR_RESSUSCITER_INSTANT": "Unable to revive right now.",
     "POPUP_OBJETS_NON_PRIS_TITRE": "BEFORE YOU LEAVE",
     "POPUP_OBJETS_NON_PRIS_TEXTE": "There are still things to do in this section. If you continue, you won't be able to come back to them.",
@@ -510,6 +497,8 @@
     "POPUP_VOIR_ECHANGE": "SEE THE TRADE"
   },
   "COMBAT_PAGE": {
+    "ABREVIATION_ENDURANCE": "END",
+    "ABREVIATION_HABILETE": "CS",
     "ARIA_REGLES": "Combat rules",
     "CHARGEMENT": "Loading combat…",
     "ARIA_BONUS_ACTIFS": "Active bonuses",
@@ -556,11 +545,8 @@
     "JET_RIPOSTE": "COUNTER-ATTACK ROLL",
     "BOUTON_POURSUIVRE": "CONTINUE",
     "ERREUR_IDENTIFIANT_INTROUVABLE": "Character ID not found.",
-    "ERREUR_CHARGEMENT_PERSONNAGE": "Error while loading the character:",
     "ERREUR_CHARGEMENT_COMBAT": "Error while loading the combat:",
     "ERREUR_CHARGEMENT_COMBAT_TEXTE": "Unable to load the combat.",
-    "ERREUR_RECHARGEMENT_PERSONNAGE": "Error while reloading the character:",
-    "ERREUR_TOUR_COMBAT": "Error during the combat round:",
     "MSG_VAINCU": "You have been defeated.",
     "MSG_DEJA_TRIOMPHE": "You have already triumphed over this opponent.",
     "MSG_DEJA_FUI": "You have already fled this combat.",
@@ -640,11 +626,7 @@
     "POPUP_UTILISER_COMBAT": "USE",
     "EFFET_HABILITE": "COMBAT SKILL",
     "EFFET_ENDURANCE": "ENDURANCE",
-    "EFFET_LABEL": "+{{valeur}} {{libelle}}",
-    "ERREUR_CHARGEMENT_INVENTAIRE": "Error while loading the inventory:",
-    "ERREUR_CHARGEMENT_OBJETS": "Error while loading the items:",
-    "ERREUR_CONSOMMATION": "Error while using the item:",
-    "ERREUR_RETRAIT": "Error while removing the item:"
+    "EFFET_LABEL": "+{{valeur}} {{libelle}}"
   },
   "NAV_BAR": {
     "ALT_CHAPITRE": "chapter",
