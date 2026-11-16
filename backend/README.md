@@ -18,6 +18,7 @@ forme de données JSON chargées au démarrage. Les tâches en cours sont dans
 - [Endpoints de l'API](#endpoints-de-lapi)
 - [Modèle de jeu (résumé des règles implémentées)](#modèle-de-jeu-résumé-des-règles-implémentées)
 - [Format des erreurs](#format-des-erreurs)
+- [Sauvegardes et restauration (OPS-06)](#sauvegardes-et-restauration-ops-06)
 - [Tests](#tests)
 - [Structure du projet](#structure-du-projet)
 - [Limitations connues](#limitations-connues)
@@ -145,6 +146,85 @@ format cron Spring) et supprime :
 Les **comptes ne sont jamais supprimés**, même non vérifiés (décision du
 12/11/2026) : leur lien expiré disparaît, « Renvoyer le lien » en recrée
 un. Le nombre de lignes supprimées est écrit dans les logs (`Purge : …`).
+
+## Sauvegardes et restauration (OPS-06)
+
+### Plan Render
+
+Base PostgreSQL sur un plan payant **Basic-1gb** (16/11/2026). À vérifier dans
+l'onglet *Recovery* de la base, Render pouvant changer ses conditions :
+
+- **pas d'expiration** (contrairement aux bases gratuites, supprimées au bout de 30 jours) ;
+- **restauration à un instant donné** (*Point-in-Time Recovery*) sur les derniers
+  jours (environ 3 jours en espace Hobby, 7 en Professional) : elle crée une
+  **nouvelle** base, l'ancienne n'est pas touchée ;
+- **exports manuels** (*logical backups*) téléchargeables, à lancer depuis *Recovery*.
+
+Aucune sauvegarde hors de Render. Piste écartée pour l'instant : un `pg_dump`
+nocturne par GitHub Action, stocké ailleurs (protège d'une perte du compte
+Render, mais met l'URL de la base en secret GitHub et des données personnelles
+dans les dumps : stockage et durée de conservation à décider, RGPD).
+
+### Avant chaque déploiement qui contient une migration
+
+1. *Recovery* → **Create export**, puis télécharger le fichier (hors du dépôt Git).
+2. Noter l'heure du déploiement : en cas de problème, on restaure à la minute d'avant.
+
+### Restaurer
+
+**A. Instant donné, chez Render** (cas normal : migration ou donnée cassée)
+
+1. Base → *Recovery* → *Restore to a point in time* : choisir l'heure juste avant
+   l'incident. Render crée une nouvelle base.
+2. Service backend → *Environment* : remplacer `DB_URL` (URL **interne** de la
+   nouvelle base, au format `jdbc:postgresql://hôte:5432/nom`), `DB_USERNAME`,
+   `DB_PASSWORD`.
+3. Redéployer **le commit qui allait avec cette base** (sinon Liquibase rejoue
+   les migrations du code récent).
+4. Vérifier : `/actuator/health` à `UP`, connexion avec un compte existant,
+   un personnage s'ouvre.
+5. Garder l'ancienne base quelques jours, puis la supprimer.
+
+**B. Depuis un export** (`pg_dump -Fc`)
+
+```bash
+createdb -h <hote> -U <utilisateur> loup_restauree
+pg_restore -h <hote> -U <utilisateur> -d loup_restauree --no-owner export.dump
+```
+
+puis étapes 2 à 5 de A. En local, avec le conteneur Docker :
+
+```bash
+docker exec loup-db pg_dump -U postgres -d loup -Fc -f /tmp/loup.dump
+docker exec loup-db psql -U postgres -c "create database loup_restauree"
+docker exec loup-db pg_restore -U postgres -d loup_restauree --no-owner /tmp/loup.dump
+```
+
+**C. Annuler une seule migration** : chaque changeset a son `rollback` (bloc
+`rollback:` du `.yaml`). Le projet n'a pas le plugin Maven de Liquibase : on
+exécute ce SQL à la main (`psql`), on retire la ligne du changeset
+(`delete from databasechangelog where id = 'NNN-nom';`), puis on redéploie le
+code précédent. À réserver aux migrations de structure : une migration qui supprime
+des données (ex. 013, date de naissance) ne se rattrape qu'avec A ou B.
+
+### Durées mesurées
+
+| Date | Où | Taille | Sauvegarde | Restauration | Redémarrage + vérification | Résultat |
+|---|---|---|---|---|---|---|
+| 16/11/2026 | local (Docker, PostgreSQL 18, 27 tables, 353 chapitres) | dump 155 Ko | `pg_dump` 0,25 s | `pg_restore` 0,26 s | 9 s (Liquibase à jour, catalogue reconnu, `health` UP) | comptages identiques sur les 27 tables |
+| *à faire* | Render (instant donné) | | | | | |
+
+**Une fois par trimestre** : refaire une restauration A sur une base de test,
+compléter le tableau, puis supprimer la base de test.
+
+### Règle des migrations
+
+Une migration doit rester **rétrocompatible** : le code de la version
+précédente doit encore tourner après elle (pour pouvoir revenir au code
+d'avant sans restaurer la base). Pour renommer ou supprimer : **ajouter** la
+nouvelle colonne, **migrer** les données et le code, puis **supprimer**
+l'ancienne dans une version suivante. Chaque changeset a son `rollback`
+(voir `CLAUDE.md`).
 
 ## Failles connues des dépendances (SEC-07)
 

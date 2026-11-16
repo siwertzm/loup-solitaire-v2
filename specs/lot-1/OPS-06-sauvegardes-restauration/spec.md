@@ -2,9 +2,17 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 1 | Haute | M | `feature-OPS-06` | À faire |
+| 1 | Haute | M | `feature-OPS-06` | Fait (reste : test chez Render) |
 
 Origine : Cahier des charges (OPS-06), statut « À faire »
+
+## Mise en œuvre (16/11/2026)
+
+- `backend/README.md`, section « Sauvegardes et restauration (OPS-06) » : plan Render (Basic-1gb, limites à vérifier dans *Recovery*), export avant chaque déploiement avec migration, procédures A (instant donné), B (export + `pg_restore`), C (rollback d'un changeset), tableau des durées, test trimestriel, règle des migrations rétrocompatibles.
+- Restauration testée en local le 16/11/2026 : `pg_dump` 0,25 s, `pg_restore` 0,26 s, redémarrage du backend sur la base restaurée 9 s (Liquibase à jour, catalogue reconnu, `health` UP), comptages identiques sur les 27 tables.
+- `CLAUDE.md` : règle des migrations rétrocompatibles.
+- Écarté : sauvegarde hors Render par GitHub Action (secret de la base, données personnelles dans les dumps).
+- **Reste à faire par le porteur du projet** : une restauration « instant donné » chez Render sur une base de test, durée à reporter dans le tableau du README ; puis une fois par trimestre.
 
 ## Problème
 
