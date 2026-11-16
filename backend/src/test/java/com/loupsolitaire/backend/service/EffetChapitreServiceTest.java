@@ -306,7 +306,7 @@ class EffetChapitreServiceTest {
 
         effetChapitreService.appliquerEffetHabilite(personnage, effet);
 
-        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+        assertThat(personnage.getHabiliteTemp()).isZero();
     }
 
     // =========================================================
