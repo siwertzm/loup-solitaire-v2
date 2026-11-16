@@ -3051,12 +3051,10 @@
     "objet": []
   },
     {
-    "text": "Instinctivement, vous plongez en avant pour éviter le carreau de l'arbalète. Le brigand tire et vous sentez la manche de votre tunique se déchirer tandis que le projectile vous écorche le bras gauche. Vous remerciez les Dieux de vous avoir protégé et vous prenez vos jambes à votre cou.\n\nLes autres bandits n'ont pas d'arbalètes ni d'arcs et ils ont tôt fait d'abandonner la poursuite. Quelques instants plus tard, ils sont loin derrière vous et vous êtes sauf. Vous avez perdu votre Équipement, mais pas la vie.\n\nVous faites une brève halte pour panser l'écorchure causée par le carreau d'arbalète puis vous vous remettez en route en direction de la capitale.\n\nRendez-vous au <strong>288</strong>.",
+    "text": "Instinctivement, vous plongez en avant pour éviter le carreau de l'arbalète. Le brigand tire et vous sentez la manche de votre tunique se déchirer tandis que le projectile vous écorche le bras gauche. Vous remerciez les Dieux de vous avoir protégé et vous prenez vos jambes à votre cou.\n\nLes autres bandits n'ont pas d'arbalètes ni d'arcs et ils ont tôt fait d'abandonner la poursuite. Quelques instants plus tard, ils sont loin derrière vous et vous êtes sauf.\n\nVous faites une brève halte pour panser l'écorchure causée par le carreau d'arbalète puis vous vous remettez en route en direction de la capitale.\n\nRendez-vous au <strong>288</strong>.",
     "combat": false,
     "ennemi": null,
-    "effet": [
-      { "type": "vol", "nom": "perte", "valeur": 8, "cond": null }
-    ],
+    "effet": null,
     "lien": [
       { "page": "288", "cond": null }
     ],
@@ -3388,7 +3386,9 @@
     ],
     "id": 205,
     "objet": [],
-    "effet": null,
+    "effet": [
+      { "type": "vol", "nom": "perte", "valeur": 10, "cond": null }
+    ],
     "ennemi": null
   },
   {

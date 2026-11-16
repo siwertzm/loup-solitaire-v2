@@ -10,13 +10,13 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 ## Avancement (16/11/2026)
 
-**Prochaine tâche : #18, DATA-06 + DATA-07** (lot 2, étape C), branche `fix-DATA-06`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
+**Prochaine tâche : #19, DATA-16** (lot 2, étape C), branche `fix-DATA-16`. OPS-06 (lot 1) reste à faire avant d'ouvrir l'app au public.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #59) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07.
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
-- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13.
+- Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07.
 - Abandonné : REGLE-06. Reporté au lot 3 : RGPD-02.
 
 ## Tâches à faire
@@ -33,7 +33,6 @@ Tâches classées dans l'ordre conseillé (revue du 12/11/2026). L'étape renvoi
 
 | # | Étape | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- | --- | --- |
-| 18 | C | [DATA-06](lot-2/DATA-06-perte-equipement-205/spec.md) + [DATA-07](lot-2/DATA-07-pas-de-vol-181/spec.md) | Moyenne | S | Perte d'équipement au 205, pas au 181 |
 | 19 | C | [DATA-16](lot-2/DATA-16-repas-184/spec.md) | Basse | S | 184 : 1 Repas obligatoire + 3 facultatifs |
 | 20 | C | [REGLE-12](lot-2/REGLE-12-sac-a-dos/spec.md) | Moyenne | M | Modéliser le Sac à Dos |
 | 21 | C | [REGLE-09](lot-2/REGLE-09-vol-144-sac-puis-arme/spec.md) | Moyenne | S | Vol du 144 : Sac d'abord |
