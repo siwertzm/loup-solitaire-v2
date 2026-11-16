@@ -55,6 +55,8 @@ import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.EnnemiRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.SessionFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,6 +98,7 @@ public class GameDataLoader implements ApplicationRunner {
     private final ObjetRepository objetRepository;
     private final ChapitreRepository chapitreRepository;
     private final CatalogueEmpreinteRepository catalogueEmpreinteRepository;
+    private final EntityManagerFactory entityManagerFactory;
     // Jackson 3 a change deux valeurs par defaut par rapport a Jackson 2.
     // On garde explicitement l'ancien comportement pour les fichiers de donnees :
     // - un champ inconnu dans un JSON fait echouer le chargement (detecte les fautes de frappe) ;
@@ -118,6 +121,12 @@ public class GameDataLoader implements ApplicationRunner {
 
         log.info("Catalogue du livre absent ou modifie (empreinte {}) : rechargement depuis les JSON.",
                 empreinte.substring(0, 12));
+        // Le cache de second niveau (OPS-07) peut garder les anciens liens,
+        // effets... d'un chapitre : sans ce vidage, le rechargement les
+        // relit au lieu de la base (EntityNotFoundException sur un Lien
+        // deja supprime). evictAllRegions vide aussi les collections, ce que
+        // l'evictAll() de JPA ne fait pas.
+        entityManagerFactory.unwrap(SessionFactory.class).getCache().evictAllRegions();
         chargerDisciplines();
         chargerEnnemis();
         chargerObjets();
@@ -482,6 +491,12 @@ public class GameDataLoader implements ApplicationRunner {
             }
             // Seuils numeriques (endurance, nombre d'assauts, 1/0...).
             case ENDURANCE, ENDURANCE_INF, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> cond.valeurEntiere();
+            // Sans valeur, ou 1 = lien aussi propose apres une victoire (DATA-18).
+            case EVITEMENT -> {
+                if (cond.getValeur() != null && cond.valeurEntiere() != 1) {
+                    throw new IllegalStateException("Valeur d'evitement invalide : " + cond.getValeur());
+                }
+            }
         }
     }
 

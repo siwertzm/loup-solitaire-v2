@@ -347,6 +347,32 @@ class ConditionServiceTest {
         assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
     }
 
+    // DATA-18 : evitement = 1 (112) -> aussi propose apres une victoire
+
+    @Test
+    void evitementAUnDisponibleApresUneVictoire() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, "1");
+
+        stuberCombat(Optional.of(creerCombat(StatutCombat.VICTOIRE, 3, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+    }
+
+    @Test
+    void evitementAUnDisponibleAvantToutCombat() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, "1");
+
+        stuberCombat(Optional.empty());
+        assertThat(conditionService.estDisponible(cond, personnage)).isTrue();
+    }
+
+    @Test
+    void evitementAUnIndisponiblePendantLeCombatEngage() {
+        Cond cond = creerCond(TypeCondition.EVITEMENT, null, "1");
+
+        stuberCombat(Optional.of(creerCombat(StatutCombat.EN_COURS, 1, false)));
+        assertThat(conditionService.estDisponible(cond, personnage)).isFalse();
+    }
+
     // Fuite a 0 assaut (191, 220, 339) : fuite des la premiere action, mais
     // le combat ne peut pas etre evite.
     @Test

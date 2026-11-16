@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,6 +43,10 @@ import com.loupsolitaire.backend.repository.DisciplineRepository;
 import com.loupsolitaire.backend.repository.EnnemiRepository;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.SessionFactory;
+import org.mockito.Answers;
+
 @ExtendWith(MockitoExtension.class)
 class GameDataLoaderTest {
 
@@ -60,13 +65,18 @@ class GameDataLoaderTest {
     @Mock
     private CatalogueEmpreinteRepository catalogueEmpreinteRepository;
 
+    // Vidage du cache au debut d'un rechargement : sans effet ici.
+    @Mock
+    private EntityManagerFactory entityManagerFactory;
+
     private GameDataLoader creerLoader() {
         return new GameDataLoader(
                 disciplineRepository,
                 ennemiRepository,
                 objetRepository,
                 chapitreRepository,
-                catalogueEmpreinteRepository
+                catalogueEmpreinteRepository,
+                entityManagerFactory
         );
     }
 
@@ -76,6 +86,8 @@ class GameDataLoaderTest {
     // verifie une etape sans dependre des autres.
     @BeforeEach
     void catalogueSimule() {
+        lenient().when(entityManagerFactory.unwrap(SessionFactory.class))
+                .thenReturn(mock(SessionFactory.class, Answers.RETURNS_DEEP_STUBS));
         lenient().when(disciplineRepository.findById(any())).thenAnswer(inv -> {
             Discipline d = new Discipline();
             d.setId(inv.getArgument(0));
@@ -450,6 +462,20 @@ class GameDataLoaderTest {
         assertThatThrownBy(() -> GameDataLoader.validerCondition(
                 cond(TypeCondition.FUITE, null, null), OBJETS_CONNUS))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void accepteUnEvitementSansValeurOuAUn() {
+        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, null), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, "1"), OBJETS_CONNUS);
+    }
+
+    @Test
+    void refuseUnEvitementAvecUneAutreValeur() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.EVITEMENT, null, "2"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("evitement");
     }
 
     @Test

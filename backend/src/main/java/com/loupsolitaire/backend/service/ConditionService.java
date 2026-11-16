@@ -70,7 +70,8 @@ public class ConditionService {
             case ENDURANCE_INF -> enduranceInferieure(cond, personnage);
             case HASARD -> tirageDansLaPlage(cond, personnage);
             case VICTOIRE, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> conditionDeCombat(cond, contexte);
-            case EVITEMENT -> combatEvitable(contexte.combatDuChapitreActuel());
+            case EVITEMENT -> combatEvitable(contexte.combatDuChapitreActuel())
+                    || (resteApresVictoire(cond) && combatGagne(contexte.combatDuChapitreActuel()));
             case PERMANENT, SANS_ARME -> true;
         };
     }
@@ -122,6 +123,17 @@ public class ConditionService {
     // le combat : seulement de fuir des la premiere action.
     public static boolean estEvitementDuCombat(Cond cond) {
         return cond.getType() == TypeCondition.EVITEMENT;
+    }
+
+    // DATA-18 : evitement = 1 -> le lien reste propose apres une victoire
+    // (112 : « Si vous êtes vainqueur… Mais vous pouvez également quitter
+    // les lieux »). Sans valeur (180), il ne sert qu'a eviter le combat.
+    private static boolean resteApresVictoire(Cond cond) {
+        return cond.getValeur() != null && "1".equals(cond.getValeur().trim());
+    }
+
+    private static boolean combatGagne(Optional<Combat> combat) {
+        return combat.map(c -> c.getStatut() == StatutCombat.VICTOIRE).orElse(false);
     }
 
     // Vrai si le combat n'a pas encore commence : aucun combat, ou un combat
