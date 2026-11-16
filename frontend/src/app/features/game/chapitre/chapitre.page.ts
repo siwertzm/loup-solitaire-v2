@@ -218,6 +218,8 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   });
 
   readonly combatDisponible = signal(false);
+  // DATA-18 : après une victoire, le lien EVITEMENT du 112 affiche son numéro, pas « FUITE ».
+  readonly combatGagne = signal(false);
   // Mort HORS combat (voir plus bas) et mort EN combat (Combat.statut =
   // DEFAITE, voir CombatService.appliquerDegatsAuJoueur côté backend) sont
   // toutes deux reflétées par le même Personnage.mort — mais leur remède
@@ -674,6 +676,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     if (!estChapitreCombat) {
       this.combatDisponible.set(false);
       this.combatEnDefaite.set(false);
+      this.combatGagne.set(false);
       return;
     }
 
@@ -683,11 +686,13 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (combat) => {
         this.combatDisponible.set(combat.statut === 'EN_COURS');
         this.combatEnDefaite.set(combat.statut === 'DEFAITE');
+        this.combatGagne.set(combat.statut === 'VICTOIRE');
       },
       error: (err) => {
         // 404 signifie que le combat n'a pas encore été démarré.
         this.combatDisponible.set(err.status === 404);
         this.combatEnDefaite.set(false);
+        this.combatGagne.set(false);
       },
     });
   }

@@ -14,6 +14,7 @@ public enum TypeCondition {
     // D-11 : lien qui permet de ne pas livrer le combat du tout (112, 180).
     // Empruntable avant le premier assaut ; une fois le combat engage, il
     // faut gagner ou fuir (bouton FUITE actif des la premiere action).
+    // Valeur 1 : le lien reste aussi propose apres une victoire (112, DATA-18).
     EVITEMENT;
  
     public static TypeCondition fromJson(String valeur) {

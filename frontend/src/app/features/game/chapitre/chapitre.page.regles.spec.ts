@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 
 import { LienResponse } from '../../../core/models/chapitre.model';
 import { ChapitreService } from '../../../core/services/chapitre.service';
@@ -86,6 +87,17 @@ describe('ChapitrePage — règles affichées', () => {
     page.chapitre.set(unChapitre({ liens: [evitement, fuite0, evitementIndispo, lien(1)] }));
 
     expect(page.liensEvitementCombat()).toEqual([evitement]);
+  });
+
+  it.each([
+    ['VICTOIRE', true],
+    ['FUITE', false],
+  ])('combatGagne : combat %s → %s (DATA-18, libellé du lien EVITEMENT)', (statut, attendu) => {
+    Object.assign(TestBed.inject(CombatService), { recuperer: () => of({ statut }) });
+
+    page['actualiserCombatDisponible'](true, 'p1');
+
+    expect(page.combatGagne()).toBe(attendu);
   });
 
   it('trouverLienRetourNarratif : le lien conditionné au coin', () => {

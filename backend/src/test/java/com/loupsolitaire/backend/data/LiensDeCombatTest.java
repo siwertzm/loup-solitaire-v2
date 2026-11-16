@@ -48,7 +48,7 @@ class LiensDeCombatTest {
     void lesLiensDeFuiteEtDEvitementSuiventLeLivre() {
         Map<String, String> attendus = Map.of(
                 "43 → 106", "fuite=3",      // « After three rounds »
-                "112 → 248", "evitement=null", // « Or you may leave »
+                "112 → 248", "evitement=1", // « Or you may leave » : aussi apres victoire (DATA-18)
                 "169 → 23", "fuite=1",      // « after the first round »
                 "180 → 22", "evitement=null", // « Si vous souhaitez engager le combat »
                 "191 → 234", "fuite=0",     // « during the fight »

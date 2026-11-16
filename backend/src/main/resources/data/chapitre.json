@@ -2131,7 +2131,7 @@
       },
       {
         "page": "248",
-        "cond": [{ "type": "evitement", "valeur": null, "targetId": null }]
+        "cond": [{ "type": "evitement", "valeur": "1", "targetId": null }]
       }
     ],
     "id": 112

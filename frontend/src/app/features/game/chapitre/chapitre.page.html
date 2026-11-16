@@ -267,7 +267,10 @@
                       'CHAPITRE_PAGE.LIEN_COURONNES'
                         | translate: { valeur: lien.conditions[0].valeur }
                     }}
-                  } @else if (lien.conditions[0].type === 'FUITE' || lien.conditions[0].type === 'EVITEMENT') {
+                  } @else if (
+                    lien.conditions[0].type === 'FUITE' ||
+                    (lien.conditions[0].type === 'EVITEMENT' && !combatGagne())
+                  ) {
                     {{ 'CHAPITRE_PAGE.LIEN_FUITE' | translate }}
                   } @else {
                     {{ lien.chapitreCibleId }}

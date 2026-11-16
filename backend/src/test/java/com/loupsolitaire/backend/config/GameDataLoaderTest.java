@@ -453,6 +453,20 @@ class GameDataLoaderTest {
     }
 
     @Test
+    void accepteUnEvitementSansValeurOuAUn() {
+        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, null), OBJETS_CONNUS);
+        GameDataLoader.validerCondition(cond(TypeCondition.EVITEMENT, null, "1"), OBJETS_CONNUS);
+    }
+
+    @Test
+    void refuseUnEvitementAvecUneAutreValeur() {
+        assertThatThrownBy(() -> GameDataLoader.validerCondition(
+                cond(TypeCondition.EVITEMENT, null, "2"), OBJETS_CONNUS))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("evitement");
+    }
+
+    @Test
     void refuseUnePlageDeHasardInvalide() {
         assertThatThrownBy(() -> GameDataLoader.validerCondition(
                 cond(TypeCondition.HASARD, null, "[0, 10]"), OBJETS_CONNUS))

@@ -482,6 +482,12 @@ public class GameDataLoader implements ApplicationRunner {
             }
             // Seuils numeriques (endurance, nombre d'assauts, 1/0...).
             case ENDURANCE, ENDURANCE_INF, FUITE, ASSAUT_MAX, ASSAUT_MIN, ASSAUT_ECHEC, ENDURANCE_PERDUE -> cond.valeurEntiere();
+            // Sans valeur, ou 1 = lien aussi propose apres une victoire (DATA-18).
+            case EVITEMENT -> {
+                if (cond.getValeur() != null && cond.valeurEntiere() != 1) {
+                    throw new IllegalStateException("Valeur d'evitement invalide : " + cond.getValeur());
+                }
+            }
         }
     }
 
