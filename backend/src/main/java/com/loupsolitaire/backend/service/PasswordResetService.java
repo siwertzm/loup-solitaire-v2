@@ -30,8 +30,8 @@ public class PasswordResetService {
     private final LimiteurDeDebit limiteurDeDebit;
 
     // SEC-11 : hachage d'un code au hasard, compare quand il n'y a pas de
-    // vrai code (voir verifierCodeSansLimite). Calcule au premier besoin ;
-    // deux calculs simultanes donnent deux valeurs aussi valables.
+    // vrai code, voir verifierCodeSansLimite. Il est calcule au premier
+    // besoin, et deux calculs simultanes donnent deux valeurs aussi valables.
     private volatile String hashFactice;
 
     /*
