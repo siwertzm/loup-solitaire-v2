@@ -68,7 +68,7 @@ ion-content.equipement {
     border-radius: 50%;
     color: $or;
     font-family: 'Cinzel', serif;
-    font-size: 23px;
+    font-size: 1.4375rem;
   }
 
   .identite {
@@ -78,7 +78,7 @@ ion-content.equipement {
       overflow: hidden;
       margin: 0;
       font-family: 'Cinzel', serif;
-      font-size: 28px;
+      font-size: 1.75rem;
       font-weight: 600;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -87,7 +87,7 @@ ion-content.equipement {
     .sous-titre {
       margin-top: 4px;
       color: rgba(236, 226, 200, 0.55);
-      font-size: 16px;
+      font-size: 1rem;
       font-style: italic;
     }
   }
@@ -111,7 +111,7 @@ ion-content.equipement {
 
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   display: flex;
   justify-content: space-between;
   letter-spacing: 0.18em;
@@ -120,7 +120,7 @@ ion-content.equipement {
 
 .cle {
   font-family: 'Cinzel', serif;
-  font-size: 9.5px;
+  font-size: 0.59375rem;
   letter-spacing: 0.14em;
   color: rgba(236, 226, 200, 0.35);
 }
@@ -132,7 +132,7 @@ ion-content.equipement {
 
   .compteur {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.1em;
     color: rgba(236, 226, 200, 0.35);
   }
@@ -156,19 +156,19 @@ ion-content.equipement {
   text-align: center;
 
   .cle {
-    font-size: 9px;
+    font-size: 0.5625rem;
     letter-spacing: 0.1em;
     color: rgba(236, 226, 200, 0.55);
   }
 
   .stat-value {
     font-family: 'Cinzel', serif;
-    font-size: 27px;
+    font-size: 1.6875rem;
     line-height: 1;
   }
 
   .stat-detail {
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: rgba(236, 226, 200, 0.4);
   }
 
@@ -189,7 +189,7 @@ ion-content.equipement {
   width: 46px;
   height: 46px;
   border-radius: 13px;
-  font-size: 20px;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,7 +270,7 @@ ion-content.equipement {
 
   .case-nom {
     font-family: 'Cinzel', serif;
-    font-size: 10.5px;
+    font-size: 0.65625rem;
     line-height: 1.2;
     color: rgba(236, 226, 200, 0.28);
   }
@@ -316,7 +316,7 @@ ion-content.equipement {
 
   .ligne-nom {
     flex: 1;
-    font-size: 13.5px;
+    font-size: 0.84375rem;
   }
 
   .discipline-libelle {
@@ -327,13 +327,13 @@ ion-content.equipement {
   }
 
   .arme-maitrisee {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: $or;
   }
 
   .ligne-note {
     font-family: 'Cinzel', serif;
-    font-size: 9px;
+    font-size: 0.5625rem;
     letter-spacing: 0.12em;
     color: $or;
   }
@@ -349,7 +349,7 @@ ion-content.equipement {
     cursor: pointer;
 
     ion-icon {
-      font-size: 18px;
+      font-size: 1.125rem;
       vertical-align: middle;
     }
 
@@ -385,7 +385,7 @@ ion-content.equipement {
 
   .surtitre {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.2em;
     color: #8a7a5e;
   }
@@ -393,13 +393,13 @@ ion-content.equipement {
   .popup-titre {
     margin: 8px 0 12px;
     font-family: 'Cinzel', serif;
-    font-size: 19px;
+    font-size: 1.1875rem;
     font-weight: 600;
   }
 
   .popup-texte {
     margin: 0;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     white-space: pre-line;
   }
@@ -410,7 +410,7 @@ ion-content.equipement {
     border-left: 2px solid $cuivre;
     background: rgba(194, 112, 58, 0.12);
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.04em;
   }
 
@@ -423,7 +423,7 @@ ion-content.equipement {
     background: $foret;
     color: $parchemin;
     font-family: 'Cinzel', serif;
-    font-size: 11.5px;
+    font-size: 0.71875rem;
     letter-spacing: 0.16em;
     cursor: pointer;
   }
@@ -449,7 +449,7 @@ ion-content.equipement {
     padding: 12px 8px;
     border-radius: 10px;
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.08em;
     cursor: pointer;
   }
@@ -484,7 +484,7 @@ ion-content.equipement {
     bottom: calc(100% + 4px);
     left: 22px;
     color: $rouge;
-    font-size: 14px;
+    font-size: 0.875rem;
     text-align: center;
   }
 }
@@ -501,7 +501,7 @@ ion-content.equipement {
   padding: 17px;
   background: $cuivre;
   color: $foret;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   font-weight: bold;
   letter-spacing: 0.18em;
   cursor: pointer;
@@ -514,7 +514,7 @@ ion-content.equipement {
   padding: 15px;
   background: rgba(236, 226, 200, 0.12);
   color: rgba(236, 226, 200, 0.45);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   letter-spacing: 0.16em;
   cursor: pointer;
 
@@ -535,7 +535,7 @@ ion-content.equipement {
   padding: 15px;
   background: rgba(236, 226, 200, 0.12);
   color: rgba(236, 226, 200, 0.45);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   font-weight: bold;
   letter-spacing: 0.16em;
   cursor: pointer;

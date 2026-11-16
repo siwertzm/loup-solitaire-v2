@@ -42,7 +42,7 @@ ion-content.victoire {
 
   .sur-titre {
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.42em;
     text-transform: uppercase;
@@ -52,7 +52,7 @@ ion-content.victoire {
   .titre {
     margin: 14px 0 10px;
     font-family: 'Cinzel', serif;
-    font-size: 27px;
+    font-size: 1.6875rem;
     font-weight: 700;
     line-height: 1.25;
     color: $parchemin;
@@ -61,7 +61,7 @@ ion-content.victoire {
   .sous-titre {
     font-family: 'EB Garamond', Georgia, serif;
     font-style: italic;
-    font-size: 15px;
+    font-size: 0.9375rem;
     color: rgba(236, 226, 200, 0.75);
   }
 
@@ -78,7 +78,7 @@ ion-content.victoire {
     align-items: center;
     justify-content: center;
     color: $or;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 }
 
@@ -88,7 +88,7 @@ ion-content.victoire {
   border-radius: 14px;
   background: $parchemin;
   color: $encre;
-  font-size: 16.5px;
+  font-size: 1.03125rem;
   line-height: 1.62;
   text-wrap: pretty;
   display: flex;
@@ -102,7 +102,7 @@ ion-content.victoire {
   .mention-victoire {
     align-self: center;
     font-family: 'Cinzel', serif;
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: 0.22em;
     color: $cuivre;
@@ -117,7 +117,7 @@ ion-content.victoire {
     padding-top: 14px;
     border-top: 1px solid rgba(58, 50, 38, 0.2);
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -128,7 +128,7 @@ ion-content.victoire {
   .titre-tome-2 {
     margin: 0;
     font-family: 'Cinzel', serif;
-    font-size: 21px;
+    font-size: 1.3125rem;
     font-weight: 600;
     text-align: center;
   }
@@ -146,7 +146,7 @@ ion-content.victoire {
   padding: 15px;
   background: $cuivre;
   color: $foret;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   letter-spacing: 0.16em;
   cursor: pointer;
 

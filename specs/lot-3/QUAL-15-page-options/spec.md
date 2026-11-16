@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | M | `feature-QUAL-15` | À faire |
+| 3 | Basse | M | `feature-QUAL-15` | Fait |
 
 Origine : retour du porteur du projet (16/11/2026)
 
@@ -30,6 +30,13 @@ Constat dans le code :
 - **Technique de la taille du texte** : passer les `font-size` en `rem` (gros changement de styles, mais propre) ou zoom global ? À trancher au récap.
 - **Stockage** : paramètres gardés sur l'appareil seulement (`Preferences`), ou liés au compte côté serveur pour les retrouver sur un autre appareil ?
 - **Ordre avec QUAL-13** : faire la page Options avant ou après la bande originale ?
+
+## Réalisé (16/11/2026)
+
+- Décisions : taille du texte seulement (langue avec QUAL-09, son avec QUAL-13) ; page `/options` réservée aux joueurs connectés, ouverte depuis le Profil ; trois tailles (petite 0,9 / normale 1 / grande 1,15) ; réglage du téléphone non suivi ; stockage sur l'appareil (`Preferences`).
+- Technique **A** : les 325 `font-size` passés en `rem` ; base `:root { font-size: calc(16px * var(--echelle-texte)) }` (prend le pas sur la police dynamique d'Ionic sur iOS) ; le terme en `vw` des `clamp` est multiplié par `--echelle-texte`. Rendu identique en taille normale.
+- `OptionsService` (appliqué au démarrage via `provideAppInitializer`), attribut `data-taille-texte` sur `html` pour les ajustements propres à une taille.
+- Retouches en grande taille : bouton « Signaler un bug ou donner un avis » sur une ligne, texte d'accueil sans personnage rééquilibré, titres alignés dans l'inventaire de départ (subgrid).
 
 ## Critères d'acceptation
 

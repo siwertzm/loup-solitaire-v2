@@ -34,6 +34,13 @@
  */
 
  :root {
+  /* QUAL-15 : taille du texte reglable (page Options). Toutes les tailles
+   * de police sont en rem : elles suivent cette base de 16px multipliee par
+   * --echelle-texte (OptionsService). :root l'emporte sur le "font" d'Ionic
+   * pose sur html, qui suivrait sinon la taille de texte d'iOS. */
+  --echelle-texte: 1;
+  font-size: calc(16px * var(--echelle-texte));
+
   --ion-color-oeil: #8a826d;
   --ion-color-oeil-rgb: 138, 130, 109;
 

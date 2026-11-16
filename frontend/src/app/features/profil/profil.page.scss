@@ -35,14 +35,14 @@ ion-content.profil {
   border: none;
   padding: 8px 0;
   color: rgba(236, 226, 200, 0.6);
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 }
 
 .etat {
   padding: 24px 2px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: rgba(236, 226, 200, 0.6);
 
   &.erreur {
@@ -67,18 +67,18 @@ ion-content.profil {
     align-items: center;
     justify-content: center;
     font-family: 'Cinzel', serif;
-    font-size: 22px;
+    font-size: 1.375rem;
     color: $or;
   }
 
   .username {
     font-family: 'Cinzel', serif;
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 600;
   }
 
   .email {
-    font-size: 14.5px;
+    font-size: 0.90625rem;
     color: rgba(236, 226, 200, 0.6);
   }
 }
@@ -102,13 +102,13 @@ ion-content.profil {
 
   .cle {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.14em;
     color: rgba(236, 226, 200, 0.55);
   }
 
   .valeur {
-    font-size: 15px;
+    font-size: 0.9375rem;
     color: $parchemin;
 
     &.vert {
@@ -138,7 +138,9 @@ ion-content.profil {
   border-radius: 11px;
   padding: 14px;
   color: $parchemin;
-  font-size: 11.5px;
+  // QUAL-15 : plafonné à la largeur de l'écran pour que « SIGNALER UN BUG OU
+  // DONNER UN AVIS » tienne sur une ligne, même en grande taille.
+  font-size: min(0.71875rem, 3.07vw);
   letter-spacing: 0.14em;
   cursor: pointer;
 
@@ -153,7 +155,7 @@ ion-content.profil {
   border-radius: 11px;
   padding: 14px;
   color: $rouge;
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 
@@ -169,7 +171,7 @@ ion-content.profil {
   border-radius: 11px;
   padding: 14px;
   color: $rouge;
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 
@@ -182,7 +184,7 @@ ion-content.profil {
 .bandeau {
   border-radius: 10px;
   padding: 11px 14px;
-  font-size: 14.5px;
+  font-size: 0.90625rem;
 
   &.erreur {
     background: rgba(184, 65, 47, 0.14);
@@ -201,7 +203,7 @@ ion-content.profil {
 
   .suppression-avertissement {
     margin: 0;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.4;
     color: $parchemin;
   }
@@ -215,7 +217,7 @@ ion-content.profil {
     padding: 12px 13px;
     color: $parchemin;
     font-family: 'EB Garamond', Georgia, serif;
-    font-size: 16px;
+    font-size: 1rem;
 
     &:focus {
       outline: none;
@@ -241,7 +243,7 @@ ion-content.profil {
   justify-content: center;
   gap: 8px 20px;
   margin-top: 28px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 
   a {
     color: rgba(236, 226, 200, 0.58);

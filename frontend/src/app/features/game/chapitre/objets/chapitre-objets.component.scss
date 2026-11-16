@@ -17,7 +17,7 @@ $parchemin: #ece2c8;
 
 .sac-titre {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   color: $sepia;
@@ -35,7 +35,7 @@ $parchemin: #ece2c8;
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 15px;
+  font-size: 0.9375rem;
 
   .logo {
     flex: none;
@@ -52,7 +52,7 @@ $parchemin: #ece2c8;
 
 .objet-quantite {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: $sepia;
   text-transform: uppercase;
 }
@@ -73,7 +73,7 @@ $parchemin: #ece2c8;
   color: $rouge;
 
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: bold;
   letter-spacing: 0.16em;
 
@@ -138,20 +138,20 @@ $parchemin: #ece2c8;
 }
 
 .nbr {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   padding-right: 10px;
 }
 
 .nbr2 {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   padding-right: 10px;
 }
 
 .cont {
   padding-right: 2px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 800;
 }
 
@@ -183,7 +183,7 @@ $parchemin: #ece2c8;
 
 .popup-plein-titre {
   font-family: 'Cinzel', serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: $or;
@@ -191,7 +191,7 @@ $parchemin: #ece2c8;
 }
 
 .popup-plein-texte {
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   color: $sepia;
   text-align: center;
   margin: 8px 0 16px;
@@ -213,12 +213,12 @@ $parchemin: #ece2c8;
 
 .popup-plein-nom {
   flex: 1;
-  font-size: 14.5px;
+  font-size: 0.90625rem;
 }
 
 .popup-plein-quantite {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: $sepia;
 }
 
@@ -228,7 +228,7 @@ $parchemin: #ece2c8;
   flex-direction: column;
   align-items: flex-end;
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.08em;
   color: $sepia;
   text-transform: uppercase;
@@ -236,7 +236,7 @@ $parchemin: #ece2c8;
 
 .popup-plein-bonus {
   color: $vert;
-  font-size: 8.5px;
+  font-size: 0.53125rem;
 }
 
 .popup-plein-retirer {
@@ -247,7 +247,7 @@ $parchemin: #ece2c8;
   border-radius: 6px;
   color: $rouge;
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.1em;
 
   &:disabled {
@@ -264,6 +264,6 @@ $parchemin: #ece2c8;
   border-radius: 10px;
   color: $sepia;
   font-family: 'Cinzel', serif;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   letter-spacing: 0.14em;
 }

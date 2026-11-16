@@ -80,7 +80,7 @@ ion-content.auth-page {
     color: $cuivre;
 
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
 
     letter-spacing: 0.28em;
   }
@@ -93,7 +93,7 @@ ion-content.auth-page {
     font-family: 'Cinzel', serif;
 
     font-size:
-      clamp(24px, 7vw, 31px);
+      clamp(1.5rem, calc(7vw * var(--echelle-texte, 1)), 1.9375rem);
 
     font-weight: 600;
 
@@ -106,7 +106,7 @@ ion-content.auth-page {
     color:
       rgba(236, 226, 200, 0.62);
 
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-style: italic;
   }
 }
@@ -117,7 +117,7 @@ h2 {
   color: $or;
 
   font-family: 'Cinzel', serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 
   letter-spacing: 0.12em;
@@ -131,7 +131,7 @@ h2 {
   color:
     rgba(236, 226, 200, 0.58);
 
-  font-size: 16px;
+  font-size: 1rem;
   font-style: italic;
 
   line-height: 1.4;
@@ -156,7 +156,7 @@ form {
       rgba(236, 226, 200, 0.68);
 
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
 
     letter-spacing: 0.12em;
 
@@ -187,7 +187,7 @@ form {
   }
 
   ion-input.code-input {
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 600;
 
     letter-spacing: 0.3em;
@@ -204,7 +204,7 @@ form {
 
   border-radius: 8px;
 
-  font-size: 14px;
+  font-size: 0.875rem;
 
   text-align: left;
 }
@@ -248,7 +248,7 @@ form {
 
   font-family: 'Cinzel', serif;
 
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
 
   letter-spacing: 0.12em;
@@ -275,7 +275,7 @@ form {
     Georgia,
     serif;
 
-  font-size: 15px;
+  font-size: 0.9375rem;
 
   cursor: pointer;
 

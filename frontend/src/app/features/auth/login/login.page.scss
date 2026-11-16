@@ -42,7 +42,7 @@ ion-content.auth-page {
   .sur-titre {
     color: $cuivre;
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.28em;
   }
 
@@ -50,7 +50,7 @@ ion-content.auth-page {
     margin: 8px 0 4px;
     color: $parchemin;
     font-family: 'Cinzel', serif;
-    font-size: clamp(24px, 7vw, 31px);
+    font-size: clamp(1.5rem, calc(7vw * var(--echelle-texte, 1)), 1.9375rem);
     font-weight: 600;
     line-height: 1.12;
     text-transform: uppercase;
@@ -58,7 +58,7 @@ ion-content.auth-page {
 
   .sous-titre {
     color: rgba(236, 226, 200, 0.62);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-style: italic;
   }
 }
@@ -67,7 +67,7 @@ h2 {
   margin: 0 0 4px;
   color: $or;
   font-family: 'Cinzel', serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -76,7 +76,7 @@ h2 {
 .surtitre {
   color: $cuivre;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.28em;
 }
 
@@ -84,14 +84,14 @@ h1 {
   margin: 8px 0 4px;
   color: $parchemin;
   font-family: 'Cinzel', serif;
-  font-size: 27px;
+  font-size: 1.6875rem;
   font-weight: 600;
 }
 
 .introduction {
   margin: 0 0 26px;
   color: rgba(236, 226, 200, 0.58);
-  font-size: 16px;
+  font-size: 1rem;
   font-style: italic;
 }
 
@@ -109,7 +109,7 @@ form {
     margin: 0 0 7px 2px;
     color: rgba(236, 226, 200, 0.68);
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
@@ -137,7 +137,7 @@ form {
   border-radius: 8px;
   background: rgba(224, 112, 90, 0.1);
   color: $rouge;
-  font-size: 14px;
+  font-size: 0.875rem;
   text-align: left;
 }
 
@@ -150,7 +150,7 @@ form {
   --padding-top: 17px;
   margin-top: 4px;
   font-family: 'Cinzel', serif;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -162,7 +162,7 @@ form {
   margin: 24px 0 18px;
   color: rgba(236, 226, 200, 0.3);
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.14em;
 
   &::before,
@@ -176,7 +176,7 @@ form {
 
 .inscription {
   color: rgba(236, 226, 200, 0.58);
-  font-size: 15px;
+  font-size: 0.9375rem;
   text-decoration: none;
 
   strong {
@@ -225,7 +225,7 @@ ion-input-password-toggle.password-toggle {
 
   color: rgba(236, 226, 200, 0.5);
 
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-style: italic;
 
   text-align: right;
@@ -250,7 +250,7 @@ ion-input-password-toggle.password-toggle {
   p {
     margin: 0;
     color: $parchemin;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
   .renvoyer {
@@ -261,7 +261,7 @@ ion-input-password-toggle.password-toggle {
     background: transparent;
     color: $or;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 0.875rem;
     cursor: pointer;
 
     &:disabled {
@@ -273,6 +273,6 @@ ion-input-password-toggle.password-toggle {
   .succes {
     display: block;
     color: #9fb77a;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 }

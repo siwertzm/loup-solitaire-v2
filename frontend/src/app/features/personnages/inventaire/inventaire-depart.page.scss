@@ -46,7 +46,7 @@ ion-content.equipement {
 
   .surtitre {
     font-family: 'Cinzel', serif;
-    font-size: 10.5px;
+    font-size: 0.65625rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: $cuivre;
@@ -54,7 +54,7 @@ ion-content.equipement {
 
   .titre {
     font-family: 'Cinzel', serif;
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 600;
     margin: 4px 0 0;
   }
@@ -69,30 +69,33 @@ ion-content.equipement {
   gap: 8px;
 }
 
+// QUAL-15 : grille + subgrid : les titres des deux blocs partagent la même
+// ligne, donc la tunique et l'arme restent alignées quand « ARME MAÎTRISÉE »
+// passe sur deux lignes (grande taille de texte).
 .intro-equipement {
-  display: flex;
-  gap: 11px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: 11px;
 
   .bloc {
-    flex: 1;
-    min-width: 0;
-
-    &:only-child {
-      flex-basis: 100%;
-    }
+    grid-row: span 2;
+    display: grid;
+    grid-template-rows: subgrid;
+    row-gap: 8px;
   }
 }
 
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   color: rgba(236, 226, 200, 0.774);
 }
 
 .cle {
   font-family: 'Cinzel', serif;
-  font-size: 9.5px;
+  font-size: 0.59375rem;
   letter-spacing: 0.14em;
   color: rgba(236, 226, 200, 0.774);
 }
@@ -104,7 +107,7 @@ ion-content.equipement {
 
   .compteur {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
+    font-size: 0.625rem;
     letter-spacing: 0.1em;
     color: rgba(236, 226, 200, 0.35);
   }
@@ -124,7 +127,7 @@ ion-content.equipement {
   padding: 11px 12px;
 
   .cle {
-    font-size: 9px;
+    font-size: 0.5625rem;
     letter-spacing: 0.13em;
     color: rgba(236, 226, 200, 0.774);
     text-align: center;
@@ -132,7 +135,7 @@ ion-content.equipement {
 
   .total {
     font-family: 'Cinzel', serif;
-    font-size: 34px;
+    font-size: 2.125rem;
     line-height: 1.35;
 
     &.or {
@@ -141,13 +144,13 @@ ion-content.equipement {
   }
 
   .detail {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: rgba(236, 226, 200, 0.4);
   }
 
   .nom-objet {
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.25;
     color: $or;
     text-align: center;
@@ -158,7 +161,7 @@ ion-content.equipement {
   width: 58px;
   height: 58px;
   border-radius: 13px;
-  font-size: 32px;
+  font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,7 +243,7 @@ ion-content.equipement {
 
   .case-nom {
     font-family: 'Cinzel', serif;
-    font-size: 10.5px;
+    font-size: 0.65625rem;
     line-height: 1.2;
     color: rgba(236, 226, 200, 0.28);
   }
@@ -296,12 +299,12 @@ ion-content.equipement {
 
   .ligne-nom {
     flex: 1;
-    font-size: 13.5px;
+    font-size: 0.84375rem;
   }
 
   .ligne-note {
     font-family: 'Cinzel', serif;
-    font-size: 9px;
+    font-size: 0.5625rem;
     letter-spacing: 0.12em;
     color: $or;
   }
@@ -315,7 +318,7 @@ ion-content.equipement {
 
   .erreur {
     color: $rouge;
-    font-size: 14px;
+    font-size: 0.875rem;
     margin-bottom: 10px;
     text-align: center;
   }
@@ -328,7 +331,7 @@ ion-content.equipement {
   padding: 15px;
   background: rgba(236, 226, 200, 0.12);
   color: rgba(236, 226, 200, 0.45);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   letter-spacing: 0.16em;
   cursor: pointer;
 
@@ -349,7 +352,7 @@ ion-content.equipement {
   padding: 15px;
   background: rgba(236, 226, 200, 0.12);
   color: rgba(236, 226, 200, 0.45);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   font-weight: bold;
   letter-spacing: 0.16em;
   cursor: pointer;

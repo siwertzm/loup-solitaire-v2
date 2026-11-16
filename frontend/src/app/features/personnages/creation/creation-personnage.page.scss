@@ -46,7 +46,7 @@ ion-content.creation {
   border: none;
   padding: 8px 0;
   color: rgba(236, 226, 200, 0.6);
-  font-size: 11.5px;
+  font-size: 0.71875rem;
   letter-spacing: 0.14em;
   cursor: pointer;
 }
@@ -54,7 +54,7 @@ ion-content.creation {
 .titre {
   flex: none;
   font-family: 'Cinzel', serif;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin: 8px 0 16px;
 }
@@ -106,7 +106,7 @@ ion-content.creation {
     padding: 12px 13px;
     color: $parchemin;
     font-family: 'EB Garamond', Georgia, serif;
-    font-size: 16px;
+    font-size: 1rem;
 
     &:focus {
       outline: none;
@@ -118,7 +118,7 @@ ion-content.creation {
 
 .cle {
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   color: rgba(236, 226, 200, 0.55);
 }
@@ -134,7 +134,7 @@ ion-content.creation {
 
 .bloc-titre {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 0.2em;
   color: rgba(236, 226, 200, 0.774);
 }
@@ -154,12 +154,12 @@ ion-content.creation {
   min-height: 118px;
 
   .cle {
-    font-size: 9.5px;
+    font-size: 0.59375rem;
   }
 
   .total {
     font-family: 'Cinzel', serif;
-    font-size: 46px;
+    font-size: 2.875rem;
     line-height: 1;
 
     &.habilite {
@@ -172,7 +172,7 @@ ion-content.creation {
   }
 
   .detail {
-    font-size: 12.5px;
+    font-size: 0.78125rem;
     color: rgba(236, 226, 200, 0.747);
   }
 
@@ -180,7 +180,7 @@ ion-content.creation {
     width: 58px;
     height: 58px;
     border-radius: 16px;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
 
     &.habilite {
@@ -208,7 +208,7 @@ ion-content.creation {
 
   .compteur {
     font-family: 'Cinzel', serif;
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
     color: $or;
 
@@ -238,7 +238,7 @@ ion-content.creation {
     padding: 9px 0;
     cursor: pointer;
     font-family: 'Cinzel', serif;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: $parchemin;
   }
 
@@ -258,7 +258,7 @@ ion-content.creation {
     border: 1px solid rgba(236, 226, 200, 0.3);
     background: none;
     color: rgba(236, 226, 200, 0.65);
-    font-size: 12px;
+    font-size: 0.75rem;
     cursor: pointer;
 
     &:hover {
@@ -308,21 +308,21 @@ ion-content.creation {
 
   .surtitre {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 0.6875rem;
     letter-spacing: 0.2em;
     color: #8a7a5e;
   }
 
   .popup-titre {
     font-family: 'Cinzel', serif;
-    font-size: 19px;
+    font-size: 1.1875rem;
     font-weight: 600;
     margin: 8px 0 12px;
   }
 
   .popup-texte {
     margin: 0;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     text-wrap: pretty;
     white-space: pre-line;
@@ -336,7 +336,7 @@ ion-content.creation {
     padding: 12px;
     background: $foret;
     color: $parchemin;
-    font-size: 11.5px;
+    font-size: 0.71875rem;
     letter-spacing: 0.16em;
     cursor: pointer;
   }
@@ -349,7 +349,7 @@ ion-content.creation {
 
   .erreur {
     color: $rouge;
-    font-size: 14px;
+    font-size: 0.875rem;
     margin-bottom: 10px;
     text-align: center;
   }
@@ -362,7 +362,7 @@ ion-content.creation {
   padding: 15px;
   background: rgba(236, 226, 200, 0.12);
   color: rgba(236, 226, 200, 0.45);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   letter-spacing: 0.16em;
   cursor: pointer;
 
