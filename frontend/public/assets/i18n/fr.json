@@ -417,6 +417,7 @@
     "VOL_GENERIQUE": "Vol",
     "ASSAUT_PREMIER": "Premier assaut",
     "ASSAUT_N_PREMIERS": "{{n}} premiers assauts",
+    "ASSAUT_A_PARTIR": "À partir de l'assaut {{n}}",
     "ASSAUT_LIMITE": "Assaut limité",
     "POPUP_VOL_TEXTE": "Choisissez ce que vous perdez.",
     "POPUP_VOL_VIDE": "Vous n'avez rien à perdre ici.",
@@ -574,6 +575,9 @@
     "MSG_PERD_ENDURANCE": "Vous perdez {{degats}} points d'ENDURANCE.",
     "MSG_OUVERTURE": "Vous saisissez une ouverture :\n +{{bonus}} HABILETÉ pour votre prochaine attaque.",
     "MSG_INTERROMPU": "Le combat est interrompu ; le récit continue.",
+    "TITLE_ASSAUT": "Habileté de l'assaut {{n}} : {{bonus}}",
+    "POPUP_ASSAUT_TITRE": "Effet de l'assaut",
+    "POPUP_ASSAUT_TEXTE": "Ce combat modifie votre HABILETÉ selon l'assaut : <strong>{{bonus}}</strong> pour l'assaut {{n}}. Le détail est indiqué dans le texte du chapitre.",
     "TITLE_MAINS_NUES": "Combat à mains nues : {{malus}} HABILETÉ",
     "POPUP_MAINS_NUES_TITRE": "Combat à mains nues",
     "POPUP_MAINS_NUES_TEXTE": "Vous combattez sans arme : votre HABILETÉ de base est réduite de <strong>{{malus}}</strong>, quelles que soient les armes de votre sac. La Maîtrise des Armes ne donne pas son bonus pendant ce combat."

@@ -46,6 +46,8 @@ public class CombatMapper {
         Chapitre chapitre = enCours ? recupererChapitre(combat) : null;
         boolean fuitePossible = enCours && combatService.peutFuir(chapitre, combat);
         Integer malusMainsNues = enCours ? combatService.malusMainsNues(chapitre).orElse(null) : null;
+        // REGLE-10 : bonus/malus de l'assaut a venir (283), pour la carte du joueur.
+        int bonusHabiliteAssaut = enCours ? combatService.bonusHabiliteAssaut(combat.getPersonnage(), chapitre, combat) : 0;
 
         return new CombatResponse(
                 combat.getId(),
@@ -57,6 +59,7 @@ public class CombatMapper {
                 combat.getStatut().name(),
                 fuitePossible,
                 malusMainsNues,
+                bonusHabiliteAssaut,
                 versReponseResultat(resultat));
     }
 

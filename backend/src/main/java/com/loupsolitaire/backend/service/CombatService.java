@@ -343,7 +343,7 @@ public class CombatService {
     // la Discipline Kai Puissance Psychique (+2), sauf si l'ennemi y
     // resiste (Ennemi.resistances, ex. serpent_aile, gluatre,
     // vordak_puissant), plus un eventuel bonus HABILITE conditionne par
-    // ASSAUT_MAX (voir bonusHabiliteAssautMax). Le tout est recalcule a
+    // ASSAUT_MAX / ASSAUT_MIN (voir bonusHabiliteAssaut). Le tout est recalcule a
     // chaque appel plutot que fixe une fois pour toutes : necessaire pour
     // un combat a plusieurs ennemis (resistance differente par ennemi) et
     // pour un bonus qui ne s'applique que sur certains assauts.
@@ -358,7 +358,7 @@ public class CombatService {
         if (possedePuissancePsychique(personnage) && !resisteAPuissancePsychique(ennemi)) {
             base += 2;
         }
-        base += bonusHabiliteAssautMax(chapitre, combat);
+        base += bonusHabiliteAssaut(personnage, chapitre, combat);
         return base;
     }
 
@@ -373,24 +373,47 @@ public class CombatService {
                 .findFirst();
     }
 
-    // Cas particulier des effets HABILITE dont l'UNIQUE condition est
-    // ASSAUT_MAX (ex. chapitre 283 : "+2 HABILITE lors du premier assaut
-    // seulement"). Contrairement aux autres conditions d'un effet HABILITE
-    // (DISCIPLINE/OBJET/PERMANENT), gerees une fois pour toutes a l'arrivee
-    // sur le chapitre par EffetChapitreService (habiliteTemp fige pour toute
-    // la duree du chapitre), ASSAUT_MAX depend du NOMBRE D'ASSAUTS DEJA
-    // LIVRES dans CE combat : il faut donc le recalculer a chaque tour.
+    // Effets HABILITE limites a certains assauts (ex. chapitre 283 : "+2
+    // lors du premier assaut" = ASSAUT_MAX 1, puis "-2 des le deuxieme
+    // assaut sauf Bouclier Psychique" = ASSAUT_MIN 2 + DISCIPLINE).
+    // Contrairement aux autres effets HABILITE, figes dans habiliteTemp a
+    // l'arrivee sur le chapitre par EffetChapitreService, ils dependent du
+    // NUMERO DE L'ASSAUT en cours : recalcules a chaque tour.
     // Combat.assautsLivres compte les assauts deja joues (0 avant le
-    // premier) : ASSAUT_MAX=1 ("le premier assaut") s'applique donc tant
-    // que assautsLivres < 1.
-    private int bonusHabiliteAssautMax(Chapitre chapitre, Combat combat) {
+    // premier) : l'assaut en cours porte le numero assautsLivres + 1.
+    // Protections DISCIPLINE/OBJET (semantique inversee, comme a
+    // l'arrivee) : l'effet est evite si le joueur les possede TOUTES.
+    // Public : CombatMapper l'expose pour l'afficher sur la carte du joueur.
+    public int bonusHabiliteAssaut(Personnage personnage, Chapitre chapitre, Combat combat) {
+        int assautEnCours = combat.getAssautsLivres() + 1;
         return chapitre.getEffets().stream()
                 .filter(effet -> effet.getType() == TypeEffet.HABILITE)
-                .filter(effet -> effet.getConditions().size() == 1
-                        && effet.getConditions().getFirst().getType() == TypeCondition.ASSAUT_MAX)
-                .filter(effet -> combat.getAssautsLivres() < effet.getConditions().getFirst().valeurEntiere())
+                .filter(effet -> effet.getConditions().stream().anyMatch(CombatService::estConditionAssaut))
+                .filter(effet -> effet.getConditions().stream()
+                        .allMatch(c -> switch (c.getType()) {
+                            case ASSAUT_MAX -> assautEnCours <= c.valeurEntiere();
+                            case ASSAUT_MIN -> assautEnCours >= c.valeurEntiere();
+                            default -> true;
+                        }))
+                .filter(effet -> !protectionsToutesPossedees(personnage, effet))
                 .mapToInt(Effet::getValeur)
                 .sum();
+    }
+
+    private static boolean estConditionAssaut(Cond cond) {
+        return cond.getType() == TypeCondition.ASSAUT_MAX || cond.getType() == TypeCondition.ASSAUT_MIN;
+    }
+
+    // Faux si l'effet n'a aucune protection DISCIPLINE/OBJET.
+    private boolean protectionsToutesPossedees(Personnage personnage, Effet effet) {
+        List<Cond> protections = effet.getConditions().stream()
+                .filter(c -> c.getType() == TypeCondition.DISCIPLINE || c.getType() == TypeCondition.OBJET)
+                .toList();
+        return !protections.isEmpty() && protections.stream().allMatch(c -> c.getType() == TypeCondition.DISCIPLINE
+                ? personnage.getDisciplines().stream()
+                        .anyMatch(d -> d.getId() == IdDiscipline.fromJson(c.getTargetId()))
+                : inventaireService.listerInventaire(personnage).stream()
+                        .anyMatch(item -> item.getObjet().getId().equals(c.getTargetId()) && item.getQuantite() > 0));
     }
 
     private boolean possedePuissancePsychique(Personnage personnage) {

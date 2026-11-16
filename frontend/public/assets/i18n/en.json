@@ -417,6 +417,7 @@
     "VOL_GENERIQUE": "Theft",
     "ASSAUT_PREMIER": "First round",
     "ASSAUT_N_PREMIERS": "First {{n}} rounds",
+    "ASSAUT_A_PARTIR": "From round {{n}}",
     "ASSAUT_LIMITE": "Limited round",
     "POPUP_VOL_TEXTE": "Choose what you lose.",
     "POPUP_VOL_VIDE": "You have nothing to lose here.",
@@ -574,6 +575,9 @@
     "MSG_PERD_ENDURANCE": "You lose {{degats}} ENDURANCE points.",
     "MSG_OUVERTURE": "You seize an opening:\n +{{bonus}} COMBAT SKILL for your next attack.",
     "MSG_INTERROMPU": "The combat is interrupted; the story continues.",
+    "TITLE_ASSAUT": "Round {{n}} combat skill: {{bonus}}",
+    "POPUP_ASSAUT_TITRE": "Round effect",
+    "POPUP_ASSAUT_TEXTE": "This fight changes your COMBAT SKILL depending on the round: <strong>{{bonus}}</strong> for round {{n}}. See the section text for details.",
     "TITLE_MAINS_NUES": "Bare-handed fight: {{malus}} COMBAT SKILL",
     "POPUP_MAINS_NUES_TITRE": "Bare-handed fight",
     "POPUP_MAINS_NUES_TEXTE": "You fight without a weapon: your base COMBAT SKILL is reduced by <strong>{{malus}}</strong>, whatever weapons are in your backpack. Weaponskill gives no bonus during this fight."

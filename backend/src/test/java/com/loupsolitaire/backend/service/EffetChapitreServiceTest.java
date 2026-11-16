@@ -292,6 +292,23 @@ class EffetChapitreServiceTest {
         assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
     }
 
+    // REGLE-10 : au 283, le -2 sans Bouclier Psychique porte aussi
+    // ASSAUT_MIN 2 : rien a l'arrivee, CombatService l'applique a partir
+    // du deuxieme assaut.
+    @Test
+    void ignoreUnMalusDeDisciplineLimiteAPartirDUnAssaut() {
+        Effet effet = creerEffetHabilite(-2, TypeCondition.DISCIPLINE, "bouclier_psychique");
+        com.loupsolitaire.backend.model.Cond assautMin = new com.loupsolitaire.backend.model.Cond();
+        assautMin.setType(TypeCondition.ASSAUT_MIN);
+        assautMin.setValeur("2");
+        effet.setConditions(List.of(effet.getConditions().getFirst(), assautMin));
+        personnage.setDisciplines(List.of());
+
+        effetChapitreService.appliquerEffetHabilite(personnage, effet);
+
+        assertThat(personnage.getHabiliteTemp()).isEqualTo(0);
+    }
+
     // =========================================================
     // ENDURANCE
     // =========================================================

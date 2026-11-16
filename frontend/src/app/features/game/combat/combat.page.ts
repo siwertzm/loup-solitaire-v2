@@ -11,7 +11,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'mains-nues' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
+type BonusSelectionne = 'habilite' | 'arme' | 'mains-nues' | 'assaut' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -184,7 +184,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       this.bonusArmeAffiche() +
       this.bonusPsychiqueAffiche() +
       this.bonusTempAffiche() +
-      this.bonusGardeAffiche(),
+      this.bonusGardeAffiche() +
+      this.bonusAssaut(),
   );
 
   /**
@@ -231,6 +232,7 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       this.bonusPsychiqueAffiche(),
       this.bonusTempAffiche(),
       this.bonusGardeAffiche(),
+      this.bonusAssaut(),
     ].filter((v) => v !== 0);
 
     if (termes.length === 0) return null;
@@ -246,6 +248,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   );
   readonly enduranceMaxJoueur = computed(() => this.personnage()?.enduranceMax ?? 1);
   readonly bonusHabiliteTemp = computed(() => this.bonusTempAffiche());
+  /** REGLE-10 : bonus/malus de l'assaut à venir (283), 0 sinon. */
+  readonly bonusAssaut = computed(() => this.combat()?.bonusHabiliteAssaut ?? 0);
+  readonly numeroAssaut = computed(() => (this.combat()?.assautsLivres ?? 0) + 1);
   /** REGLE-11 : malus du combat à mains nues (-4 au 260), null sinon. */
   readonly malusMainsNues = computed(() => this.combat()?.malusMainsNues ?? null);
 

@@ -4393,7 +4393,10 @@
       {
         "type": "habilite",
         "valeur": -2,
-        "cond": [{ "type": "discipline", "targetId": "bouclier_psychique", "valeur": "-1" }]
+        "cond": [
+          { "type": "discipline", "targetId": "bouclier_psychique", "valeur": "-1" },
+          { "type": "assaut_min", "valeur": "2", "targetId": null }
+        ]
       }
     ],
     "ennemi": [

@@ -106,6 +106,7 @@ export function unCombat(surcharge: Partial<CombatResponse> = {}): CombatRespons
     statut: 'EN_COURS',
     fuitePossible: false,
     malusMainsNues: null,
+    bonusHabiliteAssaut: 0,
     dernierTour: null,
     ...surcharge,
   };

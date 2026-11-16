@@ -33,17 +33,22 @@ describe('CombatPage — combat à mains nues', () => {
     };
   }
 
-  function combat(malusMainsNues: number | null): CombatResponse {
+  function combat(
+    malusMainsNues: number | null,
+    bonusHabiliteAssaut = 0,
+    assautsLivres = 0,
+  ): CombatResponse {
     return {
       id: 'c1',
       chapitreId: 260,
       ennemis: [],
-      assautsLivres: 0,
+      assautsLivres,
       endurancePerdue: false,
       bonusHabiliteEnAttente: 0,
       statut: 'EN_COURS',
       fuitePossible: false,
       malusMainsNues,
+      bonusHabiliteAssaut,
       dernierTour: null,
     };
   }
@@ -100,5 +105,16 @@ describe('CombatPage — combat à mains nues', () => {
 
     expect(page.habiliteJoueur()).toBe(17);
     expect(page.detailHabiliteAffiche()).toBe('15+2');
+  });
+
+  // REGLE-10 : au 283, le -2 du Vordak à partir du 2e assaut compte dans
+  // l'HABILETÉ affichée sur la carte du joueur.
+  it("compte le bonus de l'assaut à venir dans l'HABILETÉ affichée", () => {
+    page.personnage.set(personnage(15));
+    page.combat.set(combat(null, -2, 1));
+
+    expect(page.habiliteJoueur()).toBe(13);
+    expect(page.detailHabiliteAffiche()).toBe('15-2');
+    expect(page.numeroAssaut()).toBe(2);
   });
 });

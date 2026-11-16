@@ -94,7 +94,9 @@ public class EffetChapitreService {
     //   uniquement si la discipline/l'objet est absent.
     // - PERMANENT : applique a habiliteBase (definitif), puis recalcule
     //   l'HABILITE effective (qui depend aussi des armes possedees).
-    // - Le reste (ASSAUT_MAX, etc.) : combat non construit, ignore.
+    // - Le reste (ASSAUT_MAX, ASSAUT_MIN, etc., meme avec une protection
+    //   DISCIPLINE comme au 283) : ignore ici, CombatService l'applique
+    //   assaut par assaut.
     //   Dont SANS_ARME (REGLE-11, 260) : rien a l'arrivee, CombatService
     //   l'applique pendant le combat a la place de l'ajustement d'arme.
     @Transactional
@@ -172,7 +174,7 @@ public class EffetChapitreService {
         /*
          * Les autres conditions ne sont pas appliquees ici.
          *
-         * ASSAUT_MAX, par exemple, est gere dynamiquement dans
+         * ASSAUT_MAX / ASSAUT_MIN, par exemple, sont geres dynamiquement dans
          * CombatService en fonction du nombre d'assauts deja livres.
          */
     }

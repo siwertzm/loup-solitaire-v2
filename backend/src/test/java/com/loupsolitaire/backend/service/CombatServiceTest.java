@@ -475,6 +475,64 @@ class CombatServiceTest {
         assertThat(tourJoue.resultat().rapportAttaque()).isEqualTo(5);
     }
 
+    // REGLE-10 : effets HABILITE du 283 tels que dans chapitre.json : +2 au
+    // premier assaut (ASSAUT_MAX 1), -2 des le deuxieme sauf Bouclier
+    // Psychique (DISCIPLINE "-1" + ASSAUT_MIN 2).
+    private List<Effet> effetsDuVordak() {
+        Cond bouclier = new Cond();
+        bouclier.setType(TypeCondition.DISCIPLINE);
+        bouclier.setTargetId("bouclier_psychique");
+        bouclier.setValeur("-1");
+        Cond assautMin = new Cond();
+        assautMin.setType(TypeCondition.ASSAUT_MIN);
+        assautMin.setValeur("2");
+
+        Effet malus = new Effet();
+        malus.setType(TypeEffet.HABILITE);
+        malus.setValeur(-2);
+        malus.setConditions(List.of(bouclier, assautMin));
+        return List.of(creerEffetHabiliteAssautMax(2, 1), malus);
+    }
+
+    // Rapport d'attaque au 283 (HABILITE 10, ennemi HABILITE 5) selon
+    // l'assaut en cours et la possession du Bouclier Psychique.
+    private int rapportAttaqueAu283(int assautsLivres, boolean bouclier) {
+        Ennemi ennemi = creerEnnemi("vordak", 5, 10);
+        Chapitre chapitre = creerChapitreCombat(283, List.of(ennemi), null);
+        chapitre.setEffets(effetsDuVordak());
+        Personnage personnage = creerPersonnage(10, 20, chapitre);
+        if (bouclier) {
+            Discipline bouclierPsychique = new Discipline();
+            bouclierPsychique.setId(IdDiscipline.BOUCLIER_PSYCHIQUE);
+            personnage.setDisciplines(List.of(bouclierPsychique));
+        }
+        Combat combat = creerCombatEnCours(chapitre, List.of(creerCombatEnnemi(ennemi, 0, 10)));
+        combat.setAssautsLivres(assautsLivres);
+        stuberCombatExistant(personnage, chapitre, combat);
+        when(tableDeHasardService.tirerChiffre()).thenReturn(6, 4);
+        when(tableCombatService.degatsInfliges(anyInt(), anyInt())).thenReturn(-1);
+        when(tableCombatService.degatsSubis(anyInt(), anyInt())).thenReturn(-1);
+
+        return combatService.jouerTour(personnage, ActionCombat.ATTAQUE, null).resultat().rapportAttaque();
+    }
+
+    @Test
+    void auVordakPlusDeuxAuPremierAssautMemeSansBouclier() {
+        assertThat(rapportAttaqueAu283(0, false)).isEqualTo(10 + 2 - 5);
+    }
+
+    @Test
+    void auVordakMoinsDeuxDesLeDeuxiemeAssautSansBouclier() {
+        assertThat(rapportAttaqueAu283(1, false)).isEqualTo(10 - 2 - 5);
+        assertThat(rapportAttaqueAu283(4, false)).isEqualTo(10 - 2 - 5);
+    }
+
+    @Test
+    void auVordakLeBouclierPsychiqueEviteLeMalus() {
+        assertThat(rapportAttaqueAu283(0, true)).isEqualTo(10 + 2 - 5);
+        assertThat(rapportAttaqueAu283(1, true)).isEqualTo(10 - 5);
+    }
+
     // =========================================================
     // jouerTour - DEFENSE
     // =========================================================

@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | S | `fix-DATA-12` | À faire |
+| 3 | Basse | S | `fix-DATA-12` (fait dans `feature-REGLE-10`) | Fait |
 
 Origine : Cahier des charges (DATA-12), après REGLE-10
 

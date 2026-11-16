@@ -368,6 +368,14 @@ $beige: #e0d3b4;
 }
 .bonus-psychique { border-color: rgba(117, 83, 139, 0.65); }
 
+// REGLE-10 : bonus/malus limité à certains assauts (283).
+.bonus-assaut { border-color: rgba(78, 95, 49, 0.7); }
+.malus-assaut {
+  border-color: rgba(162, 42, 42, 0.75);
+
+  small { background: #a22a2a; }
+}
+
 // Résistances de l'ennemi : même picto que les bonus du joueur, posé
 // juste au-dessus de la plaque ennemie (qui est déjà en position absolue).
 .bonus-ennemi {

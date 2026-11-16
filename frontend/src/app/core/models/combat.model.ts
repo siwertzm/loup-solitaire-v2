@@ -54,6 +54,9 @@ export interface CombatResponse {
   /** REGLE-11 : malus du combat à mains nues (-4 au 260), qui remplace
    * l'ajustement d'arme ; null pour les autres combats. */
   malusMainsNues: number | null;
+  /** REGLE-10 : bonus/malus d'HABILETÉ de l'assaut à venir (283 : +2 au
+   * 1er, -2 ensuite sans Bouclier Psychique), déjà compté par le serveur ; 0 sinon. */
+  bonusHabiliteAssaut: number;
   /** Null sur GET/POST /combat ; rempli uniquement par POST /combat/tour. */
   dernierTour: ResultatTourResponse | null;
 }

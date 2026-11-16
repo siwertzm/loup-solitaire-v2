@@ -191,12 +191,6 @@ export class ChapitreEffetsComponent {
   }
 
   /**
-   * Condition ASSAUT_MAX d'un effet HABILITE.
-   *
-   * Exemple chapitre 283 :
-   * bonus limité au premier assaut.
-   */
-  /**
    * REGLE-11 : effet HABILITE du combat à mains nues (condition SANS_ARME,
    * 260) : il remplace l'ajustement d'arme pendant ce combat.
    */
@@ -204,29 +198,30 @@ export class ChapitreEffetsComponent {
     return effet.conditions.some((c) => c.type === 'SANS_ARME');
   }
 
-  conditionAssautMax(effet: EffetResponse): CondResponse | null {
-    if (effet.conditions.length !== 1) {
-      return null;
-    }
-
-    const condition = effet.conditions[0];
-
-    return condition.type === 'ASSAUT_MAX' ? condition : null;
+  /**
+   * Condition ASSAUT_MAX / ASSAUT_MIN d'un effet HABILITE (283 : +2 au
+   * premier assaut ; REGLE-10 : -2 à partir du deuxième sauf Bouclier
+   * Psychique, protection vérifiée par effetEvite()).
+   */
+  conditionAssaut(effet: EffetResponse): CondResponse | null {
+    return effet.conditions.find((c) => c.type === 'ASSAUT_MAX' || c.type === 'ASSAUT_MIN') ?? null;
   }
 
   /**
-   * Libellé humain d'une condition ASSAUT_MAX.
+   * Libellé humain d'une condition ASSAUT_MAX / ASSAUT_MIN.
    */
-  libelleAssautMax(condition: CondResponse): string {
+  libelleAssaut(condition: CondResponse): string {
     const n = Number(condition.valeur);
 
-    if (n === 1) {
-      return this.translate.instant('CHAPITRE_EFFETS.ASSAUT_PREMIER');
+    if (!Number.isFinite(n)) {
+      return this.translate.instant('CHAPITRE_EFFETS.ASSAUT_LIMITE');
     }
-
-    return Number.isFinite(n)
-      ? this.translate.instant('CHAPITRE_EFFETS.ASSAUT_N_PREMIERS', { n })
-      : this.translate.instant('CHAPITRE_EFFETS.ASSAUT_LIMITE');
+    if (condition.type === 'ASSAUT_MIN') {
+      return this.translate.instant('CHAPITRE_EFFETS.ASSAUT_A_PARTIR', { n });
+    }
+    return n === 1
+      ? this.translate.instant('CHAPITRE_EFFETS.ASSAUT_PREMIER')
+      : this.translate.instant('CHAPITRE_EFFETS.ASSAUT_N_PREMIERS', { n });
   }
 
   /**
@@ -594,7 +589,7 @@ export class ChapitreEffetsComponent {
       },
 
       error: (err) => {
-        console.error('Erreur lors de l\'échange d\'objet :', err);
+        console.error("Erreur lors de l'échange d'objet :", err);
 
         this.echangeEnCours.set(null);
       },
