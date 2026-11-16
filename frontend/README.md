@@ -1,9 +1,10 @@
 # Loup Solitaire — Frontend
 
-Client Ionic/Angular (web + mobile via Capacitor) pour l'API backend
-[loup-solitaire-v2](https://github.com/siwertzm/loup-solitaire-v2).
+Client Ionic/Angular (web + mobile via Capacitor) du monorepo
+[loup-solitaire-v2](https://github.com/siwertzm/loup-solitaire-v2) : l'API
+est dans `../backend`, les tâches en cours dans `../specs/README.md`.
 
-Implémente l'intégralité du tome 1 (*Le Seigneur des Ténèbres*) : création de
+Implémente l'intégralité du tome 1 (*Les Maîtres des Ténèbres*) : création de
 personnage, navigation dans les 350+ chapitres du livre, combat au tour par
 tour, gestion de l'inventaire, mort (narrative / perte d'endurance / combat)
 et écran de victoire de fin de tome.
@@ -15,14 +16,16 @@ et écran de victoire de fin de tome.
 | Framework | Angular 21 (standalone, zoneless) |
 | UI | Ionic Angular 9 (standalone components) |
 | Mobile | Capacitor 8 (Android + iOS scaffoldés) |
-| i18n | `@ngx-translate/core` + `http-loader` — tous les textes dans `public/assets/i18n/fr.json`, aucune chaîne en dur dans les composants |
+| i18n | `@ngx-translate/core` + `http-loader` — tous les textes dans `public/assets/i18n/fr.json` (`en.json` doit avoir les mêmes clés), aucune chaîne en dur dans les composants |
 | Stockage tokens | `@capacitor/preferences` (web + natif) |
 | HTTP | `HttpClient` + intercepteur JWT avec refresh automatique |
+| Tests | Vitest (`npm test`), lancé par la CI |
+| Format | Prettier (`printWidth 100`, `singleQuote`) |
 
 ## Prérequis
 
 - Node.js 20+
-- Le backend lancé sur `http://localhost:8080` (voir le repo backend)
+- Le backend lancé sur `http://localhost:8080` (voir `../backend/README.md`)
 
 ## Lancer le projet
 
@@ -34,6 +37,15 @@ npm start        # ng serve, http://localhost:4200
 > `--legacy-peer-deps` est nécessaire : certains peer deps d'Ionic/Capacitor
 > ne sont pas encore alignés sur Angular 21 au moment de la création de ce
 > projet, alors que le runtime est compatible.
+
+Tests :
+
+```bash
+npm test         # Vitest ; la CI le lance sur chaque PR
+```
+
+Toute nouvelle logique non triviale (service, intercepteur, guard) vient avec
+son `*.spec.ts` à côté du fichier.
 
 Build de prod :
 
@@ -58,7 +70,7 @@ npx cap open ios       # nécessite Xcode (macOS uniquement)
 L'URL de l'API se règle dans `src/environments/` :
 
 - `environment.development.ts` → `http://localhost:8080` (utilisé par `ng serve` / `ng build --configuration development`)
-- `environment.ts` → URL de prod à adapter au déploiement réel du backend
+- `environment.ts` → API de production (`https://loup-solitaire-api.onrender.com/api/v1`)
 
 Le CORS backend autorise déjà `http://localhost:4200` et `capacitor://localhost`
 par défaut (`CORS_ALLOWED_ORIGINS`, voir README backend).
@@ -72,7 +84,8 @@ src/app/
 │   │   ├── auth.model.ts
 │   │   ├── personnage.model.ts
 │   │   ├── chapitre.model.ts
-│   │   └── combat.model.ts
+│   │   ├── combat.model.ts
+│   │   └── version.model.ts
 │   ├── services/
 │   │   ├── auth.service.ts           # login/register/refresh/logout/changePassword
 │   │   ├── token-storage.service.ts  # tokens (web + natif via Capacitor Preferences)
@@ -81,6 +94,7 @@ src/app/
 │   │   ├── combat.service.ts         # initier/récupérer combat, jouer un tour
 │   │   ├── discipline.service.ts     # catalogue GET /disciplines
 │   │   ├── objet.service.ts          # catalogue GET /objets
+│   │   ├── version.service.ts        # GET /version : écran « Mise à jour requise » (QUAL-02)
 │   │   └── inventaire-sheet.service.ts  # état partagé de la feuille "SAC À DOS"
 │   ├── interceptors/
 │   │   └── auth.interceptor.ts       # Bearer token + refresh automatique sur 401
@@ -90,7 +104,10 @@ src/app/
 ├── features/
 │   ├── auth/
 │   │   ├── login/                    # Connexion
-│   │   └── register/                 # Inscription (+ écran succès / vérification e-mail)
+│   │   ├── register/                 # Inscription (+ écran succès / vérification e-mail)
+│   │   ├── forgot-password/          # Mot de passe oublié : demande du code
+│   │   ├── verify-reset-code/        # Saisie du code reçu par e-mail
+│   │   └── reset-password/           # Nouveau mot de passe
 │   │
 │   ├── accueil/                      # Carrousel des personnages
 │   │                                  #  - trié par dernier personnage joué (backend)
@@ -103,6 +120,7 @@ src/app/
 │   │   └── edition/                  # Modifier username/e-mail, changer mot de passe
 │   │
 │   ├── personnages/
+│   │   ├── intro/                    # Intro avant / après la création du personnage
 │   │   ├── creation/
 │   │   │   ├── intro/                # Écran d'intro avant la création
 │   │   │   └── creation-personnage.page.ts  # Nom, tirage HAB/END, choix des 5 disciplines
@@ -118,6 +136,8 @@ src/app/
 │   │   │   └── effets/               # Onglet "effets" (repas/endurance/habileté/vol/échange)
 │   │   ├── combat/
 │   │   │   └── combat.page.ts        # Combat tour par tour (arène + boîte de dialogue JRPG)
+│   │   ├── journal/
+│   │   │   └── journal.page.ts       # Chapitres traversés (GET /personnages/{id}/historique)
 │   │   └── victoire/
 │   │       └── victoire.page.ts      # Écran de fin du tome 1 + teaser Tome 2
 │   │
@@ -128,22 +148,21 @@ src/app/
 │   │   └── combat/                   # Actions, résolution, disciplines en combat, mort au combat
 │   │
 │   └── shared/
-│       ├── nav-bar/                  # Barre basse (CHAPITRE / FICHE / SAC / JOURNAL*)
+│       ├── nav-bar/                  # Barre basse (CHAPITRE / FICHE / SAC / JOURNAL)
 │       └── inventaire-sheet/         # Feuille "SAC À DOS" globale, montée à la racine
 │
 ├── app.config.ts          # Providers racine (Ionic, Router, HttpClient, ngx-translate)
 ├── app.routes.ts          # Routing lazy-loaded + guard sur toutes les routes de jeu
-└── app.ts                 # Shell ion-app / ion-router-outlet + <app-inventaire-sheet>
+└── app.ts                 # Shell ion-app / ion-router-outlet + <app-inventaire-sheet> + écran « Mise à jour requise »
 ```
-
-`*` JOURNAL n'a pas encore d'écran dédié (bouton présent mais désactivé dans `nav-bar`).
 
 ## Fonctionnalités
 
 ### Authentification & compte
 - Inscription, connexion, déconnexion, refresh silencieux du token.
-- Modification du profil (username / e-mail), renvoi du lien de vérification.
-- Changement de mot de passe.
+- Modification du profil (username / e-mail ; changer d'e-mail demande le mot de passe et une confirmation par lien), renvoi du lien de vérification.
+- Changement de mot de passe, mot de passe oublié (code par e-mail), suppression du compte.
+- Mise à jour forcée : si la version de l'app est plus ancienne que `versionMinimale` (`GET /version`), écran « Mise à jour requise ».
 
 ### Création & fiche personnage
 - Tirage animé (dés) de l'HABILETÉ et de l'ENDURANCE, choix de 5 Disciplines Kaï parmi 10.
@@ -189,6 +208,9 @@ Pièces Premium, jamais désactivé puisqu'il permet justement de se ressusciter
   ouvrable depuis n'importe quel écran de jeu.
 - Swipe pour retirer un objet, popup de confirmation pour consommer un consommable.
 
+### Journal
+Liste des chapitres traversés par le personnage, du plus récent au plus ancien.
+
 ### Règles du jeu
 Chaîne de 4 écrans en lecture seule (intro → disciplines → équipement → combat),
 accessibles depuis l'accueil, documentant les règles réelles du jeu.
@@ -209,7 +231,8 @@ compteurs...) utilisent l'interpolation `ngx-translate` (`translate:{ param }`).
 
 ## À faire
 
-- Écran **JOURNAL** : pas encore d'écran dédié, bouton désactivé dans `nav-bar`
-  (contrairement à **FICHE**, qui pointe déjà vers un vrai écran, `/personnage/:id`).
+Voir `../specs/README.md` pour la liste à jour (bonus des Objets Spéciaux,
+bande originale, page Options, URL sans id...).
+
 - Tome 2 (*La Traversée Infernale*) : seule une carte "à venir" est affichée sur
   l'accueil pour un personnage ayant terminé le tome 1.

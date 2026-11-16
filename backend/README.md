@@ -1,10 +1,12 @@
 # Loup Solitaire — Backend V2
 
 API REST Spring Boot pour une adaptation numérique du livre-jeu **Loup
-Solitaire, Livre 1 : Le Seigneur des Ténèbres** (*Flight from the Dark*).
-Ce dépôt ne contient que le backend : authentification complète, moteur de
-partie (personnage, chapitres, combat, inventaire) et les 350 chapitres du
-tome 1 embarqués sous forme de données JSON chargées au démarrage.
+Solitaire, Tome 1 : Les Maîtres des Ténèbres** (*Flight from the Dark*).
+Ce dossier contient le backend du monorepo (le client Ionic/Angular est dans
+`../frontend`) : authentification complète, moteur de partie (personnage,
+chapitres, combat, inventaire) et les 350 chapitres du tome 1 embarqués sous
+forme de données JSON chargées au démarrage. Les tâches en cours sont dans
+`../specs/README.md`.
 
 ## Sommaire
 
@@ -26,7 +28,7 @@ tome 1 embarqués sous forme de données JSON chargées au démarrage.
 |---|---|
 | Langage / Framework | Java 21, Spring Boot |
 | Sécurité | Spring Security, JWT (access + refresh token) |
-| Persistance | Spring Data JPA / Hibernate, PostgreSQL |
+| Persistance | Spring Data JPA / Hibernate (`ddl-auto=validate`), PostgreSQL, schéma géré par Liquibase (`db/changelog/`) |
 | Build | Maven (wrapper `mvnw` fourni) |
 | Conteneurisation | Docker multi-stage + `docker-compose` (backend + PostgreSQL) |
 | Email | Spring Mail (SMTP, ex. Mailtrap en dev) — vérification de compte |
@@ -66,8 +68,9 @@ lui-même).
 ### Option B — Maven local (dev rapide sans rebuild Docker)
 
 ```bash
-# 1. Démarrer uniquement PostgreSQL
+# 1. Démarrer uniquement PostgreSQL (la première fois)
 docker run --name loup-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=loup -p 5432:5432 -d postgres
+#    Les fois suivantes (Docker Desktop lancé) : docker start loup-db
 
 # 2. Créer backend/.env (une seule fois) avec au minimum :
 #    DB_PASSWORD=postgres
@@ -186,8 +189,8 @@ Les autres variables ont une valeur par défaut adaptée au dev.
 | `DB_URL` | `jdbc:postgresql://localhost:5432/loup` | URL JDBC PostgreSQL |
 | `DB_USERNAME` | `postgres` | Utilisateur DB |
 | `DB_PASSWORD` | **aucun (obligatoire)** | Mot de passe DB — dans `backend/.env` en local, jamais committé |
-| `DDL_AUTO` | `update` | Stratégie Hibernate (`update` conserve les données ; `create` repart de zéro à chaque démarrage — dev only) |
-| `SHOW_SQL` | `true` | Affiche les requêtes SQL générées dans les logs |
+| `DDL_AUTO` | `validate` | Stratégie Hibernate. Le schéma est créé par Liquibase : Hibernate vérifie seulement qu'il correspond aux entités |
+| `SHOW_SQL` | `false` | Affiche les requêtes SQL générées dans les logs |
 | `JWT_SECRET` | **aucun (obligatoire)** | Clé Base64 (256 bits mini). Générer avec `openssl rand -base64 32` |
 | `JWT_EXPIRATION_MS` | `900000` (15 min) | Durée de validité du token d'accès |
 | `JWT_REFRESH_EXPIRATION_DAYS` | `30` | Durée de validité du refresh token (jours) |
@@ -222,7 +225,9 @@ $env:JWT_SECRET = "<valeur générée par openssl rand -base64 32>"
 ## Authentification
 
 Toutes les routes sont protégées par un jeton JWT **sauf** `/auth/**` (hors
-`/auth/me` et `/auth/me/**`, qui exigent le jeton) et `/actuator/health`. Le jeton d'accès s'envoie dans l'en-tête :
+`/auth/me` et `/auth/me/**`, qui exigent le jeton), `/actuator/health`,
+`/version`, les pages légales (`/legal/**`) et, si activés, Swagger et
+`/diagnostic/erreur-test`. Le jeton d'accès s'envoie dans l'en-tête :
 
 ```
 Authorization: Bearer <accessToken>
@@ -290,6 +295,14 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 |---|---|---|---|
 | GET | `/version` | 🔓 | `{ versionMinimale }` (QUAL-02). Au démarrage et à chaque retour au premier plan, l'app compare sa version (`versionName` Android, `MARKETING_VERSION` iOS) : plus ancienne → écran « Mise à jour requise ». Pour forcer une mise à jour : publier la nouvelle version dans les stores, puis augmenter `APP_VERSION_MINIMALE` sur Render. |
 
+### Catalogue et pages légales
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| GET | `/disciplines` | 🔒 | Les 10 Disciplines Kaï. |
+| GET | `/objets` | 🔒 | Catalogue des objets (catégorie, effets). |
+| GET | `/legal/cgu.html`, `/legal/confidentialite.html` | 🔓 | CGU et politique de confidentialité (`static/legal/`). |
+
 ### Auth (`/auth`)
 
 | Méthode | Route | Accès | Description |
@@ -300,15 +313,23 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 | POST | `/auth/login` | 🔓 | Connexion (`identifiant` = username ou email, `password`). `403` si l'email n'est pas encore vérifié. Retourne `{ accessToken, refreshToken, tokenType }`. |
 | POST | `/auth/refresh` | 🔓 | Échange un refresh token valide contre un nouveau couple access/refresh (rotation ; l'ancien refresh token est révoqué). |
 | POST | `/auth/logout` | 🔓 | Révoque un refresh token (`refreshToken`). `204 No Content`. |
+| POST | `/auth/forgot-password` | 🔓 | Envoie un code de réinitialisation par email (`email`). Réponse `202` identique que l'adresse existe ou non. |
+| POST | `/auth/verify-reset-code` | 🔓 | Vérifie le code reçu (`email`, `code`) et renvoie un `resetToken`. |
+| POST | `/auth/reset-password` | 🔓 | Nouveau mot de passe (`resetToken`, `newPassword`). `204`. |
 | GET | `/auth/me` | 🔒 | Profil de l'utilisateur connecté + liste de ses personnages. |
 | PUT | `/auth/me` | 🔒 | Met à jour `username` et/ou `email` (champs optionnels). Changer d'email exige `motDePasseActuel` (`401` sinon) et ne change pas l'email du compte : le nouveau est gardé dans `emailEnAttente`, un lien de confirmation part à la nouvelle adresse et une alerte à l'ancienne. L'ancien email sert à se connecter jusqu'au clic sur le lien (SEC-06). |
+| PUT | `/auth/me/password` | 🔒 | Change le mot de passe (`currentPassword`, `newPassword`), renvoie un nouveau couple de jetons. |
+| DELETE | `/auth/me` | 🔒 | Supprime définitivement le compte, après vérification du mot de passe (`password`). `204`. |
 
 ### Personnages (`/personnages`)
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
-| POST | `/personnages` | 🔒 | Crée un personnage : `nom` + exactement 5 `disciplines` (noms d'enum, ex. `"CAMOUFLAGE"`, `"MAITRISE_ARMES"`). Tire HABILITE/ENDURANCE/or/objet de départ, équipe le matériel fixe (Hache, 1 Repas, Carte). |
-| GET | `/personnages` | 🔒 | Liste des personnages de l'utilisateur connecté. |
+| POST | `/personnages/tirage` | 🔒 | Tire HABILITE et ENDURANCE côté serveur. Appels répétés : toujours le même tirage, jusqu'à la création du personnage. |
+| POST | `/personnages` | 🔒 | Crée un personnage : `nom` + exactement 5 `disciplines` (noms d'enum, ex. `"CAMOUFLAGE"`, `"MAITRISE_ARMES"`). Utilise le tirage en attente (`400` sans tirage), tire or et objet de départ, équipe le matériel fixe (Hache, 1 Repas, Carte). |
+| GET | `/personnages` | 🔒 | Liste des personnages de l'utilisateur connecté, le plus récemment joué en tête. |
+| DELETE | `/personnages/{id}` | 🔒 | Supprime le personnage. `204`. |
+| GET | `/personnages/{id}/historique` | 🔒 | Journal : chapitres traversés, du plus récent au plus ancien. |
 | GET | `/personnages/{id}` | 🔒 | Fiche personnage complète (stats, disciplines, inventaire, chapitre courant). |
 | GET | `/personnages/{id}/chapitre` | 🔒 | Chapitre courant : texte, ennemis, effets, liens (avec leurs conditions et leur disponibilité déjà évaluée), objets proposés. Fige un tirage de Table de Hasard (`tirageHasard`) tant que le personnage reste sur ce chapitre. |
 | POST | `/personnages/{id}/chapitre/{chapitreCibleId}` | 🔒 | Avance vers `chapitreCibleId` si un lien valide (conditions remplies) existe depuis le chapitre actuel. Réinitialise l'HABILITE temporaire. |
@@ -318,7 +339,7 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 | DELETE | `/personnages/{id}/objets/{objetId}?quantite=1` | 🔒 | Retire un objet de l'inventaire (debug/test), sans appliquer d'effet de consommation. |
 | POST | `/personnages/{id}/objets/{objetId}/consommer` | 🔒 | Consomme un objet (potion, Laumspur...) : applique son effet (ENDURANCE/HABILITE) puis le retire de l'inventaire. |
 | POST | `/personnages/{id}/vol/{objetId}` | 🔒 | Résout un vol en attente (`volEnAttente` non-null sur la fiche personnage) : choisit quel objet/arme perdre parmi ceux autorisés par la portée du vol. |
-| POST | `/personnages/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}` | 🔒 | Échange volontaire d'objet, uniquement si le chapitre courant propose explicitement cet échange (ex. Marteau de Guerre de l'ermite). |
+| POST | `/personnages/{id}/objets/{objetAAjouterId}/echanger-contre/{objetARetirerId}` | 🔒 | Échange volontaire d'objet, uniquement si le chapitre courant propose explicitement cet échange (ex. Marteau de Guerre de l'ermite), et une seule fois par passage sur le chapitre (REGLE-16). |
 
 ### Combat (`/personnages/{id}/combat`)
 
@@ -338,15 +359,19 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 
 - **Création de personnage** : HABILITE = 10 + tirage(0-9), ENDURANCE = 20 +
   tirage(0-9), exactement 5 disciplines parmi les 10 disciplines Kaï.
-- **Discipline Maîtrise des Armes** : tire une arme au hasard parmi le
-  catalogue ; +2 HABILITE tant qu'elle est équipée.
-- **Sans arme équipée** : -4 HABILITE.
+- **Discipline Maîtrise des Armes** : l'arme est tirée sur la table 0-9 du
+  livre (l'Épée y figure deux fois, REGLE-07) ; +2 HABILITE tant qu'elle est
+  équipée.
+- **Sans arme équipée** : -4 HABILITE. Au 260 (combat à mains nues imposé),
+  HABILITE de base - 4, sans cumul avec les autres bonus d'arme (REGLE-11).
+- **Liens « Sinon »** : condition de valeur `-1` = « si vous ne possédez
+  pas » ; les choix « Sinon » sont exclusifs (REGLE-14).
 - **Inventaire** : max 2 armes, max 8 (objets + repas confondus), max 50 pièces
   d'or ; objets spéciaux (armure, clés, carte...) illimités.
 - **Repas** : consomme 1 Repas à chaque effet `REPAS` d'un chapitre, sinon
   -3 ENDURANCE ; dispensé si discipline Chasse.
 - **Discipline Guérison** : +1 ENDURANCE à chaque chapitre traversé sans
-  combat.
+  combat (pas sur les sous-sections 2101 et 2102, REGLE-13).
 - **Discipline Puissance Psychique** : +2 HABILITE en combat, sauf contre un
   ennemi qui y résiste.
 - **Effets de chapitre** gérés : `ENDURANCE`, `HABILITE` (temporaire, reset à
@@ -400,22 +425,26 @@ Hibernate le valide (`ddl-auto=validate`) et le catalogue du livre est chargé,
 comme sur Render. La CI (`.github/workflows/sonar.yml`) lance `mvn verify` :
 un test en échec fait échouer le contrôle de la PR.
 
-Tests unitaires présents sur : authentification (JWT, filtre, service
+Tests présents notamment sur : authentification (JWT, filtre, service
 utilisateur), `PersonnageService`, `InventaireService`, `ObjetService`,
-`EffetChapitreService`, `ConditionService`, `ChapitreMapper`,
-`RefreshTokenService`, `EmailService`/`EmailVerificationService`, et le
-chargement des données (`GameDataLoaderTest`).
+`EffetChapitreService`, `ConditionService`, `ChapitreMapper`, le combat
+(`CombatService`, `CombatController`, `TableCombatService`,
+`CombatAMainsNuesTest`), `RefreshTokenService`, les emails et le chargement
+des données (`GameDataLoaderTest`).
 
-> ⚠️ Pas de test dédié sur `CombatService`, `CombatController` ni
-> `TableCombatService` à ce jour — c'est la logique la plus complexe et la
-> plus récemment modifiée du projet, à couvrir en priorité.
+Les tests du package `data/` (`CoherenceLivreTest`,
+`StatsEnnemisConformesAuLivreTest`, `LiensDeCombatTest`) vérifient que les
+JSON restent fidèles au livre : à garder verts.
+
+> Ne pas lancer `./mvnw test` pendant que `spring-boot:run` tourne (DevTools) :
+> l'app répond ensuite 400 sur `/objets`, il faut la redémarrer.
 
 ## Structure du projet
 
 ```
 backend/src/main/java/com/loupsolitaire/backend/
 ├── config/          # Sécurité, JWT, CORS, chargement des données de jeu (GameDataLoader)
-├── controller/       # AuthController, PersonnageController, CombatController
+├── controller/       # Auth, Personnage, Combat, Discipline, Objet, Version, Diagnostic
 ├── dto/              # DTOs de désérialisation des fichiers JSON du livre
 ├── exception/        # Exceptions métier + GlobalExceptionHandler
 ├── model/            # Entités JPA (Personnage, Chapitre, Combat, Objet, Discipline, Ennemi...)
@@ -429,6 +458,8 @@ backend/src/main/java/com/loupsolitaire/backend/
 
 backend/src/main/resources/
 ├── application.properties
+├── db/changelog/      # Migrations Liquibase (db.changelog-master.yaml + changes/NNN-*.yaml|sql)
+├── static/legal/      # CGU et confidentialité
 └── data/
     ├── chapitre.json     # Les 350 chapitres du Livre 1 (texte, liens, effets, ennemis, objets)
     ├── discipline.json   # Les 10 disciplines Kaï
@@ -438,8 +469,6 @@ backend/src/main/resources/
 
 ## Limitations connues
 
-- **Pas de frontend dans ce dépôt** : uniquement l'API backend. Un client
-  (Angular/Ionic ou autre) doit consommer cette API.
 - **Système de combat non fidèle au livre** : le livre résout chaque round
   avec un seul tirage sur une table unique (dégâts des deux camps
   simultanément), sans décision tactique. Ce projet ajoute des actions
@@ -449,12 +478,10 @@ backend/src/main/resources/
   coup le tue (REGLE-03).
 - **Chapitre 350 (fin du tome) sans lien de sortie** : son unique lien
   (`351`) est un marqueur de fin de partie filtré au chargement des
-  données (`GameDataLoader.PAGES_FIN_DE_JEU`) — il n'existe aucun écran de
-  victoire/transition vers le tome 2 pour l'instant.
+  données (`GameDataLoader.PAGES_FIN_DE_JEU`). Le frontend affiche un écran
+  de victoire ; pas encore de passage au tome 2.
 - **Pièce Premium (`coin`) illimitée** : chaque personnage démarre avec 999
   exemplaires et ils ne sont jamais consommés (MVP1). En pratique, la mort
   (combat ou hors combat) n'a donc actuellement aucune conséquence
   définitive. Un vrai système d'achat/limite est prévu pour une itération
-  future (MVP2).
-- **`DDL_AUTO=update`** en dev : à remplacer par des migrations
-  Flyway/Liquibase avant une mise en production.
+  future (MVP2, REGLE-15 et QUAL-04 dans `../specs`).
