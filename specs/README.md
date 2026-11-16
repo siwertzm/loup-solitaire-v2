@@ -17,7 +17,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape A : QUAL-02, DATA-00, OPS-03, SEC-08, OPS-01, SEC-07 ; QUAL-06 (tests frontend dans la CI).
 - Lot 2, étape B : SEC-06, SEC-05, OPS-05, RGPD-03.
 - Lot 2, étape C : REGLE-16, REGLE-13, REGLE-07, REGLE-14, REGLE-11 + DATA-13, DATA-06 + DATA-07, REGLE-12, REGLE-09, DATA-14, DATA-17.
-- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16.
+- Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026).
 - Abandonné : REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire

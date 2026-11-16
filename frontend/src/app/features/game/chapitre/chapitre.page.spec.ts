@@ -105,6 +105,26 @@ describe('ChapitrePage — échange non fait', () => {
     expect(avancer).not.toHaveBeenCalled();
   });
 
+  // REGLE-17 : un second Sac à Dos ne peut pas être pris, l'alerte l'ignore.
+  it("n'alerte pas pour un Sac à Dos quand le joueur en a déjà un", () => {
+    const sac: InventaireItem = {
+      objetId: 'sac_a_dos',
+      nom: 'Sac à Dos',
+      categorie: 'OBJETS_SPECIAUX',
+      quantite: 1,
+    };
+    page.chapitre.set(
+      chapitre307([{ objetId: 'sac_a_dos', nom: 'Sac à Dos', valeur: 1, optionnel: true }]),
+    );
+    page.restantsObjets.set({ sac_a_dos: 1 });
+
+    page.personnage.set(personnage([sac]));
+    expect(page.objetsNonPris()).toEqual([]);
+
+    page.personnage.set(personnage([]));
+    expect(page.objetsNonPris().map((o) => o.objetId)).toEqual(['sac_a_dos']);
+  });
+
   it("ne signale rien si l'échange est déjà fait", () => {
     page.personnage.set(personnage([{ ...hache, objetId: 'marteau', nom: 'Marteau de Guerre' }]));
 

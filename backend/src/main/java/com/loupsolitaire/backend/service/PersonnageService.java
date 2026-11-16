@@ -580,6 +580,10 @@ public class PersonnageService {
         if (objetDeSac && !inventaireService.possedeSacADos(personnage)) {
             throw new IllegalArgumentException("Sans Sac a Dos, vous ne pouvez pas porter cet objet");
         }
+        // REGLE-17 : un seul Sac a Dos a la fois.
+        if (InventaireService.OBJET_SAC_A_DOS.equals(objet.getId()) && inventaireService.possedeSacADos(personnage)) {
+            throw new IllegalArgumentException("Vous avez deja un Sac a Dos");
+        }
 
         ResultatAjout resultat = inventaireService.ajouterObjet(personnage, objet, quantiteDemandee);
 

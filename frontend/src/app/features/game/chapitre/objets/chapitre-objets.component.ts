@@ -16,6 +16,7 @@ import { ObjetChapResponse } from '../../../../core/models/chapitre.model';
 import {
   InventaireItem,
   ObjetResume,
+  OBJET_SAC_A_DOS,
   PersonnageResume,
   possedeSacADos,
 } from '../../../../core/models/personnage.model';
@@ -108,6 +109,11 @@ export class ChapitreObjetsComponent implements OnDestroy {
   sansSac(objetId: string): boolean {
     const categorie = this.categorieObjet(objetId);
     return (categorie === 'OBJET' || categorie === 'REPAS') && !this.possedeSac();
+  }
+
+  /** REGLE-17 : un seul Sac à Dos à la fois. */
+  sacDejaPossede(objetId: string): boolean {
+    return objetId === OBJET_SAC_A_DOS && this.possedeSac();
   }
 
   readonly bourseCount = computed(() =>

@@ -59,6 +59,10 @@
             ) | translate
           }}
         </button>
+      } @else if (sacDejaPossede(objet.objetId)) {
+        <button type="button" class="objet-prendre" disabled>
+          {{ 'CHAPITRE_OBJETS.BADGE_DEJA_SAC' | translate }}
+        </button>
       } @else if (sansSac(objet.objetId)) {
         <button type="button" class="objet-prendre" disabled>
           {{ 'CHAPITRE_OBJETS.BADGE_SANS_SAC' | translate }}

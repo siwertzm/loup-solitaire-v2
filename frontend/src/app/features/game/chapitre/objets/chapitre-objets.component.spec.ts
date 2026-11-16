@@ -89,6 +89,15 @@ describe('ChapitreObjetsComponent — Sac à Dos', () => {
 
     expect(composant.sansSac('repas')).toBe(false);
   });
+
+  // REGLE-17 : un seul Sac à Dos à la fois.
+  it('bloque un second Sac à Dos', () => {
+    expect(creer([sac]).sacDejaPossede('sac_a_dos')).toBe(true);
+  });
+
+  it('laisse reprendre un Sac à Dos perdu', () => {
+    expect(creer([]).sacDejaPossede('sac_a_dos')).toBe(false);
+  });
 });
 
 // QUAL-16 : l'arme de la Maîtrise des Armes est signalée parmi les objets à

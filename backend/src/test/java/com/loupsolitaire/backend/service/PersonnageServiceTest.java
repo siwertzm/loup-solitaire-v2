@@ -1314,6 +1314,40 @@ class PersonnageServiceTest {
         verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());
     }
 
+    // REGLE-17 : un seul Sac a Dos a la fois.
+    @Test
+    void refuseDeRamasserUnSecondSacADos() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        Objet sac = objetsParId.get("sac_a_dos");
+        sac.setCategorie(CategorieObjet.OBJETS_SPECIAUX);
+        chapitre0.setObjets(List.of(creerObjetChap(sac, 1, true)));
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(inventaireService.possedeSacADos(p)).thenReturn(true);
+
+        assertThatThrownBy(() -> personnageService.ramasserObjetDuChapitre(p, sac))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("deja un Sac a Dos");
+
+        verify(inventaireService, never()).ajouterObjet(any(), any(), anyInt());
+    }
+
+    @Test
+    void ramasseUnSacADosSiLeJoueurNEnAPas() {
+        Personnage p = new Personnage();
+        p.setChapitreActuel(chapitre0);
+        Objet sac = objetsParId.get("sac_a_dos");
+        sac.setCategorie(CategorieObjet.OBJETS_SPECIAUX);
+        chapitre0.setObjets(List.of(creerObjetChap(sac, 1, true)));
+        when(chapitreRepository.findById(0)).thenReturn(Optional.of(chapitre0));
+        when(inventaireService.possedeSacADos(p)).thenReturn(false);
+        when(inventaireService.ajouterObjet(p, sac, 1)).thenReturn(new ResultatAjout(sac, 1, 1, List.of()));
+
+        personnageService.ramasserObjetDuChapitre(p, sac);
+
+        verify(inventaireService).ajouterObjet(p, sac, 1);
+    }
+
     @Test
     void ramasseUneArmeSansSacADos() {
         Personnage p = new Personnage();
