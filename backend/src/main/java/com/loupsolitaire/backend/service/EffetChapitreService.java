@@ -298,9 +298,20 @@ public class EffetChapitreService {
             throw new IllegalArgumentException(
                     "Cet objet ne correspond pas a la portee du vol en attente (" + portee + ")");
         }
+        // REGLE-09 (144) : le voleur prend dans le Sac ; une arme seulement si
+        // le Sac ne contient ni objet ni repas.
+        if (portee == PorteeVol.TOUT && objet.getCategorie() == CategorieObjet.ARME && sacContientQuelqueChose(personnage)) {
+            throw new IllegalArgumentException(
+                    "Le voleur prend un objet de votre Sac a Dos : choisissez un objet ou un repas");
+        }
 
         inventaireService.retirerObjet(personnage, objet, 1);
         personnage.setVolEnAttente(null);
+    }
+
+    private boolean sacContientQuelqueChose(Personnage personnage) {
+        return inventaireService.listerInventaire(personnage).stream()
+                .anyMatch(item -> CATEGORIES_SAC.contains(item.getObjet().getCategorie()) && item.getQuantite() > 0);
     }
 
     // Retire integralement tous les objets possedes dans les categories
