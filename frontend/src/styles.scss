@@ -33,12 +33,13 @@
  * a la place. Meme logique deja en place pour le bas sur chapitre.page.scss.
  */
 
-/* QUAL-24 : marge du bas (barre d'accueil iOS, boutons de navigation
- * Android). Sur iOS le contenu passe sous la barre d'accueil et chaque
- * page reserve --marge-bas la ou il faut. Sur Android les boutons de
- * navigation masqueraient le contenu : toute l'app (pages et modales)
- * s'arrete au-dessus d'eux, et --marge-bas vaut 0 pour ne pas la compter
- * deux fois. */
+/* QUAL-24/25 : marge du bas (barre d'accueil iOS, boutons de navigation
+ * Android). Sur iOS le contenu passe sous la barre d'accueil. Sur Android
+ * les boutons masqueraient le contenu : la racine de chaque page reserve
+ * leur hauteur par une bordure transparente, sous laquelle le fond de la
+ * page (degrades compris) continue jusqu'en bas de l'ecran. --marge-bas
+ * (marge reservee par la page Chapitre) vaut donc 0 sur Android pour ne
+ * pas compter cette hauteur deux fois. */
 :root {
   --marge-bas: env(safe-area-inset-bottom, 0px);
 }
@@ -46,12 +47,11 @@
 html.plt-android {
   --marge-bas: 0px;
 
-  body {
-    background: #171c13;
-  }
-
-  ion-app {
-    bottom: env(safe-area-inset-bottom, 0px);
+  ion-content > .ecran,
+  ion-content > main,
+  ion-content > .combat {
+    border-bottom: env(safe-area-inset-bottom, 0px) solid transparent;
+    background-origin: border-box;
   }
 }
 

@@ -404,3 +404,9 @@ ion-item-option {
   justify-content: center;
   cursor: pointer;
 }
+
+// QUAL-25 : sur Android, le bas de la feuille passe sous les boutons de
+// navigation ; son contenu reste au-dessus.
+:host-context(html.plt-android) .feuille-sac {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
