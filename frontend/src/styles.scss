@@ -33,6 +33,28 @@
  * a la place. Meme logique deja en place pour le bas sur chapitre.page.scss.
  */
 
+/* QUAL-24 : marge du bas (barre d'accueil iOS, boutons de navigation
+ * Android). Sur iOS le contenu passe sous la barre d'accueil et chaque
+ * page reserve --marge-bas la ou il faut. Sur Android les boutons de
+ * navigation masqueraient le contenu : toute l'app (pages et modales)
+ * s'arrete au-dessus d'eux, et --marge-bas vaut 0 pour ne pas la compter
+ * deux fois. */
+:root {
+  --marge-bas: env(safe-area-inset-bottom, 0px);
+}
+
+html.plt-android {
+  --marge-bas: 0px;
+
+  body {
+    background: #171c13;
+  }
+
+  ion-app {
+    bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
 :root {
   /* QUAL-15 : taille du texte reglable (page Options). Toutes les tailles
    * de police sont en rem : elles suivent cette base de 16px multipliee par
