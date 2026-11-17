@@ -18,6 +18,7 @@ forme de données JSON chargées au démarrage. Les tâches en cours sont dans
 - [Endpoints de l'API](#endpoints-de-lapi)
 - [Modèle de jeu (résumé des règles implémentées)](#modèle-de-jeu-résumé-des-règles-implémentées)
 - [Format des erreurs](#format-des-erreurs)
+- [Suppression de compte sur demande (RGPD-05)](#suppression-de-compte-sur-demande-rgpd-05)
 - [Sauvegardes et restauration (OPS-06)](#sauvegardes-et-restauration-ops-06)
 - [Tests](#tests)
 - [Structure du projet](#structure-du-projet)
@@ -150,6 +151,37 @@ format cron Spring) et supprime :
 Les **comptes ne sont jamais supprimés**, même non vérifiés (décision du
 12/11/2026) : leur lien expiré disparaît, « Renvoyer le lien » en recrée
 un. Le nombre de lignes supprimées est écrit dans les logs (`Purge : …`).
+
+## Suppression de compte sur demande (RGPD-05)
+
+Google Play exige une page web pour demander la suppression du compte sans
+l'application : `/legal/suppression-compte.html` (URL à donner dans la Play
+Console : `https://loup-solitaire-api.onrender.com/api/v1/legal/suppression-compte.html`).
+La demande arrive par email à `contact@lone-wolf.fr` ; délai promis : **un mois**.
+
+Ne traiter que les demandes venant de **l'adresse email du compte**. Pas de
+`DELETE` SQL direct : la base n'a pas de suppression en cascade, c'est
+`CompteService.supprimerCompte` qui vide chaque table. On passe donc par l'API
+avec un mot de passe temporaire :
+
+```sql
+-- 1. Mot de passe temporaire (BCrypt via pgcrypto) ; email_verifie = true sinon la connexion est refusee
+create extension if not exists pgcrypto;
+update utilisateur
+   set password = crypt('<mdp-temporaire>', gen_salt('bf', 10)), email_verifie = true
+ where email = '<email-du-compte>';
+```
+
+```bash
+# 2. Connexion puis suppression (memes routes que l'app)
+API=https://loup-solitaire-api.onrender.com/api/v1
+TOKEN=$(curl -s -X POST $API/auth/login -H 'Content-Type: application/json' \
+  -d '{"identifiant":"<email-du-compte>","password":"<mdp-temporaire>"}' | jq -r .accessToken)
+curl -i -X DELETE $API/auth/me -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' -d '{"password":"<mdp-temporaire>"}'
+```
+
+3. Vérifier la réponse `204`, puis confirmer la suppression au demandeur par email.
 
 ## Sauvegardes et restauration (OPS-06)
 
@@ -385,7 +417,7 @@ Légende : 🔓 public · 🔒 nécessite `Authorization: Bearer <accessToken>`
 |---|---|---|---|
 | GET | `/disciplines` | 🔒 | Les 10 Disciplines Kaï. |
 | GET | `/objets` | 🔒 | Catalogue des objets (catégorie, effets). |
-| GET | `/legal/cgu.html`, `/legal/confidentialite.html` | 🔓 | CGU et politique de confidentialité (`static/legal/`). |
+| GET | `/legal/cgu.html`, `/legal/confidentialite.html`, `/legal/suppression-compte.html` | 🔓 | CGU, politique de confidentialité et suppression du compte (`static/legal/`). |
 
 ### Auth (`/auth`)
 
