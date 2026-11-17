@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | XS | `fix-QUAL-20` | À faire |
+| 3 | Basse | XS | `fix-QUAL-20` | Fait |
 
 Origine : second audit Claude Code du 17/11/2026 (point 1)
 
@@ -33,3 +33,7 @@ Un test d'intégration (PostgreSQL) : ramasser un objet optionnel → `derniereA
 ## Fichiers concernés
 
 `PersonnageRepositoryCustomImpl.java`, `Personnage.java`
+
+## Réalisation (17/11/2026)
+
+Test `DerniereActiviteIT` vu en échec avant le correctif (ramassage), vert après. Le changement de date rend la ligne toujours modifiée : une action incrémente maintenant la version de 2 (UPDATE normal + incrément forcé du verrou), le conflit entre deux actions simultanées reste détecté. `PersonnageVerrouOptimisteTest` mis à jour en conséquence (décision du porteur du projet : garder le verrou).

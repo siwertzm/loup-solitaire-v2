@@ -19,7 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.persistence.CollectionTable;   
@@ -114,22 +113,16 @@ public class Personnage {
     private Instant dateCreation;
 
     // "Dernier personnage joué" cote accueil frontend (AccueilPage trie sur
-    // ce champ pour placer ce personnage en premiere carte). Rafraichie
-    // AUTOMATIQUEMENT a chaque modification de l'entite (avancer de
-    // chapitre, tour de combat, ramasser un objet...) via @PreUpdate,
-    // plutot que d'ajouter un appel explicite a chacun des tres nombreux
-    // points du code qui font personnageRepository.save(personnage).
+    // ce champ pour placer ce personnage en premiere carte). Rafraichie a
+    // chaque action de jeu par PersonnageRepository.findByIdPourModification
+    // (QUAL-20 : un @PreUpdate ratait les actions qui ne touchent que
+    // l'inventaire ou le combat).
     // Initialisee a la creation (voir PersonnageService.creerPersonnage),
     // mais volontairement PAS nullable=false : les personnages crees avant
     // l'ajout de ce champ (ddl-auto=update ne backfill rien) l'auraient
     // sinon en violation du schema. Le tri cote controleur traite null
     // comme "jamais joue" (le plus ancien possible).
     private Instant derniereActivite;
-
-    @PreUpdate
-    private void surMiseAJour() {
-        this.derniereActivite = Instant.now();
-    }
 
     // Tirage 0-9 courant pour evaluer les conditions HASARD des liens.
     // Regenere a chaque chargement du chapitre (GET /chapitre), puis relu

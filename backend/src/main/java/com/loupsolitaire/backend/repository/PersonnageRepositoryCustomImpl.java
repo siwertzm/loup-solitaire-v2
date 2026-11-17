@@ -1,5 +1,6 @@
 package com.loupsolitaire.backend.repository;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +39,8 @@ class PersonnageRepositoryCustomImpl implements PersonnageRepositoryCustom {
         // la validation de la transaction, que le personnage ait ete modifie
         // ou non.
         entityManager.lock(personnage, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        // Toute action de jeu passe ici : personnage a reprendre sur l'accueil (QUAL-20).
+        personnage.setDerniereActivite(Instant.now());
         return Optional.of(personnage);
     }
 }
