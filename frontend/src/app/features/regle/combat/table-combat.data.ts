@@ -3,7 +3,8 @@
  * du backend (backend/.../service/TableCombatService.java).
  *
  * ⚠ À garder synchronisé à la main : si les tables changent côté backend,
- * reporter les mêmes valeurs ici.
+ * reporter les mêmes valeurs ici. TablesCombatPageReglesTest (backend, QUAL-21)
+ * échoue si les deux copies diffèrent.
  *
  * Les valeurs sont des pertes d'ENDURANCE en positif (le backend les stocke
  * en négatif). FATAL correspond au -999 du backend : mort immédiate.
