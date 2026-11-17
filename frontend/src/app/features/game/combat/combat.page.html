@@ -5,7 +5,6 @@
     <div class="combat-chargement">{{ erreur() }}</div>
   } @else {
     <div class="combat" [class]="'combat fond-' + fond">
-
       <!-- ARÈNE -->
       <div class="arene">
         <div class="decor" [class]="'decor decor-' + fond">
@@ -26,7 +25,15 @@
           @for (carte of cartesOmbreEnnemis(); track $index) {
             <div
               class="plaque-ennemi-ombre"
-              [style.transform]="'translate(' + carte.decalage + 'px, ' + carte.decalage + 'px) rotate(' + carte.rotation + 'deg)'"
+              [style.transform]="
+                'translate(' +
+                carte.decalage +
+                'px, ' +
+                carte.decalage +
+                'px) rotate(' +
+                carte.rotation +
+                'deg)'
+              "
               [style.opacity]="carte.opacite"
               [style.z-index]="carte.z"
             ></div>
@@ -42,12 +49,24 @@
               @if (ennemiPossedePuissancePsychique() || ennemiResistePuissancePsychique()) {
                 <div class="bonus-ennemi">
                   @if (ennemiPossedePuissancePsychique()) {
-                    <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('ennemi-puissance-psychique')">
+                    <button
+                      type="button"
+                      class="bonus-picto bonus-psychique"
+                      [attr.title]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate"
+                      [attr.aria-label]="'COMBAT_PAGE.TITLE_ENNEMI_PUISSANCE_PSYCHIQUE' | translate"
+                      (click)="ouvrirExplicationBonus('ennemi-puissance-psychique')"
+                    >
                       <img src="/assets/icon/puissance.png" alt="" />
                     </button>
                   }
                   @if (ennemiResistePuissancePsychique()) {
-                    <button type="button" class="bonus-picto resistance-psychique" [attr.title]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('resistance-psychique')">
+                    <button
+                      type="button"
+                      class="bonus-picto resistance-psychique"
+                      [attr.title]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate"
+                      [attr.aria-label]="'COMBAT_PAGE.TITLE_RESISTANCE_PSYCHIQUE' | translate"
+                      (click)="ouvrirExplicationBonus('resistance-psychique')"
+                    >
                       <img src="/assets/icon/bulle.png" alt="" />
                     </button>
                   }
@@ -55,12 +74,18 @@
               }
               <div class="plaque-titre">
                 <span class="nom">{{ ennemi.nom }}</span>
-                <span class="hab">{{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ ennemi.habilite }}</span>
+                <span class="hab"
+                  >{{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ ennemi.habilite }}</span
+                >
               </div>
               <div class="plaque-barre">
                 <span class="etiquette">{{ 'COMBAT_PAGE.ABREVIATION_ENDURANCE' | translate }}</span>
                 <div class="jauge">
-                  <div class="remplissage" [class]="'remplissage ' + classeBarreEnnemi()" [style.width.%]="pctEnnemi()"></div>
+                  <div
+                    class="remplissage"
+                    [class]="'remplissage ' + classeBarreEnnemi()"
+                    [style.width.%]="pctEnnemi()"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -80,7 +105,12 @@
             <div class="socle socle-ennemi"></div>
             <div class="combattant combattant-ennemi" [class.touche]="hit() === 'ennemi'">
               <div class="entree-ennemi">
-                <img class="illustration" [class.vaincu]="ennemiVaincu()" src="/assets/illustrations/ennemi.png" alt="" />
+                <img
+                  class="illustration"
+                  [class.vaincu]="ennemiVaincu()"
+                  src="/assets/illustrations/ennemi.png"
+                  alt=""
+                />
               </div>
             </div>
           }
@@ -88,7 +118,11 @@
 
         <!-- héros -->
         <div class="socle socle-heros"></div>
-        <div class="combattant combattant-heros" [class.touche]="hit() === 'joueur'" [class.vaincu]="joueurVaincu()">
+        <div
+          class="combattant combattant-heros"
+          [class.touche]="hit() === 'joueur'"
+          [class.vaincu]="joueurVaincu()"
+        >
           <div class="entree-heros">
             <img class="illustration" src="/assets/illustrations/loup.png" alt="" />
           </div>
@@ -98,52 +132,111 @@
         <div class="plaque plaque-joueur">
           <!-- bonus du joueur, accrochés au-dessus de la plaque de vie -->
           <div class="bonus-joueur" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_ACTIFS' | translate">
-              @if (bonusHabiliteTemp() > 0) {
-                <button type="button" class="bonus-picto bonus-temp" [attr.title]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate" (click)="ouvrirExplicationBonus('habilite')">
-                  <img src="/assets/icon/potion.png" alt="" />
-                  <small>+{{ bonusHabiliteTemp() }}</small>
-                </button>
-              }
-              @if (malusMainsNues(); as malus) {
-                <!-- REGLE-11 : combat à mains nues (épée barrée). -->
-                <button type="button" class="bonus-picto bonus-mains-nues" [attr.title]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }" [attr.aria-label]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }" (click)="ouvrirExplicationBonus('mains-nues')">
-                  <img src="/assets/icon/epee.png" alt="" />
-                  <small>{{ malus }}</small>
-                </button>
-              }
-              @if (bonusAssaut(); as bonus) {
-                <!-- REGLE-10 : bonus/malus limité à certains assauts (283). -->
-                <button type="button" class="bonus-picto" [class.bonus-assaut]="bonus > 0" [class.malus-assaut]="bonus < 0" [attr.title]="'COMBAT_PAGE.TITLE_ASSAUT' | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }" [attr.aria-label]="'COMBAT_PAGE.TITLE_ASSAUT' | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }" (click)="ouvrirExplicationBonus('assaut')">
-                  <img src="/assets/icon/combat.png" alt="" />
-                  <small>{{ bonus > 0 ? '+' : '' }}{{ bonus }}</small>
-                </button>
-              }
-              @if (bonusArmeMaitrisee(); as arme) {
-                <button type="button" class="bonus-picto bonus-arme" [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }" [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate" (click)="ouvrirExplicationBonus('arme')">
-                  <img src="/assets/icon/epee.png" alt="" />
-                </button>
-              }
-              @if (bonusPuissancePsychique()) {
-                <button type="button" class="bonus-picto bonus-psychique" [attr.title]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('puissance')">
-                  <img src="/assets/icon/puissance.png" alt="" />
-                </button>
-              }
-              @if (bonusBouclierPsychique()) {
-                <button type="button" class="bonus-picto bonus-bouclier" [attr.title]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" [attr.aria-label]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate" (click)="ouvrirExplicationBonus('bouclier')">
-                  <img src="/assets/icon/bulle.png" alt="" />
-                </button>
-              }
-              @if (bonusGarde()) {
-                <button type="button" class="bonus-picto bonus-garde" [attr.title]="'COMBAT_PAGE.TITLE_GARDE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }" [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_GARDE' | translate" (click)="ouvrirExplicationBonus('garde')">
-                  <img src="/assets/icon/bouclier.png" alt="" />
-                </button>
-              }
+            @if (bonusHabiliteTemp() > 0) {
+              <button
+                type="button"
+                class="bonus-picto bonus-temp"
+                [attr.title]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate"
+                [attr.aria-label]="'COMBAT_PAGE.TITLE_HABILITE_TEMP' | translate"
+                (click)="ouvrirExplicationBonus('habilite')"
+              >
+                <img src="/assets/icon/potion.png" alt="" />
+                <small>+{{ bonusHabiliteTemp() }}</small>
+              </button>
+            }
+            @if (malusMainsNues(); as malus) {
+              <!-- REGLE-11 : combat à mains nues (épée barrée). -->
+              <button
+                type="button"
+                class="bonus-picto bonus-mains-nues"
+                [attr.title]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }"
+                [attr.aria-label]="'COMBAT_PAGE.TITLE_MAINS_NUES' | translate: { malus: malus }"
+                (click)="ouvrirExplicationBonus('mains-nues')"
+              >
+                <img src="/assets/icon/epee.png" alt="" />
+                <small>{{ malus }}</small>
+              </button>
+            }
+            @if (bonusAssaut(); as bonus) {
+              <!-- REGLE-10 : bonus/malus limité à certains assauts (283). -->
+              <button
+                type="button"
+                class="bonus-picto"
+                [class.bonus-assaut]="bonus > 0"
+                [class.malus-assaut]="bonus < 0"
+                [attr.title]="
+                  'COMBAT_PAGE.TITLE_ASSAUT'
+                    | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }
+                "
+                [attr.aria-label]="
+                  'COMBAT_PAGE.TITLE_ASSAUT'
+                    | translate: { bonus: (bonus > 0 ? '+' : '') + bonus, n: numeroAssaut() }
+                "
+                (click)="ouvrirExplicationBonus('assaut')"
+              >
+                <img src="/assets/icon/combat.png" alt="" />
+                <small>{{ bonus > 0 ? '+' : '' }}{{ bonus }}</small>
+              </button>
+            }
+            @if (bonusArmeMaitrisee(); as arme) {
+              <button
+                type="button"
+                class="bonus-picto bonus-arme"
+                [attr.title]="'COMBAT_PAGE.TITLE_ARME_MAITRISEE' | translate: { arme: arme }"
+                [attr.aria-label]="'COMBAT_PAGE.ARIA_ARME_MAITRISEE' | translate"
+                (click)="ouvrirExplicationBonus('arme')"
+              >
+                <img src="/assets/icon/epee.png" alt="" />
+              </button>
+            }
+            @if (bonusPuissancePsychique()) {
+              <button
+                type="button"
+                class="bonus-picto bonus-psychique"
+                [attr.title]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate"
+                [attr.aria-label]="'COMBAT_PAGE.TITLE_PUISSANCE_PSYCHIQUE' | translate"
+                (click)="ouvrirExplicationBonus('puissance')"
+              >
+                <img src="/assets/icon/puissance.png" alt="" />
+              </button>
+            }
+            @if (bonusBouclierPsychique()) {
+              <button
+                type="button"
+                class="bonus-picto bonus-bouclier"
+                [attr.title]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate"
+                [attr.aria-label]="'COMBAT_PAGE.TITLE_BOUCLIER_PSYCHIQUE' | translate"
+                (click)="ouvrirExplicationBonus('bouclier')"
+              >
+                <img src="/assets/icon/bulle.png" alt="" />
+              </button>
+            }
+            @if (bonusGarde()) {
+              <button
+                type="button"
+                class="bonus-picto bonus-garde"
+                [attr.title]="
+                  'COMBAT_PAGE.TITLE_GARDE'
+                    | translate
+                      : {
+                          pourcent: $safeNavigationMigration(
+                            combat()?.dernierTour?.reductionPourcent
+                          ),
+                        }
+                "
+                [attr.aria-label]="'COMBAT_PAGE.ARIA_BONUS_GARDE' | translate"
+                (click)="ouvrirExplicationBonus('garde')"
+              >
+                <img src="/assets/icon/bouclier.png" alt="" />
+              </button>
+            }
           </div>
 
           <div class="plaque-titre">
             <span class="nom">{{ nomJoueur() }}</span>
             <span class="hab">
-              {{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ habiliteJoueur() }}@if (detailHabiliteAffiche(); as detail) {
+              {{ 'COMBAT_PAGE.ABREVIATION_HABILETE' | translate }} {{ habiliteJoueur() }}
+              @if (detailHabiliteAffiche(); as detail) {
                 <span class="hab-detail">({{ detail }})</span>
               }
             </span>
@@ -151,7 +244,11 @@
           <div class="plaque-barre">
             <span class="etiquette">{{ 'COMBAT_PAGE.ABREVIATION_ENDURANCE' | translate }}</span>
             <div class="jauge">
-              <div class="remplissage" [class]="'remplissage ' + classeBarreJoueur()" [style.width.%]="pctJoueur()"></div>
+              <div
+                class="remplissage"
+                [class]="'remplissage ' + classeBarreJoueur()"
+                [style.width.%]="pctJoueur()"
+              ></div>
             </div>
           </div>
           <div class="chiffres">{{ enduranceJoueur() }} / {{ enduranceMaxJoueur() }}</div>
@@ -159,24 +256,57 @@
 
         @if (bonusSelectionne(); as bonus) {
           <div class="voile-bonus" (click)="fermerExplicationBonus()">
-            <section class="popup-bonus" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-              <button type="button" class="popup-bonus-fermer" [attr.aria-label]="'COMBAT_PAGE.ARIA_FERMER' | translate" (click)="fermerExplicationBonus()">×</button>
+            <section
+              class="popup-bonus"
+              role="dialog"
+              aria-modal="true"
+              (click)="$event.stopPropagation()"
+            >
+              <button
+                type="button"
+                class="popup-bonus-fermer"
+                [attr.aria-label]="'COMBAT_PAGE.ARIA_FERMER' | translate"
+                (click)="fermerExplicationBonus()"
+              >
+                ×
+              </button>
               @switch (bonus) {
                 @case ('habilite') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_HABILITE_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_HABILITE_TEXTE' | translate: { bonus: bonusHabiliteTemp() }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_HABILITE_TEXTE' | translate: { bonus: bonusHabiliteTemp() }
+                    "
+                  ></p>
                 }
                 @case ('arme') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_ARME_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ARME_TEXTE' | translate: { arme: bonusArmeMaitrisee() }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_ARME_TEXTE' | translate: { arme: bonusArmeMaitrisee() }
+                    "
+                  ></p>
                 }
                 @case ('mains-nues') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_MAINS_NUES_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_MAINS_NUES_TEXTE' | translate: { malus: malusMainsNues() }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_MAINS_NUES_TEXTE' | translate: { malus: malusMainsNues() }
+                    "
+                  ></p>
                 }
                 @case ('assaut') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_ASSAUT_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ASSAUT_TEXTE' | translate: { bonus: (bonusAssaut() > 0 ? '+' : '') + bonusAssaut(), n: numeroAssaut() }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_ASSAUT_TEXTE'
+                        | translate
+                          : {
+                              bonus: (bonusAssaut() > 0 ? '+' : '') + bonusAssaut(),
+                              n: numeroAssaut(),
+                            }
+                    "
+                  ></p>
                 }
                 @case ('puissance') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_PUISSANCE_TITRE' | translate }}</h2>
@@ -188,15 +318,35 @@
                 }
                 @case ('resistance-psychique') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TEXTE' | translate: { nom: ennemiActif()?.nom }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_RESISTANCE_PSYCHIQUE_TEXTE'
+                        | translate: { nom: $safeNavigationMigration(ennemiActif()?.nom) }
+                    "
+                  ></p>
                 }
                 @case ('ennemi-puissance-psychique') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_ENNEMI_PUISSANCE_PSYCHIQUE_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_ENNEMI_PUISSANCE_PSYCHIQUE_TEXTE' | translate: { nom: ennemiActif()?.nom }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_ENNEMI_PUISSANCE_PSYCHIQUE_TEXTE'
+                        | translate: { nom: $safeNavigationMigration(ennemiActif()?.nom) }
+                    "
+                  ></p>
                 }
                 @case ('garde') {
                   <h2>{{ 'COMBAT_PAGE.POPUP_GARDE_TITRE' | translate }}</h2>
-                  <p [innerHTML]="'COMBAT_PAGE.POPUP_GARDE_TEXTE' | translate: { pourcent: combat()?.dernierTour?.reductionPourcent }"></p>
+                  <p
+                    [innerHTML]="
+                      'COMBAT_PAGE.POPUP_GARDE_TEXTE'
+                        | translate
+                          : {
+                              pourcent: $safeNavigationMigration(
+                                combat()?.dernierTour?.reductionPourcent
+                              ),
+                            }
+                    "
+                  ></p>
                 }
               }
             </section>
@@ -207,10 +357,13 @@
       <!-- BOÎTE DE DIALOGUE -->
       <div class="dialogue" (click)="avancer($event)">
         <div class="cadre">
-
           @if (phase() === 'TEXTE') {
             @if (deAttaqueVisible()) {
-              <div class="de-attaque" aria-live="polite" [attr.aria-label]="'COMBAT_PAGE.ARIA_DE_ATTAQUE' | translate">
+              <div
+                class="de-attaque"
+                aria-live="polite"
+                [attr.aria-label]="'COMBAT_PAGE.ARIA_DE_ATTAQUE' | translate"
+              >
                 <p class="de-attaque-texte">{{ texteDe() }}</p>
                 <span class="de-attaque-label">{{ libelleDe() }}</span>
                 <span class="de-attaque-face" [class.roule]="deAttaqueRoule()">
@@ -218,43 +371,91 @@
                 </span>
               </div>
             } @else if (statsEnnemi(); as stats) {
-              <div class="stats-ennemi" [attr.aria-label]="'COMBAT_PAGE.ARIA_STATS_ENNEMI' | translate">
+              <div
+                class="stats-ennemi"
+                [attr.aria-label]="'COMBAT_PAGE.ARIA_STATS_ENNEMI' | translate"
+              >
                 <div class="stats-ennemi-entete">
                   <span class="stats-ennemi-ligne"></span>
-                  <span class="stats-ennemi-titre">{{ 'COMBAT_PAGE.STATS_TITRE' | translate }}</span>
+                  <span class="stats-ennemi-titre">{{
+                    'COMBAT_PAGE.STATS_TITRE' | translate
+                  }}</span>
                   <span class="stats-ennemi-ligne"></span>
                 </div>
 
                 <div class="stats-ennemi-grille">
                   <div class="stat-ennemi stat-habilite">
-                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_HABILITE_LABEL' | translate }}</span>
+                    <span class="stat-ennemi-label">{{
+                      'COMBAT_PAGE.STATS_HABILITE_LABEL' | translate
+                    }}</span>
                     <strong>{{ stats.habilite }}</strong>
-                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_HABILITE_SOUS_TITRE' | translate }}</span>
+                    <span class="stat-ennemi-sous-titre">{{
+                      'COMBAT_PAGE.STATS_HABILITE_SOUS_TITRE' | translate
+                    }}</span>
                   </div>
                   <div class="stat-ennemi stat-endurance">
-                    <span class="stat-ennemi-label">{{ 'COMBAT_PAGE.STATS_ENDURANCE_LABEL' | translate }}</span>
+                    <span class="stat-ennemi-label">{{
+                      'COMBAT_PAGE.STATS_ENDURANCE_LABEL' | translate
+                    }}</span>
                     <strong>{{ stats.endurance }}</strong>
-                    <span class="stat-ennemi-sous-titre">{{ 'COMBAT_PAGE.STATS_ENDURANCE_SOUS_TITRE' | translate }}</span>
+                    <span class="stat-ennemi-sous-titre">{{
+                      'COMBAT_PAGE.STATS_ENDURANCE_SOUS_TITRE' | translate
+                    }}</span>
                   </div>
                 </div>
               </div>
             } @else {
               <p class="texte">{{ texte() }}</p>
             }
-            <div class="curseur" [class.clignote]="!tapeEnCours()">{{ tapeEnCours() ? '' : '▼' }}</div>
+            <div class="curseur" [class.clignote]="!tapeEnCours()">
+              {{ tapeEnCours() ? '' : '▼' }}
+            </div>
           }
 
           @if (phase() === 'MENU' && statut() === 'EN_COURS') {
             <div class="menu">
               <div class="invite">
-                <span class="question">{{ 'COMBAT_PAGE.QUESTION_MENU' | translate: { nom: nomJoueur() } }}</span>
-                <span class="assaut">{{ 'COMBAT_PAGE.ASSAUT_LABEL' | translate: { round: round() } }}</span>
+                <span class="question">{{
+                  'COMBAT_PAGE.QUESTION_MENU' | translate: { nom: nomJoueur() }
+                }}</span>
+                <span class="assaut">{{
+                  'COMBAT_PAGE.ASSAUT_LABEL' | translate: { round: round() }
+                }}</span>
               </div>
               <div class="actions">
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('ATTAQUE')">{{ 'COMBAT_PAGE.BOUTON_ATTAQUER' | translate }}</button>
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="agir('DEFENSE')">{{ 'COMBAT_PAGE.BOUTON_DEFENSE' | translate }}</button>
-                <button type="button" class="action" [disabled]="actionEnCours()" (click)="ouvrirSac()">{{ 'COMBAT_PAGE.BOUTON_SAC' | translate }}</button>
-                <button type="button" class="action" [class.desactivee]="!fuitePossible()" [disabled]="actionEnCours()" (click)="agir('FUITE')">{{ 'COMBAT_PAGE.BOUTON_FUITE' | translate }}</button>
+                <button
+                  type="button"
+                  class="action"
+                  [disabled]="actionEnCours()"
+                  (click)="agir('ATTAQUE')"
+                >
+                  {{ 'COMBAT_PAGE.BOUTON_ATTAQUER' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="action"
+                  [disabled]="actionEnCours()"
+                  (click)="agir('DEFENSE')"
+                >
+                  {{ 'COMBAT_PAGE.BOUTON_DEFENSE' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="action"
+                  [disabled]="actionEnCours()"
+                  (click)="ouvrirSac()"
+                >
+                  {{ 'COMBAT_PAGE.BOUTON_SAC' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="action"
+                  [class.desactivee]="!fuitePossible()"
+                  [disabled]="actionEnCours()"
+                  (click)="agir('FUITE')"
+                >
+                  {{ 'COMBAT_PAGE.BOUTON_FUITE' | translate }}
+                </button>
               </div>
             </div>
           }
@@ -262,11 +463,8 @@
           @if (phase() === 'FIN') {
             <p class="texte">{{ texte() }}</p>
           }
-
         </div>
       </div>
-
     </div>
-
   }
 </ion-content>

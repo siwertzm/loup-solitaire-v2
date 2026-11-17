@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -28,6 +28,7 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
   standalone: true,
   imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './nav-bar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './nav-bar.component.scss',
 })
 export class NavBarComponent {
@@ -52,7 +53,7 @@ export class NavBarComponent {
 
   personnage(): void {
     // Navigation vers la page du personnage
-   this.router.navigate(['/personnage', this.personnageId()], { replaceUrl: true });
+    this.router.navigate(['/personnage', this.personnageId()], { replaceUrl: true });
   }
 
   journal(): void {

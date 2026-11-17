@@ -6,10 +6,7 @@
 
         @if (categorie === 'ARME') {
           <div class="logo">
-            <img
-              src="assets/icon/epee.png"
-              [attr.alt]="'CHAPITRE_OBJETS.ALT_ARMES' | translate"
-            />
+            <img src="assets/icon/epee.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_ARMES' | translate" />
           </div>
         } @else if (categorie === 'OBJET' || categorie === 'OBJETS_SPECIAUX') {
           <div class="logo">
@@ -20,17 +17,11 @@
           </div>
         } @else if (categorie === 'REPAS') {
           <div class="logo">
-            <img
-              src="assets/icon/repas.png"
-              [attr.alt]="'CHAPITRE_OBJETS.ALT_REPAS' | translate"
-            />
+            <img src="assets/icon/repas.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_REPAS' | translate" />
           </div>
         } @else if (categorie === 'BOURSE') {
           <div class="logo">
-            <img
-              src="assets/icon/or.png"
-              [attr.alt]="'CHAPITRE_OBJETS.ALT_BOURSE' | translate"
-            />
+            <img src="assets/icon/or.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_BOURSE' | translate" />
           </div>
         }
 
@@ -47,16 +38,10 @@
       </div>
 
       @if (restant(objet.objetId) <= 0) {
-        <button
-          type="button"
-          class="objet-prendre"
-          disabled
-        >
+        <button type="button" class="objet-prendre" disabled>
           {{
-            (objet.optionnel
-              ? 'CHAPITRE_OBJETS.BADGE_VIDE'
-              : 'CHAPITRE_OBJETS.BADGE_AUTOMATIQUE'
-            ) | translate
+            (objet.optionnel ? 'CHAPITRE_OBJETS.BADGE_VIDE' : 'CHAPITRE_OBJETS.BADGE_AUTOMATIQUE')
+              | translate
           }}
         </button>
       } @else if (sacDejaPossede(objet.objetId)) {
@@ -68,21 +53,13 @@
           {{ 'CHAPITRE_OBJETS.BADGE_SANS_SAC' | translate }}
         </button>
       } @else if (objet.optionnel && estPlein(categorieObjet(objet.objetId))) {
-        <button
-          type="button"
-          class="objet-prendre"
-          (click)="prendreObjet(objet)"
-        >
+        <button type="button" class="objet-prendre" (click)="prendreObjet(objet)">
           {{ 'CHAPITRE_OBJETS.BADGE_PRENDRE' | translate }}
         </button>
       } @else if (!objet.optionnel) {
         <!-- Obligatoire avec un manque (categorie pleine a l'arrivee) : meme
              bouton PLEIN que pour un optionnel plein, cliquable pour completer. -->
-        <button
-          type="button"
-          class="objet-prendre"
-          (click)="prendreObjet(objet)"
-        >
+        <button type="button" class="objet-prendre" (click)="prendreObjet(objet)">
           {{ 'CHAPITRE_OBJETS.BADGE_PRENDRE' | translate }}
         </button>
       } @else {
@@ -105,29 +82,18 @@
     {{ 'CHAPITRE_OBJETS.TITRE_INVENTAIRE' | translate }}
   </div>
 
-  <div
-    class="sac"
-    (click)="ouvrirSac()"
-  >
+  <div class="sac" (click)="ouvrirSac()">
     <div class="typeObj">
       <div class="logo">
-        <img
-          src="assets/icon/epee.png"
-          [attr.alt]="'CHAPITRE_OBJETS.ALT_ARMES' | translate"
-        />
+        <img src="assets/icon/epee.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_ARMES' | translate" />
       </div>
 
-      <div class="cont">
-        {{ armesCount() }}/{{ maxArmes }}
-      </div>
+      <div class="cont">{{ armesCount() }}/{{ maxArmes }}</div>
     </div>
 
     <div class="typeObj">
       <div class="logo">
-        <img
-          src="assets/icon/potion.png"
-          [attr.alt]="'CHAPITRE_OBJETS.ALT_OBJETS' | translate"
-        />
+        <img src="assets/icon/potion.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_OBJETS' | translate" />
       </div>
 
       <div class="nbr">
@@ -135,10 +101,7 @@
       </div>
 
       <div class="logo">
-        <img
-          src="assets/icon/repas.png"
-          [attr.alt]="'CHAPITRE_OBJETS.ALT_REPAS' | translate"
-        />
+        <img src="assets/icon/repas.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_REPAS' | translate" />
       </div>
 
       <div class="nbr2">
@@ -146,46 +109,27 @@
       </div>
 
       <div class="logo">
-        <img
-          src="assets/icon/sac.png"
-          [attr.alt]="'CHAPITRE_OBJETS.ALT_SAC' | translate"
-        />
+        <img src="assets/icon/sac.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_SAC' | translate" />
       </div>
 
-      <div class="cont">
-        {{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }}
-      </div>
+      <div class="cont">{{ objetsEtRepasCount() }}/{{ maxObjetsEtRepas }}</div>
     </div>
 
     <div class="typeObj">
       <div class="logo">
-        <img
-          src="assets/icon/or.png"
-          [attr.alt]="'CHAPITRE_OBJETS.ALT_BOURSE' | translate"
-        />
+        <img src="assets/icon/or.png" [attr.alt]="'CHAPITRE_OBJETS.ALT_BOURSE' | translate" />
       </div>
 
-      <div class="cont">
-        {{ bourseCount() }}/{{ maxBourse }}
-      </div>
+      <div class="cont">{{ bourseCount() }}/{{ maxBourse }}</div>
     </div>
   </div>
 </div>
 
 @if (popupCategorie(); as categorie) {
-  <div
-    class="voile-plein"
-    (click)="fermerPopup()"
-  >
-    <div
-      class="popup-plein"
-      (click)="$event.stopPropagation()"
-    >
+  <div class="voile-plein" (click)="fermerPopup()">
+    <div class="popup-plein" (click)="$event.stopPropagation()">
       <div class="popup-plein-titre">
-        {{
-          'CHAPITRE_OBJETS.POPUP_TITRE'
-            | translate: { categorie: libelleCategorie(categorie) }
-        }}
+        {{ 'CHAPITRE_OBJETS.POPUP_TITRE' | translate: { categorie: libelleCategorie(categorie) } }}
       </div>
 
       <p class="popup-plein-texte">
@@ -193,10 +137,7 @@
       </p>
 
       @for (item of itemsDeCategorie(categorie); track item.objetId) {
-        <div
-          class="popup-plein-ligne"
-          [class.maitrisee]="item.maitrisee"
-        >
+        <div class="popup-plein-ligne" [class.maitrisee]="item.maitrisee">
           <span class="popup-plein-nom">
             {{ item.nom }}
           </span>
@@ -206,16 +147,11 @@
               {{ 'CHAPITRE_OBJETS.TAG_MAITRISEE' | translate }}
 
               <span class="popup-plein-bonus">
-                {{
-                  'CHAPITRE_OBJETS.BONUS_HABILITE'
-                    | translate: { bonus: bonusArmeMaitrisee }
-                }}
+                {{ 'CHAPITRE_OBJETS.BONUS_HABILITE' | translate: { bonus: bonusArmeMaitrisee } }}
               </span>
             </span>
           } @else if (item.quantite > 1) {
-            <span class="popup-plein-quantite">
-              ×{{ item.quantite }}
-            </span>
+            <span class="popup-plein-quantite"> ×{{ item.quantite }} </span>
           }
 
           <button
@@ -229,11 +165,7 @@
         </div>
       }
 
-      <button
-        type="button"
-        class="popup-plein-annuler"
-        (click)="fermerPopup()"
-      >
+      <button type="button" class="popup-plein-annuler" (click)="fermerPopup()">
         {{ 'CHAPITRE_OBJETS.POPUP_ANNULER' | translate }}
       </button>
     </div>

@@ -7,7 +7,10 @@
 
     <div class="texte">
       <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_1' | translate"></p>
-      <div class="equipement-depart" [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_EQUIPEMENT_DEPART' | translate">
+      <div
+        class="equipement-depart"
+        [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_EQUIPEMENT_DEPART' | translate"
+      >
         @for (element of equipementDepart; track element.cle) {
           <div class="objet-possible">
             <div class="objet-icone">
@@ -18,7 +21,10 @@
         }
       </div>
       <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_2' | translate"></p>
-      <div class="elements-bourse" [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_ELEMENTS_BOURSE' | translate">
+      <div
+        class="elements-bourse"
+        [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_ELEMENTS_BOURSE' | translate"
+      >
         @for (element of elementsBourse; track element.cle) {
           <div class="objet-possible">
             <div class="objet-icone">
@@ -31,7 +37,10 @@
       <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_3' | translate"></p>
       <p [innerHTML]="'INTRO_INVENTAIRE.PARAGRAPHE_4' | translate"></p>
 
-      <div class="objets-possibles" [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_OBJETS_POSSIBLES' | translate">
+      <div
+        class="objets-possibles"
+        [attr.aria-label]="'INTRO_INVENTAIRE.ARIA_OBJETS_POSSIBLES' | translate"
+      >
         @for (objet of objetsPossibles; track objet.cle) {
           <div class="objet-possible">
             <div class="objet-icone">
@@ -50,7 +59,9 @@
     </div>
 
     <div class="pied">
-      <button type="button" class="valider" (click)="continuer()">{{ 'INTRO_INVENTAIRE.VALIDER' | translate }}</button>
+      <button type="button" class="valider" (click)="continuer()">
+        {{ 'INTRO_INVENTAIRE.VALIDER' | translate }}
+      </button>
     </div>
   </div>
 </ion-content>

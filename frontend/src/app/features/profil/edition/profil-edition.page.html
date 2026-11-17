@@ -1,13 +1,15 @@
 <ion-content [fullscreen]="true" class="profil-edition">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">{{ 'PROFIL_EDITION.RETOUR' | translate }}</button>
+    <button type="button" class="retour" (click)="retour()">
+      {{ 'PROFIL_EDITION.RETOUR' | translate }}
+    </button>
     <h1 class="titre">{{ 'PROFIL_EDITION.TITRE' | translate }}</h1>
 
     @if (chargement()) {
       <div class="etat">{{ 'PROFIL_EDITION.CHARGEMENT' | translate }}</div>
     } @else {
       @if (message()) {
-        <div class="bandeau succes">{{ message() | translate}}</div>
+        <div class="bandeau succes">{{ message() | translate }}</div>
       }
       @if (erreur()) {
         <div class="bandeau erreur">{{ erreur() | translate }}</div>
@@ -45,16 +47,25 @@
                 type="button"
                 class="oeil"
                 (click)="basculerMdp('email')"
-                [attr.aria-label]="(mdpVisible('email') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+                [attr.aria-label]="
+                  (mdpVisible('email')
+                    ? 'PROFIL_EDITION.MASQUER_MDP'
+                    : 'PROFIL_EDITION.AFFICHER_MDP'
+                  ) | translate
+                "
               >
-                <ion-icon [name]="mdpVisible('email') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+                <ion-icon
+                  [name]="mdpVisible('email') ? 'eye-off-outline' : 'eye-outline'"
+                ></ion-icon>
               </button>
             </span>
           </label>
         }
 
         @if (emailEnAttente(); as enAttente) {
-          <p class="aide">{{ 'PROFIL_EDITION.EMAIL_EN_ATTENTE' | translate: { email: enAttente } }}</p>
+          <p class="aide">
+            {{ 'PROFIL_EDITION.EMAIL_EN_ATTENTE' | translate: { email: enAttente } }}
+          </p>
         }
 
         @if (!emailVerifie() || emailEnAttente()) {
@@ -83,9 +94,16 @@
               type="button"
               class="oeil"
               (click)="basculerMdp('actuel')"
-              [attr.aria-label]="(mdpVisible('actuel') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+              [attr.aria-label]="
+                (mdpVisible('actuel')
+                  ? 'PROFIL_EDITION.MASQUER_MDP'
+                  : 'PROFIL_EDITION.AFFICHER_MDP'
+                ) | translate
+              "
             >
-              <ion-icon [name]="mdpVisible('actuel') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              <ion-icon
+                [name]="mdpVisible('actuel') ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
             </button>
           </span>
         </label>
@@ -102,9 +120,16 @@
               type="button"
               class="oeil"
               (click)="basculerMdp('nouveau')"
-              [attr.aria-label]="(mdpVisible('nouveau') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+              [attr.aria-label]="
+                (mdpVisible('nouveau')
+                  ? 'PROFIL_EDITION.MASQUER_MDP'
+                  : 'PROFIL_EDITION.AFFICHER_MDP'
+                ) | translate
+              "
             >
-              <ion-icon [name]="mdpVisible('nouveau') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              <ion-icon
+                [name]="mdpVisible('nouveau') ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
             </button>
           </span>
           @if (motDePasseForm.controls.nouveau.touched && motDePasseForm.controls.nouveau.invalid) {
@@ -124,9 +149,16 @@
               type="button"
               class="oeil"
               (click)="basculerMdp('confirmation')"
-              [attr.aria-label]="(mdpVisible('confirmation') ? 'PROFIL_EDITION.MASQUER_MDP' : 'PROFIL_EDITION.AFFICHER_MDP') | translate"
+              [attr.aria-label]="
+                (mdpVisible('confirmation')
+                  ? 'PROFIL_EDITION.MASQUER_MDP'
+                  : 'PROFIL_EDITION.AFFICHER_MDP'
+                ) | translate
+              "
             >
-              <ion-icon [name]="mdpVisible('confirmation') ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              <ion-icon
+                [name]="mdpVisible('confirmation') ? 'eye-off-outline' : 'eye-outline'"
+              ></ion-icon>
             </button>
           </span>
         </label>

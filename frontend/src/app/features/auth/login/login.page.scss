@@ -31,7 +31,9 @@ ion-content.auth-page {
   border: 1px solid rgba(217, 169, 74, 0.18);
   border-radius: 18px;
   background: rgba(20, 26, 16, 0.76);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38), inset 0 1px rgba(236, 226, 200, 0.06);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.38),
+    inset 0 1px rgba(236, 226, 200, 0.06);
   backdrop-filter: blur(8px);
   text-align: center;
 }

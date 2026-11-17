@@ -1,12 +1,18 @@
 <ion-content [fullscreen]="true" class="creation">
   <div class="ecran">
-    <br>
+    <br />
     <h1 class="titre">{{ 'CREATION_PERSONNAGE.TITRE' | translate }}</h1>
 
     <div class="haut">
       <label class="champ">
         <span class="cle">{{ 'CREATION_PERSONNAGE.CHAMP_NOM' | translate }}</span>
-        <input type="text" [formControl]="nom" maxlength="40" placeholder="{{ 'CREATION_PERSONNAGE.NOM' | translate }}" autocomplete="off" />
+        <input
+          type="text"
+          [formControl]="nom"
+          maxlength="40"
+          placeholder="{{ 'CREATION_PERSONNAGE.NOM' | translate }}"
+          autocomplete="off"
+        />
       </label>
 
       <div class="bloc">
@@ -27,7 +33,9 @@
               >
                 {{ faceHab() }}
               </button>
-              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_HABILITE_DEFAUT' | translate }}</span>
+              <span class="detail">{{
+                'CREATION_PERSONNAGE.DETAIL_HABILITE_DEFAUT' | translate
+              }}</span>
             }
           </div>
 
@@ -46,7 +54,9 @@
               >
                 {{ faceEnd() }}
               </button>
-              <span class="detail">{{ 'CREATION_PERSONNAGE.DETAIL_ENDURANCE_DEFAUT' | translate }}</span>
+              <span class="detail">{{
+                'CREATION_PERSONNAGE.DETAIL_ENDURANCE_DEFAUT' | translate
+              }}</span>
             }
           </div>
         </div>
@@ -69,7 +79,14 @@
                 <span class="case"></span>
                 {{ d.nom }}
               </button>
-              <button type="button" class="info" aria-label="{{ 'CREATION_PERSONNAGE.INFO_ARIA' | translate }}" (click)="ouvrirDescription(d)">i</button>
+              <button
+                type="button"
+                class="info"
+                aria-label="{{ 'CREATION_PERSONNAGE.INFO_ARIA' | translate }}"
+                (click)="ouvrirDescription(d)"
+              >
+                i
+              </button>
             </div>
           }
         }
@@ -80,7 +97,13 @@
       @if (erreur()) {
         <div class="erreur">{{ erreur() | translate: erreurParams() }}</div>
       }
-      <button type="button" class="valider" [class.actif]="complet()" [disabled]="envoi()" (click)="creer()">
+      <button
+        type="button"
+        class="valider"
+        [class.actif]="complet()"
+        [disabled]="envoi()"
+        (click)="creer()"
+      >
         {{ 'CREATION_PERSONNAGE.VALIDER' | translate }}
       </button>
     </div>
@@ -92,7 +115,9 @@
         <div class="surtitre">{{ 'CREATION_PERSONNAGE.POPUP_SURTITRE' | translate }}</div>
         <div class="popup-titre">{{ d.nom }}</div>
         <p class="popup-texte">{{ d.resume }}</p>
-        <button type="button" class="fermer" (click)="fermerDescription()">{{ 'CREATION_PERSONNAGE.FERMER' | translate }}</button>
+        <button type="button" class="fermer" (click)="fermerDescription()">
+          {{ 'CREATION_PERSONNAGE.FERMER' | translate }}
+        </button>
       </div>
     </div>
   }

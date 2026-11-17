@@ -9,7 +9,15 @@ import { TokenStorageService } from '../services/token-storage.service';
 
 // Routes publiques côté backend : /auth/** (sauf /auth/me) et /actuator/health.
 // Voir backend/README.md > Authentification.
-const ROUTES_PUBLIQUES = ['/auth/register', '/auth/login', '/auth/refresh', '/auth/verify-email', '/auth/forgot-password','/auth/verify-reset-code', '/auth/reset-password'];
+const ROUTES_PUBLIQUES = [
+  '/auth/register',
+  '/auth/login',
+  '/auth/refresh',
+  '/auth/verify-email',
+  '/auth/forgot-password',
+  '/auth/verify-reset-code',
+  '/auth/reset-password',
+];
 
 function estRoutePublique(url: string): boolean {
   return ROUTES_PUBLIQUES.some((route) => url.includes(route));
@@ -35,7 +43,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(reqAvecToken).pipe(
     catchError((erreur: unknown) => {
       const est401 =
-        erreur instanceof HttpErrorResponse && erreur.status === 401 && cibleApi && !estRoutePublique(req.url);
+        erreur instanceof HttpErrorResponse &&
+        erreur.status === 401 &&
+        cibleApi &&
+        !estRoutePublique(req.url);
 
       if (!est401) {
         return throwError(() => erreur);

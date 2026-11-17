@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -71,6 +71,7 @@ const ORDRE_TABLE = [
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './inventaire-depart.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './inventaire-depart.page.scss',
 })
 export class InventaireDepartPage {
@@ -139,8 +140,11 @@ export class InventaireDepartPage {
     const cases = armes
       .slice(0, MAX_ARMES)
       .map<Case>((a) => ({ nom: a.nom, note: '', remplie: true, trouvee: a.objetId !== ID_HACHE }));
-    while (cases.length < MAX_ARMES) cases.push({ nom: '', note: '', remplie: false, trouvee: false });
-    return this.objetRevele() ? cases : cases.map((c, i) => (i === 0 ? c : { nom: '', note: '', remplie: false, trouvee: false }));
+    while (cases.length < MAX_ARMES)
+      cases.push({ nom: '', note: '', remplie: false, trouvee: false });
+    return this.objetRevele()
+      ? cases
+      : cases.map((c, i) => (i === 0 ? c : { nom: '', note: '', remplie: false, trouvee: false }));
   });
 
   readonly casesObjets = computed<Case[]>(() => this.casesSac('OBJET', NB_CASES_OBJETS));
@@ -153,11 +157,10 @@ export class InventaireDepartPage {
       .map((i) => ({ nom: i.nom, note: i.quantite > 1 ? `×${i.quantite}` : '' })),
   );
 
-  readonly sacCompte = computed(
-    () =>
-      this.inventaire()
-        .filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS')
-        .reduce((total, i) => total + i.quantite, 0),
+  readonly sacCompte = computed(() =>
+    this.inventaire()
+      .filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS')
+      .reduce((total, i) => total + i.quantite, 0),
   );
 
   readonly armesCompte = computed(() => this.casesArmes().filter((c) => c.remplie).length);
@@ -190,7 +193,8 @@ export class InventaireDepartPage {
     const valeur = bourse ? bourse.quantite : 0;
     // Bonus "or" inclus dans le tirage de l'objet de départ (voir objetItem) :
     // on distingue la part fixe du bonus dans l'affichage.
-    const affichage = valeur >= SEUIL_OR_BONUS ? `${SEUIL_OR_BONUS} + ${valeur - SEUIL_OR_BONUS}` : valeur;
+    const affichage =
+      valeur >= SEUIL_OR_BONUS ? `${SEUIL_OR_BONUS} + ${valeur - SEUIL_OR_BONUS}` : valeur;
     this.roulantOr.set(true);
     setTimeout(() => {
       this.faceOr.set(valeur);
@@ -244,7 +248,8 @@ export class InventaireDepartPage {
           cases.push({ nom: i.nom, note: '', remplie: true, trouvee: trouvee && n > 0 });
         }
       });
-    while (cases.length < nbCases) cases.push({ nom: '', note: '', remplie: false, trouvee: false });
+    while (cases.length < nbCases)
+      cases.push({ nom: '', note: '', remplie: false, trouvee: false });
     return cases.slice(0, nbCases);
   }
 }

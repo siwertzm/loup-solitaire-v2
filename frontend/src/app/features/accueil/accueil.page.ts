@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonContent,
@@ -21,8 +21,17 @@ addIcons({ 'person-circle-outline': personCircleOutline, 'settings-outline': set
 @Component({
   selector: 'app-accueil',
   standalone: true,
-  imports: [IonContent, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, TranslatePipe],
+  imports: [
+    IonContent,
+    IonIcon,
+    IonItem,
+    IonItemOption,
+    IonItemOptions,
+    IonItemSliding,
+    TranslatePipe,
+  ],
   templateUrl: './accueil.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './accueil.page.scss',
 })
 export class AccueilPage implements ViewWillEnter {
@@ -53,7 +62,8 @@ export class AccueilPage implements ViewWillEnter {
       ...p,
       actif: p.id === this.actifId(),
       habiliteTotale: p.habilite + (p.habiliteTemp ?? 0),
-      initiale: p.nom.charAt(0).toUpperCase() || this.translate.instant('ACCUEIL.INITIALE_PAR_DEFAUT'),
+      initiale:
+        p.nom.charAt(0).toUpperCase() || this.translate.instant('ACCUEIL.INITIALE_PAR_DEFAUT'),
       // Chapitre 350 = fin du tome 1 (voir VictoirePage / GameDataLoader
       // côté backend, PAGES_FIN_DE_JEU). Un personnage arrivé là n'a plus
       // rien à "reprendre" dans ce tome.

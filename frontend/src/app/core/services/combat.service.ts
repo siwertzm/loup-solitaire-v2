@@ -34,7 +34,11 @@ export class CombatService {
    * Le serveur fait autorité sur le résultat : le corps ne contient que le
    * choix d'action, jamais un résultat calculé côté client.
    */
-  jouerTour(personnageId: string, action: ActionCombat, objetId?: string): Observable<CombatResponse> {
+  jouerTour(
+    personnageId: string,
+    action: ActionCombat,
+    objetId?: string,
+  ): Observable<CombatResponse> {
     return this.http.post<CombatResponse>(`${this.base}/personnages/${personnageId}/combat/tour`, {
       action,
       objetId: objetId ?? null,

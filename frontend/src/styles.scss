@@ -33,7 +33,7 @@
  * a la place. Meme logique deja en place pour le bas sur chapitre.page.scss.
  */
 
- :root {
+:root {
   /* QUAL-15 : taille du texte reglable (page Options). Toutes les tailles
    * de police sont en rem : elles suivent cette base de 16px multipliee par
    * --echelle-texte (OptionsService). :root l'emporte sur le "font" d'Ionic

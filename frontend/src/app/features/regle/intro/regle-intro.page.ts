@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './regle-intro.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './regle-intro.page.scss',
 })
 export class RegleIntroPage {

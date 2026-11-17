@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
@@ -18,6 +18,7 @@ addIcons({ 'eye-outline': eyeOutline, 'eye-off-outline': eyeOffOutline });
   standalone: true,
   imports: [IonContent, IonIcon, ReactiveFormsModule, TranslatePipe],
   templateUrl: './profil-edition.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './profil-edition.page.scss',
 })
 export class ProfilEditionPage {
@@ -56,7 +57,15 @@ export class ProfilEditionPage {
   }
 
   readonly compteForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[^@]*$/)]],
+    username: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(30),
+        Validators.pattern(/^[^@]*$/),
+      ],
+    ],
     email: ['', [Validators.required, Validators.email]],
     // SEC-06 : exigé seulement si l'e-mail change (voir emailModifie).
     motDePasseActuel: [''],
@@ -115,7 +124,9 @@ export class ProfilEditionPage {
           this.envoi.set(false);
           this.appliquerCompte(c);
           this.message.set(
-            changementEmail ? 'PROFIL_EDITION.SUCCES_EMAIL_EN_ATTENTE' : 'PROFIL_EDITION.SUCCES_PROFIL_MAJ',
+            changementEmail
+              ? 'PROFIL_EDITION.SUCCES_EMAIL_EN_ATTENTE'
+              : 'PROFIL_EDITION.SUCCES_PROFIL_MAJ',
           );
         },
         error: (err: HttpErrorResponse) => {
@@ -149,7 +160,9 @@ export class ProfilEditionPage {
       error: (err: HttpErrorResponse) => {
         this.envoi.set(false);
         this.erreur.set(
-          err.status === 401 ? 'PROFIL_EDITION.ERREUR_MDP_ACTUEL' : 'PROFIL_EDITION.ERREUR_MDP_MODIFICATION',
+          err.status === 401
+            ? 'PROFIL_EDITION.ERREUR_MDP_ACTUEL'
+            : 'PROFIL_EDITION.ERREUR_MDP_MODIFICATION',
         );
       },
     });
@@ -160,7 +173,11 @@ export class ProfilEditionPage {
     this.personnages$.renvoyerVerification(this.emailCompte()).subscribe({
       next: () => this.message.set('PROFIL_EDITION.SUCCES_VERIFICATION'),
       error: (err: HttpErrorResponse) =>
-        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'PROFIL_EDITION.ERREUR_VERIFICATION'),
+        this.erreur.set(
+          err.status === 429
+            ? 'AUTH.ERREUR_TROP_DE_TENTATIVES'
+            : 'PROFIL_EDITION.ERREUR_VERIFICATION',
+        ),
     });
   }
 }

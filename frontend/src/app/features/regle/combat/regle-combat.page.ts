@@ -1,4 +1,13 @@
-import { Component, ElementRef, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, NavController, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -26,6 +35,7 @@ import {
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './regle-combat.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './regle-combat.page.scss',
 })
 export class RegleCombatPage implements ViewWillEnter {

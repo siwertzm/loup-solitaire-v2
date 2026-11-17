@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | M | `feature-QUAL-11` | À faire |
+| 3 | Basse | M | `feature-QUAL-11` | En test |
 
 Origine : PR Dependabot du 12/11/2026 (#42 à #45), fermées volontairement
 
@@ -32,3 +32,13 @@ Tests existants (QUAL-06, QUAL-10) + parcours manuel ci-dessus.
 ## Fichiers concernés
 
 `frontend/package.json`, `frontend/package-lock.json`, code modifié par les migrations de `ng update`
+
+## Réalisation (17/11/2026)
+
+- Node passé en 24 en local et dans les trois workflows (`sonar.yml`, `android-internal-test.yml`, `testflight.yml`) : `@angular/cli` 22 exige `^22.22.3 || ^24.15 || >=26`. `packageManager` passé à `npm@11.19.1` (npm de Node 24).
+- Tout `src/` mis au format Prettier (66 fichiers qui ne l'étaient pas déjà avant la migration).
+- `ng update @angular/core@22 @angular/cli@22` : Angular 22.2, TypeScript 6.0. Migrations automatiques : `ChangeDetectionStrategy.Eager` sur 28 composants (garde le comportement d'Angular 21), `withXhr()` (garde XHR au lieu de `fetch`), `$safeNavigationMigration` à 4 endroits de `combat.page.html` (`?.` garde `null`), deux diagnostics étendus désactivés dans `tsconfig.app.json`, fichiers touchés reformatés par Prettier.
+- Vitest 5.1 (`@angular/build` 22 accepte `^4 || ^5`). Ionic 9, ngx-translate 18, `@sentry/angular` 11 et Capacitor 8 compatibles sans changement.
+- Bundle initial 875,6 → 905,9 kB (runtime Angular) : seuil d'avertissement passé de 900 à 950 kB (erreur toujours à 1,5 MB).
+- `npm test` (154 tests), `npm run build`, `npm audit --omit=dev --audit-level=high` verts.
+- Reste : test sur téléphone (Android, iOS via TestFlight) avant de passer à « Fait ».

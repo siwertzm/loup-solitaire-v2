@@ -180,7 +180,9 @@
       }
 
       @if (enCombat()) {
-        <p class="popup-consommer-description">{{ 'INVENTAIRE_SHEET.POPUP_NOTE_COMBAT' | translate }}</p>
+        <p class="popup-consommer-description">
+          {{ 'INVENTAIRE_SHEET.POPUP_NOTE_COMBAT' | translate }}
+        </p>
       }
 
       <div class="popup-consommer-actions">
@@ -193,7 +195,12 @@
           [disabled]="consommationEnCours() === objet.objetId"
           (click)="confirmerConsommation()"
         >
-          {{ (enCombat() ? 'INVENTAIRE_SHEET.POPUP_UTILISER_COMBAT' : 'INVENTAIRE_SHEET.POPUP_CONSOMMER') | translate }}
+          {{
+            (enCombat()
+              ? 'INVENTAIRE_SHEET.POPUP_UTILISER_COMBAT'
+              : 'INVENTAIRE_SHEET.POPUP_CONSOMMER'
+            ) | translate
+          }}
         </button>
       </div>
     </div>
@@ -204,7 +211,9 @@
   <div class="voile-consommer" (click)="annulerRetraitSac()">
     <div class="popup-consommer" role="alertdialog" (click)="$event.stopPropagation()">
       <div class="popup-consommer-titre">{{ 'INVENTAIRE_SHEET.POPUP_SAC_TITRE' | translate }}</div>
-      <p class="popup-consommer-description">{{ 'INVENTAIRE_SHEET.POPUP_SAC_TEXTE' | translate }}</p>
+      <p class="popup-consommer-description">
+        {{ 'INVENTAIRE_SHEET.POPUP_SAC_TEXTE' | translate }}
+      </p>
 
       <div class="popup-consommer-actions">
         <button type="button" class="popup-consommer-annuler" (click)="annulerRetraitSac()">

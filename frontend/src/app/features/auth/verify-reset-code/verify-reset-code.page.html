@@ -1,14 +1,7 @@
 <ion-content class="auth-page" [fullscreen]="true">
-
   <main class="verify-shell">
-
-    <section
-      class="verify-card"
-      aria-labelledby="verify-title"
-    >
-
+    <section class="verify-card" aria-labelledby="verify-title">
       <header class="titre-jeu">
-
         <div class="sur-titre">
           {{ 'ACCUEIL.SUR_TITRE' | translate }}
         </div>
@@ -22,7 +15,6 @@
         <div class="sous-titre">
           {{ 'ACCUEIL.SOUS_TITRE' | translate }}
         </div>
-
       </header>
 
       <h2 id="verify-title">
@@ -30,24 +22,13 @@
       </h2>
 
       <p class="introduction">
-        {{
-          'AUTH.VERIFY_RESET_CODE.INTRODUCTION'
-            | translate: { email: email() }
-        }}
+        {{ 'AUTH.VERIFY_RESET_CODE.INTRODUCTION' | translate: { email: email() } }}
       </p>
 
-      <form
-        [formGroup]="form"
-        (ngSubmit)="soumettre()"
-      >
-
+      <form [formGroup]="form" (ngSubmit)="soumettre()">
         <div class="champ">
-
           <label for="reset-code">
-            {{
-              'AUTH.VERIFY_RESET_CODE.CODE_LABEL'
-                | translate
-            }}
+            {{ 'AUTH.VERIFY_RESET_CODE.CODE_LABEL' | translate }}
           </label>
 
           <ion-input
@@ -58,28 +39,20 @@
             inputmode="numeric"
             autocomplete="one-time-code"
             maxlength="6"
-            [placeholder]="
-              'AUTH.VERIFY_RESET_CODE.CODE_PLACEHOLDER'
-                | translate
-            "
+            [placeholder]="'AUTH.VERIFY_RESET_CODE.CODE_PLACEHOLDER' | translate"
           ></ion-input>
-
         </div>
 
         @if (erreur()) {
-
           <ion-note class="erreur">
             {{ erreur() | translate }}
           </ion-note>
-
         }
 
         @if (message()) {
-
           <ion-note class="message">
             {{ message() | translate }}
           </ion-note>
-
         }
 
         <ion-button
@@ -88,21 +61,12 @@
           class="action-principale"
           [disabled]="form.invalid || enCours()"
         >
-
           {{
             enCours()
-              ? (
-                  'AUTH.VERIFY_RESET_CODE.BOUTON_EN_COURS'
-                    | translate
-                )
-              : (
-                  'AUTH.VERIFY_RESET_CODE.BOUTON'
-                    | translate
-                )
+              ? ('AUTH.VERIFY_RESET_CODE.BOUTON_EN_COURS' | translate)
+              : ('AUTH.VERIFY_RESET_CODE.BOUTON' | translate)
           }}
-
         </ion-button>
-
       </form>
 
       <button
@@ -113,30 +77,14 @@
       >
         {{
           renvoiEnCours()
-            ? (
-                'AUTH.VERIFY_RESET_CODE.RENVOI_EN_COURS'
-                  | translate
-              )
-            : (
-                'AUTH.VERIFY_RESET_CODE.RENVOYER'
-                  | translate
-              )
+            ? ('AUTH.VERIFY_RESET_CODE.RENVOI_EN_COURS' | translate)
+            : ('AUTH.VERIFY_RESET_CODE.RENVOYER' | translate)
         }}
       </button>
 
-      <button
-        type="button"
-        class="lien-secondaire"
-        (click)="modifierEmail()"
-      >
-        {{
-          'AUTH.VERIFY_RESET_CODE.MODIFIER_EMAIL'
-            | translate
-        }}
+      <button type="button" class="lien-secondaire" (click)="modifierEmail()">
+        {{ 'AUTH.VERIFY_RESET_CODE.MODIFIER_EMAIL' | translate }}
       </button>
-
     </section>
-
   </main>
-
 </ion-content>

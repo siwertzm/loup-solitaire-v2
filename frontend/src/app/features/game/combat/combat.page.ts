@@ -1,17 +1,43 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { ActionCombat, CombatEnnemiResponse, CombatResponse, ResultatTourResponse } from '../../../core/models/combat.model';
+import {
+  ActionCombat,
+  CombatEnnemiResponse,
+  CombatResponse,
+  ResultatTourResponse,
+} from '../../../core/models/combat.model';
 import { PersonnageResume } from '../../../core/models/personnage.model';
 import { CombatService } from '../../../core/services/combat.service';
-import { EffetsObjetCombat, InventaireSheetService } from '../../../core/services/inventaire-sheet.service';
+import {
+  EffetsObjetCombat,
+  InventaireSheetService,
+} from '../../../core/services/inventaire-sheet.service';
 import { PersonnageService } from '../../../core/services/personnage.service';
 
 type Phase = 'TEXTE' | 'MENU' | 'FIN';
 type Cible = 'ennemi' | 'joueur' | null;
-type BonusSelectionne = 'habilite' | 'arme' | 'mains-nues' | 'assaut' | 'puissance' | 'bouclier' | 'garde' | 'resistance-psychique' | 'ennemi-puissance-psychique' | null;
+type BonusSelectionne =
+  | 'habilite'
+  | 'arme'
+  | 'mains-nues'
+  | 'assaut'
+  | 'puissance'
+  | 'bouclier'
+  | 'garde'
+  | 'resistance-psychique'
+  | 'ennemi-puissance-psychique'
+  | null;
 
 /** Un message de la file d'affichage (boîte de dialogue façon JRPG). */
 interface Message {
@@ -56,6 +82,7 @@ interface Message {
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './combat.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './combat.page.scss',
 })
 export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
@@ -112,7 +139,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   private timerDeFaces: ReturnType<typeof setInterval> | null = null;
   private timerDe: ReturnType<typeof setTimeout> | null = null;
 
-  readonly texte = computed(() => (this.tapeEnCours() ? this.msg().slice(0, this.tape()) : this.msg()));
+  readonly texte = computed(() =>
+    this.tapeEnCours() ? this.msg().slice(0, this.tape()) : this.msg(),
+  );
 
   /**
    * Id de l'ennemi actuellement affiché (nom, portrait, barre d'ENDURANCE).
@@ -142,7 +171,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     );
   });
 
-  readonly nomJoueur = computed(() => this.personnage()?.nom ?? this.translate.instant('COMBAT_PAGE.NOM_JOUEUR_PAR_DEFAUT'));
+  readonly nomJoueur = computed(
+    () => this.personnage()?.nom ?? this.translate.instant('COMBAT_PAGE.NOM_JOUEUR_PAR_DEFAUT'),
+  );
   /**
    * Ennemis pas encore vaincus (actif inclus), pour l'effet visuel de
    * "pile de cartes" derrière la plaque de vie ennemie. PAS un computed
@@ -216,7 +247,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   /** HABILETÉ temporaire affichée en attendant la fiche à jour (voir
    * Message.habiliteTempJoueur) ; null = valeur réelle du personnage. */
   private readonly habiliteTempForcee = signal<number | null>(null);
-  readonly bonusTempAffiche = computed(() => this.habiliteTempForcee() ?? this.personnage()?.habiliteTemp ?? 0);
+  readonly bonusTempAffiche = computed(
+    () => this.habiliteTempForcee() ?? this.personnage()?.habiliteTemp ?? 0,
+  );
 
   readonly bonusGardeAffiche = computed(() => this.combat()?.bonusHabiliteEnAttente ?? 0);
 
@@ -268,18 +301,20 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     // ni Baton.
     const armePossedee = personnage.inventaire.find(
       (item) =>
-        item.categorie === 'ARME' &&
-        item.quantite > 0 &&
-        item.nom === personnage.armeMaitrisee,
+        item.categorie === 'ARME' && item.quantite > 0 && item.nom === personnage.armeMaitrisee,
     );
 
     return armePossedee?.nom ?? null;
   });
-  readonly bonusPuissancePsychique = computed(() =>
-    (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE') ?? false) &&
-    !(this.ennemiActif()?.resistances ?? []).some(
-      (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
-    ),
+  readonly bonusPuissancePsychique = computed(
+    () =>
+      (this.personnage()?.disciplines.some(
+        (discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+      ) ??
+        false) &&
+      !(this.ennemiActif()?.resistances ?? []).some(
+        (resistance) => resistance.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+      ),
   );
 
   /** L'ennemi actif est insensible à la Puissance Psychique (résistance côté backend). */
@@ -294,19 +329,26 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
    * n'a pas le Bouclier Psychique pour s'en protéger. Même logique que
    * bonusPuissancePsychique côté joueur, qui disparaît si l'ennemi résiste.
    */
-  readonly ennemiPossedePuissancePsychique = computed(() =>
-    (this.ennemiActif()?.disciplines ?? []).some(
-      (discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
-    ) && !this.bonusBouclierPsychique(),
+  readonly ennemiPossedePuissancePsychique = computed(
+    () =>
+      (this.ennemiActif()?.disciplines ?? []).some(
+        (discipline) => discipline.toUpperCase() === 'PUISSANCE_PSYCHIQUE',
+      ) && !this.bonusBouclierPsychique(),
   );
 
-  readonly bonusBouclierPsychique = computed(() =>
-    (this.personnage()?.disciplines.some((discipline) => discipline.toUpperCase() === 'BOUCLIER_PSYCHIQUE') ?? false)
+  readonly bonusBouclierPsychique = computed(
+    () =>
+      this.personnage()?.disciplines.some(
+        (discipline) => discipline.toUpperCase() === 'BOUCLIER_PSYCHIQUE',
+      ) ?? false,
   );
 
   readonly bonusGarde = computed(() => (this.combat()?.dernierTour?.reductionPourcent ?? 0) > 0);
   readonly bonusObjets = computed(
-    () => this.personnage()?.inventaire.some((item) => item.categorie === 'OBJET' && item.quantite > 0) ?? false,
+    () =>
+      this.personnage()?.inventaire.some(
+        (item) => item.categorie === 'OBJET' && item.quantite > 0,
+      ) ?? false,
   );
 
   ouvrirExplicationBonus(bonus: Exclude<BonusSelectionne, null>): void {
@@ -323,7 +365,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
   readonly round = computed(() => (this.combat()?.assautsLivres ?? 0) + 1);
 
   readonly pctJoueur = computed(() =>
-    this.enduranceMaxJoueur() ? Math.round((this.enduranceJoueur() / this.enduranceMaxJoueur()) * 100) : 0,
+    this.enduranceMaxJoueur()
+      ? Math.round((this.enduranceJoueur() / this.enduranceMaxJoueur()) * 100)
+      : 0,
   );
   readonly pctEnnemi = computed(() => {
     const e = this.ennemiActif();
@@ -336,7 +380,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     return 'bas';
   }
   readonly classeBarreJoueur = computed(() =>
-    this.classeBarre(this.enduranceMaxJoueur() ? this.enduranceJoueur() / this.enduranceMaxJoueur() : 1),
+    this.classeBarre(
+      this.enduranceMaxJoueur() ? this.enduranceJoueur() / this.enduranceMaxJoueur() : 1,
+    ),
   );
   readonly classeBarreEnnemi = computed(() => {
     const e = this.ennemiActif();
@@ -476,7 +522,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     this.jouerFile([
       { txt: this.translate.instant('COMBAT_PAGE.MSG_BARRE_ROUTE', { nom: ennemi.nom }) },
       {
-        txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', { habilite: ennemi.habilite, endurance: ennemi.enduranceMax }),
+        txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', {
+          habilite: ennemi.habilite,
+          endurance: ennemi.enduranceMax,
+        }),
         stats: { habilite: ennemi.habilite, endurance: ennemi.enduranceMax },
       },
     ]);
@@ -547,7 +596,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     // En combat en cours, utiliser un objet remplace l'attaque ou la
     // défense (action OBJET, l'ennemi riposte) : REGLE-05.
     if (this.statut() === 'EN_COURS') {
-      this.inventaireSheet.ouvrir(id, (objetId, nom, effets) => this.utiliserObjet(objetId, nom, effets));
+      this.inventaireSheet.ouvrir(id, (objetId, nom, effets) =>
+        this.utiliserObjet(objetId, nom, effets),
+      );
     } else {
       this.inventaireSheet.ouvrir(id);
     }
@@ -598,7 +649,13 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     this.combatService.jouerTour(id, action, objetId).subscribe({
       next: (c) => {
-        const messages = this.construireMessages(action, c, ennemiAvant, enduranceJoueurAvant, habiliteTempAvant);
+        const messages = this.construireMessages(
+          action,
+          c,
+          ennemiAvant,
+          enduranceJoueurAvant,
+          habiliteTempAvant,
+        );
 
         const afficherResultat = () => {
           this.actionEnCours.set(false);
@@ -618,7 +675,8 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
         };
 
         if (action === 'ATTAQUE' || action === 'DEFENSE') {
-          const tirage = action === 'ATTAQUE' ? c.dernierTour?.tirageAttaque : c.dernierTour?.tirageDefense;
+          const tirage =
+            action === 'ATTAQUE' ? c.dernierTour?.tirageAttaque : c.dernierTour?.tirageDefense;
           this.file = messages.slice(1);
           this.combatEnAttente = c;
           this.joueurVieAppliquee = false;
@@ -674,7 +732,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // REGLE-03 : l'ennemi porte un dernier coup pendant la fuite (bloc
       // "riposte" ci-dessous) ; le message de fuite ne vient qu'ensuite, et
       // seulement si ce coup n'a pas été fatal.
-      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_TENTE_FUITE', { nom: this.nomJoueur() }) });
+      messages.push({
+        txt: this.translate.instant('COMBAT_PAGE.MSG_TENTE_FUITE', { nom: this.nomJoueur() }),
+      });
     } else if (action === 'OBJET') {
       messages.push({
         txt: this.translate.instant('COMBAT_PAGE.MSG_UTILISE_OBJET', {
@@ -714,7 +774,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
         txt: coupFatal
           ? this.translate.instant('COMBAT_PAGE.MSG_COUP_FATAL_ENNEMI', { nom: nomEnnemi })
           : degats > 0
-            ? this.translate.instant('COMBAT_PAGE.MSG_PERD_ENDURANCE_ENNEMI', { nom: nomEnnemi, degats })
+            ? this.translate.instant('COMBAT_PAGE.MSG_PERD_ENDURANCE_ENNEMI', {
+                nom: nomEnnemi,
+                degats,
+              })
             : this.translate.instant('COMBAT_PAGE.MSG_PARE_COUP', { nom: nomEnnemi }),
         hit: degats > 0 ? 'ennemi' : null,
         actualiser: 'ennemi',
@@ -723,7 +786,10 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
 
     const ennemiVaincu = ennemiAvant && combat.ennemis.find((e) => e.id === ennemiAvant.id)?.vaincu;
     if (action === 'ATTAQUE' && ennemiVaincu) {
-      messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_EFFONDRE_VAINCU', { nom: nomEnnemi }), ennemiVaincu: true });
+      messages.push({
+        txt: this.translate.instant('COMBAT_PAGE.MSG_EFFONDRE_VAINCU', { nom: nomEnnemi }),
+        ennemiVaincu: true,
+      });
 
       // Combat multi-ennemis (voir CombatService.passerAuProchainEnnemi côté
       // backend) : un nouvel adversaire prend le relais dans le même
@@ -732,13 +798,20 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
       // d'ENDURANCE apparaîtrait sans transition ni explication.
       const nouvelEnnemiActif = combat.ennemis.find((e) => e.actif && e.id !== ennemiAvant?.id);
       if (nouvelEnnemiActif) {
-        messages.push({ txt: this.translate.instant('COMBAT_PAGE.MSG_PREND_RELAIS', { nom: nouvelEnnemiActif.nom }) });
+        messages.push({
+          txt: this.translate.instant('COMBAT_PAGE.MSG_PREND_RELAIS', {
+            nom: nouvelEnnemiActif.nom,
+          }),
+        });
         messages.push({
           txt: this.translate.instant('COMBAT_PAGE.MSG_STATS_ENNEMI', {
             habilite: nouvelEnnemiActif.habilite,
             endurance: nouvelEnnemiActif.enduranceMax,
           }),
-          stats: { habilite: nouvelEnnemiActif.habilite, endurance: nouvelEnnemiActif.enduranceMax },
+          stats: {
+            habilite: nouvelEnnemiActif.habilite,
+            endurance: nouvelEnnemiActif.enduranceMax,
+          },
           nouvelEnnemi: true,
           ennemiId: nouvelEnnemiActif.id,
         });
@@ -779,7 +852,9 @@ export class CombatPage implements OnInit, ViewWillEnter, OnDestroy {
     // qu'on vient d'être vaincu sur ce même tour n'a aucun sens narratif.
     if (action === 'DEFENSE' && tour.bonusHabiliteObtenu && combat.statut === 'EN_COURS') {
       messages.push({
-        txt: this.translate.instant('COMBAT_PAGE.MSG_OUVERTURE', { bonus: tour.bonusHabiliteObtenu }),
+        txt: this.translate.instant('COMBAT_PAGE.MSG_OUVERTURE', {
+          bonus: tour.bonusHabiliteObtenu,
+        }),
       });
     }
 

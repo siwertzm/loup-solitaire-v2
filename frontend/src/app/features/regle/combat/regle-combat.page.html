@@ -1,7 +1,9 @@
 <ion-content [fullscreen]="true" class="intro">
   <div class="ecran">
     <button type="button" class="retour" (click)="retour()">
-      {{ (personnageCombatId() ? 'INTRO_COMBAT.RETOUR_COMBAT' : 'INTRO_CREATION.RETOUR') | translate }}
+      {{
+        (personnageCombatId() ? 'INTRO_COMBAT.RETOUR_COMBAT' : 'INTRO_CREATION.RETOUR') | translate
+      }}
     </button>
 
     <header class="titre">
@@ -20,7 +22,11 @@
       <h3>{{ 'INTRO_COMBAT.DEFENDRE' | translate }}</h3>
       <p>{{ 'INTRO_COMBAT.PARAGRAPHE_DEFENDRE' | translate }}</p>
       <table class="table-combat table-defense">
-        <caption>{{ 'INTRO_COMBAT.TABLE_DEFENSE_TITRE' | translate }}</caption>
+        <caption>
+          {{
+            'INTRO_COMBAT.TABLE_DEFENSE_TITRE' | translate
+          }}
+        </caption>
         <thead>
           <tr>
             <th scope="col">{{ 'INTRO_COMBAT.TABLE_COL_CHIFFRE' | translate }}</th>
@@ -62,7 +68,12 @@
       <h3>{{ 'INTRO_COMBAT.TABLE_DEGATS' | translate }}</h3>
       <p [innerHTML]="'INTRO_COMBAT.PARAGRAPHE_TABLE' | translate"></p>
 
-      <div #rangeeQuotients class="quotients" role="group" [attr.aria-label]="'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate">
+      <div
+        #rangeeQuotients
+        class="quotients"
+        role="group"
+        [attr.aria-label]="'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate"
+      >
         @for (libelle of colonnes; track $index) {
           <button
             type="button"
@@ -78,7 +89,11 @@
 
       <table class="table-combat">
         <caption>
-          {{ 'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate }} : <b>{{ colonnes[colonne()] }}</b>
+          {{
+            'INTRO_COMBAT.TABLE_QUOTIENT_LABEL' | translate
+          }}
+          :
+          <b>{{ colonnes[colonne()] }}</b>
         </caption>
         <thead>
           <tr>
@@ -134,10 +149,16 @@
     <div class="pied">
       @if (personnageCombatId()) {
         <!-- Ouverte depuis un combat : un seul bouton, qui y ramène. -->
-        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.REPRENDRE_COMBAT' | translate }}</button>
+        <button type="button" class="valider" (click)="terminer()">
+          {{ 'INTRO_COMBAT.REPRENDRE_COMBAT' | translate }}
+        </button>
       } @else {
-        <button type="button" class="valider" (click)="back()">{{ 'INTRO_COMBAT.BACK' | translate }}</button>
-        <button type="button" class="valider" (click)="terminer()">{{ 'INTRO_COMBAT.TERMINER' | translate }}</button>
+        <button type="button" class="valider" (click)="back()">
+          {{ 'INTRO_COMBAT.BACK' | translate }}
+        </button>
+        <button type="button" class="valider" (click)="terminer()">
+          {{ 'INTRO_COMBAT.TERMINER' | translate }}
+        </button>
       }
     </div>
   </div>

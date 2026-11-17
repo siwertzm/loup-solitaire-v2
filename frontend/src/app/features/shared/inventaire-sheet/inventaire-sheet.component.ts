@@ -1,4 +1,13 @@
-import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { IonItemSliding, IonItem, IonItemOptions, IonItemOption } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
@@ -26,6 +35,7 @@ import { InventaireSheetService } from '../../../core/services/inventaire-sheet.
   standalone: true,
   imports: [IonItemSliding, IonItem, IonItemOptions, IonItemOption, TranslatePipe],
   templateUrl: './inventaire-sheet.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './inventaire-sheet.component.scss',
 })
 export class InventaireSheetComponent {
@@ -62,7 +72,7 @@ export class InventaireSheetComponent {
           this.chargement.set(false);
         },
         error: (err) => {
-          console.error('Erreur lors du chargement de l\'inventaire :', err);
+          console.error("Erreur lors du chargement de l'inventaire :", err);
           this.chargement.set(false);
         },
       });
@@ -96,8 +106,8 @@ export class InventaireSheetComponent {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
-  readonly objetsSpeciauxCount = computed(() =>
-    this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX').length,
+  readonly objetsSpeciauxCount = computed(
+    () => this.inventaire().filter((i) => i.categorie === 'OBJETS_SPECIAUX').length,
   );
 
   readonly bourseCount = computed(() =>
@@ -125,9 +135,13 @@ export class InventaireSheetComponent {
   readonly aucuneArme = computed(() => this.armesDetail().length === 0);
 
   readonly objetsEtRepasDetail = computed(() => {
-    const items = this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
+    const items = this.inventaire().filter(
+      (i) => i.categorie === 'OBJET' || i.categorie === 'REPAS',
+    );
     return items.map((i) => {
-      const catalogue = this.tousObjets().find((o) => o.id.toLowerCase() === i.objetId.toLowerCase());
+      const catalogue = this.tousObjets().find(
+        (o) => o.id.toLowerCase() === i.objetId.toLowerCase(),
+      );
       // Consommable : catégorie OBJET avec au moins un effet défini (ex.
       // Potion de guérison, Laumspur, Essence d'Alether) — les REPAS et les
       // OBJET sans effet (torche, message, savon...) ne le sont pas.
@@ -139,9 +153,14 @@ export class InventaireSheetComponent {
 
   private libelleEffet(effet: { type: string; valeur: number }): string {
     const libelle = this.translate.instant(
-      effet.type === 'HABILITE' ? 'INVENTAIRE_SHEET.EFFET_HABILITE' : 'INVENTAIRE_SHEET.EFFET_ENDURANCE',
+      effet.type === 'HABILITE'
+        ? 'INVENTAIRE_SHEET.EFFET_HABILITE'
+        : 'INVENTAIRE_SHEET.EFFET_ENDURANCE',
     );
-    return this.translate.instant('INVENTAIRE_SHEET.EFFET_LABEL', { valeur: effet.valeur, libelle });
+    return this.translate.instant('INVENTAIRE_SHEET.EFFET_LABEL', {
+      valeur: effet.valeur,
+      libelle,
+    });
   }
 
   // QUAL-12 : bonus passif (Casque +2, Cotte de mailles +4 ENDURANCE) affiché
@@ -184,12 +203,15 @@ export class InventaireSheetComponent {
   } | null>(null);
 
   /** Ouvre le popup de confirmation (n'appelle pas encore l'API). */
-  demanderConsommation(objet: {
-    objetId: string;
-    nom: string;
-    description: string | null;
-    effetLabel: string | null;
-  }, sliding: IonItemSliding): void {
+  demanderConsommation(
+    objet: {
+      objetId: string;
+      nom: string;
+      description: string | null;
+      effetLabel: string | null;
+    },
+    sliding: IonItemSliding,
+  ): void {
     this.objetAConfirmer.set({ ...objet, sliding });
   }
 
@@ -216,9 +238,13 @@ export class InventaireSheetComponent {
       this.objetAConfirmer.set(null);
       // Effets de l'objet (ENDURANCE, HABILETÉ), pour que l'écran de combat
       // les affiche dès le message d'utilisation (avant la riposte).
-      const catalogue = this.tousObjets().find((o) => o.id.toLowerCase() === attente.objetId.toLowerCase());
+      const catalogue = this.tousObjets().find(
+        (o) => o.id.toLowerCase() === attente.objetId.toLowerCase(),
+      );
       const somme = (type: 'ENDURANCE' | 'HABILITE') =>
-        (catalogue?.effets ?? []).filter((e) => e.type === type).reduce((total, e) => total + e.valeur, 0);
+        (catalogue?.effets ?? [])
+          .filter((e) => e.type === type)
+          .reduce((total, e) => total + e.valeur, 0);
       utiliserEnCombat(attente.objetId, attente.nom, {
         endurance: somme('ENDURANCE'),
         habilite: somme('HABILITE'),
@@ -239,7 +265,7 @@ export class InventaireSheetComponent {
         this.objetAConfirmer.set(null);
       },
       error: (err) => {
-        console.error('Erreur lors de la consommation de l\'objet :', err);
+        console.error("Erreur lors de la consommation de l'objet :", err);
         this.consommationEnCours.set(null);
       },
     });
@@ -294,7 +320,7 @@ export class InventaireSheetComponent {
         this.feuilleSac()?.nativeElement.scrollTo({ top: 0 });
       },
       error: (err) => {
-        console.error('Erreur lors du retrait de l\'objet :', err);
+        console.error("Erreur lors du retrait de l'objet :", err);
         this.retraitEnCours.set(null);
       },
     });

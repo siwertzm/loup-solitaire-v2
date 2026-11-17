@@ -1,4 +1,12 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CondResponse, EffetResponse } from '../../../../core/models/chapitre.model';
@@ -26,6 +34,7 @@ import { PersonnageService } from '../../../../core/services/personnage.service'
   standalone: true,
   imports: [TranslatePipe],
   templateUrl: './chapitre-effets.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './chapitre-effets.component.scss',
 })
 export class ChapitreEffetsComponent {

@@ -1,6 +1,8 @@
 <ion-content [fullscreen]="true" class="profil">
   <div class="ecran">
-    <button type="button" class="retour" (click)="retour()">{{ 'PROFIL.RETOUR' | translate }}</button>
+    <button type="button" class="retour" (click)="retour()">
+      {{ 'PROFIL.RETOUR' | translate }}
+    </button>
 
     @if (chargement()) {
       <div class="etat">{{ 'PROFIL.CHARGEMENT' | translate }}</div>
@@ -19,20 +21,48 @@
         @for (l of lignes(); track l.cle) {
           <div class="ligne">
             <span class="cle">{{ l.cle | translate }}</span>
-            <span class="valeur" [class.vert]="l.ton === 'vert'" [class.rouge]="l.ton === 'rouge'" [class.gold]="l.ton === 'gold'">{{ l.valeur | translate }}</span>
+            <span
+              class="valeur"
+              [class.vert]="l.ton === 'vert'"
+              [class.rouge]="l.ton === 'rouge'"
+              [class.gold]="l.ton === 'gold'"
+              >{{ l.valeur | translate }}</span
+            >
           </div>
         }
       </div>
 
       <div class="actions">
-        <button type="button" class="secondaire" (click)="modifierEmail()">{{ 'PROFIL.MODIFIER' | translate }}</button>
-        <button type="button" class="secondaire" (click)="ouvrirOptions()">{{ 'PROFIL.OPTIONS' | translate }}</button>
-        <button type="button" class="secondaire" [disabled]="exportEnvoi()" (click)="exporterDonnees()">{{ 'PROFIL.EXPORTER' | translate }}</button>
+        <button type="button" class="secondaire" (click)="modifierEmail()">
+          {{ 'PROFIL.MODIFIER' | translate }}
+        </button>
+        <button type="button" class="secondaire" (click)="ouvrirOptions()">
+          {{ 'PROFIL.OPTIONS' | translate }}
+        </button>
+        <button
+          type="button"
+          class="secondaire"
+          [disabled]="exportEnvoi()"
+          (click)="exporterDonnees()"
+        >
+          {{ 'PROFIL.EXPORTER' | translate }}
+        </button>
         @if (resultatExport(); as resultat) {
-          <div class="bandeau" [class.succes]="resultat.succes" [class.erreur]="!resultat.succes" role="status">{{ resultat.cle | translate }}</div>
+          <div
+            class="bandeau"
+            [class.succes]="resultat.succes"
+            [class.erreur]="!resultat.succes"
+            role="status"
+          >
+            {{ resultat.cle | translate }}
+          </div>
         }
-        <button type="button" class="secondaire" (click)="ouvrirFormulaireAvis()">{{ 'PROFIL.FEEDBACK' | translate }}</button>
-        <button type="button" class="danger-contour" (click)="deconnexion()">{{ 'PROFIL.DECONNEXION' | translate }}</button>
+        <button type="button" class="secondaire" (click)="ouvrirFormulaireAvis()">
+          {{ 'PROFIL.FEEDBACK' | translate }}
+        </button>
+        <button type="button" class="danger-contour" (click)="deconnexion()">
+          {{ 'PROFIL.DECONNEXION' | translate }}
+        </button>
 
         @if (!suppressionOuverte()) {
           <button type="button" class="danger" (click)="ouvrirSuppression()">
@@ -40,7 +70,9 @@
           </button>
         } @else {
           <div class="suppression">
-            <p class="suppression-avertissement">{{ 'PROFIL.SUPPRESSION_AVERTISSEMENT' | translate }}</p>
+            <p class="suppression-avertissement">
+              {{ 'PROFIL.SUPPRESSION_AVERTISSEMENT' | translate }}
+            </p>
 
             @if (erreurSuppression()) {
               <div class="bandeau erreur">{{ erreurSuppression() | translate }}</div>
@@ -75,7 +107,9 @@
         <a [href]="liensLegaux.confidentialite" target="_blank" rel="noopener">{{
           'PROFIL.CONFIDENTIALITE' | translate
         }}</a>
-        <a [href]="liensLegaux.cgu" target="_blank" rel="noopener">{{ 'PROFIL.CGU' | translate }}</a>
+        <a [href]="liensLegaux.cgu" target="_blank" rel="noopener">{{
+          'PROFIL.CGU' | translate
+        }}</a>
       </nav>
     }
   </div>

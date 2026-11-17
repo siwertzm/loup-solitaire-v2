@@ -4,13 +4,21 @@
     [routerLink]="['/personnages', personnageId(), 'chapitre']"
     routerLinkActive="actif"
   >
-    <img src="assets/icon/parchemin.png" [attr.alt]="'NAV_BAR.ALT_CHAPITRE' | translate" class="nav-icon" />
+    <img
+      src="assets/icon/parchemin.png"
+      [attr.alt]="'NAV_BAR.ALT_CHAPITRE' | translate"
+      class="nav-icon"
+    />
     <span>{{ 'NAV_BAR.LABEL_CHAPITRE' | translate }}</span>
   </a>
 
   <!-- FICHE  -->
   <button type="button" class="nav-item" (click)="personnage()">
-    <img src="assets/icon/profil.png" [attr.alt]="'NAV_BAR.ALT_FICHE' | translate" class="nav-icon" />
+    <img
+      src="assets/icon/profil.png"
+      [attr.alt]="'NAV_BAR.ALT_FICHE' | translate"
+      class="nav-icon"
+    />
     <span>{{ 'NAV_BAR.LABEL_FICHE' | translate }}</span>
   </button>
 
@@ -21,7 +29,11 @@
 
   <!-- JOURNAL  -->
   <button type="button" class="nav-item" [disabled]="mort()" (click)="journal()">
-    <img src="assets/icon/chemin.png" [attr.alt]="'NAV_BAR.ALT_JOURNAL' | translate" class="nav-icon" />
+    <img
+      src="assets/icon/chemin.png"
+      [attr.alt]="'NAV_BAR.ALT_JOURNAL' | translate"
+      class="nav-icon"
+    />
     <span>{{ 'NAV_BAR.LABEL_JOURNAL' | translate }}</span>
   </button>
 </nav>

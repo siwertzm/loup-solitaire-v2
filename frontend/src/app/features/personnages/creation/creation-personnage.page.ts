@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular';
@@ -25,6 +25,7 @@ interface DisciplineCatalogue {
   standalone: true,
   imports: [IonContent, ReactiveFormsModule, TranslatePipe],
   templateUrl: './creation-personnage.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './creation-personnage.page.scss',
 })
 export class CreationPersonnagePage {

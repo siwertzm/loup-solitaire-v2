@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, NavController } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -6,12 +6,12 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { DisciplineResume } from '../../../core/models/personnage.model';
 import { DisciplineService } from '../../../core/services/discipline.service';
 
-
 @Component({
   selector: 'app-regle-discipline',
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './regle-discipline.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './regle-discipline.page.scss',
 })
 export class RegleDisciplinePage {
@@ -45,6 +45,6 @@ export class RegleDisciplinePage {
   }
 
   back(): void {
-   this.navCtrl.navigateBack(['/regle/intro']);
+    this.navCtrl.navigateBack(['/regle/intro']);
   }
 }

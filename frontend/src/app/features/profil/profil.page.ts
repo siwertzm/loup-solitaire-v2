@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './profil.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './profil.page.scss',
 })
 export class ProfilPage implements ViewWillEnter {
@@ -47,7 +48,10 @@ export class ProfilPage implements ViewWillEnter {
   readonly membreDepuis = computed(() => {
     const iso = this.compte()?.dateCreation;
     if (!iso) return 'PROFIL.MEMBRE_DEPUIS_INCONNU';
-    return new Intl.DateTimeFormat(this.translate.getCurrentLang() ?? 'fr', { month: 'long', year: 'numeric' }).format(new Date(iso));
+    return new Intl.DateTimeFormat(this.translate.getCurrentLang() ?? 'fr', {
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(iso));
   });
 
   readonly lignes = computed(() => {
@@ -55,9 +59,13 @@ export class ProfilPage implements ViewWillEnter {
     if (!c) return [];
     return [
       { cle: 'PROFIL.LIGNE_PERSONNAGES', valeur: String(c.personnages?.length ?? 0), ton: 'clair' },
-      { cle: 'PROFIL.LIGNE_EMAIL_VERIFIE', valeur: c.emailVerifie ? 'COMMUN.OUI' : 'COMMUN.NON', ton: c.emailVerifie ? 'vert' : 'rouge' },
-      { cle: 'PROFIL.LIGNE_PIECES_PREMIUM', valeur: "999", ton: 'gold' },
-      { cle: 'PROFIL.LIGNE_MEMBRE_DEPUIS', valeur: this.membreDepuis(), ton: 'clair' }
+      {
+        cle: 'PROFIL.LIGNE_EMAIL_VERIFIE',
+        valeur: c.emailVerifie ? 'COMMUN.OUI' : 'COMMUN.NON',
+        ton: c.emailVerifie ? 'vert' : 'rouge',
+      },
+      { cle: 'PROFIL.LIGNE_PIECES_PREMIUM', valeur: '999', ton: 'gold' },
+      { cle: 'PROFIL.LIGNE_MEMBRE_DEPUIS', valeur: this.membreDepuis(), ton: 'clair' },
     ];
   });
 
@@ -108,12 +116,12 @@ export class ProfilPage implements ViewWillEnter {
     this.suppressionOuverte.set(true);
     this.erreurSuppression.set(null);
   }
- 
+
   annulerSuppression(): void {
     this.suppressionOuverte.set(false);
     this.erreurSuppression.set(null);
   }
- 
+
   confirmerSuppression(motDePasse: string): void {
     if (!motDePasse || this.suppressionEnvoi()) return;
     this.suppressionEnvoi.set(true);

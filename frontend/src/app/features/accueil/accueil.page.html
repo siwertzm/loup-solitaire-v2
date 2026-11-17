@@ -1,21 +1,38 @@
 <ion-content [fullscreen]="true" class="accueil">
   <div class="ecran">
     <div class="barre-haut">
-      <button type="button" class="rond" [attr.aria-label]="'ACCUEIL.OPTIONS_ARIA' | translate" (click)="options()">
+      <button
+        type="button"
+        class="rond"
+        [attr.aria-label]="'ACCUEIL.OPTIONS_ARIA' | translate"
+        (click)="options()"
+      >
         <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
       </button>
-      <button type="button" class="rond" [attr.aria-label]="'ACCUEIL.PROFIL_ARIA' | translate" (click)="profil()">
+      <button
+        type="button"
+        class="rond"
+        [attr.aria-label]="'ACCUEIL.PROFIL_ARIA' | translate"
+        (click)="profil()"
+      >
         <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
       </button>
     </div>
 
     <header class="titre">
       <div class="sur-titre">{{ 'ACCUEIL.SUR_TITRE' | translate }}</div>
-      <h1>{{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}</h1>
+      <h1>
+        {{ 'ACCUEIL.TITRE_LIGNE1' | translate }}<br />{{ 'ACCUEIL.TITRE_LIGNE2' | translate }}
+      </h1>
       <div class="sous-titre">{{ 'ACCUEIL.SOUS_TITRE' | translate }}</div>
     </header>
 
-    <div class="carrousel" [style.mask-image]="masque()" [style.-webkit-mask-image]="masque()" (scroll)="onScroll($event)">
+    <div
+      class="carrousel"
+      [style.mask-image]="masque()"
+      [style.-webkit-mask-image]="masque()"
+      (scroll)="onScroll($event)"
+    >
       @if (chargement()) {
         <div class="etat">{{ 'ACCUEIL.CHARGEMENT' | translate }}</div>
       } @else if (erreur()) {
@@ -33,9 +50,16 @@
                     <div class="nom">{{ pj.nom }}</div>
                   </div>
                   @if (pj.termine) {
-                    <div class="badge-termine" [attr.aria-label]="'ACCUEIL.TOME_TERMINE_ARIA' | translate">✓</div>
+                    <div
+                      class="badge-termine"
+                      [attr.aria-label]="'ACCUEIL.TOME_TERMINE_ARIA' | translate"
+                    >
+                      ✓
+                    </div>
                   } @else {
-                    <div class="chapitre">{{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}</div>
+                    <div class="chapitre">
+                      {{ 'ACCUEIL.CHAPITRE_PREFIXE' | translate }} {{ pj.chapitreActuelId }}
+                    </div>
                   }
                 </div>
 
@@ -77,7 +101,9 @@
                   </button>
                 } @else {
                   <button type="button" class="jouer" [class.actif]="pj.actif" (click)="jouer(pj)">
-                    {{ pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate) }}
+                    {{
+                      pj.actif ? ('ACCUEIL.REPRENDRE' | translate) : ('ACCUEIL.CHOISIR' | translate)
+                    }}
                   </button>
                 }
               </article>
@@ -101,8 +127,12 @@
       }
     </div>
 
-    <button type="button" class="secondaire" (click)="regles()">{{ 'ACCUEIL.REGLES_DU_JEU' | translate }}</button>
-    <button type="button" class="secondaire" (click)="nouveauPersonnage()">{{ 'ACCUEIL.NOUVEAU_PERSONNAGE' | translate }}</button>
+    <button type="button" class="secondaire" (click)="regles()">
+      {{ 'ACCUEIL.REGLES_DU_JEU' | translate }}
+    </button>
+    <button type="button" class="secondaire" (click)="nouveauPersonnage()">
+      {{ 'ACCUEIL.NOUVEAU_PERSONNAGE' | translate }}
+    </button>
 
     <div class="pied">{{ 'ACCUEIL.PIED' | translate }}</div>
   </div>
@@ -111,14 +141,30 @@
     <div class="voile" (click)="annulerSuppression()">
       <div class="popup popup-suppression" (click)="$event.stopPropagation()">
         <div class="surtitre">{{ 'ACCUEIL.POPUP_ATTENTION' | translate }}</div>
-        <div class="popup-titre">{{ 'ACCUEIL.POPUP_TITRE_SUPPRESSION' | translate: { nom: nomEnConfirmation() } }}</div>
+        <div class="popup-titre">
+          {{ 'ACCUEIL.POPUP_TITRE_SUPPRESSION' | translate: { nom: nomEnConfirmation() } }}
+        </div>
         <p class="popup-texte">{{ 'ACCUEIL.POPUP_TEXTE_SUPPRESSION' | translate }}</p>
         @if (erreurSuppression()) {
           <p class="popup-texte popup-erreur">{{ erreurSuppression() | translate }}</p>
         }
         <div class="popup-actions">
-          <button type="button" class="popup-annuler" [disabled]="!!suppressionEnCoursId()" (click)="annulerSuppression()">{{ 'ACCUEIL.POPUP_ANNULER' | translate }}</button>
-          <button type="button" class="popup-confirmer" [disabled]="!!suppressionEnCoursId()" (click)="confirmerSuppression()">{{ 'ACCUEIL.SUPPRIMER' | translate }}</button>
+          <button
+            type="button"
+            class="popup-annuler"
+            [disabled]="!!suppressionEnCoursId()"
+            (click)="annulerSuppression()"
+          >
+            {{ 'ACCUEIL.POPUP_ANNULER' | translate }}
+          </button>
+          <button
+            type="button"
+            class="popup-confirmer"
+            [disabled]="!!suppressionEnCoursId()"
+            (click)="confirmerSuppression()"
+          >
+            {{ 'ACCUEIL.SUPPRIMER' | translate }}
+          </button>
         </div>
       </div>
     </div>

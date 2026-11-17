@@ -80,7 +80,9 @@
         <div class="cases deux">
           @for (c of casesArmes(); track $index) {
             <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
-              <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+              <span class="case-nom">{{
+                c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate)
+              }}</span>
             </div>
           }
         </div>
@@ -97,7 +99,9 @@
             <div class="cases deux">
               @for (c of casesObjets(); track $index) {
                 <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
-                  <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+                  <span class="case-nom">{{
+                    c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate)
+                  }}</span>
                 </div>
               }
             </div>
@@ -107,7 +111,9 @@
             <div class="cases deux">
               @for (c of casesRepas(); track $index) {
                 <div class="case-item" [class.remplie]="c.remplie" [class.trouvee]="c.trouvee">
-                  <span class="case-nom">{{ c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate) }}</span>
+                  <span class="case-nom">{{
+                    c.remplie ? c.nom : ('EQUIPEMENT.LIBRE' | translate)
+                  }}</span>
                 </div>
               }
             </div>
@@ -135,7 +141,13 @@
       <button type="button" class="supprimer actif" (click)="supprimer()">
         {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
       </button>
-      <button type="button" class="valider" [class.actif]="complet()" [disabled]="!complet()" (click)="partir()">
+      <button
+        type="button"
+        class="valider"
+        [class.actif]="complet()"
+        [disabled]="!complet()"
+        (click)="partir()"
+      >
         {{ 'EQUIPEMENT.VALIDER' | translate }}
       </button>
     </div>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { OptionsService, TailleTexte } from '../../core/services/options.service
   selector: 'app-options',
   templateUrl: './options.page.html',
   styleUrls: ['./options.page.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, TranslatePipe],
 })
 export class OptionsPage {
