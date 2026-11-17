@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.loupsolitaire.backend.config.CustomUserDetailsService;
 import com.loupsolitaire.backend.config.JwtUtil;
 import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.exception.RessourceNonTrouveeException;
@@ -30,6 +31,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
     private final LimiteurDeDebit limiteurDeDebit;
+    private final CustomUserDetailsService customUserDetailsService;
 
     // identifiant accepte nom d'utilisateur OU email : voir
     // CustomUserDetailsService. Mauvais identifiants : BadCredentialsException
@@ -40,19 +42,27 @@ public class AuthService {
     // repartie sur plusieurs IP). Une connexion reussie remet le compteur a
     // zero. Le compteur existe aussi pour un identifiant inconnu : la reponse
     // ne revele donc pas si le compte existe.
+    //
+    // SEC-13 : compteur par COMPTE (son id) : pseudo et email du meme compte
+    // partagent le meme compteur, et "Bob" ne bloque pas "bob". Identifiant
+    // inconnu : compteur sur le texte saisi. La recherche est faite dans les
+    // deux cas (pas d'ecart de duree, SEC-11).
     @Transactional
     public AuthResponse connecter(String identifiant, String motDePasse) {
-        limiteurDeDebit.verifier(LimiteurDeDebit.LOGIN_COMPTE, identifiant);
+        String cle = customUserDetailsService.trouverParIdentifiant(identifiant)
+                .map(u -> u.getId().toString())
+                .orElse(identifiant);
+        limiteurDeDebit.verifier(LimiteurDeDebit.LOGIN_COMPTE, cle);
 
         Authentication auth;
         try {
             auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(identifiant, motDePasse));
         } catch (AuthenticationException e) {
-            limiteurDeDebit.enregistrerEchec(LimiteurDeDebit.LOGIN_COMPTE, identifiant);
+            limiteurDeDebit.enregistrerEchec(LimiteurDeDebit.LOGIN_COMPTE, cle);
             throw e;
         }
-        limiteurDeDebit.reinitialiser(LimiteurDeDebit.LOGIN_COMPTE, identifiant);
+        limiteurDeDebit.reinitialiser(LimiteurDeDebit.LOGIN_COMPTE, cle);
 
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
         Utilisateur utilisateur = utilisateurRepository.findByUsername(userDetails.getUsername())

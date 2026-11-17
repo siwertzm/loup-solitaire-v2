@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | S | `fix-SEC-13` | À faire |
+| 3 | Basse | S | `fix-SEC-13` | Fait |
 
 Origine : second audit Claude Code du 17/11/2026 (point 3)
 
@@ -30,3 +30,7 @@ Retrouver le compte comme `CustomUserDetailsService` (email prioritaire si l'ide
 ## Fichiers concernés
 
 `AuthService.java`
+
+## Réalisation (17/11/2026)
+
+La recherche du compte est sortie de `CustomUserDetailsService.loadUserByUsername` dans `trouverParIdentifiant` (règle écrite une seule fois). `AuthService.connecter` s'en sert pour la clé du compteur : id du compte s'il existe, texte saisi sinon. Recherche faite dans les deux cas (pas d'écart de durée). Tests `AuthServiceTest` avec un vrai `LimiteurDeDebit` : 5 échecs par pseudo + 5 par email → `429` ; 10 échecs sur `Bob` ne bloquent pas `bob`.
