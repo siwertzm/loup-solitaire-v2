@@ -13,9 +13,9 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +24,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.loupsolitaire.backend.config.CustomUserDetailsService;
 import com.loupsolitaire.backend.config.JwtUtil;
+import com.loupsolitaire.backend.config.ProprietesDeTest;
 import com.loupsolitaire.backend.exception.TropDeRequetesException;
 import com.loupsolitaire.backend.exception.CompteNonVerifieException;
 import com.loupsolitaire.backend.model.Utilisateur;
@@ -45,8 +47,18 @@ class AuthServiceTest {
     @Mock
     private LimiteurDeDebit limiteurDeDebit;
 
-    @InjectMocks
     private AuthService authService;
+
+    // Vraie recherche du compte (email prioritaire...) sur le depot simule.
+    private AuthService authServiceAvec(LimiteurDeDebit limiteur) {
+        return new AuthService(authenticationManager, utilisateurRepository, jwtUtil, refreshTokenService,
+                limiteur, new CustomUserDetailsService(utilisateurRepository));
+    }
+
+    @BeforeEach
+    void creerLeService() {
+        authService = authServiceAvec(limiteurDeDebit);
+    }
 
     private Utilisateur utilisateur(boolean emailVerifie) {
         Utilisateur utilisateur = new Utilisateur();
@@ -98,11 +110,12 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.connecter("marius", "mauvais"))
                 .isInstanceOf(BadCredentialsException.class);
 
-        verifyNoInteractions(utilisateurRepository, jwtUtil, refreshTokenService);
+        // Le depot est lu pour le compteur (SEC-13), mais aucune session n'est ouverte.
+        verifyNoInteractions(jwtUtil, refreshTokenService);
     }
 
     @Test
-    void connecterCompteChaqueEchecPourL_identifiant() {
+    void connecterCompteChaqueEchecSurLeTexteSaisiPourUnIdentifiantInconnu() {
         when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
 
         assertThatThrownBy(() -> authService.connecter("marius", "mauvais"))
@@ -120,7 +133,7 @@ class AuthServiceTest {
 
         authService.connecter("marius", "motdepasse123");
 
-        verify(limiteurDeDebit).reinitialiser(LimiteurDeDebit.LOGIN_COMPTE, "marius");
+        verify(limiteurDeDebit).reinitialiser(LimiteurDeDebit.LOGIN_COMPTE, utilisateur.getId().toString());
     }
 
     @Test
@@ -132,6 +145,49 @@ class AuthServiceTest {
                 .isInstanceOf(TropDeRequetesException.class);
 
         verifyNoInteractions(authenticationManager);
+    }
+
+    // SEC-13 : pseudo et email du meme compte partagent le meme compteur.
+    @Test
+    void connecterCompteLesEchecsParPseudoEtParEmailSurLeMemeCompte() {
+        Utilisateur marius = utilisateur(true);
+        when(utilisateurRepository.findByUsername("marius")).thenReturn(Optional.of(marius));
+        when(utilisateurRepository.findByEmail("marius@example.com")).thenReturn(Optional.of(marius));
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
+        AuthService service = authServiceAvec(new LimiteurDeDebit(ProprietesDeTest.limitationDebit()));
+
+        for (int i = 0; i < 5; i++) {
+            assertThatThrownBy(() -> service.connecter("marius", "mauvais"))
+                    .isInstanceOf(BadCredentialsException.class);
+            assertThatThrownBy(() -> service.connecter("Marius@Example.com", "mauvais"))
+                    .isInstanceOf(BadCredentialsException.class);
+        }
+
+        assertThatThrownBy(() -> service.connecter("marius", "motdepasse123"))
+                .isInstanceOf(TropDeRequetesException.class);
+        assertThatThrownBy(() -> service.connecter("marius@example.com", "motdepasse123"))
+                .isInstanceOf(TropDeRequetesException.class);
+    }
+
+    // SEC-13 : les pseudos sont sensibles a la casse, les compteurs aussi.
+    @Test
+    void connecterNeBloquePasUnAutreCompteDontLePseudoNeDiffereQueParLaCasse() {
+        Utilisateur bobMajuscule = utilisateur(true);
+        Utilisateur bob = utilisateur(true);
+        when(utilisateurRepository.findByUsername("Bob")).thenReturn(Optional.of(bobMajuscule));
+        when(utilisateurRepository.findByUsername("bob")).thenReturn(Optional.of(bob));
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
+        AuthService service = authServiceAvec(new LimiteurDeDebit(ProprietesDeTest.limitationDebit()));
+
+        for (int i = 0; i < 10; i++) {
+            assertThatThrownBy(() -> service.connecter("Bob", "mauvais"))
+                    .isInstanceOf(BadCredentialsException.class);
+        }
+
+        assertThatThrownBy(() -> service.connecter("Bob", "mauvais"))
+                .isInstanceOf(TropDeRequetesException.class);
+        assertThatThrownBy(() -> service.connecter("bob", "mauvais"))
+                .isInstanceOf(BadCredentialsException.class);
     }
 
     @Test

@@ -34,17 +34,21 @@ public class CustomUserDetailsService implements UserDetailsService {
     // - identifiant sans "@" : ce ne peut etre qu'un nom d'utilisateur.
     @Override
     public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
-        // Les emails sont stockes en minuscules (voir Emails) : "Bob@Mail.fr"
-        // doit retrouver le compte "bob@mail.fr".
-        Optional<Utilisateur> trouve = identifiant.contains("@")
-                ? utilisateurRepository.findByEmail(Emails.normaliser(identifiant))
-                        .or(() -> utilisateurRepository.findByUsername(identifiant))
-                : utilisateurRepository.findByUsername(identifiant);
-
-        Utilisateur utilisateur = trouve
+        Utilisateur utilisateur = trouverParIdentifiant(identifiant)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable : " + identifiant));
 
         return versUserDetails(utilisateur);
+    }
+
+    // Regle ci-dessus, aussi utilisee par AuthService pour le compteur de
+    // mots de passe faux (SEC-13).
+    public Optional<Utilisateur> trouverParIdentifiant(String identifiant) {
+        // Les emails sont stockes en minuscules (voir Emails) : "Bob@Mail.fr"
+        // doit retrouver le compte "bob@mail.fr".
+        return identifiant.contains("@")
+                ? utilisateurRepository.findByEmail(Emails.normaliser(identifiant))
+                        .or(() -> utilisateurRepository.findByUsername(identifiant))
+                : utilisateurRepository.findByUsername(identifiant);
     }
 
     private UserDetails versUserDetails(Utilisateur utilisateur) {
