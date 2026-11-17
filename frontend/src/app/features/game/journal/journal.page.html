@@ -4,7 +4,10 @@
       <h1 class="titre">{{ 'JOURNAL.TITRE' | translate }}</h1>
       @if (!chargement() && !erreur()) {
         <div class="sous-titre">
-          {{ (nombre() === 1 ? 'JOURNAL.SOUS_TITRE_UN' : 'JOURNAL.SOUS_TITRE_PLUSIEURS') | translate: { nombre: nombre() } }}
+          {{
+            (nombre() === 1 ? 'JOURNAL.SOUS_TITRE_UN' : 'JOURNAL.SOUS_TITRE_PLUSIEURS')
+              | translate: { nombre: nombre() }
+          }}
         </div>
       }
     </header>
@@ -30,7 +33,12 @@
                    coordonnées du tracé (18, 29, 40 : en px, dans une boîte
                    de 80px de large) sont liées à $x-gauche / $largeur-vague
                    du SCSS. -->
-              <svg class="virage virage-haut" viewBox="0 0 80 100" preserveAspectRatio="none" aria-hidden="true">
+              <svg
+                class="virage virage-haut"
+                viewBox="0 0 80 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
                 <path d="M 40 0 C 29 25, 18 50, 18 100" vector-effect="non-scaling-stroke" />
               </svg>
             }
@@ -44,13 +52,25 @@
                     | translate: { numero: etape.chapitreId }
                 }}</span>
                 @if (etape.avecCombat) {
-                  <img class="icone" src="assets/icon/combat.png" [attr.alt]="'JOURNAL.ALT_COMBAT' | translate" />
+                  <img
+                    class="icone"
+                    src="assets/icon/combat.png"
+                    [attr.alt]="'JOURNAL.ALT_COMBAT' | translate"
+                  />
                 }
                 @if (etape.avecEffets) {
-                  <img class="icone" src="assets/icon/effets.png" [attr.alt]="'CHAPITRE_PAGE.ALT_EFFETS' | translate" />
+                  <img
+                    class="icone"
+                    src="assets/icon/effets.png"
+                    [attr.alt]="'CHAPITRE_PAGE.ALT_EFFETS' | translate"
+                  />
                 }
                 @if (etape.avecObjets) {
-                  <img class="icone" src="assets/icon/all_items.png" [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate" />
+                  <img
+                    class="icone"
+                    src="assets/icon/all_items.png"
+                    [attr.alt]="'CHAPITRE_PAGE.ALT_OBJETS' | translate"
+                  />
                 }
               </span>
               <!-- Début du texte du chapitre, sur UNE ligne : la coupe avec
@@ -61,7 +81,12 @@
             </span>
             @if (!$last) {
               <!-- Demi-virage de départ (vers l'étape suivante). -->
-              <svg class="virage virage-bas" viewBox="0 0 80 100" preserveAspectRatio="none" aria-hidden="true">
+              <svg
+                class="virage virage-bas"
+                viewBox="0 0 80 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
                 <path d="M 18 0 C 18 50, 29 75, 40 100" vector-effect="non-scaling-stroke" />
               </svg>
             }

@@ -1,15 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {
-  IonContent,
-  IonInput,
-  IonInputPasswordToggle,
-  IonButton,
-  IonNote,
-} from '@ionic/angular';
+import { IonContent, IonInput, IonInputPasswordToggle, IonButton, IonNote } from '@ionic/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { LIENS_LEGAUX } from '../../../core/liens-legaux';
@@ -28,6 +22,7 @@ import { LIENS_LEGAUX } from '../../../core/liens-legaux';
     TranslatePipe,
   ],
   templateUrl: './register.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './register.page.scss',
 })
 export class RegisterPage {
@@ -64,12 +59,7 @@ export class RegisterPage {
       return;
     }
 
-    const {
-      username,
-      email,
-      password,
-      confirmation,
-    } = this.form.getRawValue();
+    const { username, email, password, confirmation } = this.form.getRawValue();
 
     // Même contrôle que dans l'édition du profil.
     if (password !== confirmation) {
@@ -81,27 +71,29 @@ export class RegisterPage {
     this.erreur.set(null);
 
     // On n'envoie PAS "confirmation" au backend.
-    this.authService.register({
-      username,
-      email,
-      password,
-    }).subscribe({
-      next: () => {
-        this.enCours.set(false);
-        this.succes.set(true);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.enCours.set(false);
-        // SEC-05 : seul un nom d'utilisateur pris donne 409 (un e-mail déjà inscrit n'est jamais signalé).
-        this.erreur.set(
-          err.status === 429
-            ? 'AUTH.ERREUR_TROP_DE_TENTATIVES'
-            : err.status === 409
-              ? 'AUTH.REGISTER.ERREUR_NOM_PRIS'
-              : 'AUTH.REGISTER.ERREUR_INSCRIPTION',
-        );
-      },
-    });
+    this.authService
+      .register({
+        username,
+        email,
+        password,
+      })
+      .subscribe({
+        next: () => {
+          this.enCours.set(false);
+          this.succes.set(true);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.enCours.set(false);
+          // SEC-05 : seul un nom d'utilisateur pris donne 409 (un e-mail déjà inscrit n'est jamais signalé).
+          this.erreur.set(
+            err.status === 429
+              ? 'AUTH.ERREUR_TROP_DE_TENTATIVES'
+              : err.status === 409
+                ? 'AUTH.REGISTER.ERREUR_NOM_PRIS'
+                : 'AUTH.REGISTER.ERREUR_INSCRIPTION',
+          );
+        },
+      });
   }
 
   allerVersLogin(): void {

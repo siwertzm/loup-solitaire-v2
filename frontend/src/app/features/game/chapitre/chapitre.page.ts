@@ -7,6 +7,7 @@ import {
   OnInit,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
@@ -55,6 +56,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
     TranslatePipe,
   ],
   templateUrl: './chapitre.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './chapitre.page.scss',
 })
 export class ChapitrePage implements OnInit, ViewWillEnter {
@@ -132,9 +134,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
   // ne les rend disponibles que tant qu'aucun assaut n'a été joué.
   readonly liensEvitementCombat = computed(() =>
     this.liens().filter(
-      (lien) =>
-        lien.disponible &&
-        lien.conditions.some((c) => c.type === 'EVITEMENT'),
+      (lien) => lien.disponible && lien.conditions.some((c) => c.type === 'EVITEMENT'),
     ),
   );
   readonly objets = computed(() => this.chapitre()?.objets ?? []);
@@ -160,7 +160,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       .map((o) => ({ ...o, restant: this.restantsObjets()[o.objetId] ?? 0 }))
       .filter((o) => o.restant > 0)
       // REGLE-17 : un second Sac à Dos ne peut pas être pris, rien à signaler.
-      .filter((o) => !(o.objetId === OBJET_SAC_A_DOS && possedeSacADos(this.personnage()?.inventaire ?? []))),
+      .filter(
+        (o) =>
+          !(o.objetId === OBJET_SAC_A_DOS && possedeSacADos(this.personnage()?.inventaire ?? [])),
+      ),
   );
 
   // REGLE-16 : échanges proposés (effet ECHANGE, ex. Marteau du 307) que le
@@ -174,7 +177,9 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       .map((effet) => effet.conditions[0].targetId?.toLowerCase())
       .map((id) => this.tousObjets().find((objet) => objet.id.toLowerCase() === id))
       .filter((objet): objet is ObjetResume => objet !== undefined)
-      .filter((objet) => !inventaire.some((i) => i.objetId.toLowerCase() === objet.id.toLowerCase()))
+      .filter(
+        (objet) => !inventaire.some((i) => i.objetId.toLowerCase() === objet.id.toLowerCase()),
+      )
       .filter((objet) => inventaire.some((i) => i.categorie === objet.categorie));
   });
 
@@ -287,9 +292,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       error: (err) => {
         console.error('Erreur lors du retour après défaite :', err);
         this.ressusciterEnCours.set(false);
-        this.erreurRessusciter.set(
-          this.translate.instant('CHAPITRE_PAGE.ERREUR_REVENIR_INSTANT'),
-        );
+        this.erreurRessusciter.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_REVENIR_INSTANT'));
       },
     });
   }
@@ -323,8 +326,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
             this.chargerToutesLesDonnees();
           },
           error: (err) => {
-            console.error('Erreur lors de l\'avancement après résurrection :', err,
-            );
+            console.error("Erreur lors de l'avancement après résurrection :", err);
             this.ressusciterEnCours.set(false);
             this.erreurRessusciter.set(
               this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_RESURRECTION'),
@@ -604,8 +606,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (p) => {
         this.personnage.set(p);
       },
-      error: (err) =>
-        console.error('Erreur lors du chargement du personnage :', err),
+      error: (err) => console.error('Erreur lors du chargement du personnage :', err),
     });
 
     // 2. Récupération de toutes les disciplines disponibles (GET /disciplines)
@@ -613,8 +614,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
       next: (disciplines) => {
         this.toutesDisciplines.set(disciplines);
       },
-      error: (err) =>
-        console.error('Erreur lors du chargement des disciplines :', err),
+      error: (err) => console.error('Erreur lors du chargement des disciplines :', err),
     });
 
     // 3. Récupération de tous les objets disponibles (GET /objets)
@@ -777,7 +777,10 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
     const id = this.personnageId();
     if (!id || !lien.disponible || this.mort() || this.chargement()) return;
 
-    if (!sansConfirmation && (this.objetsNonPris().length > 0 || this.echangesNonFaits().length > 0)) {
+    if (
+      !sansConfirmation &&
+      (this.objetsNonPris().length > 0 || this.echangesNonFaits().length > 0)
+    ) {
       this.lienEnAttenteConfirmation.set(lien);
       return;
     }
@@ -790,7 +793,7 @@ export class ChapitrePage implements OnInit, ViewWillEnter {
         this.chargerToutesLesDonnees();
       },
       error: (err) => {
-        console.error('Erreur lors de l\'avancement vers le chapitre :', err);
+        console.error("Erreur lors de l'avancement vers le chapitre :", err);
         this.erreur.set(this.translate.instant('CHAPITRE_PAGE.ERREUR_AVANCER_CHAPITRE'));
         this.chargement.set(false);
       },

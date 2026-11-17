@@ -1,16 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  Injectable,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  Observable,
-  finalize,
-  shareReplay,
-  tap,
-} from 'rxjs';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, finalize, shareReplay, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
@@ -29,14 +19,11 @@ import { TokenStorageService } from './token-storage.service';
   providedIn: 'root',
 })
 export class AuthService {
-
   private readonly http = inject(HttpClient);
 
-  private readonly tokenStorage =
-    inject(TokenStorageService);
+  private readonly tokenStorage = inject(TokenStorageService);
 
-  private readonly baseUrl =
-    `${environment.apiUrl}/auth`;
+  private readonly baseUrl = `${environment.apiUrl}/auth`;
 
   /*
    * Informations temporaires du parcours
@@ -46,22 +33,15 @@ export class AuthService {
    * les données disparaissent lorsque la session
    * WebView / navigateur est terminée.
    */
-  private readonly passwordResetEmailKey =
-    'loup_password_reset_email';
+  private readonly passwordResetEmailKey = 'loup_password_reset_email';
 
-  private readonly passwordResetTokenKey =
-    'loup_password_reset_token';
+  private readonly passwordResetTokenKey = 'loup_password_reset_token';
 
-  private readonly _utilisateur =
-    signal<UtilisateurResponse | null>(null);
+  private readonly _utilisateur = signal<UtilisateurResponse | null>(null);
 
-  readonly utilisateur =
-    this._utilisateur.asReadonly();
+  readonly utilisateur = this._utilisateur.asReadonly();
 
-  readonly estConnecte =
-    computed(
-      () => this._utilisateur() !== null,
-    );
+  readonly estConnecte = computed(() => this._utilisateur() !== null);
 
   /*
    * Refresh en cours, partage entre les requetes
@@ -74,104 +54,51 @@ export class AuthService {
   /*
    * SEC-05 : 202 sans contenu, que l'e-mail ait déjà un compte ou non.
    */
-  register(
-    payload: RegisterRequest,
-  ): Observable<void> {
-
-    return this.http.post<void>(
-      `${this.baseUrl}/register`,
-      payload,
-    );
+  register(payload: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, payload);
   }
 
-  login(
-    payload: LoginRequest,
-  ): Observable<AuthResponse> {
-
+  login(payload: LoginRequest): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(
-        `${this.baseUrl}/login`,
-        payload,
-      )
-      .pipe(
-        tap((res) =>
-          this.tokenStorage.enregistrerJetons(
-            res.accessToken,
-            res.refreshToken,
-          ),
-        ),
-      );
+      .post<AuthResponse>(`${this.baseUrl}/login`, payload)
+      .pipe(tap((res) => this.tokenStorage.enregistrerJetons(res.accessToken, res.refreshToken)));
   }
 
   refresh(): Observable<AuthResponse> {
-
     if (this.refreshEnCours$) {
       return this.refreshEnCours$;
     }
 
-    const refreshToken =
-      this.tokenStorage.getRefreshToken();
+    const refreshToken = this.tokenStorage.getRefreshToken();
 
     const payload: RefreshRequest = {
       refreshToken: refreshToken ?? '',
     };
 
-    this.refreshEnCours$ = this.http
-      .post<AuthResponse>(
-        `${this.baseUrl}/refresh`,
-        payload,
-      )
-      .pipe(
-        tap((res) =>
-          this.tokenStorage.enregistrerJetons(
-            res.accessToken,
-            res.refreshToken,
-          ),
-        ),
-        finalize(() => {
-          this.refreshEnCours$ = undefined;
-        }),
-        shareReplay(1),
-      );
+    this.refreshEnCours$ = this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, payload).pipe(
+      tap((res) => this.tokenStorage.enregistrerJetons(res.accessToken, res.refreshToken)),
+      finalize(() => {
+        this.refreshEnCours$ = undefined;
+      }),
+      shareReplay(1),
+    );
 
     return this.refreshEnCours$;
   }
 
-  chargerUtilisateurCourant():
-    Observable<UtilisateurResponse> {
-
+  chargerUtilisateurCourant(): Observable<UtilisateurResponse> {
     return this.http
-      .get<UtilisateurResponse>(
-        `${this.baseUrl}/me`,
-      )
-      .pipe(
-        tap((utilisateur) =>
-          this._utilisateur.set(utilisateur),
-        ),
-      );
+      .get<UtilisateurResponse>(`${this.baseUrl}/me`)
+      .pipe(tap((utilisateur) => this._utilisateur.set(utilisateur)));
   }
 
-  changePassword(
-    currentPassword: string,
-    newPassword: string,
-  ): Observable<AuthResponse> {
-
+  changePassword(currentPassword: string, newPassword: string): Observable<AuthResponse> {
     return this.http
-      .put<AuthResponse>(
-        `${this.baseUrl}/me/password`,
-        {
-          currentPassword,
-          newPassword,
-        },
-      )
-      .pipe(
-        tap((res) =>
-          this.tokenStorage.enregistrerJetons(
-            res.accessToken,
-            res.refreshToken,
-          ),
-        ),
-      );
+      .put<AuthResponse>(`${this.baseUrl}/me/password`, {
+        currentPassword,
+        newPassword,
+      })
+      .pipe(tap((res) => this.tokenStorage.enregistrerJetons(res.accessToken, res.refreshToken)));
   }
 
   /** RGPD-02 : le serveur envoie toutes les données du compte par email (202). */
@@ -179,47 +106,27 @@ export class AuthService {
     return this.http.post<void>(`${this.baseUrl}/me/export`, {});
   }
 
-  supprimerCompte(
-    password: string,
-  ): Observable<void> {
- 
+  supprimerCompte(password: string): Observable<void> {
     return this.http
-      .delete<void>(
-        `${this.baseUrl}/me`,
-        {
-          body: {
-            password,
-          },
+      .delete<void>(`${this.baseUrl}/me`, {
+        body: {
+          password,
         },
-      )
-      .pipe(
-        tap(() =>
-          this.clearSessionLocale(),
-        ),
-      );
+      })
+      .pipe(tap(() => this.clearSessionLocale()));
   }
 
   logout(): Observable<void> {
-
-    const refreshToken =
-      this.tokenStorage.getRefreshToken();
+    const refreshToken = this.tokenStorage.getRefreshToken();
 
     return this.http
-      .post<void>(
-        `${this.baseUrl}/logout`,
-        {
-          refreshToken,
-        },
-      )
-      .pipe(
-        tap(() =>
-          this.clearSessionLocale(),
-        ),
-      );
+      .post<void>(`${this.baseUrl}/logout`, {
+        refreshToken,
+      })
+      .pipe(tap(() => this.clearSessionLocale()));
   }
 
   clearSessionLocale(): void {
-
     this._utilisateur.set(null);
 
     this.tokenStorage.clear();
@@ -231,32 +138,20 @@ export class AuthService {
    * ==============================
    */
 
-  forgotPassword(
-    email: string,
-  ): Observable<void> {
-
+  forgotPassword(email: string): Observable<void> {
     return this.http
-      .post<void>(
-        `${this.baseUrl}/forgot-password`,
-        {
-          email,
-        },
-      )
+      .post<void>(`${this.baseUrl}/forgot-password`, {
+        email,
+      })
       .pipe(
         tap(() => {
-
-          sessionStorage.setItem(
-            this.passwordResetEmailKey,
-            email,
-          );
+          sessionStorage.setItem(this.passwordResetEmailKey, email);
 
           /*
            * Une nouvelle demande invalide
            * l'ancien parcours côté frontend.
            */
-          sessionStorage.removeItem(
-            this.passwordResetTokenKey,
-          );
+          sessionStorage.removeItem(this.passwordResetTokenKey);
         }),
       );
   }
@@ -267,53 +162,29 @@ export class AuthService {
    * tapé pour se connecter (pseudo ou email) :
    * le backend retrouve l'email du compte.
    */
-  resendVerification(
-    identifiant: string,
-  ): Observable<void> {
-
-    return this.http.post<void>(
-      `${this.baseUrl}/resend-verification`,
-      { identifiant },
-    );
+  resendVerification(identifiant: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/resend-verification`, { identifiant });
   }
 
-  verifyResetCode(
-    email: string,
-    code: string,
-  ): Observable<ResetCodeResponse> {
-
+  verifyResetCode(email: string, code: string): Observable<ResetCodeResponse> {
     return this.http
-      .post<ResetCodeResponse>(
-        `${this.baseUrl}/verify-reset-code`,
-        {
-          email,
-          code,
-        },
-      )
+      .post<ResetCodeResponse>(`${this.baseUrl}/verify-reset-code`, {
+        email,
+        code,
+      })
       .pipe(
         tap((response) => {
-
-          sessionStorage.setItem(
-            this.passwordResetTokenKey,
-            response.resetToken,
-          );
+          sessionStorage.setItem(this.passwordResetTokenKey, response.resetToken);
         }),
       );
   }
 
-  resetPassword(
-    resetToken: string,
-    newPassword: string,
-  ): Observable<void> {
-
+  resetPassword(resetToken: string, newPassword: string): Observable<void> {
     return this.http
-      .post<void>(
-        `${this.baseUrl}/reset-password`,
-        {
-          resetToken,
-          newPassword,
-        },
-      )
+      .post<void>(`${this.baseUrl}/reset-password`, {
+        resetToken,
+        newPassword,
+      })
       .pipe(
         tap(() => {
           this.clearPasswordResetFlow();
@@ -322,27 +193,16 @@ export class AuthService {
   }
 
   emailReinitialisation(): string | null {
-
-    return sessionStorage.getItem(
-      this.passwordResetEmailKey,
-    );
+    return sessionStorage.getItem(this.passwordResetEmailKey);
   }
 
   jetonReinitialisation(): string | null {
-
-    return sessionStorage.getItem(
-      this.passwordResetTokenKey,
-    );
+    return sessionStorage.getItem(this.passwordResetTokenKey);
   }
 
   clearPasswordResetFlow(): void {
+    sessionStorage.removeItem(this.passwordResetEmailKey);
 
-    sessionStorage.removeItem(
-      this.passwordResetEmailKey,
-    );
-
-    sessionStorage.removeItem(
-      this.passwordResetTokenKey,
-    );
+    sessionStorage.removeItem(this.passwordResetTokenKey);
   }
 }

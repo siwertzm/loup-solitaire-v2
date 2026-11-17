@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -19,6 +19,7 @@ import { PersonnageService } from '../../../core/services/personnage.service';
   standalone: true,
   imports: [IonContent, TranslatePipe],
   templateUrl: './victoire.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './victoire.page.scss',
 })
 export class VictoirePage implements ViewWillEnter {

@@ -33,10 +33,15 @@ export class InventaireSheetService {
   // l'objet elle-même. Elle transmet l'objet choisi à ce callback, qui le
   // joue comme action de combat OBJET (à la place d'une attaque ou d'une
   // défense, avec la riposte de l'ennemi).
-  private readonly _utiliserEnCombat = signal<((objetId: string, nom: string, effets: EffetsObjetCombat) => void) | null>(null);
+  private readonly _utiliserEnCombat = signal<
+    ((objetId: string, nom: string, effets: EffetsObjetCombat) => void) | null
+  >(null);
   readonly utiliserEnCombat = this._utiliserEnCombat.asReadonly();
 
-  ouvrir(personnageId: string, utiliserEnCombat?: (objetId: string, nom: string, effets: EffetsObjetCombat) => void): void {
+  ouvrir(
+    personnageId: string,
+    utiliserEnCombat?: (objetId: string, nom: string, effets: EffetsObjetCombat) => void,
+  ): void {
     this._utiliserEnCombat.set(utiliserEnCombat ?? null);
     this._personnageId.set(personnageId);
   }

@@ -64,7 +64,9 @@ describe('InventaireSheetComponent — retrait du Sac à Dos', () => {
 
   it('retire directement un autre Objet Spécial', () => {
     // QUAL-10 : valeurs recopiées de CLAUDE.md pour l'affichage du Sac.
-    expect([composant.maxArmes, composant.maxObjetsEtRepas, composant.maxBourse]).toEqual([2, 8, 50]);
+    expect([composant.maxArmes, composant.maxObjetsEtRepas, composant.maxBourse]).toEqual([
+      2, 8, 50,
+    ]);
     expect(composant.bonusArmeMaitrisee).toBe(2);
     expect(composant.malusSansArme).toBe(-4);
     composant.demanderRetrait('carte', glissement);

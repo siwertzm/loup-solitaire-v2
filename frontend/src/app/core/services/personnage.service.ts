@@ -4,7 +4,12 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { UpdateProfilRequest } from '../models/auth.model';
-import { ChapitreParcouru, MoiResponse, PersonnageResume, TirageCreation } from '../models/personnage.model';
+import {
+  ChapitreParcouru,
+  MoiResponse,
+  PersonnageResume,
+  TirageCreation,
+} from '../models/personnage.model';
 
 @Injectable({ providedIn: 'root' })
 export class PersonnageService {
@@ -137,13 +142,13 @@ export class PersonnageService {
   majCompte(payload: UpdateProfilRequest): Observable<MoiResponse> {
     return this.http.put<MoiResponse>(`${this.base}/auth/me`, payload);
   }
- 
+
   /** POST /auth/resend-verification — renvoie le lien de vérification à l'email donné. */
   renvoyerVerification(email: string): Observable<void> {
     return this.http.post<void>(`${this.base}/auth/resend-verification`, { email });
   }
 
-    /**
+  /**
    * GET /personnages/{id}/historique — chapitres traversés (chapitre de départ et
    * revisites compris) avec le début de leur texte, du plus récent au plus ancien.
    * Le premier est donc le chapitre courant. Un même chapitre peut apparaître

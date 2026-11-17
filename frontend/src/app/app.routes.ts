@@ -107,9 +107,7 @@ export const routes: Routes = [
     path: 'personnages/intro/perso',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/personnages/intro/intro-perso.page').then(
-        (m) => m.IntroPersoPage,
-      ),
+      import('./features/personnages/intro/intro-perso.page').then((m) => m.IntroPersoPage),
   },
   {
     path: 'personnages/:id/inventaire/intro',
@@ -141,8 +139,7 @@ export const routes: Routes = [
   {
     path: 'personnages/:id/journal',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/game/journal/journal.page').then((m) => m.JournalPage),
+    loadComponent: () => import('./features/game/journal/journal.page').then((m) => m.JournalPage),
   },
   {
     path: 'personnages/:id/victoire',

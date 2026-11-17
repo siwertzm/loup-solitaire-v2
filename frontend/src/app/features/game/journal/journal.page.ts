@@ -1,4 +1,11 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, ViewWillEnter } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -31,6 +38,7 @@ import { NavBarComponent } from '../../shared/nav-bar/nav-bar.component';
   standalone: true,
   imports: [IonContent, TranslatePipe, NavBarComponent],
   templateUrl: './journal.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './journal.page.scss',
 })
 export class JournalPage implements ViewWillEnter {

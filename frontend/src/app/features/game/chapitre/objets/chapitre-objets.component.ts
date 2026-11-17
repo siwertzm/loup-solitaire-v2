@@ -9,6 +9,7 @@ import {
   OnDestroy,
   output,
   signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
@@ -57,6 +58,7 @@ import { InventaireSheetService } from '../../../../core/services/inventaire-she
   standalone: true,
   imports: [TranslatePipe],
   templateUrl: './chapitre-objets.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './chapitre-objets.component.scss',
 })
 export class ChapitreObjetsComponent implements OnDestroy {
@@ -99,9 +101,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
       .reduce((total, i) => total + i.quantite, 0),
   );
 
-  readonly objetsEtRepasCount = computed(
-    () => this.objetsCount() + this.repasCount(),
-  );
+  readonly objetsEtRepasCount = computed(() => this.objetsCount() + this.repasCount());
 
   readonly possedeSac = computed(() => possedeSacADos(this.inventaire()));
 
@@ -166,12 +166,10 @@ export class ChapitreObjetsComponent implements OnDestroy {
   private appuiTimeout: ReturnType<typeof setTimeout> | null = null;
   private appuiInterval: ReturnType<typeof setInterval> | null = null;
 
-  private objetMaintenu:
-    | {
-        objetId: string;
-        optionnel: boolean;
-      }
-    | null = null;
+  private objetMaintenu: {
+    objetId: string;
+    optionnel: boolean;
+  } | null = null;
 
   private appuiLongEnCours = false;
 
@@ -202,9 +200,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
    */
   categorieObjet(objetId: string): string | null {
     return (
-      this.tousObjets().find(
-        (o) => o.id.toLowerCase() === objetId.toLowerCase(),
-      )?.categorie ?? null
+      this.tousObjets().find((o) => o.id.toLowerCase() === objetId.toLowerCase())?.categorie ?? null
     );
   }
 
@@ -238,9 +234,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
   }
 
   /** Objets actuellement possédés dans une catégorie (pour le popup "libérer de la place"). */
-  itemsDeCategorie(
-    categorie: string | null,
-  ): (InventaireItem & { maitrisee?: boolean })[] {
+  itemsDeCategorie(categorie: string | null): (InventaireItem & { maitrisee?: boolean })[] {
     if (categorie === 'ARME') {
       const maitriseeNom = this.personnage()?.armeMaitrisee ?? null;
 
@@ -253,9 +247,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
     }
 
     if (categorie === 'OBJET' || categorie === 'REPAS') {
-      return this.inventaire().filter(
-        (i) => i.categorie === 'OBJET' || i.categorie === 'REPAS',
-      );
+      return this.inventaire().filter((i) => i.categorie === 'OBJET' || i.categorie === 'REPAS');
     }
 
     return this.inventaire().filter((i) => i.categorie === categorie);
@@ -268,9 +260,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
 
       case 'OBJET':
       case 'REPAS':
-        return this.translate.instant(
-          'CHAPITRE_OBJETS.LIBELLE_OBJETS_REPAS',
-        );
+        return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_OBJETS_REPAS');
 
       case 'BOURSE':
         return this.translate.instant('CHAPITRE_OBJETS.LIBELLE_BOURSE');
@@ -297,10 +287,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
    * On attend 400 ms avant de considérer qu'il s'agit d'un appui long.
    * Avant ce délai, le relâchement sera traité comme un clic classique.
    */
-  demarrerAppui(
-    objet: { objetId: string; optionnel: boolean },
-    event: PointerEvent,
-  ): void {
+  demarrerAppui(objet: { objetId: string; optionnel: boolean }, event: PointerEvent): void {
     if (this.restant(objet.objetId) <= 0) {
       return;
     }
@@ -319,10 +306,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
     event.preventDefault();
 
     this.appuiTimeout = setTimeout(() => {
-      if (
-        !this.objetMaintenu ||
-        this.objetMaintenu.objetId !== objet.objetId
-      ) {
+      if (!this.objetMaintenu || this.objetMaintenu.objetId !== objet.objetId) {
         return;
       }
 
@@ -346,10 +330,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
    * Pour une activation clavier, aucun pointerdown n'a eu lieu :
    * on conserve donc le comportement normal +1.
    */
-  gererClicObjet(objet: {
-    objetId: string;
-    optionnel: boolean;
-  }): void {
+  gererClicObjet(objet: { objetId: string; optionnel: boolean }): void {
     if (this.ignorerProchainClic) {
       this.ignorerProchainClic = false;
       return;
@@ -364,14 +345,8 @@ export class ChapitreObjetsComponent implements OnDestroy {
    * - l'inventaire n'est pas plein ;
    * - aucune requête précédente n'est encore en cours.
    */
-  private prendrePendantAppui(objet: {
-    objetId: string;
-    optionnel: boolean;
-  }): void {
-    if (
-      !this.objetMaintenu ||
-      this.objetMaintenu.objetId !== objet.objetId
-    ) {
+  private prendrePendantAppui(objet: { objetId: string; optionnel: boolean }): void {
+    if (!this.objetMaintenu || this.objetMaintenu.objetId !== objet.objetId) {
       return;
     }
 
@@ -452,10 +427,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
    * libération de place au lieu d'appeler l'API (qui refuserait de toute
    * façon, InventaireService plafonne aussi côté serveur).
    */
-  prendreObjet(objet: {
-    objetId: string;
-    optionnel: boolean;
-  }): void {
+  prendreObjet(objet: { objetId: string; optionnel: boolean }): void {
     if (this.restant(objet.objetId) <= 0) {
       return;
     }
@@ -476,10 +448,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
     this.executerRamassage(objet);
   }
 
-  private executerRamassage(objet: {
-    objetId: string;
-    optionnel: boolean;
-  }): void {
+  private executerRamassage(objet: { objetId: string; optionnel: boolean }): void {
     const id = this.personnageId();
 
     if (!id) {
@@ -497,9 +466,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
         // repasse donc directement à 0 plutôt que de décrémenter de 1.
         this.restants.update((r) => ({
           ...r,
-          [objet.objetId]: objet.optionnel
-            ? Math.max(0, this.restant(objet.objetId) - 1)
-            : 0,
+          [objet.objetId]: objet.optionnel ? Math.max(0, this.restant(objet.objetId) - 1) : 0,
         }));
 
         this.ramassageEnCours.set(null);
@@ -511,8 +478,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
       },
 
       error: (err) => {
-        console.error('Erreur lors du ramassage de l\'objet :', err,
-        );
+        console.error("Erreur lors du ramassage de l'objet :", err);
 
         this.ramassageEnCours.set(null);
         this.annulerAppui();
@@ -546,8 +512,7 @@ export class ChapitreObjetsComponent implements OnDestroy {
       },
 
       error: (err) => {
-        console.error('Erreur lors du retrait de l\'objet :', err,
-        );
+        console.error("Erreur lors du retrait de l'objet :", err);
 
         this.retraitPopupEnCours.set(null);
       },

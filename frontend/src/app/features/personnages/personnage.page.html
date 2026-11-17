@@ -4,7 +4,9 @@
       <div class="avatar">{{ initiale() }}</div>
       <div class="identite">
         <h1 class="titre">{{ nom() }}</h1>
-        <div class="sous-titre">{{ 'PERSONNAGE.SOUS_TITRE' | translate: { chapitre: chapitre() } }}</div>
+        <div class="sous-titre">
+          {{ 'PERSONNAGE.SOUS_TITRE' | translate: { chapitre: chapitre() } }}
+        </div>
       </div>
     </div>
 
@@ -12,7 +14,9 @@
       <div class="bloc stat-card habilite-card" [class.grise]="mort()">
         <span class="cle">{{ 'PERSONNAGE.LABEL_HABILITE' | translate }}</span>
         <span class="stat-value">{{ habilite() }}</span>
-        <span class="stat-detail">{{ 'PERSONNAGE.DETAIL_BASE' | translate: { valeur: habiliteMax() } }}</span>
+        <span class="stat-detail">{{
+          'PERSONNAGE.DETAIL_BASE' | translate: { valeur: habiliteMax() }
+        }}</span>
       </div>
 
       <div class="bloc stat-card endurance-card" [class.grise]="mort()">
@@ -20,10 +24,13 @@
         <span class="stat-value">{{ endurance() }}</span>
         @if (bonusEndurance() > 0) {
           <span class="stat-detail">{{
-            'PERSONNAGE.DETAIL_MAX_BONUS' | translate: { base: enduranceMaxBase(), bonus: bonusEndurance() }
+            'PERSONNAGE.DETAIL_MAX_BONUS'
+              | translate: { base: enduranceMaxBase(), bonus: bonusEndurance() }
           }}</span>
         } @else {
-          <span class="stat-detail">{{ 'PERSONNAGE.DETAIL_MAX' | translate: { valeur: enduranceMax() } }}</span>
+          <span class="stat-detail">{{
+            'PERSONNAGE.DETAIL_MAX' | translate: { valeur: enduranceMax() }
+          }}</span>
         }
       </div>
 
@@ -75,48 +82,63 @@
         <div class="popup-titre">{{ discipline.nom }}</div>
         <p class="popup-texte">{{ discipline.description }}</p>
         @if (discipline.id === 'MAITRISE_ARMES' && armeMaitrisee()) {
-          <div class="popup-arme-maitrisee">{{ 'PERSONNAGE.POPUP_ARME_MAITRISEE' | translate: { arme: armeMaitrisee() } }}</div>
+          <div class="popup-arme-maitrisee">
+            {{ 'PERSONNAGE.POPUP_ARME_MAITRISEE' | translate: { arme: armeMaitrisee() } }}
+          </div>
         }
-        <button type="button" class="fermer" (click)="fermerDescription()">{{ 'PERSONNAGE.FERMER' | translate }}</button>
+        <button type="button" class="fermer" (click)="fermerDescription()">
+          {{ 'PERSONNAGE.FERMER' | translate }}
+        </button>
       </div>
     </div>
   }
 
   <div class="pied">
-      @if (erreur()) {
-        <div class="erreur">{{ erreur() | translate }}</div>
-      }
-      @if (mort()) {
-        <!-- La résurrection elle-même (avec le cas du lien de retour
+    @if (erreur()) {
+      <div class="erreur">{{ erreur() | translate }}</div>
+    }
+    @if (mort()) {
+      <!-- La résurrection elle-même (avec le cas du lien de retour
              narratif) reste sur ChapitrePage : on y renvoie plutôt que de
              dupliquer cette logique ici. -->
-        <button
-          type="button"
-          class="ressusciter"
-          [routerLink]="['/personnages', personnageId(), 'chapitre']"
-        >
-          {{ 'PERSONNAGE.RESSUSCITER' | translate }}
-        </button>
-      }
-      <div class="pied-ligne">
-        <button type="button" class="supprimer actif" [disabled]="suppressionEnCours()" (click)="ouvrirConfirmationSuppression()">
-          {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
-        </button>
-        <button type="button" class="valider" (click)="menu()">
-          {{ 'PERSONNAGE.CHANGER_PERSONNAGE' | translate }}
-        </button>
-      </div>
+      <button
+        type="button"
+        class="ressusciter"
+        [routerLink]="['/personnages', personnageId(), 'chapitre']"
+      >
+        {{ 'PERSONNAGE.RESSUSCITER' | translate }}
+      </button>
+    }
+    <div class="pied-ligne">
+      <button
+        type="button"
+        class="supprimer actif"
+        [disabled]="suppressionEnCours()"
+        (click)="ouvrirConfirmationSuppression()"
+      >
+        {{ 'EQUIPEMENT.SUPPRIMER' | translate }}
+      </button>
+      <button type="button" class="valider" (click)="menu()">
+        {{ 'PERSONNAGE.CHANGER_PERSONNAGE' | translate }}
+      </button>
     </div>
+  </div>
 
   @if (confirmationSuppression()) {
     <div class="voile voile-suppression" (click)="annulerSuppression()">
       <div class="popup popup-suppression" (click)="$event.stopPropagation()">
         <div class="surtitre">{{ 'PERSONNAGE.POPUP_ATTENTION' | translate }}</div>
-        <div class="popup-titre">{{ 'PERSONNAGE.POPUP_TITRE_SUPPRESSION' | translate: { nom: nom() } }}</div>
+        <div class="popup-titre">
+          {{ 'PERSONNAGE.POPUP_TITRE_SUPPRESSION' | translate: { nom: nom() } }}
+        </div>
         <p class="popup-texte">{{ 'PERSONNAGE.POPUP_TEXTE_SUPPRESSION' | translate }}</p>
         <div class="popup-actions">
-          <button type="button" class="popup-annuler" (click)="annulerSuppression()">{{ 'PERSONNAGE.POPUP_ANNULER' | translate }}</button>
-          <button type="button" class="popup-confirmer" (click)="confirmerSuppression()">{{ 'PERSONNAGE.POPUP_CONFIRMER_SUPPRIMER' | translate }}</button>
+          <button type="button" class="popup-annuler" (click)="annulerSuppression()">
+            {{ 'PERSONNAGE.POPUP_ANNULER' | translate }}
+          </button>
+          <button type="button" class="popup-confirmer" (click)="confirmerSuppression()">
+            {{ 'PERSONNAGE.POPUP_CONFIRMER_SUPPRIMER' | translate }}
+          </button>
         </div>
       </div>
     </div>

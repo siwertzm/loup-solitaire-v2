@@ -26,7 +26,7 @@ export class ChapitreService {
   avancerVersChapitre(personnageId: string, chapitreCibleId: number): Observable<PersonnageResume> {
     return this.http.post<PersonnageResume>(
       `${this.base}/personnages/${personnageId}/chapitre/${chapitreCibleId}`,
-      {}
+      {},
     );
   }
 
@@ -37,7 +37,7 @@ export class ChapitreService {
   revenirApresDefaite(personnageId: string): Observable<PersonnageResume> {
     return this.http.post<PersonnageResume>(
       `${this.base}/personnages/${personnageId}/chapitre/revenir-apres-defaite`,
-      {}
+      {},
     );
   }
 

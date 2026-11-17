@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -29,6 +29,7 @@ interface DisciplineAffichee {
   standalone: true,
   imports: [IonContent, IonIcon, TranslatePipe, NavBarComponent, RouterLink],
   templateUrl: './personnage.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './personnage.page.scss',
 })
 export class PersonnagePage implements ViewWillEnter {
@@ -47,7 +48,11 @@ export class PersonnagePage implements ViewWillEnter {
   readonly confirmationSuppression = signal(false);
 
   readonly nom = computed(() => this.personnage()?.nom ?? '');
-  readonly initiale = computed(() => this.nom().trim().charAt(0).toUpperCase() || this.translate.instant('PERSONNAGE.INITIALE_PAR_DEFAUT'));
+  readonly initiale = computed(
+    () =>
+      this.nom().trim().charAt(0).toUpperCase() ||
+      this.translate.instant('PERSONNAGE.INITIALE_PAR_DEFAUT'),
+  );
   readonly chapitre = computed(() => this.personnage()?.chapitreActuelId ?? 1);
   readonly habilite = computed(
     () => (this.personnage()?.habilite ?? 0) + (this.personnage()?.habiliteTemp ?? 0),

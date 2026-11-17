@@ -8,20 +8,12 @@ $vert-succes: #9fb77a;
 
 ion-content.auth-page {
   --background: #{$foret};
-  --ion-font-family:
-    'EB Garamond',
-    Georgia,
-    'Times New Roman',
-    serif;
+  --ion-font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
   --ion-text-color: #{$parchemin};
 
   color: $parchemin;
 
-  font-family:
-    'EB Garamond',
-    Georgia,
-    'Times New Roman',
-    serif;
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
 }
 
 .verify-shell {
@@ -36,16 +28,8 @@ ion-content.auth-page {
   padding: 32px 22px;
 
   background:
-    radial-gradient(
-      120% 80% at 50% 0%,
-      rgba(217, 169, 74, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      100% 70% at 50% 100%,
-      rgba(0, 0, 0, 0.45),
-      transparent 65%
-    );
+    radial-gradient(120% 80% at 50% 0%, rgba(217, 169, 74, 0.1), transparent 60%),
+    radial-gradient(100% 70% at 50% 100%, rgba(0, 0, 0, 0.45), transparent 65%);
 }
 
 .verify-card {
@@ -53,20 +37,15 @@ ion-content.auth-page {
 
   padding: 30px 26px 24px;
 
-  border:
-    1px solid
-    rgba(217, 169, 74, 0.18);
+  border: 1px solid rgba(217, 169, 74, 0.18);
 
   border-radius: 18px;
 
-  background:
-    rgba(20, 26, 16, 0.76);
+  background: rgba(20, 26, 16, 0.76);
 
   box-shadow:
-    0 24px 60px
-      rgba(0, 0, 0, 0.38),
-    inset 0 1px
-      rgba(236, 226, 200, 0.06);
+    0 24px 60px rgba(0, 0, 0, 0.38),
+    inset 0 1px rgba(236, 226, 200, 0.06);
 
   backdrop-filter: blur(8px);
 
@@ -92,8 +71,7 @@ ion-content.auth-page {
 
     font-family: 'Cinzel', serif;
 
-    font-size:
-      clamp(1.5rem, calc(7vw * var(--echelle-texte, 1)), 1.9375rem);
+    font-size: clamp(1.5rem, calc(7vw * var(--echelle-texte, 1)), 1.9375rem);
 
     font-weight: 600;
 
@@ -103,8 +81,7 @@ ion-content.auth-page {
   }
 
   .sous-titre {
-    color:
-      rgba(236, 226, 200, 0.62);
+    color: rgba(236, 226, 200, 0.62);
 
     font-size: 0.9375rem;
     font-style: italic;
@@ -128,8 +105,7 @@ h2 {
 .introduction {
   margin: 0 0 26px;
 
-  color:
-    rgba(236, 226, 200, 0.58);
+  color: rgba(236, 226, 200, 0.58);
 
   font-size: 1rem;
   font-style: italic;
@@ -152,8 +128,7 @@ form {
 
     margin: 0 0 7px 2px;
 
-    color:
-      rgba(236, 226, 200, 0.68);
+    color: rgba(236, 226, 200, 0.68);
 
     font-family: 'Cinzel', serif;
     font-size: 0.625rem;
@@ -164,8 +139,7 @@ form {
   }
 
   ion-input {
-    --background:
-      rgba(236, 226, 200, 0.07);
+    --background: rgba(236, 226, 200, 0.07);
 
     --color: #{$parchemin};
 
@@ -176,12 +150,9 @@ form {
     --padding-start: 14px;
     --padding-top: 13px;
 
-    --placeholder-color:
-      rgba(236, 226, 200, 0.32);
+    --placeholder-color: rgba(236, 226, 200, 0.32);
 
-    border:
-      1px solid
-      rgba(236, 226, 200, 0.16);
+    border: 1px solid rgba(236, 226, 200, 0.16);
 
     border-radius: 10px;
   }
@@ -210,23 +181,17 @@ form {
 }
 
 .erreur {
-  border:
-    1px solid
-    rgba(224, 112, 90, 0.35);
+  border: 1px solid rgba(224, 112, 90, 0.35);
 
-  background:
-    rgba(224, 112, 90, 0.1);
+  background: rgba(224, 112, 90, 0.1);
 
   color: $rouge;
 }
 
 .message {
-  border:
-    1px solid
-    rgba(159, 183, 122, 0.35);
+  border: 1px solid rgba(159, 183, 122, 0.35);
 
-  background:
-    rgba(159, 183, 122, 0.08);
+  background: rgba(159, 183, 122, 0.08);
 
   color: $vert-succes;
 }
@@ -234,8 +199,7 @@ form {
 .action-principale {
   --background: #{$cuivre};
 
-  --background-activated:
-    #{$or};
+  --background-activated: #{$or};
 
   --border-radius: 10px;
 
@@ -267,13 +231,9 @@ form {
 
   background: transparent;
 
-  color:
-    rgba(236, 226, 200, 0.58);
+  color: rgba(236, 226, 200, 0.58);
 
-  font-family:
-    'EB Garamond',
-    Georgia,
-    serif;
+  font-family: 'EB Garamond', Georgia, serif;
 
   font-size: 0.9375rem;
 
@@ -289,7 +249,6 @@ form {
 }
 
 @media (max-width: 380px) {
-
   .verify-shell {
     padding: 20px 14px;
   }

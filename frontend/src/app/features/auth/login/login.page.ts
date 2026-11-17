@@ -1,15 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import {
-  IonContent,
-  IonInput,
-  IonButton,
-  IonNote,
-  IonInputPasswordToggle,
-} from '@ionic/angular';
+import { IonContent, IonInput, IonButton, IonNote, IonInputPasswordToggle } from '@ionic/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -27,6 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
     TranslatePipe,
   ],
   templateUrl: './login.page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './login.page.scss',
 })
 export class LoginPage {
@@ -71,7 +66,9 @@ export class LoginPage {
           this.compteNonVerifie.set(true);
           return;
         }
-        this.erreur.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_IDENTIFIANTS');
+        this.erreur.set(
+          err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_IDENTIFIANTS',
+        );
       },
     });
   }
@@ -92,7 +89,9 @@ export class LoginPage {
       },
       error: (err: HttpErrorResponse) => {
         this.renvoiEnCours.set(false);
-        this.erreurRenvoi.set(err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_RENVOI');
+        this.erreurRenvoi.set(
+          err.status === 429 ? 'AUTH.ERREUR_TROP_DE_TENTATIVES' : 'AUTH.LOGIN.ERREUR_RENVOI',
+        );
       },
     });
   }
