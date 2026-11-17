@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | S | `fix-QUAL-21` | À faire |
+| 3 | Basse | S | `fix-QUAL-21` | Fait |
 
 Origine : second audit Claude Code du 17/11/2026 (point 2)
 
@@ -23,3 +23,7 @@ Changer une seule valeur d'un côté fait échouer `./mvnw test`.
 ## Fichiers concernés
 
 Nouveau test sous `backend/src/test/.../service/` ; `table-combat.data.ts` et `TableCombatService.java` en lecture
+
+## Réalisation (17/11/2026)
+
+`TablesCombatPageReglesTest` (JUnit simple, sans Spring) extrait les quatre tableaux du `.ts` et les compare case par case aux méthodes publiques de `TableCombatService`, dimensions comprises. Vérifié : une valeur changée dans le `.ts` (DEGATS_INFLIGES) puis dans le `.java` (BONUS_HABILITE) fait échouer le test, avec la table, la colonne et le chiffre dans le message.

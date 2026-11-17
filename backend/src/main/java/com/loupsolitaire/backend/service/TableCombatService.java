@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 // signifie un coup fatal net (mort immediate du camp concerne), traite
 // comme n'importe quel degat par l'appelant (la verification "<= 0" suffit
 // a declencher la mort correctement).
+//
+// Copie affichee dans la page des regles (frontend, table-combat.data.ts) :
+// TablesCombatPageReglesTest (QUAL-21) echoue si elle n'est pas mise a jour.
 @Service
 public class TableCombatService {
 
