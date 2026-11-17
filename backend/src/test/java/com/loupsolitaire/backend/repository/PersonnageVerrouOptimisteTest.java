@@ -95,6 +95,10 @@ class PersonnageVerrouOptimisteTest {
         });
     }
 
+    // +2 par action (QUAL-20) : derniereActivite change toujours la ligne
+    // (UPDATE normal, +1), puis le verrou force son propre increment (+1).
+    private static final long INCREMENT_PAR_ACTION = 2;
+
     private long versionActuelle() {
         return transaction.execute(status ->
                 personnageRepository.findById(personnageId).orElseThrow().getVersion());
@@ -108,7 +112,7 @@ class PersonnageVerrouOptimisteTest {
         transaction.executeWithoutResult(status ->
                 personnageRepository.findByIdPourModification(personnageId).orElseThrow());
 
-        assertThat(versionActuelle()).isEqualTo(avant + 1);
+        assertThat(versionActuelle()).isEqualTo(avant + INCREMENT_PAR_ACTION);
     }
 
     @Test
@@ -136,6 +140,6 @@ class PersonnageVerrouOptimisteTest {
         })).isInstanceOf(OptimisticLockingFailureException.class);
 
         // Seule l'action de B a ete appliquee.
-        assertThat(versionActuelle()).isEqualTo(avant + 1);
+        assertThat(versionActuelle()).isEqualTo(avant + INCREMENT_PAR_ACTION);
     }
 }
