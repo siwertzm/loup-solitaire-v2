@@ -8,7 +8,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode Integer.parseInt(System.getenv("VERSION_CODE") ?: "1")
-        versionName "1.0"
+        // QUAL-23 : version unique dans frontend/package.json (comparee a APP_VERSION_MINIMALE)
+        versionName new groovy.json.JsonSlurper().parse(rootProject.file('../package.json')).version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

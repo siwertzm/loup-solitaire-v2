@@ -65,6 +65,20 @@ npx cap open android   # nécessite Android Studio
 npx cap open ios       # nécessite Xcode (macOS uniquement)
 ```
 
+### Version de l'app (QUAL-23)
+
+La version affichée dans les stores vient d'un seul endroit : `"version"` de
+`package.json`. Gradle la lit pour `versionName` (Android) et le workflow
+`testflight.yml` la passe en `MARKETING_VERSION` (iOS). Les numéros de build
+(`versionCode`, `CURRENT_PROJECT_VERSION`) suivent le numéro de run de la CI.
+
+C'est cette version que l'app compare à `APP_VERSION_MINIMALE` (`GET /version`).
+Pour une release qui doit forcer la mise à jour :
+
+1. `npm version 1.1.0 --no-git-tag-version` (met à jour `package.json` et `package-lock.json`), PR, merge ;
+2. lancer les workflows Android et TestFlight, publier dans les deux stores ;
+3. **ensuite seulement**, mettre `APP_VERSION_MINIMALE=1.1.0` sur Render.
+
 ## Configuration
 
 L'URL de l'API se règle dans `src/environments/` :
