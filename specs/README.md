@@ -50,7 +50,7 @@ Toutes les tâches du lot 2 sont faites, abandonnées ou reportées au lot 3 (vo
 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
-| [DATA-19](lot-3/DATA-19-donnees-anglaises/spec.md) | Basse | M | Jeu de données anglais du livre (texte officiel de la VO uniquement) — ennemis, disciplines et objets faits ; chapitres, puis chargement en base |
+| [DATA-19](lot-3/DATA-19-donnees-anglaises/spec.md) | Basse | M | Jeu de données anglais du livre (texte officiel de la VO uniquement) — les quatre fichiers faits ; reste le chargement en base par langue |
 | [QUAL-04](lot-3/QUAL-04-portefeuille-coins/spec.md) | Haute (MVP2) | L | Portefeuille de coins |
 | [REGLE-15](lot-3/REGLE-15-coin-decompte/spec.md) | Moyenne | M | Coin décompté à chaque retour ou résurrection (reporté du lot 2, à faire avec QUAL-04 ; met `CLAUDE.md` à jour) |
 | [QUAL-05](lot-3/QUAL-05-multi-tomes/spec.md) | Moyenne (MVP2) | L | Modèle multi-tomes |
