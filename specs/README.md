@@ -10,9 +10,9 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Ajouts du porteur du projet pour le lot 3 : REGLE-18 et REGLE-19 (Guérison, édition augmentée), QUAL-17 (dialogue du combat). Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Chaque tâche garde son dossier une fois finie. Quand une tâche est finie : passer son statut à « Fait » dans son `spec.md`, la retirer du tableau « Tâches à faire » et l'ajouter dans « Avancement ».
 
-## Avancement (17/11/2026)
+## Avancement (18/11/2026)
 
-**Lots 1 et 2 terminés.** Reste pour OPS-06 : un test de restauration chez Render (voir `backend/README.md`). Prochaines tâches : lot « Bêta-test » (OPS-09, OPS-10), lot 3.
+**Lots 1 et 2 terminés.** Reste pour OPS-06 : un test de restauration chez Render (voir `backend/README.md`). Prochaines tâches : lot « Bêta-test » (OPS-09 en attente des 14 jours, puis OPS-11 et OPS-12), lot 3.
 
 **Fait** (statut « Fait » dans le `spec.md`, PR fusionnées jusqu'à la #77) :
 - Lot 1 : SEC-09, SEC-10, OPS-08, QUAL-07, OPS-06 (test chez Render à faire).
@@ -22,6 +22,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - Lot 2, étape D : QUAL-08 (Pièces Premium du profil laissées à 999, à revoir avec REGLE-15), REGLE-04, QUAL-16, REGLE-17 (un seul Sac à Dos, ajoutée le 16/11/2026), QUAL-12, QUAL-10.
 - Lot 3 : QUAL-17 (boîte de dialogue du combat agrandie), REGLE-10 + DATA-12 (malus du Vordak à partir du 2e assaut, affiché sur la carte), QUAL-03 (convention de nommage), REGLE-18 (pas de Guérison sur un chapitre à perte d'ENDURANCE ; on reste sur la VO), QUAL-15 (page Options : taille du texte), RGPD-02 (export des données par email), [SEC-11](lot-3/SEC-11-audit-securite/spec.md) (audit du 16/11 : compte deviné au temps de réponse, rafraîchissements simultanés), OPS-07 (requêtes SQL mesurées, N+1 de la liste des personnages supprimé), DATA-11 (décision D-11 : FUITE dès la première action aux 191, 220 et 339 ; type `evitement` pour partir sans combattre aux 112 et 180), [DATA-18](lot-3/DATA-18-112-apres-victoire/spec.md) (112 : le 248 aussi proposé après une victoire, `evitement=1`), [SEC-12](lot-3/SEC-12-plafond-personnages/spec.md) (au plus 20 personnages par compte), [QUAL-18](lot-3/QUAL-18-regles-en-double/spec.md) (gardes « mort » et protections écrites une seule fois), [QUAL-19](lot-3/QUAL-19-commentaires-et-readme/spec.md) (commentaires et README alignés : Pièce Premium non consommée), [QUAL-20](lot-3/QUAL-20-derniere-activite/spec.md) (« Dernière activité » mise à jour par toute action de jeu), [QUAL-21](lot-3/QUAL-21-tables-combat-synchronisees/spec.md) (tables de combat de la page des règles vérifiées contre le serveur), [SEC-13](lot-3/SEC-13-blocage-connexion-par-compte/spec.md) (blocage après mots de passe faux compté par compte).
 - Bêta-test, corrections du 17/11/2026 (PR #104 à #110, sans spec) : SEC-14 (lien de vérification d'email ouvert dans l'app Android, `allowBackup` désactivé), QUAL-22 (icône et splash Android, splash iOS), RGPD-05 (page web de suppression du compte exigée par Google Play), QUAL-23 (version de l'app unique dans `package.json`), QUAL-24 et QUAL-25 (contenu au-dessus des boutons de navigation Android, fond des pages dessous). Google Play : compte, app, fiche et formulaires faits, test interne avec envoi automatique par la CI.
+- Bêta-test : [OPS-10](beta-test/OPS-10-testflight-ios/spec.md) (18/11/2026 : compte Apple régularisé, TestFlight relancé et vérifié sur iPhone, `ITSAppUsesNonExemptEncryption` = `false`).
 - Abandonné : REGLE-01 + REGLE-02 (16/11/2026, décision D-12 : combat maison gardé), DATA-05 (16/11/2026, décision D-11 : le 112 → 248 reste un départ sans combat), REGLE-06, DATA-16 (16/11/2026 : les 4 Repas du 184 restent automatiques, le joueur retire ceux qu'il ne veut pas), QUAL-14 (16/11/2026 : les URL du jeu gardent l'id du personnage). Reporté au lot 3 : RGPD-02, REGLE-15 (16/11/2026, avec QUAL-04).
 
 ## Tâches à faire
@@ -31,11 +32,10 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
 | [OPS-09](beta-test/OPS-09-test-ferme-android/spec.md) | Haute | S + 14 jours | Test fermé Android (12 testeurs / 14 jours) — en cours : console et workflow faits, 14 jours en attente des inscriptions |
-| [OPS-10](beta-test/OPS-10-testflight-ios/spec.md) | Haute | S | Version iOS : reprise de TestFlight (bloqué : compte Apple Developer), vérifications sur iPhone |
 | [OPS-11](beta-test/OPS-11-production-android/spec.md) | Moyenne | S | Production Android, après OPS-09 |
 | [OPS-12](beta-test/OPS-12-production-ios/spec.md) | Moyenne | M | Production iOS (App Store), après OPS-10 |
 
-Ordre : OPS-09 et OPS-10 en parallèle (l'un attend 14 jours, l'autre le compte Apple), puis OPS-11 et OPS-12.
+Ordre : OPS-11 après les 14 jours d'OPS-09 ; OPS-12 possible dès maintenant (OPS-10 fait).
 
 ### Lot 1 — avant d'élargir le test TestFlight
 
