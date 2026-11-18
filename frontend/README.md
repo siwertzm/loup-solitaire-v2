@@ -79,6 +79,9 @@ Pour une release qui doit forcer la mise à jour :
 2. lancer les workflows Android et TestFlight, publier dans les deux stores ;
 3. **ensuite seulement**, mettre `APP_VERSION_MINIMALE=1.1.0` sur Render.
 
+Le workflow Android (`android-internal-test.yml`, « Android Play ») envoie sur la piste
+choisie à son lancement : `internal` (test interne, par défaut) ou `alpha` (test fermé, OPS-09).
+
 ## Configuration
 
 L'URL de l'API se règle dans `src/environments/` :
