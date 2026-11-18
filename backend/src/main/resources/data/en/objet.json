@@ -1,0 +1,242 @@
+[
+  {
+    "id": "poignard",
+    "nom": "Dagger",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "glaive",
+    "nom": "Broadsword",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "lance",
+    "nom": "Spear",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "epee",
+    "nom": "Sword",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "marteau",
+    "nom": "Warhammer",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "sabre",
+    "nom": "Short Sword",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "masse",
+    "nom": "Mace",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "hache",
+    "nom": "Axe",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "baton",
+    "nom": "Quarterstaff",
+    "description": "",
+    "categorie": "arme",
+    "effet": null
+  },
+  {
+    "id": "casque",
+    "nom": "Helmet",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": [
+      {
+        "type": "endurance",
+        "valeur": 2,
+        "cond": null
+      }
+    ]
+  },
+  {
+    "id": "cotte_de_mailles",
+    "nom": "Chainmail Waistcoat",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": [
+      {
+        "type": "endurance",
+        "valeur": 4,
+        "cond": null
+      }
+    ]
+  },
+  {
+    "id": "potion_de_soin",
+    "nom": "Healing Potion",
+    "description": "",
+    "categorie": "objet",
+    "effet": [
+      {
+        "type": "endurance",
+        "valeur": 4,
+        "cond": null
+      }
+    ]
+  },
+  {
+    "id": "pierre_de_vordak",
+    "nom": "Vordak Gem",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "repas",
+    "nom": "Meal",
+    "description": "",
+    "categorie": "repas",
+    "effet": null
+  },
+  {
+    "id": "cle_or",
+    "nom": "Golden Key",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "or",
+    "nom": "Gold Crowns",
+    "description": "",
+    "categorie": "bourse",
+    "effet": null
+  },
+  {
+    "id": "laumspur",
+    "nom": "Laumspur",
+    "description": "",
+    "categorie": "objet",
+    "effet": [
+      {
+        "type": "endurance",
+        "valeur": 3,
+        "cond": null
+      }
+    ]
+  },
+  {
+    "id": "cle_argent",
+    "nom": "Silver Key",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "pierres_tombeau",
+    "nom": "20 Tomb Guardian Gems",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "pierre_precieuse",
+    "nom": "Gem",
+    "description": "",
+    "categorie": "bourse",
+    "effet": null
+  },
+  {
+    "id": "essence_alether",
+    "nom": "Alether",
+    "description": "",
+    "categorie": "objet",
+    "effet": [
+      {
+        "type": "habilite",
+        "valeur": 2,
+        "cond": null
+      }
+    ]
+  },
+  {
+    "id": "parchemin",
+    "nom": "Scroll",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "torche",
+    "nom": "Torch",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "message",
+    "nom": "Message",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "savon",
+    "nom": "Tablet of Perfumed Soap",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "briquet_amadou",
+    "nom": "Tinderbox",
+    "description": "",
+    "categorie": "objet",
+    "effet": null
+  },
+  {
+    "id": "etoile_cristal",
+    "nom": "Crystal Star Pendant",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "sac_a_dos",
+    "nom": "Backpack",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "carte",
+    "nom": "Map of Sommerlund",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  },
+  {
+    "id": "coin",
+    "nom": "Premium Coin",
+    "description": "",
+    "categorie": "objets spéciaux",
+    "effet": null
+  }
+]

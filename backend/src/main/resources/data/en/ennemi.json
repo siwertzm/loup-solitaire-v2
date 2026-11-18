@@ -1,0 +1,287 @@
+[
+  {
+    "id": "kraan",
+    "nom": "Kraan",
+    "description": "",
+    "habilite": 16,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
+    "id": "kraan_229",
+    "nom": "Kraan",
+    "description": "",
+    "habilite": 16,
+    "endurance": 25,
+    "resistance": []
+  },
+  {
+    "id": "vordak",
+    "nom": "Vordak",
+    "description": "",
+    "habilite": 17,
+    "endurance": 25,
+    "resistance": [],
+    "disciplines": [
+      {
+        "id": "puissance_psychique"
+      }
+    ]
+  },
+  {
+    "id": "vordak_puissant",
+    "nom": "Vordak",
+    "description": "",
+    "habilite": 18,
+    "endurance": 26,
+    "resistance": [
+      {
+        "id": "puissance_psychique"
+      }
+    ],
+    "disciplines": [
+      {
+        "id": "puissance_psychique"
+      }
+    ]
+  },
+  {
+    "id": "ours_noir",
+    "nom": "Black Bear",
+    "description": "",
+    "habilite": 16,
+    "endurance": 10,
+    "resistance": []
+  },
+  {
+    "id": "glok",
+    "nom": "Giak",
+    "description": "",
+    "habilite": 9,
+    "endurance": 9,
+    "resistance": []
+  },
+  {
+    "id": "vieil_homme_fou",
+    "nom": "Madman",
+    "description": "",
+    "habilite": 11,
+    "endurance": 10,
+    "resistance": []
+  },
+  {
+    "id": "glok_loup_maudit",
+    "nom": "Giak + Doomwolf",
+    "description": "",
+    "habilite": 15,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
+    "id": "glok_loup_maudit_340",
+    "nom": "Giak + Doomwolf",
+    "description": "",
+    "habilite": 14,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
+    "id": "glok_premier_112",
+    "nom": "Giak 1",
+    "description": "",
+    "habilite": 13,
+    "endurance": 10,
+    "resistance": []
+  },
+  {
+    "id": "glok_deuxieme_112",
+    "nom": "Giak 2",
+    "description": "",
+    "habilite": 12,
+    "endurance": 10,
+    "resistance": []
+  },
+  {
+    "id": "serpent_aile",
+    "nom": "Winged Serpent",
+    "description": "",
+    "habilite": 16,
+    "endurance": 18,
+    "resistance": [
+      {
+        "id": "puissance_psychique"
+      }
+    ]
+  },
+  {
+    "id": "monstres_des_cryptes",
+    "nom": "Crypt Spawn",
+    "description": "",
+    "habilite": 16,
+    "endurance": 16,
+    "resistance": []
+  },
+  {
+    "id": "gluatre",
+    "nom": "Burrowcrawler",
+    "description": "",
+    "habilite": 17,
+    "endurance": 7,
+    "resistance": [
+      {
+        "id": "puissance_psychique"
+      },
+      {
+        "id": "communication_animale"
+      }
+    ]
+  },
+  {
+    "id": "chef_soldats",
+    "nom": "Leader",
+    "description": "",
+    "habilite": 15,
+    "endurance": 22,
+    "resistance": []
+  },
+  {
+    "id": "soldat_premier",
+    "nom": "Soldier 1",
+    "description": "",
+    "habilite": 13,
+    "endurance": 20,
+    "resistance": []
+  },
+  {
+    "id": "soldat_deuxieme",
+    "nom": "Soldier 2",
+    "description": "",
+    "habilite": 12,
+    "endurance": 20,
+    "resistance": []
+  },
+  {
+    "id": "garde_corps",
+    "nom": "Bodyguard",
+    "description": "",
+    "habilite": 11,
+    "endurance": 21,
+    "resistance": []
+  },
+  {
+    "id": "garde_corps_220",
+    "nom": "Bodyguard",
+    "description": "",
+    "habilite": 11,
+    "endurance": 20,
+    "resistance": []
+  },
+  {
+    "id": "gloks",
+    "nom": "Giaks",
+    "description": "",
+    "habilite": 15,
+    "endurance": 13,
+    "resistance": []
+  },
+  {
+    "id": "vipere",
+    "nom": "Marshviper",
+    "description": "",
+    "habilite": 16,
+    "endurance": 6,
+    "resistance": []
+  },
+  {
+    "id": "voleur",
+    "nom": "Robber",
+    "description": "",
+    "habilite": 13,
+    "endurance": 20,
+    "resistance": []
+  },
+  {
+    "id": "drakkarim",
+    "nom": "Drakkar",
+    "description": "",
+    "habilite": 15,
+    "endurance": 23,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_1",
+    "nom": "Doomwolf 1",
+    "description": "",
+    "habilite": 13,
+    "endurance": 24,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_2",
+    "nom": "Doomwolf 2",
+    "description": "",
+    "habilite": 14,
+    "endurance": 23,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_3",
+    "nom": "Doomwolf 3",
+    "description": "",
+    "habilite": 14,
+    "endurance": 22,
+    "resistance": []
+  },
+  {
+    "id": "loup_maudit_4",
+    "nom": "Doomwolf 4",
+    "description": "",
+    "habilite": 15,
+    "endurance": 21,
+    "resistance": []
+  },
+  {
+    "id": "gourgaz",
+    "nom": "Gourgaz",
+    "description": "",
+    "habilite": 20,
+    "endurance": 30,
+    "resistance": [
+      {
+        "id": "puissance_psychique"
+      }
+    ]
+  },
+  {
+    "id": "glok_premier_260",
+    "nom": "Giak 1",
+    "description": "",
+    "habilite": 11,
+    "endurance": 18,
+    "resistance": []
+  },
+  {
+    "id": "glok_deuxieme_260",
+    "nom": "Giak 2",
+    "description": "",
+    "habilite": 12,
+    "endurance": 17,
+    "resistance": []
+  },
+  {
+    "id": "glok_premier_336",
+    "nom": "Giak 1",
+    "description": "",
+    "habilite": 14,
+    "endurance": 11,
+    "resistance": []
+  },
+  {
+    "id": "glok_deuxieme_336",
+    "nom": "Giak 2",
+    "description": "",
+    "habilite": 13,
+    "endurance": 11,
+    "resistance": []
+  }
+]
