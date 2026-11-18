@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| Bêta-test | Haute | S | `fix-OPS-10` | À faire (bloqué : compte Apple Developer) |
+| Bêta-test | Haute | S | `fix-OPS-10` | Fait |
 
 Origine : audit du déploiement du 17/11/2026
 
@@ -39,3 +39,10 @@ Parcours manuel sur iPhone (critères ci-dessus).
 ## À demander avant de commencer
 
 - Le compte Apple Developer est-il régularisé ?
+
+## Fait (18/11/2026)
+
+- Compte Apple Developer régularisé ; `testflight.yml` réussi le 18/11/2026, build en version 1.0.0.
+- `Info.plist` : `ITSAppUsesNonExemptEncryption` = `false`.
+- `PrivacyInfo.xcprivacy` non ajouté : envoi accepté sans avertissement d'Apple (à ajouter si un email ITMS-91053 arrive).
+- Vérifié sur iPhone par le porteur du projet : icône et splash, lien de vérification d'email, bas des écrans, partie jouable.
