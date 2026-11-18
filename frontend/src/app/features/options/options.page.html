@@ -22,5 +22,24 @@
       </div>
       <p class="apercu">{{ 'OPTIONS.APERCU' | translate }}</p>
     </section>
+
+    <section class="bloc">
+      <h2 class="bloc-titre" id="titre-langue">{{ 'OPTIONS.LANGUE' | translate }}</h2>
+      <div class="choix" role="radiogroup" aria-labelledby="titre-langue">
+        @for (langue of langues; track langue) {
+          <button
+            type="button"
+            role="radio"
+            [attr.lang]="langue"
+            [class.actif]="options.langue() === langue"
+            [attr.aria-checked]="options.langue() === langue"
+            (click)="choisirLangue(langue)"
+          >
+            {{ 'OPTIONS.LANGUE_' + langue.toUpperCase() | translate }}
+          </button>
+        }
+      </div>
+      <p class="note">{{ 'OPTIONS.LANGUE_NOTE' | translate }}</p>
+    </section>
   </div>
 </ion-content>

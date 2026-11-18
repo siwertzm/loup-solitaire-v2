@@ -81,6 +81,16 @@ ion-content.options {
   }
 }
 
+.bloc + .bloc {
+  margin-top: 14px;
+}
+
+.note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(236, 226, 200, 0.6);
+}
+
 .apercu {
   margin: 0;
   font-size: 1.0625rem;

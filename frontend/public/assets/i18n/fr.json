@@ -134,7 +134,11 @@
     "TAILLE_PETITE": "PETITE",
     "TAILLE_NORMALE": "NORMALE",
     "TAILLE_GRANDE": "GRANDE",
-    "APERCU": "Vous êtes à trois mètres environ de l'étranger lorsque son corbeau se met à croasser."
+    "APERCU": "Vous êtes à trois mètres environ de l'étranger lorsque son corbeau se met à croasser.",
+    "LANGUE": "LANGUE",
+    "LANGUE_FR": "Français",
+    "LANGUE_EN": "English",
+    "LANGUE_NOTE": "Le texte de l'aventure reste en français pour l'instant."
   },
   "PROFIL": {
     "RETOUR": "‹ ACCUEIL",
