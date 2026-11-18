@@ -24,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     // aussi dans la console). Sans DSN, Sentry n'envoie rien.
     { provide: ErrorHandler, useValue: Sentry.createErrorHandler() },
     provideZonelessChangeDetection(),
-    // QUAL-15 : taille du texte appliquée avant le premier affichage.
+    // QUAL-15 / QUAL-09 : taille du texte et langue appliquées avant le premier affichage.
     provideAppInitializer(() => inject(OptionsService).charger()),
     provideIonicAngular({}),
     provideRouter(routes, withPreloading(PreloadAllModules)),
@@ -32,7 +32,6 @@ export const appConfig: ApplicationConfig = {
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: '/assets/i18n/', suffix: '.json' }),
       fallbackLang: 'fr',
-      lang: 'fr',
     }),
   ],
 };

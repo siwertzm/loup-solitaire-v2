@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Moyenne | M | `feature-QUAL-09` | À faire |
+| 3 | Moyenne | M | `feature-QUAL-09` | Fait |
 
 Origine : Audit Claude Code du 11/11/2026 (nouveau). Décision du 11/11/2026 : garder en.json et le rendre utilisable.
 
@@ -45,3 +45,11 @@ Le nom des disciplines et des objets vient aussi du serveur (`discipline.json`, 
 ## Fichiers concernés
 
 `frontend/src/app/app.config.ts`, `frontend/src/app/app.ts`, `frontend/src/app/features/profil/*`, `frontend/public/assets/i18n/en.json`, `frontend/public/assets/i18n/fr.json`
+
+## Réalisation (18/11/2026)
+
+- Textes du livre (chapitres, disciplines, objets) et messages d'erreur du serveur : **en français en v1** ; le jeu de données anglais pour la base viendra plus tard (porteur du projet). Une note le dit sous le choix de la langue.
+- Réglage dans la page **Options** (QUAL-15) plutôt que le Profil : la page a été créée depuis et prévoyait la langue.
+- `OptionsService` : langue enregistrée (`loup_langue`, Capacitor Preferences), sinon celle de l'appareil (`navigator.language`) si `fr` ou `en`, sinon `fr` ; appliquée au démarrage (`provideAppInitializer`) avec `<html lang>`. `lang: 'fr'` retiré de `app.config.ts`.
+- en.json corrigé selon le tableau ; pour l'ennemi, « Mindforce » (terme du tome 1 anglais) au lieu de « Psi-surge », « Mindblast » pour la discipline Kaï. `JOURNAL.ALT_COMBAT` existait déjà.
+- Tests Vitest dans `options.service.spec.ts` (en-GB → en, de-DE → fr, choix enregistré prioritaire, `<html lang>`).
