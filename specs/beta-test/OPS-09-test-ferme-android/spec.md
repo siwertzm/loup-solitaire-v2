@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| Bêta-test | Haute | S (code) + 14 jours (Play) | `feature-OPS-09` | À faire |
+| Bêta-test | Haute | S (code) + 14 jours (Play) | `feature-OPS-09` | En cours (14 jours : en attente des inscriptions) |
 
 Origine : audit du déploiement Android du 17/11/2026
 
@@ -46,6 +46,12 @@ L'app est en **test interne** sur Google Play (builds 107 à 113, envoi automati
 
 - Le tableau de bord affiche-t-il bien l'exigence « 12 testeurs / 14 jours » pour ce compte ?
 - Liste des 12 testeurs prête ?
+
+## Avancement (18/11/2026)
+
+- Play Console : étapes 1 à 5 faites, lien d'inscription envoyé aux testeurs.
+- Code : entrée `track` du workflow (`internal` par défaut, `alpha` pour le test fermé).
+- Début des 14 jours : **en attente des inscriptions** (à noter quand les 12 testeurs sont inscrits).
 
 ## Déjà en place (17/11/2026)
 

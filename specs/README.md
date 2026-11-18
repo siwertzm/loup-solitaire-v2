@@ -30,7 +30,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 
 | ID | Sévérité | Effort | Tâche |
 | --- | --- | --- | --- |
-| [OPS-09](beta-test/OPS-09-test-ferme-android/spec.md) | Haute | S + 14 jours | Test fermé Android (12 testeurs / 14 jours), choix de la piste dans le workflow |
+| [OPS-09](beta-test/OPS-09-test-ferme-android/spec.md) | Haute | S + 14 jours | Test fermé Android (12 testeurs / 14 jours) — en cours : console et workflow faits, 14 jours en attente des inscriptions |
 | [OPS-10](beta-test/OPS-10-testflight-ios/spec.md) | Haute | S | Version iOS : reprise de TestFlight (bloqué : compte Apple Developer), vérifications sur iPhone |
 | [OPS-11](beta-test/OPS-11-production-android/spec.md) | Moyenne | S | Production Android, après OPS-09 |
 | [OPS-12](beta-test/OPS-12-production-ios/spec.md) | Moyenne | M | Production iOS (App Store), après OPS-10 |

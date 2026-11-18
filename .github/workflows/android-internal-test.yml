@@ -1,10 +1,10 @@
-name: Android Internal Test
+name: Android Play
 
 on:
   workflow_dispatch:
     inputs:
       upload_to_play:
-        description: "Envoyer le build sur Google Play (Internal testing). A laisser decoche tant que le compte de service n'est pas configure."
+        description: "Envoyer le build sur Google Play sur la piste choisie. A laisser decoche tant que le compte de service n'est pas configure."
         type: boolean
         default: false
       status:
@@ -14,13 +14,20 @@ on:
         options:
           - completed
           - draft
+      track:
+        description: "Piste Play : 'internal' (test interne) ou 'alpha' (test ferme)"
+        type: choice
+        default: internal
+        options:
+          - internal
+          - alpha
 
 permissions:
   contents: read
 
 jobs:
   build-and-upload:
-    name: Build Android et upload vers Google Play (Internal testing)
+    name: Build Android et upload vers Google Play
     runs-on: ubuntu-latest
 
     env:
@@ -90,14 +97,14 @@ jobs:
           path: frontend/android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 7
 
-      - name: Upload to Google Play (Internal testing)
+      - name: Upload to Google Play (${{ inputs.track }})
         if: ${{ inputs.upload_to_play }}
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: ${{ env.PACKAGE_NAME }}
           releaseFiles: frontend/android/app/build/outputs/bundle/release/app-release.aab
-          track: internal
+          track: ${{ inputs.track }}
           status: ${{ inputs.status }}
 
       - name: Remove keystore
