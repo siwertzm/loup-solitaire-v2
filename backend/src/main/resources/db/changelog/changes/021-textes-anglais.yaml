@@ -1,0 +1,40 @@
+databaseChangeLog:
+
+  # DATA-19 : textes anglais du livre (data/en/*.json), remplis par
+  # GameDataLoader. Colonnes facultatives : le code N-1 tourne sur ce schema.
+  - changeSet:
+      id: 021-textes-anglais
+      author: siwertzm
+
+      changes:
+        - addColumn:
+            tableName: chapitre
+            columns:
+              - column: { name: text_en, type: TEXT }
+        - addColumn:
+            tableName: ennemi
+            columns:
+              - column: { name: nom_en, type: VARCHAR(255) }
+              - column: { name: description_en, type: VARCHAR(2000) }
+        - addColumn:
+            tableName: objet
+            columns:
+              - column: { name: nom_en, type: VARCHAR(255) }
+              - column: { name: description_en, type: VARCHAR(1000) }
+        - addColumn:
+            tableName: discipline
+            columns:
+              - column: { name: nom_en, type: VARCHAR(255) }
+              - column: { name: description_en, type: VARCHAR(3000) }
+
+      rollback:
+        - dropColumn: { tableName: chapitre, columnName: text_en }
+        - dropColumn:
+            tableName: ennemi
+            columns: [ { column: { name: nom_en } }, { column: { name: description_en } } ]
+        - dropColumn:
+            tableName: objet
+            columns: [ { column: { name: nom_en } }, { column: { name: description_en } } ]
+        - dropColumn:
+            tableName: discipline
+            columns: [ { column: { name: nom_en } }, { column: { name: description_en } } ]

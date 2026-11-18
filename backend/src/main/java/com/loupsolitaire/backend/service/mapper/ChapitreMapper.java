@@ -26,6 +26,7 @@ import com.loupsolitaire.backend.response.LienResponse;
 import com.loupsolitaire.backend.response.ObjetChapResponse;
 import com.loupsolitaire.backend.service.ConditionService;
 import com.loupsolitaire.backend.service.ContexteConditions;
+import com.loupsolitaire.backend.util.Textes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,7 +54,7 @@ public class ChapitreMapper {
                 .orElseThrow(() -> new RessourceNonTrouveeException("Chapitre introuvable : " + chapitreId));
 
         List<EnnemiChapitreResponse> ennemis = chapitre.getEnnemis().stream()
-                .map(e -> new EnnemiChapitreResponse(e.getId(), e.getNom(), e.getHabilite(), e.getEndurance()))
+                .map(e -> new EnnemiChapitreResponse(e.getId(), Textes.selon(e.getNom(), e.getNomEn()), e.getHabilite(), e.getEndurance()))
                 .toList();
 
         // Un seul contexte pour tout le chapitre : l'inventaire et le combat
@@ -80,7 +81,7 @@ public class ChapitreMapper {
                 .map(o -> versReponseObjet(o, dejaPrisParObjet))
                 .toList();
 
-        return new ChapitreResponse(chapitre.getId(), chapitre.getText(), chapitre.isCombat(),
+        return new ChapitreResponse(chapitre.getId(), Textes.selon(chapitre.getText(), chapitre.getTextEn()), chapitre.isCombat(),
                 personnage.getDernierTirageHasard(), ennemis, effets, liens, objets);
     }
 
@@ -100,7 +101,8 @@ public class ChapitreMapper {
             valeur = Math.max(0, objetChap.getValeur() - dejaPris);
         }
 
-        return new ObjetChapResponse(objetId, objetChap.getObjet().getNom(), valeur, objetChap.isOptionnel());
+        return new ObjetChapResponse(objetId,
+                Textes.selon(objetChap.getObjet().getNom(), objetChap.getObjet().getNomEn()), valeur, objetChap.isOptionnel());
     }
 
     private boolean estEffetActif(Effet effet, Personnage personnage, ContexteConditions contexte) {

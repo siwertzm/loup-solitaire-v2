@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.loupsolitaire.backend.util.Textes;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -89,7 +91,8 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(appProperties.cors().allowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // X-Langue : langue des textes du livre (DATA-19, voir util/Textes).
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", Textes.ENTETE_LANGUE));
         // Pas de "credentials" : l'API n'utilise aucun cookie, le token JWT
         // passe dans l'en-tete Authorization (autorise juste au-dessus). Les
         // autoriser quand meme permettrait inutilement aux origines listees

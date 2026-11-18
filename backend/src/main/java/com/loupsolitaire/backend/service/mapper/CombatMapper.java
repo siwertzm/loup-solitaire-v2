@@ -16,6 +16,7 @@ import com.loupsolitaire.backend.response.CombatResponse;
 import com.loupsolitaire.backend.response.ResultatTourResponse;
 import com.loupsolitaire.backend.service.CombatService;
 import com.loupsolitaire.backend.service.record.ResultatTour;
+import com.loupsolitaire.backend.util.Textes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -92,7 +93,7 @@ public class CombatMapper {
         boolean actif = !vaincu && combat.getEnnemiActif() == ce;
         return new CombatEnnemiResponse(
                 ce.getEnnemi().getId(),
-                ce.getEnnemi().getNom(),
+                Textes.selon(ce.getEnnemi().getNom(), ce.getEnnemi().getNomEn()),
                 ce.getEnnemi().getHabilite(),
                 ce.getEnnemi().getEndurance(),
                 ce.getEnduranceActuelle(),

@@ -43,6 +43,10 @@ public class Chapitre {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
+    // DATA-19 : texte de la VO (data/en/chapitre.json), null tant que non charge.
+    @Column(name = "text_en", columnDefinition = "TEXT")
+    private String textEn;
+
     @Column(nullable = false)
     private boolean combat;
 

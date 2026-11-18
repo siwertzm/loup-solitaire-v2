@@ -40,6 +40,13 @@ public class Ennemi {
     @Column(length = 2000)
     private String description;
 
+    // DATA-19 : textes de la VO (data/en/), null tant que non charges.
+    @Column(name = "nom_en")
+    private String nomEn;
+
+    @Column(name = "description_en", length = 2000)
+    private String descriptionEn;
+
     @Column(nullable = false)
     private int habilite;
 

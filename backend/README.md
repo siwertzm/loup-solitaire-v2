@@ -98,6 +98,13 @@ table `catalogue_empreinte`. À chaque démarrage :
   des joueurs ne référencent que des identifiants stables (chapitre, objet,
   ennemi, discipline) et ne sont pas touchées.
 
+**Textes anglais (DATA-19).** `data/en/*.json` reprend les mêmes entrées avec
+le texte officiel de la VO (Project Aon), chargé dans les colonnes `*_en`
+(`text_en`, `nom_en`, `description_en`) et compté dans l'empreinte. Un `id`
+anglais absent du fichier français fait échouer le démarrage. L'API renvoie
+l'anglais quand la requête porte l'en-tête `X-Langue: en` (envoyé par l'app
+selon la langue choisie), sinon le français.
+
 Le cache de second niveau d'Hibernate (OPS-07) est entièrement vidé au début
 d'un rechargement, collections comprises, pour ne pas relire d'anciens liens
 ou effets supprimés en base.

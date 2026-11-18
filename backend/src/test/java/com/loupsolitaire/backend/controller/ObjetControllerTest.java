@@ -10,6 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.loupsolitaire.backend.model.Effet;
 import com.loupsolitaire.backend.model.Objet;
@@ -18,6 +21,7 @@ import com.loupsolitaire.backend.model.enums.TypeEffet;
 import com.loupsolitaire.backend.repository.ObjetRepository;
 import com.loupsolitaire.backend.response.EffetObjetResponse;
 import com.loupsolitaire.backend.response.ObjetResponse;
+import com.loupsolitaire.backend.util.Textes;
 
 @ExtendWith(MockitoExtension.class)
 class ObjetControllerTest {
@@ -65,5 +69,28 @@ class ObjetControllerTest {
         assertThat(reponse.description()).isEqualTo("Description de Potion de Laumspur");
         assertThat(reponse.categorie()).isEqualTo(CategorieObjet.OBJET);
         assertThat(reponse.effets()).containsExactly(new EffetObjetResponse("ENDURANCE", 4));
+    }
+
+    @Test
+    void enAnglaisRenvoieEtTrieLesNomsDeLaVo() {
+        Objet poignard = objet("poignard", "Poignard", CategorieObjet.ARME);
+        poignard.setNomEn("Dagger");
+        poignard.setDescriptionEn("");
+        Objet baton = objet("baton", "Baton", CategorieObjet.ARME);
+        baton.setNomEn("Quarterstaff");
+        baton.setDescriptionEn("");
+        when(objetRepository.findAll()).thenReturn(List.of(baton, poignard));
+        MockHttpServletRequest requete = new MockHttpServletRequest();
+        requete.addHeader(Textes.ENTETE_LANGUE, "en");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(requete));
+        try {
+            List<ObjetResponse> objets = objetController.lister();
+
+            // En francais : Baton, Poignard ; en anglais : Dagger, Quarterstaff.
+            assertThat(objets).extracting(ObjetResponse::nom).containsExactly("Dagger", "Quarterstaff");
+            assertThat(objets.getFirst().description()).isEmpty();
+        } finally {
+            RequestContextHolder.resetRequestAttributes();
+        }
     }
 }
