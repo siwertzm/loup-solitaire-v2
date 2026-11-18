@@ -2,7 +2,7 @@
 
 | Lot | Sévérité | Effort | Branche | Statut |
 | --- | --- | --- | --- | --- |
-| 3 | Basse | M | `feature-QUAL-11` | En test |
+| 3 | Basse | M | `feature-QUAL-11` | Fait |
 
 Origine : PR Dependabot du 12/11/2026 (#42 à #45), fermées volontairement
 
@@ -41,4 +41,4 @@ Tests existants (QUAL-06, QUAL-10) + parcours manuel ci-dessus.
 - Vitest 5.1 (`@angular/build` 22 accepte `^4 || ^5`). Ionic 9, ngx-translate 18, `@sentry/angular` 11 et Capacitor 8 compatibles sans changement.
 - Bundle initial 875,6 → 905,9 kB (runtime Angular) : seuil d'avertissement passé de 900 à 950 kB (erreur toujours à 1,5 MB).
 - `npm test` (154 tests), `npm run build`, `npm audit --omit=dev --audit-level=high` verts.
-- Reste : test sur téléphone (Android, iOS via TestFlight) avant de passer à « Fait ».
+- Testé sur téléphone le 18/11/2026 (Android, iOS via TestFlight) : connexion, création de personnage, chapitre, combat, inventaire, profil.
