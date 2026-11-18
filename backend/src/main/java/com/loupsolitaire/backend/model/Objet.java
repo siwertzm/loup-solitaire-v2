@@ -43,12 +43,13 @@ public class Objet {
     @Column(length = 1000)
     private String description;
 
-    // DATA-19 : textes de la VO (data/en/), null tant que non charges.
-    @Column(name = "nom_en")
-    private String nomEn;
-
+    // DATA-19 : description puis nom de la VO (data/en/objet.json),
+    // null tant que non charges.
     @Column(name = "description_en", length = 1000)
     private String descriptionEn;
+
+    @Column(name = "nom_en")
+    private String nomEn;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
