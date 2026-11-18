@@ -43,6 +43,13 @@ public class Objet {
     @Column(length = 1000)
     private String description;
 
+    // DATA-19 : textes de la VO (data/en/), null tant que non charges.
+    @Column(name = "nom_en")
+    private String nomEn;
+
+    @Column(name = "description_en", length = 1000)
+    private String descriptionEn;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CategorieObjet categorie;

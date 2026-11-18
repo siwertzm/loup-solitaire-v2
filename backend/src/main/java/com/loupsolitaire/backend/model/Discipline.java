@@ -38,4 +38,11 @@ public class Discipline {
 
     @Column(length = 3000, nullable = false)
     private String description;
+
+    // DATA-19 : textes de la VO (data/en/), null tant que non charges.
+    @Column(name = "nom_en")
+    private String nomEn;
+
+    @Column(name = "description_en", length = 3000)
+    private String descriptionEn;
 }

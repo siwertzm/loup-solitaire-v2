@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,9 @@ public class GameDataLoader implements ApplicationRunner {
 
     // Ordre fixe : il entre dans le calcul de l'empreinte.
     private static final List<String> FICHIERS_DU_LIVRE = List.of(
-            "data/discipline.json", "data/ennemi.json", "data/objet.json", "data/chapitre.json");
+            "data/discipline.json", "data/ennemi.json", "data/objet.json", "data/chapitre.json",
+            // DATA-19 : textes de la VO, memes id que les fichiers francais.
+            "data/en/discipline.json", "data/en/ennemi.json", "data/en/objet.json", "data/en/chapitre.json");
 
     private final DisciplineRepository disciplineRepository;
     private final EnnemiRepository ennemiRepository;
@@ -138,7 +141,7 @@ public class GameDataLoader implements ApplicationRunner {
         catalogueEmpreinteRepository.save(ligne);
     }
 
-    // SHA-256 des quatre fichiers, dans un ordre fixe.
+    // SHA-256 des fichiers du livre, dans un ordre fixe.
     static String calculerEmpreinte() throws IOException {
         MessageDigest sha256;
         try {
@@ -173,6 +176,8 @@ public class GameDataLoader implements ApplicationRunner {
 
     private void chargerDisciplines() throws Exception {
         List<DisciplineJson> donnees = lireJson("data/discipline.json", DisciplineJson.class);
+        Map<String, DisciplineJson> anglais = textesAnglais("data/en/discipline.json", DisciplineJson.class,
+                DisciplineJson::getId, donnees.stream().map(DisciplineJson::getId).collect(Collectors.toSet()));
         Map<IdDiscipline, Discipline> existantes = parId(disciplineRepository.findAll(), Discipline::getId);
 
         List<Discipline> disciplines = donnees.stream()
@@ -182,6 +187,9 @@ public class GameDataLoader implements ApplicationRunner {
                     discipline.setId(id);
                     discipline.setNom(json.getNom());
                     discipline.setDescription(json.getDescription());
+                    DisciplineJson en = anglais.get(json.getId());
+                    discipline.setNomEn(en == null ? null : en.getNom());
+                    discipline.setDescriptionEn(en == null ? null : en.getDescription());
                     return discipline;
                 })
                 .toList();
@@ -194,10 +202,18 @@ public class GameDataLoader implements ApplicationRunner {
 
     private void chargerEnnemis() throws Exception {
         List<EnnemiJson> donnees = lireJson("data/ennemi.json", EnnemiJson.class);
+        Map<String, EnnemiJson> anglais = textesAnglais("data/en/ennemi.json", EnnemiJson.class,
+                EnnemiJson::getId, donnees.stream().map(EnnemiJson::getId).collect(Collectors.toSet()));
         Map<String, Ennemi> existants = parId(ennemiRepository.findAll(), Ennemi::getId);
 
         List<Ennemi> ennemis = donnees.stream()
-                .map(json -> versEntite(json, existants.getOrDefault(json.getId(), new Ennemi())))
+                .map(json -> {
+                    Ennemi ennemi = versEntite(json, existants.getOrDefault(json.getId(), new Ennemi()));
+                    EnnemiJson en = anglais.get(json.getId());
+                    ennemi.setNomEn(en == null ? null : en.getNom());
+                    ennemi.setDescriptionEn(en == null ? null : en.getDescription());
+                    return ennemi;
+                })
                 .toList();
 
         ennemiRepository.saveAll(ennemis);
@@ -237,6 +253,21 @@ public class GameDataLoader implements ApplicationRunner {
                 .toList();
     }
 
+    // DATA-19 : textes anglais par id. Un id absent du fichier francais est
+    // une incoherence du livre : le demarrage echoue, comme pour les autres.
+    private <T> Map<String, T> textesAnglais(String cheminClasspath, Class<T> type,
+            Function<T, Object> id, Set<String> idsFrancais) throws Exception {
+        Map<String, T> parId = new HashMap<>();
+        for (T json : lireJson(cheminClasspath, type)) {
+            String cle = String.valueOf(id.apply(json));
+            if (!idsFrancais.contains(cle)) {
+                throw new IllegalStateException(cheminClasspath + " : id absent du fichier francais : " + cle);
+            }
+            parId.put(cle, json);
+        }
+        return parId;
+    }
+
     private <T> List<T> lireJson(String cheminClasspath, Class<T> type) throws Exception {
         try (InputStream is = new ClassPathResource(cheminClasspath).getInputStream()) {
             return objectMapper.readerForListOf(type).readValue(is);
@@ -254,9 +285,18 @@ public class GameDataLoader implements ApplicationRunner {
         // Les objets ne sont pas encore en base : les conditions de leurs
         // effets sont verifiees par rapport au contenu du fichier lui-meme.
         Set<String> idsObjets = donnees.stream().map(ObjetJson::getId).collect(Collectors.toSet());
+        Map<String, ObjetJson> anglais = textesAnglais("data/en/objet.json", ObjetJson.class,
+                ObjetJson::getId, idsObjets);
 
         List<Objet> objets = donnees.stream()
-                .map(json -> versEntite(json, existants.getOrDefault(json.getId(), new Objet()), idsObjets::contains))
+                .map(json -> {
+                    Objet objet = versEntite(json, existants.getOrDefault(json.getId(), new Objet()),
+                            idsObjets::contains);
+                    ObjetJson en = anglais.get(json.getId());
+                    objet.setNomEn(en == null ? null : en.getNom());
+                    objet.setDescriptionEn(en == null ? null : en.getDescription());
+                    return objet;
+                })
                 .toList();
 
         objetRepository.saveAll(objets);
@@ -307,6 +347,8 @@ public class GameDataLoader implements ApplicationRunner {
 
     private void chargerChapitres() throws Exception {
         List<ChapitreJson> donnees = lireJson("data/chapitre.json", ChapitreJson.class);
+        Map<String, ChapitreJson> anglais = textesAnglais("data/en/chapitre.json", ChapitreJson.class,
+                ChapitreJson::getId, donnees.stream().map(c -> String.valueOf(c.getId())).collect(Collectors.toSet()));
         Map<Integer, Chapitre> existants = parId(chapitreRepository.findAll(), Chapitre::getId);
 
         // --- PASSE 1 : tous les chapitres "nus" (id + texte + combat) ---
@@ -319,6 +361,8 @@ public class GameDataLoader implements ApplicationRunner {
                     Chapitre chapitre = existants.getOrDefault(json.getId(), new Chapitre());
                     chapitre.setId(json.getId());
                     chapitre.setText(json.getText());
+                    ChapitreJson en = anglais.get(String.valueOf(json.getId()));
+                    chapitre.setTextEn(en == null ? null : en.getText());
                     chapitre.setCombat(json.isCombat());
                     chapitre.getEnnemis().clear();
                     chapitre.getEffets().clear();

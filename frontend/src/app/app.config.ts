@@ -15,6 +15,7 @@ import * as Sentry from '@sentry/angular';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { langueInterceptor } from './core/interceptors/langue.interceptor';
 import { OptionsService } from './core/services/options.service';
 
 export const appConfig: ApplicationConfig = {
@@ -28,7 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(OptionsService).charger()),
     provideIonicAngular({}),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withXhr(), withInterceptors([authInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([langueInterceptor, authInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: '/assets/i18n/', suffix: '.json' }),
       fallbackLang: 'fr',

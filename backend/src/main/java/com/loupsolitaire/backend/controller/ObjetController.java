@@ -28,8 +28,8 @@ public class ObjetController {
     @Transactional(readOnly = true)
     public List<ObjetResponse> lister() {
         return objetRepository.findAll().stream()
-                .sorted(Comparator.comparing(o -> o.getNom().toLowerCase()))
                 .map(ObjetResponse::fromEntity)
+                .sorted(Comparator.comparing(o -> o.nom().toLowerCase()))
                 .toList();
     }
 }

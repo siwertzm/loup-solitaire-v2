@@ -11,6 +11,7 @@ import com.loupsolitaire.backend.model.Personnage;
 import com.loupsolitaire.backend.response.InventaireItemResponse;
 import com.loupsolitaire.backend.response.PersonnageResponse;
 import com.loupsolitaire.backend.service.InventaireService;
+import com.loupsolitaire.backend.util.Textes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,7 +50,9 @@ public class PersonnageMapper {
                 personnage.getEnduranceMax(),
                 personnage.getEnduranceActuelle(),
                 personnage.getDisciplines().stream().map(d -> d.getId().name()).toList(),
-                personnage.getArmeMaitrisee() != null ? personnage.getArmeMaitrisee().getNom() : null,
+                personnage.getArmeMaitrisee() != null
+                        ? Textes.selon(personnage.getArmeMaitrisee().getNom(), personnage.getArmeMaitrisee().getNomEn())
+                        : null,
                 personnage.getChapitreActuel().getId(),
                 personnage.getVolEnAttente() != null ? personnage.getVolEnAttente().name() : null,
                 personnage.isMort(),
@@ -60,7 +63,7 @@ public class PersonnageMapper {
     private InventaireItemResponse versReponseInventaire(InventaireItem item) {
         return new InventaireItemResponse(
                 item.getObjet().getId(),
-                item.getObjet().getNom(),
+                Textes.selon(item.getObjet().getNom(), item.getObjet().getNomEn()),
                 item.getObjet().getCategorie().name(),
                 item.getQuantite()
         );

@@ -128,6 +128,13 @@ class GameDataLoaderTest {
                         IdDiscipline.MAITRISE_ARMES,
                         IdDiscipline.SIXIEME_SENS
                 );
+
+        // DATA-19 : textes de la VO a cote du francais.
+        Discipline chasse = disciplines.stream()
+                .filter(d -> d.getId() == IdDiscipline.CHASSE).findFirst().orElseThrow();
+        assertThat(chasse.getNom()).isEqualTo("Chasse");
+        assertThat(chasse.getNomEn()).isEqualTo("Hunting");
+        assertThat(chasse.getDescriptionEn()).startsWith("This skill ensures that a Kai Lord will never starve");
     }
 
 
@@ -152,6 +159,8 @@ class GameDataLoaderTest {
                 .filter(e -> e.getId().equals("gluatre"))
                 .findFirst()
                 .orElseThrow();
+
+        assertThat(gluatre.getNomEn()).isEqualTo("Burrowcrawler");
 
         assertThat(gluatre.getResistances())
                 .extracting(Discipline::getId)
@@ -213,6 +222,9 @@ class GameDataLoaderTest {
                 .orElseThrow();
 
         assertThat(poignard.getEffets()).isEmpty();
+        assertThat(poignard.getNomEn()).isEqualTo("Dagger");
+        // Pas de description dans la VO : vide, pas null (le francais ne la remplace pas).
+        assertThat(poignard.getDescriptionEn()).isEmpty();
     }
 
 
@@ -257,6 +269,7 @@ class GameDataLoaderTest {
                 .orElseThrow();
 
         assertThat(chapitre0.getLiens()).hasSize(1);
+        assertThat(chapitre0.getTextEn()).startsWith("In the northern land of Sommerlund");
 
         assertThat(
                 chapitre0.getLiens()
