@@ -6,7 +6,7 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 - **Ajouts** : SEC-09, QUAL-06 et OPS-08 viennent de l'audit Claude Code du 11/11/2026. SEC-06 et OPS-05 existaient déjà et ont été complétés.
 - **Second audit du 11/11/2026** (textes, i18n, règles `CLAUDE.md`) : SEC-10, QUAL-07, QUAL-08, REGLE-16 et QUAL-09 ajoutés ; QUAL-03 complété. DATA-17 vient de la comparaison complète des textes avec la VF en ligne chg96 et la VO Project Aon.
 - **Audits Claude Code du 16 et 17/11/2026** (repo entier) : SEC-12, QUAL-18 et QUAL-19 faits le 17/11 (PR #95 à #97) ; QUAL-20, QUAL-21 et SEC-13 ajoutés au lot 3.
-- **Audit du déploiement Android du 17/11/2026** : lot « Bêta-test » (`beta-test/`), OPS-09 à OPS-12 ; corrections déjà faites le 17/11 listées dans « Avancement ».
+- **Audit du déploiement Android du 17/11/2026** : lot « Bêta-test » (`beta-test/`), OPS-09 à OPS-12 ; corrections déjà faites le 17/11 listées dans « Avancement ». OPS-13 ajouté le 18/11/2026 (échec de signature du workflow TestFlight, email Apple ITMS-90725).
 - **Retours bêta-testeurs (16/11/2026)** : QUAL-12, QUAL-13, QUAL-16 ; QUAL-14 et QUAL-15 viennent du porteur du projet. Ajouts du porteur du projet pour le lot 3 : REGLE-18 et REGLE-19 (Guérison, édition augmentée), QUAL-17 (dialogue du combat). Les infos manquantes sont listées dans la section « À demander avant de commencer » de chaque spec.
 - Chaque tâche garde son dossier une fois finie. Quand une tâche est finie : passer son statut à « Fait » dans son `spec.md`, la retirer du tableau « Tâches à faire » et l'ajouter dans « Avancement ».
 
@@ -34,8 +34,9 @@ Une tâche = un dossier `lot-N/<ID>-<nom>/spec.md`, avec le problème, ce qu'il 
 | [OPS-09](beta-test/OPS-09-test-ferme-android/spec.md) | Haute | S + 14 jours | Test fermé Android (12 testeurs / 14 jours) — en cours : console et workflow faits, 14 jours en attente des inscriptions |
 | [OPS-11](beta-test/OPS-11-production-android/spec.md) | Moyenne | S | Production Android, après OPS-09 |
 | [OPS-12](beta-test/OPS-12-production-ios/spec.md) | Moyenne | M | Production iOS (App Store), après OPS-10 |
+| [OPS-13](beta-test/OPS-13-signature-ios-ci/spec.md) | Haute | S | CI iOS : certificat de signature fixe (panne du 18/11) et Xcode 27 (exigé par Apple en avril 2027) |
 
-Ordre : OPS-11 après les 14 jours d'OPS-09 ; OPS-12 possible dès maintenant (OPS-10 fait).
+Ordre : OPS-11 après les 14 jours d'OPS-09 ; OPS-13 avant OPS-12 (chaque envoi iOS risque la panne de certificat).
 
 ### Lot 1 — avant d'élargir le test TestFlight
 
